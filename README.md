@@ -192,7 +192,30 @@ RNF: Requerimiento No Funcional
 ![alt text](WBS.jpg)
 
 ### Diccionario
-(Descripción del diccionario)
+| ID | NOMBRE | DESCRIPCIÓN | TAREA  | RESPONSABLE | PESO |
+|---------|-------|--------|--------|--------|--------|
+| 1 | Planificación | Planificación sobre las tareas que la componen | Planificación, investigación | Todo el equipo | 3 | 
+| 1.1 | Tecnologías a utilizar | Investigar sobre las tecnologías a utilizar | Investigación | Todo el equipo | 3 |
+| 1.2 | Herramientas a utilizar | Investigar sobre las herramientas a utilizar | Investigación | Todo el equipo | 3 |
+| 1.3 | Definición de requerimientos | Definir los requerimientos del proyecto | Documentación | Todo el equipo | 3 |
+| 1.4 | Creación del backlog | Crear backlog | Planificación  | Scrum Master | 3 |
+| 1.5 | Documentación inicial | Crear la documentación | Planificación | Todo el equipo | 3 |
+| 2 | Desarrollo de Interfaz | Desarrollar la interfaz | Desarrollo | Equipo de desarrollo | 1 |
+| 2.1 | Capacitación del Equipo de Desarrollo | Capacitar al equipo con las tecnologías a utilizar | Capacitación | Equipo de desarrollo | 1 |
+| 2.2 | Registro | Crear interfaz registro | Desarrollo | Equipo de desarrollo | 1 |
+| 2.2.1 | Formulario | Creación del formulario | Desarrollo | Equipo de desarrollo | 1 |
+| 2.2.2 | Cámara | Implementar cámara en interfaz | Desarrollo | Equipo de desarrollo | 1 |
+| 2.3 | Autentificación | Implementar interfaz de autentificación | Desarrollo | Equipo de desarrollo | 1 |
+| 2.3.1 | Formulario | Creación de formulario de autentificación | Desarrollo | Equipo de desarrollo | 1 |
+| 3 | Desarrollo backend | Desarrollar la lógica de la aplicación | Desarrollo | Equipo de desarrollo | 3 |
+| 3.1 | Capacitación del equipo de desarrollo | Capacitar al equipo de desarrollo con las tecnologías a utilizar | Capacitación | Equipo de desarrollo | 2 |
+| 3.2 | Almacenamiento de imágenes | Almacenar las imágenes en el dispositivo del usuario | Desarrollo | Equipo de desarrollo | 1 |
+| 3.2.1 | Creación de Base de Datos | Crear base de datos | Desarrollo | Equipo de desarrollo | 1 |
+| 3.3 | Crear algoritmo reconocimiento facial | Implementación de lógica de reconocimiento facial | Desarrollo | Equipo de desarrollo | 3 |
+| 3.4 | Desarrollo parte Vault | Implementar aplicación de galería privada | Desarrollo | Equipo de desarrollo | 3 |
+| 4 | Implementación | Puesta en servicio de la aplicación | Implementación | Capacitador y Prueba de Usuario | 1 |
+| 4.1 | Exportar apk | Compilación del proyecto a formato de dispositivo android | Implementación | Capacitador y Prueba de Usuario  | 1 |
+| 4.2 | Capacitar usuario | Capacitar a usuario final | Capacitación | Capacitador y Prueba de Usuario | 1 |
 
 ### Calendario
 | Entrega | Fecha | Tareas |
