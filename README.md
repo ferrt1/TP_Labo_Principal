@@ -173,12 +173,16 @@ RNF: Requerimiento No Funcional
 
 <ol>
   <li>Usabilidad
-    <li>Si el usuario desea entrar y no esta registrado se le debe mostrar un mensaje de "acceso denegado, primero necesitas registrarte"</li>
-    <li>Si el usuario desea ingresar a su cuenta con una foto u otro rostro (no asociado a su cuenta) se le debe mostrar un mensaje de "acceso denegado".</li>
-    <li>Si el usuario pudo ingresar a su cuenta se le debe mostrar un mensaje de "acceso permitido".</li>
+    <ol>
+      <li>Si el usuario desea entrar y no esta registrado se le debe mostrar un mensaje de "acceso denegado, primero necesitas registrarte"</li>
+      <li>Si el usuario desea ingresar a su cuenta con una foto u otro rostro (no asociado a su cuenta) se le debe mostrar un mensaje de "acceso denegado".</li>
+      <li>Si el usuario pudo ingresar a su cuenta se le debe mostrar un mensaje de "acceso permitido".</li>
+    </ol>
   </li>
   <li>Rendimiento
-    <li>El sistema debe ser eficiente en el uso de la batería, la memoria y el procesador de la Tablet.</li>
+    <ol>
+      <li>El sistema debe ser eficiente en el uso de la batería, la memoria y el procesador de la Tablet.</li>
+    </ol>
   </li>
 </ol>
 
