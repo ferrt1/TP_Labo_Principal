@@ -1,7 +1,24 @@
 # Proyecto de Reconocimiento Facial
+--- 
+#### Primer cuatrimestre 2024 - Universidad Nacional de General Sarmiento - Comisión 02
 
-Falta portada aca
+![alt text](image-1.png)
 
+**Profesores:**
+
+- Ing. Francisco Orozco De La Hoz @ forozco@campus.ungs.edu.ar 
+- Lic. Leandro Dikenstein @ ldikenstein@campus.ungs.edu.ar 
+
+**Equipo de trabajo:**
+
+- Flavio Ybarra
+- Alejandro Moras
+- Javier Galeano
+- Melanie Ibarra
+- Ivan Sanchez
+- Fernando Trejo
+
+---
 ## Introducción
 
 Bienvenidos al proyecto de Autenticación Facial en Kotlin. Este documento tiene como objetivo dar a conocer el desarrollo de una aplicación capaz de autenticar a los usuarios a través del reconocimiento facial enfocado para Tablets. La misma está diseñada para funcionar sin conexión a internet.
@@ -65,6 +82,7 @@ Con este enfoque, nuestro equipo podrá gestionar eficazmente el proyecto, adapt
 - Herramientas: Android Studio, OpenCV, TensorFlow Lite
 
 ## Gestión
+
 
 ### Misión/Visión del Negocio
 (Descripción de la misión y visión del negocio)
