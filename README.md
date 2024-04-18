@@ -1,8 +1,10 @@
+
+---
 # Proyecto de Reconocimiento Facial
---- 
-#### Primer cuatrimestre 2024 - Universidad Nacional de General Sarmiento - Comisión 02
 
 ![alt text](image.png)
+
+#### Primer cuatrimestre 2024 - Universidad Nacional de General Sarmiento - Comisión 02
 
 **Profesores:**
 
@@ -19,6 +21,7 @@
 - Fernando Trejo
 
 ---
+
 ## Introducción
 
 Bienvenidos al proyecto de Autenticación Facial en Kotlin. Este documento tiene como objetivo dar a conocer el desarrollo de una aplicación capaz de autenticar a los usuarios a través del reconocimiento facial enfocado para Tablets. La misma está diseñada para funcionar sin conexión a internet.
@@ -80,13 +83,24 @@ Con este enfoque, nuestro equipo podrá gestionar eficazmente el proyecto, adapt
 ## Enlaces
 - Repositorio: se decidió utilizar Github para que todos los miembros del equipo puedan acceder y trabajar con mayor comodidad. 
 <a href="https://github.com/ferrt1/TP_Labo_Principal" target="_blank">Repositorio Github</a>
-- Herramientas a utilizar: Android Studio, OpenCV, TensorFlow Lite
+
+- WBS: Se decidio utilizar Miro que es una plataforma de colaboración digital para realizar la WBS. Por motivos de seguridad no se compartirá el link pero la misma se mostrará en la documentación.
+
+- Herramientas a utilizar: Android Studio, OpenCV, TensorFlow Lite, Visual Studio.
+
+- Comunicación de equipo: WhatsApp y Discord.
+
+- User Stories: Trello
+
+- Comunicación con el Líder del Proyecto: Telegram o Mail.
+
+- Diagrama de arquitectura: draw.io
 
 ## Gestión
 
-
 ### Misión/Visión del Negocio
-(Descripción de la misión y visión del negocio)
+
+
 
 ### Alcance
 (Descripción del alcance del proyecto)
