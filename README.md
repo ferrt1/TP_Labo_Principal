@@ -2,7 +2,7 @@
 --- 
 #### Primer cuatrimestre 2024 - Universidad Nacional de General Sarmiento - Comisión 02
 
-![alt text](image-1.png)
+![alt text](image.png)
 
 **Profesores:**
 
@@ -78,8 +78,8 @@ Con este enfoque, nuestro equipo podrá gestionar eficazmente el proyecto, adapt
 
 
 ## Enlaces
-- Repositorio: (URL del repositorio)
-- Herramientas: Android Studio, OpenCV, TensorFlow Lite
+- Repositorio: se decidió utilizar Github para que todos los miembros del equipo puedan acceder y trabajar con mayor comodidad. https://github.com/ferrt1/TP_Labo_Principal
+- Herramientas a utilizar: Android Studio, OpenCV, TensorFlow Lite
 
 ## Gestión
 
@@ -107,11 +107,11 @@ Con este enfoque, nuestro equipo podrá gestionar eficazmente el proyecto, adapt
 | Entrega | Fecha | Tareas |
 |---------|-------|--------|
 | 1 | (19/4)| Presentación del documento, definición de roles, planificación inicial |
-| 2 | (26/4) | Diseño de interfaz de usuario y agregando datos al modelo de Inteligencia Artificial |
-| 3 | (3/5) | Desarrollo del backend y terminacion de interfaz – ¿modelo de datos? |
-| 4 | (10/5) | Se sigue con el backend en teoria |
-| 5 | (17/5) | Hacer Tests y esas cosas |
-| 6 | (21/5) | Presentación final ya como servicio - aplicación |
+| 2 | (3/4) | Diseño de interfaz de usuario, base de datos |
+| 3 | (17/5) | Desarrollo del backend y terminacion de interfaz – ¿modelo de datos? |
+| 4 | (31/5) | Se sigue con el backend en teoria |
+| 5 | (14/6) | Hacer Tests y esas cosas |
+| 6 | (/5) | Presentación final ya como servicio - aplicación |
 
 ### Estimaciones Iniciales
 (Descripción de las estimaciones iniciales)
