@@ -213,11 +213,13 @@ RNF: Requerimiento No Funcional
 | 3.2.1 | Creación de Base de Datos | Crear base de datos | Desarrollo | Equipo de desarrollo | 1 |
 | 3.3 | Crear algoritmo reconocimiento facial | Implementación de lógica de reconocimiento facial | Desarrollo | Equipo de desarrollo | 3 |
 | 3.4 | Desarrollo parte Vault | Implementar aplicación de galería privada | Desarrollo | Equipo de desarrollo | 3 |
-| 4 | Implementación | Puesta en servicio de la aplicación | Implementación | Capacitador y Prueba de Usuario | 1 |
-| 4.1 | Exportar apk | Compilación del proyecto a formato de dispositivo android | Implementación | Capacitador y Prueba de Usuario  | 1 |
+| 4 | Implementación | Puesta en servicio de la aplicación | Implementación | Capacitador y Prueba de Usuario, Equipo de desarrollo | 1 |
+| 4.1 | Exportar apk | Compilación del proyecto a formato de dispositivo android | Implementación | Equipo de desarrollo | 1 |
 | 4.2 | Capacitar usuario | Capacitar a usuario final | Capacitación | Capacitador y Prueba de Usuario | 1 |
+| 4.2.1 | Infografía | Mostrar imagen de uso | Capacitación | Capacitador y Prueba de Usuario | 1 |
 
 ### Calendario
+
 | Entrega | Fecha | Tareas |
 |---------|-------|--------|
 | 1 | (19/4)| Presentación del documento, definición de roles, planificación inicial |
