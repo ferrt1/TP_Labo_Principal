@@ -188,7 +188,8 @@ RNF: Requerimiento No Funcional
 
 
 ### WBS
-(Descripción del WBS)
+
+![alt text](WBS.jpg)
 
 ### Diccionario
 (Descripción del diccionario)
