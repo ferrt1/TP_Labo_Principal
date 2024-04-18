@@ -1,0 +1,66 @@
+ Metodologías Ágiles y Waterfall
+
+La combinación de metodologías ágiles y Waterfall, también conocida como "Wagile" o "Agilefall", es una estrategia que busca aprovechar lo mejor de ambos enfoques para adaptarse a las necesidades específicas de un proyecto o equipo. Aquí te explico cómo puedes implementar esta combinación en tu equipo de trabajo de seis personas:
+
+1. **Comprender las metodologías**: Lo primero es que todo el equipo entienda en qué consisten tanto Agile como Waterfall. Agile se centra en la adaptabilidad, la colaboración y la entrega incremental, mientras que Waterfall se basa en una planificación exhaustiva y una ejecución secuencial. Comprender los principios y prácticas de ambas metodologías es fundamental para su integración efectiva.
+
+2. **Identificar las fases del proyecto**: Divide tu proyecto en fases o etapas claramente definidas. Por ejemplo, podrías tener una fase inicial de planificación y diseño, seguida de fases de desarrollo iterativo y pruebas, y finalmente una fase de implementación y mantenimiento.
+
+3. **Aplicar Waterfall en las fases iniciales**: Utiliza el enfoque Waterfall en las primeras etapas del proyecto, como la planificación, el análisis de requerimientos y el diseño. Esto implica establecer una estructura de trabajo más lineal, donde se define el alcance del proyecto, se crean los planes detallados y se elabora la arquitectura inicial.
+
+4. **Implementar Agile en las fases de desarrollo**: Una vez que tengas una base sólida establecida con Waterfall, puedes aplicar metodologías ágiles en las fases de desarrollo y pruebas. Divide el trabajo en iteraciones cortas, llamadas sprints, donde el equipo se enfoque en entregar incrementos de funcionalidad de manera regular y continua.
+
+5. **Facilitar la comunicación y colaboración**: Fomenta la comunicación abierta y la colaboración entre los miembros del equipo durante todo el proceso. Esto es esencial para asegurar que todos estén alineados con los objetivos del proyecto y para abordar cualquier cambio o desafío que pueda surgir a lo largo del camino.
+
+6. **Realizar retrospectivas periódicas**: Programa reuniones regulares de retrospectiva al final de cada fase o sprint para evaluar lo que funcionó bien y qué se puede mejorar. Esta retroalimentación continua te permitirá ajustar y refinar el enfoque de trabajo de acuerdo a las necesidades específicas del equipo y del proyecto.
+
+7. **Ser flexible y adaptativo**: Lo más importante es mantener una mentalidad flexible y adaptativa. Si bien la combinación de metodologías puede proporcionar una estructura inicial, es importante estar dispuesto a ajustar y adaptar el enfoque según evolucione el proyecto y surjan nuevas necesidades o desafíos.
+
+Al integrar elementos de Waterfall y Agile de esta manera, tu equipo puede aprovechar lo mejor de ambos enfoques para gestionar eficazmente el proyecto, mantener la flexibilidad necesaria para adaptarse a los cambios y entregar valor de manera constante y oportuna.
+
+*************** desarrollo de un sistema de autenticación por 
+reconocimiento facial para una Tablet, permitiendo el ingreso a áreas con seguridad.**********
+
+*************************
+
+Reconocimiento facial en una Tablet
+El reconocimiento facial en una Tablet se basa en la tecnología de visión por computadora. Cuando se 
+configura esta función en el dispositivo, se crea un modelo tridimensional del rostro utilizando algoritmos avanzados.
+
+** XCODE FUIIIIRAAA **
+
+
+REQUERIMIENTOS 
+
+ El sistema debe ser capaz de capturar imágenes de la cámara frontal de la Tablet.
+
+ El sistema debe ser capaz de detectar rostros en las imágenes capturadas.
+
+ El sistema debe ser capaz de identificar a las personas a partir de sus rostros.
+
+ El sistema debe ser capaz de autenticar a las personas comparando sus rostros con una base de datos de 
+rostros conocidos almacenada en la Tablet.
+
+ El sistema debe mostrar un mensaje de "Acceso Permitido" o "Acceso Denegado" en la pantalla de la 
+Tablet en función del resultado de la autenticación. 
+
+ El sistema deberá registrar un log con los datos de ingresos (Hora, ID de persona, etc.)
+
+ El sistema deberá permitir una alternativa manual de ingreso ante posibles desconexiones (sin Wifi o 
+datos).
+
+ El sistema deberá permitir el ALTA/MODIFICACIONES de las personas a autenticar.
+
+
+******** https://www.develou.com/guia-de-kotlin/ ************* KOTLIN
+
+******* https://medium.com/@estebanuri/real-time-face-recognition-with-android-tensorflow-lite-14e9c6cc53a5 *********** apk de reconocimiento facial explicacion del funcionamiento.
+
+***** https://learnopencv.com/face-recognition-an-introduction-for-beginners/ ******** documentacion de face recognition
+
+***** https://es.stackoverflow.com/questions/86963/encriptar-datos-sensibles-en-local **** cifrado encriptado
+***** https://es.stackoverflow.com/questions/494244/cifrar-contrase%C3%B1a-con-llave-p%C3%BAblica-android-studio ***** lo mismo
+
+***** https://reintech.io/blog/kotlin-machine-learning-ml-kit-integration **** kit ml de google
+
+*-**** https://www.geeksforgeeks.org/augmented-faces-with-arcore-in-android/ ***** AR
