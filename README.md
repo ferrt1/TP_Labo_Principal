@@ -78,7 +78,8 @@ Con este enfoque, nuestro equipo podrá gestionar eficazmente el proyecto, adapt
 
 
 ## Enlaces
-- Repositorio: se decidió utilizar Github para que todos los miembros del equipo puedan acceder y trabajar con mayor comodidad. https://github.com/ferrt1/TP_Labo_Principal
+- Repositorio: se decidió utilizar Github para que todos los miembros del equipo puedan acceder y trabajar con mayor comodidad. 
+<a href="https://github.com/ferrt1/TP_Labo_Principal" target="_blank">Repositorio Github</a>
 - Herramientas a utilizar: Android Studio, OpenCV, TensorFlow Lite
 
 ## Gestión
