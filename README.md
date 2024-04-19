@@ -259,22 +259,27 @@ En los hitos restantes se presentará al cliente los avances en el producto.
 
 ### Administración en el Manejo de Bugs
 
-Realizar una buena administración de bugs y testing, es una tarea fundamental en un sistema de software. Estas actividades son cruciales para garantizar que el sistema funcione de manera confiable, eficiente y cumpla con las expectativas de los usuarios. A continuación, profundizaremos en la relevancia de administrar estos aspectos:
+Ejecutar una gestión eficaz de errores y pruebas es un componente esencial en un sistema de software. Estas tareas son vitales para asegurar que el sistema opere de forma fiable, eficiente y satisfaga las necesidades de los usuarios.
 
-- Realizaremos un seguimiento de bugs en Trello detallando en la tarjeta una descripción del error, el contexto en el que se encuentra, e información relevante para su posible solución. Los clasificaremos en tres niveles según su gravedad: bajo, medio o alto. Esto nos ayudará a identificar cuáles son los problemas más críticos y cuáles son menos importantes.
+- Haremos un seguimiento de los errores en Trello, proporcionando en la tarjeta una explicación del fallo, el entorno en el que se produce, y datos útiles para su posible corrección. Los categorizaremos en tres niveles de acuerdo a su severidad: bajo, medio o alto. Esto nos permitirá determinar cuáles son las dificultades más urgentes y cuáles son de menor prioridad.
 
 ### Administración de Cambios
-(Descripción de cómo se manejarán los cambios)
+La administración eficiente de cambios es crucial para el triunfo de cualquier proyecto. Los cambios pueden aparecer por varias causas, como nuevas demandas del cliente, hallazgos durante el desarrollo, o variaciones en las condiciones del mercado. En este informe, se explica cómo planeamos registrar, validar y supervisar las modificaciones en nuestro proyecto, así como quién es el encargado de cada una de estas tareas.
+
+Para registrar los cambios, emplearemos diversas herramientas y procedimientos: 
+- Trello: como se mencionó previamente, será nuestra plataforma principal para el seguimiento y administración de modificaciones.
+- Recolección de peticiones de cambios: se anexarán todas las peticiones de cambios que incluirán detalles exhaustivos sobre cada petición de modificación. Esto abarcará una descripción de la modificación, su razón, el impacto anticipado en el proyecto y cualquier documentación de apoyo pertinente.
+- Informe de Progreso: se mantendrá un informe de progreso actualizado que contendrá un registro de todas los cambios aprobados y pendientes. Esto ofrecerá una visión general del estado actual del proyecto en relación con las modificaciones.
 
 ### Indicadores a Utilizar
 - Funcionalidad Completa
 - Nivel de Calidad
 - Evolución de la Prueba
-- Cobertura de la Prueba
 - Burndown Chart
 
 ### Tecnologías
-- Android Studio
-- Kotlin
-- OpenCV
-- TensorFlow Lite
+- Android Studio: s un entorno de desarrollo integrado gratuito diseñado específicamente para el desarrollo de aplicaciones Android. 
+- Kotlin: Kotlin es un lenguaje de programación de código abierto para aplicaciones Android.
+- OpenCV: Es una biblioteca que proporciona una amplia gama de funciones y algoritmos para el procesamiento de imágenes y vídeo
+- TensorFlow Lite: TensorFlow Lite es un marco de trabajo ligero desarrollado por Google que permite ejecutar modelos de aprendizaje automático en dispositivos móviles e integrados.
+- SQLite: SQLite es un sistema de gestión de bases de datos relacional (RDBMS) ligero, rápido, autónomo y de código abierto.
