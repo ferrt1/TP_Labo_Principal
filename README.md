@@ -281,8 +281,8 @@ Para registrar los cambios, emplearemos diversas herramientas y procedimientos:
 - Burndown Chart
 
 ### Tecnologías
-- Android Studio: s un entorno de desarrollo integrado gratuito diseñado específicamente para el desarrollo de aplicaciones Android. 
-- Kotlin: Kotlin es un lenguaje de programación de código abierto para aplicaciones Android.
+- Android Studio: Es un entorno de desarrollo integrado gratuito diseñado específicamente para el desarrollo de aplicaciones Android. 
+- Kotlin: Kotlin Es un lenguaje de programación de código abierto para aplicaciones Android.
 - OpenCV: Es una biblioteca que proporciona una amplia gama de funciones y algoritmos para el procesamiento de imágenes y vídeo
 - TensorFlow Lite: TensorFlow Lite es un marco de trabajo ligero desarrollado por Google que permite ejecutar modelos de aprendizaje automático en dispositivos móviles e integrados.
 - SQLite: SQLite es un sistema de gestión de bases de datos relacional (RDBMS) ligero, rápido, autónomo y de código abierto.
