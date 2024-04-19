@@ -28,25 +28,25 @@
 # Glosario
 
 1. [Introducción](#introducción)
-2. [Objetivos del Proyecto](#objetivosdelproyecto)
-3. Objetivos del Documento
-4. Definición de Roles
-5. Equipo de Trabajo y Roles
-6. Metodología
-7. Enlaces
-8. Gestión
-   1. Plan de comunicaciones
-   2. Requerimientos
-   3. WBS
-   4. Diccionario
-   5. Calendario
-   6. Estimaciones iniciales
-   7. Riesgos
-   8. Entregables
-   9. Administración en el Manejo de Bugs
-   10. Administración de Cambios
-   11. Indicadores a Utilizar
-   12. Tecnologías
+2. [Objetivos del Proyecto](#objetivos-del-proyecto)
+3. [Objetivos del Documento](#objetivos-del-documento)
+4. [Definición de Roles](#definición-de-roles)
+5. [Equipo de Trabajo y Roles](#equipo-de-trabajo-y-roles)
+6. [Metodología](#metodología)
+7. [Enlaces](#enlaces)
+8. [Gestión](#gestión)
+   1. [Plan de comunicaciones](#plan-de-comunicaciones)
+   2. [Requerimientos](#requerimientos)
+   3. [WBS](#wbs)
+   4. [Diccionario](#diccionario)
+   5. [Calendario](#calendario)
+   6. [Estimaciones iniciales](#estimaciones-iniciales)
+   7. [Riesgos](#riesgos)
+   8. [Entregables](#entregables)
+   9. [Administración en el Manejo de Bugs](#administración-en-el-manejo-de-bugs)
+   10. [Administración de Cambios](#administración-de-cambios)
+   11. [Indicadores a Utilizar](#indicadores-a-utilizar)
+   12. [Tecnologías](#tecnologías)
 
 
 ## Introducción
