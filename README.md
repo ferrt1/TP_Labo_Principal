@@ -1,6 +1,12 @@
 
+<br>
+<br>
+
 ---
+
+
 # Proyecto de Reconocimiento Facial
+<br>
 
 ![alt text](image.png)
 
@@ -23,9 +29,22 @@
 - Ivan Sanchez - ivansncz11@gmail.com - DNI: 42087962
 - Fernando Trejo - fernandotrejo125@gmail.com - DNI: 43986607
 
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+
 ---
 
 # Glosario
+
 
 1. [Introducción](#introducción)
 2. [Objetivos del Proyecto](#objetivos-del-proyecto)
@@ -48,6 +67,7 @@
    11. [Indicadores a Utilizar](#indicadores-a-utilizar)
    12. [Tecnologías](#tecnologías)
 
+---
 
 ## Introducción
 
