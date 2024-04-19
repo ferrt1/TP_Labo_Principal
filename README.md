@@ -25,6 +25,30 @@
 
 ---
 
+# Tabla de Contenidos
+
+1. Introducción
+2. Objetivos del Proyecto
+3. Objetivos del Documento
+4. Definición de Roles
+5. Equipo de Trabajo y Roles
+6. Metodología
+7. Enlaces
+8. Gestión
+   1. Plan de comunicaciones
+   2. Requerimientos
+   3. WBS
+   4. Diccionario
+   5. Calendario
+   6. Estimaciones iniciales
+   7. Riesgos
+   8. Entregables
+   9. Administración en el Manejo de Bugs
+   10. Administración de Cambios
+   11. Indicadores a Utilizar
+   12. Tecnologías
+
+
 ## Introducción
 
 Bienvenidos al proyecto Cypher Vault de Autenticación Facial en Kotlin. Este documento tiene como objetivo dar a conocer el desarrollo de una aplicación capaz de autenticar a los usuarios a través del reconocimiento facial enfocado para Tablets. La misma está diseñada para funcionar sin conexión a internet ofreciendo un servicio de almacenamiento de imágenes seguro y encriptado para el usuario.
