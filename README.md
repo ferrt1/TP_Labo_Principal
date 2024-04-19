@@ -16,12 +16,12 @@
 
 **Equipo de trabajo:**
 
-- Flavio Ybarra flavio_712@hotmail.com DNI: 36322712
+- Flavio Ybarra - flavio_712@hotmail.com - DNI: 36322712
 - Alejandro Moras
 - Javier Galeano
 - Melanie Ibarra
 - Ivan Sanchez
-- Fernando Trejo
+- Fernando Trejo - fernandotrejo@gmail.com - DNI: 43986607
 
 ---
 
