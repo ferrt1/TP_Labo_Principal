@@ -21,7 +21,7 @@
 - Javier Galeano
 - Melanie Ibarra
 - Ivan Sanchez
-- Fernando Trejo - fernandotrejo@gmail.com - DNI: 43986607
+- Fernando Trejo - fernandotrejo125@gmail.com - DNI: 43986607
 
 ---
 
