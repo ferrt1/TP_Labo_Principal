@@ -16,7 +16,7 @@
 
 **Equipo de trabajo:**
 
-- Flavio Ybarra
+- Flavio Ybarra flavio_712@hotmail.com
 - Alejandro Moras
 - Javier Galeano
 - Melanie Ibarra
