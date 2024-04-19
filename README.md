@@ -163,7 +163,7 @@ Requerimientos No funcionales: El objetivo de estos requerimientos es explicar l
       <li>El sistema debe ser capaz de capturar imágenes de la cámara frontal de la Tablet.</li>
       <li>Se debe crear una interfaz de login donde el usuario se registre con sus datos (nombre y mail) y su rostro.</li>
       <li>La interfaz debe tener un boton para capturar la imagen.</li>
-      <li>Tiene que solicitar los permisos necesarios para acceder a la camara (en el archivo androidManifest.xml)</li>
+      <li>Tiene que solicitar los permisos necesarios para acceder a la camara</li>
       <li>Se debera guardar la imagen en una base de datos almacenada en la tablet</li>
       <li>El sistema debe ser capaz de detectar rostros en las imágenes capturadas.</li>
       <li>El sistema debe ser capaz de identificar a las personas a partir de sus rostros.</li>
