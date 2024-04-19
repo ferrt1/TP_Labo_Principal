@@ -16,7 +16,7 @@
 
 **Equipo de trabajo:**
 
-- Flavio Ybarra flavio_712@hotmail.com
+- Flavio Ybarra flavio_712@hotmail.com DNI: 36322712
 - Alejandro Moras
 - Javier Galeano
 - Melanie Ibarra
