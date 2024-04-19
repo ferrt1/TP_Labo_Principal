@@ -25,10 +25,10 @@
 
 ---
 
-# Tabla de Contenidos
+# Glosario
 
-1. Introducción
-2. Objetivos del Proyecto
+1. [Introducción](#introducción)
+2. [Objetivos del Proyecto](#objetivosdelproyecto)
 3. Objetivos del Documento
 4. Definición de Roles
 5. Equipo de Trabajo y Roles
