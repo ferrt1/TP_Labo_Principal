@@ -54,18 +54,20 @@
 6. [Metodología](#metodología)
 7. [Enlaces](#enlaces)
 8. [Gestión](#gestión)
-   1. [Plan de comunicaciones](#plan-de-comunicaciones)
-   2. [Requerimientos](#requerimientos)
-   3. [WBS](#wbs)
-   4. [Diccionario](#diccionario)
-   5. [Calendario](#calendario)
-   6. [Estimaciones iniciales](#estimaciones-iniciales)
-   7. [Riesgos](#riesgos)
-   8. [Entregables](#entregables)
-   9. [Administración en el Manejo de Bugs](#administración-en-el-manejo-de-bugs)
-   10. [Administración de Cambios](#administración-de-cambios)
-   11. [Indicadores a Utilizar](#indicadores-a-utilizar)
-   12. [Tecnologías](#tecnologías)
+   1. [Misión y Visión del negocio](#misión-y-visión-del-negocio)
+   2. [Alcance](#alcance)
+   3. [Plan de comunicaciones](#plan-de-comunicaciones)
+   4. [Requerimientos](#requerimientos)
+   5. [WBS](#wbs)
+   6. [Diccionario](#diccionario)
+   7. [Calendario](#calendario)
+   8. [Estimaciones iniciales](#estimaciones-iniciales)
+   9. [Riesgos](#riesgos)
+   10. [Entregables](#entregables)
+   11. [Administración en el Manejo de Bugs](#administración-en-el-manejo-de-bugs)
+   12. [Administración de Cambios](#administración-de-cambios)
+   13. [Indicadores a Utilizar](#indicadores-a-utilizar)
+   14. [Tecnologías](#tecnologías)
 
 ---
 
@@ -141,7 +143,7 @@ Con este enfoque, nuestro equipo podrá gestionar eficazmente el proyecto, adapt
 
 ## Gestión
 
-### Misión/Visión del Negocio
+### Misión y Visión del Negocio
 
 Nuestra visión: Aspirar en que sea una aplicación cómoda y fácil de usar dentro de los estandares de seguridad para así brindar tranquilidad y seguridad al usuario.
 Nuestra misión: Es crear una aplicación de almacenamiento de imágenes privadas las cuáles son encriptadas en el dispositivo, donde el usuario se registra e ingresa a través del reconocimiento facial mediante la utilizacion de la cámara frontal del dispositivo (tablet). 
