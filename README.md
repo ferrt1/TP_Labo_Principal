@@ -1,9 +1,5 @@
 
-<br>
-<br>
-
 ---
-
 
 # Proyecto de Reconocimiento Facial
 <br>
@@ -29,15 +25,6 @@
 - Ivan Sanchez - ivansncz11@gmail.com - DNI: 42087962
 - Fernando Trejo - fernandotrejo125@gmail.com - DNI: 43986607
 
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
 <br>
 <br>
 
