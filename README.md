@@ -6,6 +6,9 @@
 
 #### Primer cuatrimestre 2024 - Universidad Nacional de General Sarmiento - Comisión 02
 
+#### Nombre del proyecto: InnovaSoft
+#### Nombre del producto: Cypher Vault
+
 **Profesores:**
 
 - Ing. Francisco Orozco De La Hoz @ forozco@campus.ungs.edu.ar 
@@ -24,7 +27,7 @@
 
 ## Introducción
 
-Bienvenidos al proyecto de Autenticación Facial en Kotlin. Este documento tiene como objetivo dar a conocer el desarrollo de una aplicación capaz de autenticar a los usuarios a través del reconocimiento facial enfocado para Tablets. La misma está diseñada para funcionar sin conexión a internet ofreciendo un servicio de almacenamiento de imágenes seguro y encriptado para el usuario.
+Bienvenidos al proyecto Cypher Vault de Autenticación Facial en Kotlin. Este documento tiene como objetivo dar a conocer el desarrollo de una aplicación capaz de autenticar a los usuarios a través del reconocimiento facial enfocado para Tablets. La misma está diseñada para funcionar sin conexión a internet ofreciendo un servicio de almacenamiento de imágenes seguro y encriptado para el usuario.
 
 
 ## Objetivos del Proyecto
