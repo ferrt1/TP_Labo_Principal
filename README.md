@@ -24,7 +24,7 @@
 
 ## Introducción
 
-Bienvenidos al proyecto de Autenticación Facial en Kotlin. Este documento tiene como objetivo dar a conocer el desarrollo de una aplicación capaz de autenticar a los usuarios a través del reconocimiento facial enfocado para Tablets. La misma está diseñada para funcionar sin conexión a internet.
+Bienvenidos al proyecto de Autenticación Facial en Kotlin. Este documento tiene como objetivo dar a conocer el desarrollo de una aplicación capaz de autenticar a los usuarios a través del reconocimiento facial enfocado para Tablets. La misma está diseñada para funcionar sin conexión a internet ofreciendo un servicio de almacenamiento de imágenes seguro y encriptado para el usuario.
 
 
 ## Objetivos del Proyecto
@@ -39,10 +39,6 @@ Bienvenidos al proyecto de Autenticación Facial en Kotlin. Este documento tiene
 ## Objetivos del Documento
 
 Este documento tiene como objetivo explicar cuáles son los pasos a seguir  en el ciclo de vida del desarrollo de este software, es decir, se detallarán los requerimientos funcionales, no funcionales, armado de la WBS (funcionalidades del proyecto), definición de roles, estimaciones de implementación y diagrama de arquitectura. Más adelante se detalla mejor el objetivo de cada uno.
-
-1. Proporcionar una visión general del proyecto.
-2. Definir los roles y responsabilidades del equipo.
-3. Esbozar la metodología del proyecto.
 
 ## Definición de Roles
 
@@ -98,13 +94,14 @@ Con este enfoque, nuestro equipo podrá gestionar eficazmente el proyecto, adapt
 
 ## Gestión
 
-
 ### Misión/Visión del Negocio
+
 Nuestra visión: Aspirar en que sea una aplicación cómoda y fácil de usar dentro de los estandares de seguridad para así brindar tranquilidad y seguridad al usuario.
-Nuestra misión: Es crear una aplicación en la cual el usuario se registra e ingresa a través del reconocimiento facial mediante la utilizacion de la cámara frontal del dispositivo (tablet). 
+Nuestra misión: Es crear una aplicación de almacenamiento de imágenes privadas las cuáles son encriptadas en el dispositivo, donde el usuario se registra e ingresa a través del reconocimiento facial mediante la utilizacion de la cámara frontal del dispositivo (tablet). 
 Posteriormente el ingreso del usuario se realizará comparando la foto tomada con las imágenes guardadas en el dispositivo, estas imágenes estan encriptadas y cifradas.
 
 ### Alcance
+
 - Aplicación para dispositivos Android (Tablets) 
 - Registro por reconocimiento facial
 - Login por reconocimiento fácil
@@ -113,6 +110,7 @@ Posteriormente el ingreso del usuario se realizará comparando la foto tomada co
 *Como aún hay poca información sobre la implementación de la app no podemos confirmar las funcionalidades que quedan por fuera del alcance*
 
 ### Plan de Comunicaciones
+
 Para facilitar la comunicación utilizamos la plataforma WhatApps y Discord, ya que nos proporcionan un canal de comunicación instantánea y versátil, que permite una interacción ágil entre los miembros del equipo. Esto nos permite compartir actualizaciones rápidas, discutir ideas y mantenernos conectados en tiempo real.
 Para gestionar las tareas y el progreso del proyecto, se utilizará Trello. Nos permitió crear un flujo de trabajo estructurado y asignar tareas, asegurando que cada miembro del equipo esté al tanto de sus responsabilidades y plazos.
 
@@ -130,13 +128,6 @@ Requerimientos deseables: Son componentes adicionales que pueden ser agregados a
 Una vez explicado las clasificación de requerimientos funcionales,  se hará a continuación mención de los requerimientos no funcionales:
 
 Requerimientos No funcionales: El objetivo de estos requerimientos es explicar las limitaciones o restricciones que el sistema posee. Estos requisitos no tienen ningún impacto en la funcionalidad del software, pero garantizan que el sistema satisfaga las necesidades de los usuarios del sistema.
-
-Notación utilizada:
-
-RFE: Requerimiento Funcional Esencial
-RFI: Requerimiento Funcional Importante
-RFD: Requerimiento Funcional Deseable
-RNF: Requerimiento No Funcional
 
 - Funcionales:
 <ol>
@@ -192,6 +183,12 @@ RNF: Requerimiento No Funcional
 ![alt text](WBS.jpg)
 
 ### Diccionario
+
+Los pesos se clasifican en base a:
+- 3: Esencial
+- 2: Importante
+- 1: Deseable
+
 | ID | NOMBRE | DESCRIPCIÓN | TAREA  | RESPONSABLE | PESO |
 |---------|-------|--------|--------|--------|--------|
 | 1 | Planificación | Planificación sobre las tareas que la componen | Planificación, investigación | Todo el equipo | 3 | 
@@ -200,46 +197,71 @@ RNF: Requerimiento No Funcional
 | 1.3 | Definición de requerimientos | Definir los requerimientos del proyecto | Documentación | Todo el equipo | 3 |
 | 1.4 | Creación del backlog | Crear backlog | Planificación  | Scrum Master | 3 |
 | 1.5 | Documentación inicial | Crear la documentación | Planificación | Todo el equipo | 3 |
-| 2 | Desarrollo de Interfaz | Desarrollar la interfaz | Desarrollo | Equipo de desarrollo | 1 |
-| 2.1 | Capacitación del Equipo de Desarrollo | Capacitar al equipo con las tecnologías a utilizar | Capacitación | Equipo de desarrollo | 1 |
-| 2.2 | Registro | Crear interfaz registro | Desarrollo | Equipo de desarrollo | 1 |
-| 2.2.1 | Formulario | Creación del formulario | Desarrollo | Equipo de desarrollo | 1 |
-| 2.2.2 | Cámara | Implementar cámara en interfaz | Desarrollo | Equipo de desarrollo | 1 |
-| 2.3 | Autentificación | Implementar interfaz de autentificación | Desarrollo | Equipo de desarrollo | 1 |
-| 2.3.1 | Formulario | Creación de formulario de autentificación | Desarrollo | Equipo de desarrollo | 1 |
+| 2 | Desarrollo de Interfaz | Desarrollar la interfaz | Desarrollo | Equipo de desarrollo | 2 |
+| 2.1 | Capacitación del Equipo de Desarrollo | Capacitar al equipo con las tecnologías a utilizar | Capacitación | Equipo de desarrollo | 2 |
+| 2.2 | Registro | Crear interfaz registro | Desarrollo | Equipo de desarrollo | 2 |
+| 2.2.1 | Formulario | Creación del formulario | Desarrollo | Equipo de desarrollo | 2 |
+| 2.2.2 | Cámara | Implementar cámara en interfaz | Desarrollo | Equipo de desarrollo | 2 |
+| 2.3 | Autentificación | Implementar interfaz de autentificación | Desarrollo | Equipo de desarrollo | 2 |
+| 2.3.1 | Formulario | Creación de formulario de autentificación | Desarrollo | Equipo de desarrollo | 2 |
 | 3 | Desarrollo backend | Desarrollar la lógica de la aplicación | Desarrollo | Equipo de desarrollo | 3 |
 | 3.1 | Capacitación del equipo de desarrollo | Capacitar al equipo de desarrollo con las tecnologías a utilizar | Capacitación | Equipo de desarrollo | 2 |
-| 3.2 | Almacenamiento de imágenes | Almacenar las imágenes en el dispositivo del usuario | Desarrollo | Equipo de desarrollo | 1 |
-| 3.2.1 | Creación de Base de Datos | Crear base de datos | Desarrollo | Equipo de desarrollo | 1 |
+| 3.2 | Almacenamiento de imágenes | Almacenar las imágenes en el dispositivo del usuario | Desarrollo | Equipo de desarrollo | 2 |
+| 3.2.1 | Creación de Base de Datos | Crear base de datos | Desarrollo | Equipo de desarrollo | 2 |
 | 3.3 | Crear algoritmo reconocimiento facial | Implementación de lógica de reconocimiento facial | Desarrollo | Equipo de desarrollo | 3 |
 | 3.4 | Desarrollo parte Vault | Implementar aplicación de galería privada | Desarrollo | Equipo de desarrollo | 3 |
-| 4 | Implementación | Puesta en servicio de la aplicación | Implementación | Capacitador y Prueba de Usuario, Equipo de desarrollo | 1 |
-| 4.1 | Exportar apk | Compilación del proyecto a formato de dispositivo android | Implementación | Equipo de desarrollo | 1 |
-| 4.2 | Capacitar usuario | Capacitar a usuario final | Capacitación | Capacitador y Prueba de Usuario | 1 |
-| 4.2.1 | Infografía | Mostrar imagen de uso | Capacitación | Capacitador y Prueba de Usuario | 1 |
+| 4 | Implementación | Puesta en servicio de la aplicación | Implementación | Capacitador y Prueba de Usuario, Equipo de desarrollo | 2 |
+| 4.1 | Exportar apk | Compilación del proyecto a formato de dispositivo android | Implementación | Equipo de desarrollo | 2 |
+| 4.2 | Capacitar usuario | Capacitar a usuario final | Capacitación | Capacitador y Prueba de Usuario | 2 |
+| 4.2.1 | Infografía | Mostrar imagen de uso | Capacitación | Capacitador y Prueba de Usuario | 2 |
 
 ### Calendario
 
 | Entrega | Fecha | Tareas |
 |---------|-------|--------|
-| 1 | (19/4)| Presentación del documento, definición de roles, planificación inicial |
-| 2 | (3/4) | Diseño de interfaz de usuario, base de datos |
-| 3 | (17/5) | Desarrollo del backend y terminacion de interfaz – ¿modelo de datos? |
-| 4 | (31/5) | Se sigue con el backend en teoria |
-| 5 | (14/6) | Hacer Tests y esas cosas |
-| 6 | (/5) | Presentación final ya como servicio - aplicación |
+| 1 | (19/4)| Sprint 0 |
+| 2 | (3/4) | Reunión Formal 1 |
+| 3 | (17/5) | Reunión Formal 2 |
+| 4 | (31/5) | Reunión Formal 3 |
+| 5 | (14/6) | Reunión Formal 4 |
+| 6 | (28/6) | Reunión Formal 5 |
 
 ### Estimaciones Iniciales
-(Descripción de las estimaciones iniciales)
+
+Se entregará un prototipo de la interfaz funcional para el registro, la autentificación y base de datos. Estimamos que el tiempo empleado será:
+- **Capacitación del equipo en las tecnologías**: 5hs por cada desarrollador y tester.
+- **Desarrollo**: 20hs por cada desarrollador.
+- **Testing**: 10hs por tester.
 
 ### Riesgos
-(Descripción de los riesgos y planes de contingencia)
 
+- Baja de un integrante del equipo.
+- Superposición de tareas fuera de la materia.
+- Enfermedad de un integrante.
+- Dificultad en la comprensión de nuevas tecnologías.
+- Impedimento con las herramientas de trabajo.
+- Planificación inadecuada por falta de experiencia.
+- Conflicto en el equipo en cuanto a comunicación.
+- Cambios excesivos de los requerimientos.
+- Retrasos en el desarrollo.
+  
 ### Entregables
-(Descripción de los entregables)
+
+Definimos los hitos que ocurrirán en las diferentes fechas del proyecto. El primer hito se enfocará en la presentación formal del proyecto al cliente. En esta se explicará el plan de gestión que tendremos para administrar el proyecto.
+En los hitos restantes se presentará al cliente los avances en el producto.
+1. Presentación del proyecto el día 19/09
+2. Reunión formal 1 el día 19/04
+3. Reunión formal 2 el día 03/05
+4. Reunión formal 3 el día 17/05
+5. Reunión formal 4 el día 31/05
+6. Reunión formal 5 el día 14/06
+7. Presentación final el día 28/06
 
 ### Administración en el Manejo de Bugs
-(Descripción de cómo se manejarán los bugs)
+
+Realizar una buena administración de bugs y testing, es una tarea fundamental en un sistema de software. Estas actividades son cruciales para garantizar que el sistema funcione de manera confiable, eficiente y cumpla con las expectativas de los usuarios. A continuación, profundizaremos en la relevancia de administrar estos aspectos:
+
+- Realizaremos un seguimiento de bugs en Trello detallando en la tarjeta una descripción del error, el contexto en el que se encuentra, e información relevante para su posible solución. Los clasificaremos en tres niveles según su gravedad: bajo, medio o alto. Esto nos ayudará a identificar cuáles son los problemas más críticos y cuáles son menos importantes.
 
 ### Administración de Cambios
 (Descripción de cómo se manejarán los cambios)
