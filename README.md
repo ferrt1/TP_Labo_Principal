@@ -18,9 +18,9 @@
 
 - Flavio Ybarra - flavio_712@hotmail.com - DNI: 36322712
 - Alejandro Moras
-- Javier Galeano
-- Melanie Ibarra
-- Ivan Sanchez
+- Javier Galeano - javi_b_galeano@hotmail.com - DNI: 41805228
+- Melanie Ibarra - meluibarra15@gmail.com - DNI: 44301664
+- Ivan Sanchez - ivansncz11@gmail.com - DNI: 42087962
 - Fernando Trejo - fernandotrejo125@gmail.com - DNI: 43986607
 
 ---
