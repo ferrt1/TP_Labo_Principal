@@ -1,4 +1,4 @@
-ALEJANDRO: 9:30 - 13:00 < Creacion de Backlog - Administracion de archivos - Instalacion(en proceso aun) - Comunicacion con gente del equipo >
+ALEJANDRO: 9:30 - 13:13 < Creacion de Backlog - Administracion de archivos - Instalacion android studio, se debe actualizar IDE(en proceso aun) - Comunicacion con gente del equipo >
 
 
 
