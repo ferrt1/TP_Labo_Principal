@@ -1,0 +1,7 @@
+////////////////////////////////////////////////////////////////////////////////////////////
+Ivan: 
+20/04 10:30 - 12:00 < Creacion de Backlog - Administracion de archivos - Instalacion android studio, se debe actualizar IDE(en proceso aun) - Comunicacion con el equipo >
+20/04 20:15 - 22:06 < Capacitacion en android studio y comunicion con los miembros >
+
+
+////////////////////////////////////////////////////////////////////////////////////////////
