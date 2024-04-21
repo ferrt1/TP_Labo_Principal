@@ -2,7 +2,10 @@ package com.example.cyphervaultbasededatiensos
 
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.ext.junit.runners.AndroidJUnit4
-
+import androidx.room.Room
+import com.example.cyphervaultbasededatiensos.ui.theme.CypherVaultBaseDeDatiensosTheme
+import com.example.cyphervaultbasededatiensos.baseDeDatos.AppDatabase
+import com.example.cyphervaultbasededatiensos.baseDeDatos.User
 import org.junit.Test
 import org.junit.runner.RunWith
 
@@ -15,10 +18,20 @@ import org.junit.Assert.*
  */
 @RunWith(AndroidJUnit4::class)
 class ExampleInstrumentedTest {
+    val appContext = InstrumentationRegistry.getInstrumentation().targetContext
+    val db = Room.databaseBuilder(
+        appContext,
+        AppDatabase::class.java, "database-name"
+    ).build()
+
+
+
     @Test
-    fun useAppContext() {
+    fun listaVacia() {
         // Context of the app under test.
-        val appContext = InstrumentationRegistry.getInstrumentation().targetContext
-        assertEquals("com.example.cyphervaultbasededatiensos", appContext.packageName)
+        val userDao = db.userDao()
+        val users: List<User> = userDao.getAll()
+        val listaVacia: List<User>? = null
+        assertEquals(listaVacia,users)
     }
 }

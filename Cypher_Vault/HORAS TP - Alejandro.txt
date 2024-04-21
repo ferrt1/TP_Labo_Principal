@@ -2,6 +2,6 @@
 ALEJANDRO: 
 20/04 9:30 - 13:13 < Creacion de Backlog - Administracion de archivos - Instalacion android studio, se debe actualizar IDE(en proceso aun) - Comunicacion con el equipo >
 20/04 19:50 - 22:06 < Capacitacion en android studio y comunicion con los miembros >
-21/04 10:20 - 
+21/04 10:20 - 13:50 < en proceso de base de datos y capacitacion>
 
 ////////////////////////////////////////////////////////////////////////////////////////////
