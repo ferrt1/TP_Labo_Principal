@@ -1,0 +1,4 @@
+JAVIER:
+20-04-24: 
+14:30 - 16:00 <Instalacion de herramientas (Android Studios, openCV, Tensorflow) 
+17:00 - 22:00 Capacitacion de herramientas (android Studios,kotlin) 
