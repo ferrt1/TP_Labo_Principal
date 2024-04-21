@@ -18,8 +18,13 @@ interface UserDao {
     fun findByName(first: String, last: String): User
 
     @Insert
-    fun insertAll(vararg users: User)
+    fun insert(user: User) // Método para insertar un solo usuario
+
+    @Query("SELECT * FROM user WHERE email = :email LIMIT 1")
+    fun findByEmail(email: String): User? // Método para buscar un usuario por su correo electrónico
 
     @Delete
     fun delete(user: User)
+    @Insert
+    fun insertAll(vararg users: User)
 }

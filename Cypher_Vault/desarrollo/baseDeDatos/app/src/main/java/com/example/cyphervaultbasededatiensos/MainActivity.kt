@@ -1,5 +1,7 @@
 package com.example.cyphervaultbasededatiensos
+
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.Column
@@ -14,98 +16,79 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.style.LineHeightStyle
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.lifecycleScope
 import androidx.room.Room
-import com.example.cyphervaultbasededatiensos.ui.theme.CypherVaultBaseDeDatiensosTheme
 import com.example.cyphervaultbasededatiensos.baseDeDatos.AppDatabase
 import com.example.cyphervaultbasededatiensos.baseDeDatos.User
+import com.example.cyphervaultbasededatiensos.ui.theme.CypherVaultBaseDeDatiensosTheme
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import java.util.Date
 
 class MainActivity : ComponentActivity() {
     private lateinit var db: AppDatabase
+    private var usuarios: List<User> by mutableStateOf(emptyList()) // Lista de usuarios
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContent {
-            CypherVaultBaseDeDatiensosTheme {
-                // A surface container using the 'background' color from the theme
-                Surface(
-                    modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colorScheme.background
-                ) {
-                    Greeting("Android")
-                    ///TEST BASE DE DATOS
-                    FormularioIngreso(onSaveButtonClick = ::guardarUsuario)
-                }
-            }
+
+        // Inicializar db antes de llamar a obtenerUsuarios()
+        db = Room.databaseBuilder(
+            applicationContext,
+            AppDatabase::class.java, "database-name"
+        ).build()
+
+        // Llamar a las pruebas
+        runTests()
+    }
+
+    private fun runTests() {
+        lifecycleScope.launch {
+            // Insertar usuarios de prueba
+            insertTestUsers()
+
+            // Obtener y mostrar los usuarios en Logcat
+            showUsersFromDatabase()
         }
     }
-    private fun guardarUsuario(nombre: String, email: String) {
-        val user = User(uid = 0, firstName = nombre, lastName = email)
-        GlobalScope.launch {
-            db.userDao().insertAll(user)
+
+    private suspend fun insertTestUsers() {
+        // Insertar al menos dos usuarios de prueba
+        withContext(Dispatchers.IO) {
+            db.userDao().insertAll(
+                User(
+                    uid = 1,
+                    firstName = "John",
+                    email = "john@example.com",
+                    entryDate = Date().time
+                ),
+                User(
+                    uid = 2,
+                    firstName = "Jane",
+                    email = "jane@example.com",
+                    entryDate = Date().time
+                )
+            )
         }
     }
-}
 
-@Preview
-@Composable
-fun FormularioIngreso(onSaveButtonClick: (String, String) -> Unit) {
-    var nombre by remember { mutableStateOf("") }
-    var email by remember { mutableStateOf("") }
+    private suspend fun showUsersFromDatabase() {
+        // Obtener usuarios de la base de datos
+        val users = withContext(Dispatchers.IO) {
+            db.userDao().getAll()
+        }
 
-    Column(
-        modifier = Modifier
-            .padding(16.dp)
-    ) {
-        TextField(
-            value = nombre,
-            onValueChange = { nombre = it },
-            label = { Text("Nombre") },
-            modifier = Modifier.fillMaxWidth()
-        )
-        Spacer(modifier = Modifier.height(16.dp))
-        TextField(
-            value = email,
-            onValueChange = { email = it },
-            label = { Text("Correo electrónico") },
-            modifier = Modifier.fillMaxWidth()
-        )
-        Spacer(modifier = Modifier.height(16.dp))
-        Button(
-            onClick = { onSaveButtonClick(nombre, email) },
-        ) {
-            Text("Guardar")
+        // Mostrar usuarios en Logcat
+        users.forEach {
+            Log.d("User", "ID: ${it.uid}, Name: ${it.firstName}, Email: ${it.email}, Entry Date: ${Date(it.entryDate)}")
         }
     }
+
+    // Otros métodos y funciones...
 }
-
-
-
-@Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
-}
-
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    CypherVaultBaseDeDatiensosTheme {
-        Greeting("Android")
-    }
-}
-
-/// PARA TESTEAR LA BASE DE DATOS
-
-

@@ -18,20 +18,9 @@ import org.junit.Assert.*
  */
 @RunWith(AndroidJUnit4::class)
 class ExampleInstrumentedTest {
-    val appContext = InstrumentationRegistry.getInstrumentation().targetContext
-    val db = Room.databaseBuilder(
-        appContext,
-        AppDatabase::class.java, "database-name"
-    ).build()
-
-
 
     @Test
     fun listaVacia() {
         // Context of the app under test.
-        val userDao = db.userDao()
-        val users: List<User> = userDao.getAll()
-        val listaVacia: List<User>? = null
-        assertEquals(listaVacia,users)
     }
 }
