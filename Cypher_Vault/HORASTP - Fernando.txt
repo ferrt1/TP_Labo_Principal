@@ -1,2 +1,3 @@
-Sábado: 11:00 - 12:50 < Completar Backlog - Empezar desarrollo interfaz
-        19:00 - 23:00 < Seguir desarrollando interfaz
+Sábado: 
+20/04 11:00 - 12:50 < Completar Backlog - Empezar desarrollo interfaz
+20/04 19:00 - 23:00 < Seguir desarrollando interfaz
