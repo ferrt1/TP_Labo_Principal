@@ -61,10 +61,10 @@ fun NavigationHost()
 Empieza en register por predeterminado y luego va cambiando, toma como parámetro las direcciones que le pasa el AuthenticationController.
 
 **Definición de pantallas**: Dentro de esta función `NavHost`, se definen varias pantallas que representan diferentes partes:
-    - **"register"**: Esta es la pantalla inicial donde los usuarios pueden registrarse. Muestra `InitialScreen`.
-    - **"camera"**: Esta es la pantalla donde los usuarios pueden usar la cámara durante el proceso de registro. Muestra `RegistrationCameraScreen`.
-    - **"confirmation"**: Esta es la pantalla donde los usuarios pueden confirmar su registro. Muestra `ConfirmationScreen`.
-    - **"login"**: Esta es la pantalla donde los usuarios pueden iniciar sesión. Falta implementar.
+- **"register"**: Esta es la pantalla inicial donde los usuarios pueden registrarse. Muestra `InitialScreen`.
+- **"camera"**: Esta es la pantalla donde los usuarios pueden usar la cámara durante el proceso de registro. Muestra `RegistrationCameraScreen`.
+- **"confirmation"**: Esta es la pantalla donde los usuarios pueden confirmar su registro. Muestra `ConfirmationScreen`.
+- **"login"**: Esta es la pantalla donde los usuarios pueden iniciar sesión. Falta implementar.
 
 <br>
 <hr>
