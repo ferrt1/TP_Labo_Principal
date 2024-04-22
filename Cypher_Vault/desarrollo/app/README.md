@@ -36,9 +36,9 @@ Si todos los campos están bien, llama a `navigateToCamera` y los manda a la cá
 
 Las funciones `validateMail()`, `validateName()` y `validateFields` verifican la validez de los campos de entrada.
 
- `validateMail(email: String)`: Se fija que se cumpla android.util.Patterns.EMAIL_ADDRESS.matcher(email).
- `validateName(name: String)`: Se fija que no tenga menos de 3 carácteres el nombre.
-`validateFields(name: String, email: String)`: Se fija que no esten vacios.
+- `validateMail(email: String)`: Se fija que se cumpla android.util.Patterns.EMAIL_ADDRESS.matcher(email).
+- `validateName(name: String)`: Se fija que no tenga menos de 3 carácteres el nombre.
+- `validateFields(name: String, email: String)`: Se fija que no esten vacios.
 
 <br>
 
