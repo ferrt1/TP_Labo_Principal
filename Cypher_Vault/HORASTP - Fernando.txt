@@ -1,8 +1,8 @@
 Sábado: 
-20/04 11:00 - 12:50 < Completar Backlog - Empezar desarrollo interfaz
-20/04 19:00 - 23:00 < Seguir desarrollando interfaz
+20/04 11:00 - 12:50 < Completar Backlog - Empezar desarrollo interfaz registro
+20/04 19:00 - 23:00 < Seguir desarrollando interfaz registro
 Domingo:
-21/04 
-      10:45 - 13:45
-      18:00 - 20:00
-      22:00 - 23:00
+21/04 10:45 - 13:45 < Capacitación Jetpack Compose - CameraX - Seguir interfaz
+21/04 18:00 - 20:00 < Seguir interfaz registro
+21/04 22:00 - 23:00 < Seguir interfaz registro
+ 
