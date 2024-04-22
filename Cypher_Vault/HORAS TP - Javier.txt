@@ -1,4 +1,7 @@
 JAVIER:
 20-04-24: 
 14:30 - 16:00 <Instalacion de herramientas (Android Studios, openCV, Tensorflow) 
-17:00 - 22:00 Capacitacion de herramientas (android Studios,kotlin) 
+17:00 - 22:00 <Capacitacion de herramientas (android Studios,kotlin)
+21-04-24:
+15:00 - 19:00 < Capacitacion de herramientas (android Studios,kotlin)
+20:00 - 23:00 < implementacion de interfaz (Interfaz de Logueo)
