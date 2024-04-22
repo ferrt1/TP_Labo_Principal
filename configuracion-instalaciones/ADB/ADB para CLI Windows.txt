@@ -1,0 +1,3 @@
+dentro del disco C:/ se crean una carpeta ADB y dentro le ponen esta carpeta "platform-tools"
+luego van y agregan el path "platform-tools" y ponen la ruta C:/ADB/platform-tools ( la ruta escrita como aparece en la barra de direcciones de la carpeta.
+Luego van a la carpeta platform tools y con CTRL + SHIFT hace click derecho en cualquier parte donde no cliqueen nada y ponen "abrir con powershel". Y ya esta "adb" para usar desde el CLI de windows 
