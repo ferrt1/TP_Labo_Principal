@@ -25,6 +25,10 @@ interface UserDao {
 
     @Delete
     fun delete(user: User)
+
     @Insert
     fun insertAll(vararg users: User)
+
+    @Query("SELECT * FROM user WHERE uid = :userId")
+    fun getUserById(userId: Int): User?
 }

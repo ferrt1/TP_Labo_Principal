@@ -5,90 +5,71 @@ import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.material3.Button
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
 import androidx.lifecycle.lifecycleScope
-import androidx.room.Room
-import com.example.cyphervaultbasededatiensos.baseDeDatos.AppDatabase
+import com.example.cyphervaultbasededatiensos.baseDeDatos.Images
+import com.example.cyphervaultbasededatiensos.baseDeDatos.ImagesRegister
 import com.example.cyphervaultbasededatiensos.baseDeDatos.User
-import com.example.cyphervaultbasededatiensos.ui.theme.CypherVaultBaseDeDatiensosTheme
+import com.example.cyphervaultbasededatiensos.sistema.DatabaseManager
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
-import java.util.Date
+import kotlin.random.Random
 
 class MainActivity : ComponentActivity() {
-    private lateinit var db: AppDatabase
-    private var usuarios: List<User> by mutableStateOf(emptyList()) // Lista de usuarios
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        // Inicializar db antes de llamar a obtenerUsuarios()
-        db = Room.databaseBuilder(
-            applicationContext,
-            AppDatabase::class.java, "database-name"
-        ).build()
+        // Inicializar la base de datos
+        DatabaseManager.initialize(applicationContext)
 
-        // Llamar a las pruebas
-        runTests()
-    }
-
-    private fun runTests() {
-        lifecycleScope.launch {
-            // Insertar usuarios de prueba
-            insertTestUsers()
-
-            // Obtener y mostrar los usuarios en Logcat
-            showUsersFromDatabase()
+        // Cargar datos ficticios en las tablas en un hilo de fondo
+        lifecycleScope.launch(Dispatchers.IO) {
+            loadDummyData()
         }
     }
 
-    private suspend fun insertTestUsers() {
-        // Insertar al menos dos usuarios de prueba
-        withContext(Dispatchers.IO) {
-            db.userDao().insertAll(
-                User(
-                    uid = 1,
-                    firstName = "John",
-                    email = "john@example.com",
-                    entryDate = Date().time
-                ),
-                User(
-                    uid = 2,
-                    firstName = "Jane",
-                    email = "jane@example.com",
-                    entryDate = Date().time
-                )
-            )
+    private suspend fun loadDummyData() {
+        // Cargar datos ficticios en la tabla de usuarios
+        val user1 = User(1, "John", "john@example.com", System.currentTimeMillis(),"1234")
+        val user2 = User(2, "Alice", "alice@example.com", System.currentTimeMillis(),"1234")
+        DatabaseManager.insertUser(user1)
+        DatabaseManager.insertUser(user2)
+
+        // Mostrar usuarios a través de Log
+        val users = DatabaseManager.getAllUsers()
+        for (user in users) {
+            Log.e("tabla", "user: id=${user.uid}, name=${user.firstName}, email=${user.email}, entryDate=${user.entryDate}")
+        }
+
+        // Cargar datos ficticios en la tabla de imágenes
+        val image1 = Images(1, ByteArray(10) { Random.nextInt(0, 256).toByte() }, 1)
+        val image2 = Images(2, ByteArray(10) { Random.nextInt(0, 256).toByte() }, 1)
+        DatabaseManager.insertImage(image1)
+        DatabaseManager.insertImage(image2)
+
+        // Mostrar imágenes a través de Log
+        val images = DatabaseManager.getImagesForUser(1)
+        for (image in images) {
+            Log.e("tabla", "image: id=${image.id}, user_id=${image.user_id}")
+        }
+
+        // Cargar datos ficticios en la tabla de registros de imágenes
+        fun generateRandomByteArray(size: Int): ByteArray {
+            return ByteArray(size) { Random.nextInt(0, 256).toByte() }
+        }
+        val byteArray = generateRandomByteArray(10)
+        val register1 = ImagesRegister(1, byteArray, 1)
+        val register2 = ImagesRegister(2, byteArray, 2)
+        DatabaseManager.insertImageRegister(register1)
+        DatabaseManager.insertImageRegister(register2)
+
+        // Mostrar registros de imágenes a través de Log
+        val registers = DatabaseManager.getImageRegistersForImage(1)
+        for (register in registers) {
+            Log.e("tabla", "images_register: id=${register.id}, image_id=${register.imageData}, date=${register.user_id}")
         }
     }
-
-    private suspend fun showUsersFromDatabase() {
-        // Obtener usuarios de la base de datos
-        val users = withContext(Dispatchers.IO) {
-            db.userDao().getAll()
-        }
-
-        // Mostrar usuarios en Logcat
-        users.forEach {
-            Log.d("User", "ID: ${it.uid}, Name: ${it.firstName}, Email: ${it.email}, Entry Date: ${Date(it.entryDate)}")
-        }
-    }
-
-    // Otros métodos y funciones...
 }
