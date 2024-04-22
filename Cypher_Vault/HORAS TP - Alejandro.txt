@@ -6,5 +6,8 @@ ALEJANDRO:
 20/04 19:50 - 22:06 < Capacitacion en android studio y comunicion con los miembros >
 21/04 10:20 - 14:00 < en proceso de base de datos y capacitacion >
 21/04 14:50 - 16:50 < en proceso de base de datos y capacitacion >
+21/04 22:30 - 00:40 < Charla entre desarrolladores > 
 
 ////////////////////////////////////////////////////////////////////////////////////////////
+Minuta 21/04 22:30 - 00:40 (Desarrolladores):
+ < acerta de la implementacion y recomendacion de materiales/links/forma de trabajo para continuar implementando por separado pero con vista a escalar tanto en la fusion de los 3 trabajos como ir pensando en implementaciones futuras como "mensajes de sistema" >
