@@ -1,0 +1,164 @@
+Guardar datos en una base de datos es ideal para los datos estructurados o que se repiten, como la información de contacto. En esta página, en la que se asume que estás familiarizado con las bases de datos SQL en general, encontrarás información que te ayudará a comenzar a usar bases de datos SQLite en Android. Las APIs que necesitarás para utilizar una base de datos en Android están disponibles en el paquete android.database.sqlite.
+
+
+https://developer.android.com/training/data-storage/room?hl=es-419#kts
+https://developer.android.com/training/data-storage/room/defining-data?hl=es-419
+https://developer.android.com/training/data-storage/room/accessing-data?hl=es-419
+https://developer.android.com/reference/kotlin/androidx/room/RoomDatabase?hl=en
+https://medium.com/@sdranju/step-by-step-how-to-setting-up-and-implementing-room-database-aeb211c56702
+
+Precaución: Si bien estas APIs son potentes, se caracterizan por ser bastante específicas y su uso requiere de mucho tiempo y esfuerzo.
+
+No hay verificación en tiempo de compilación de las consultas de SQL sin procesar. A medida que cambia tu grafo de datos, debes actualizar manualmente las consultas de SQL afectadas. Este proceso puede llevar mucho tiempo y causar errores.
+Debes usar mucho código estándar para convertir entre consultas de SQL y objetos de datos.
+Por estos motivos, recomendamos enfáticamente usar la Biblioteca de persistencias Room como una capa de abstracción para acceder a la información de las bases de datos SQLite de tu app.
+
+Componentes principales
+Estos son los tres componentes principales de Room:
+
+La clase de la base de datos que contiene la base de datos y sirve como punto de acceso principal para la conexión subyacente a los datos persistentes de la app
+
+Las entidades de datos que representan tablas de la base de datos de tu app
+
+Los objetos de acceso a datos (DAOs) que proporcionan métodos que tu app puede usar para consultar, actualizar, insertar y borrar datos en la base de datos
+
+//////////// IMPLEMENTACION ////////////////
+gradle module app
+
+plugins {
+    alias(libs.plugins.androidApplication)
+    alias(libs.plugins.jetbrainsKotlinAndroid)
+    // BASE DE DATOS ///////////////////////
+    kotlin("kapt")
+}
+
+dependencies {
+
+    // BASE DE DATOS ///////////////////////
+
+    implementation("androidx.room:room-runtime:2.6.1")
+    annotationProcessor("androidx.room:room-compiler:2.6.1")
+	kapt("androidx.room:room-compiler:2.6.1")
+    //////////////////////////////////////////////
+}
+
+
+
+//// GUARDAR IMAGENES EN SQLITE 
+
+https://stackoverflow.com/questions/64245712/save-images-in-room-database
+
+A very simple way to get images into the database (although I personally discourage it) would be to base-64 encode the bitmaps into a String and put it into a row of the database.
+
+Take in account that bitmaps are very memory heavy; and base64 encoding something increases it's size some more so be careful when loading a bunch of images... I do also think Room and SQLite supports binary data as blobs, so you could just declare a column as ByteArray and it should just work.
+
+What I've been doing in my projects is to write them into the internal or external storage of my app and then store the reference Uri as a String to later be able to retrieve the image from disk.
+
+Something that I discourage even more is to stuff more than one value per row; having a list of stuff inside a coulmn in SQL is definetely not a pattern you should follow. Creating a "join" table should be simple enough or simply an extra column you could use to group them by should be easy enough, right?
+
+//// Convertir imagen a Blob 
+
+https://es.stackoverflow.com/questions/74332/guardar-imagenes-en-sqlite-android
+
+Si es mejor de guardar el imagen en un Datatype Blob, o en un archivo con la ruta como referencia en la tabla depende del tamaño de tus imagenes.
+
+Tu puedes encontrar una tabla que indica hasta que tamaño es factible de guardar un Blob directamente en la tabla en esta pagina. Como se ve, hasta un tamaño de 20k siempre es factible de guardar el Blob directo, con tamaños más grande eso depende del tamaño de pagina en el acceso a SQLite.
+
+Las versiones de SQLite usado en Android actualmente son todos anteriores a 3.12, significando que el tamaño de pagina por defecto es 1024 bytes.
+
+Para cambiar el tamaño de pagina se puede usar PRAGMA, antes de crear la tabla:
+
+PRAGMA page_size = 4096;
+(El Pragma puedes por ejemplo agregar en onCreate de tu SQLiteOpenHelper)
+
+El procedimiento para guardar los imagenes desde un Bitmap seria:
+
+comprimir el bitmap en un ByteArrayOutputStream
+escribir el byte[] del stream como blob en tu tabla:
+se asume una tabla CREATE TABLE imagenes (id INTEGER PRIMARY KEY, img BLOB); con un SQLiteOpenHelper helper
+En código:
+
+public void guardarImagen(long id, Bitmap bitmap){
+    // tamaño del baos depende del tamaño de tus imagenes en promedio
+    ByteArrayOutputStream baos = new ByteArrayOutputStream(20480);
+    bitmap.compress(Bitmap.CompressFormat.PNG, 0 , baos);
+    byte[] blob = baos.toByteArray();
+    // aqui tenemos el byte[] con el imagen comprimido, ahora lo guardemos en SQLite
+    SQLiteDatabase db = helper.getWritableDatabase();
+
+    String sql = "INSERT INTO imagenes (id, img) VALUES(?,?)";
+    SQLiteStatement insert = db.compileStatement(sql);
+    insert.clearBindings();
+    insert.bindLong(1, id));
+    insert.bindBlob(2, blob);
+    insert.executeInsert();
+    db.close();
+}
+Para recuperar un imagen según id se puede usar:
+
+public Bitmap buscarImagen(long id){
+    SQLiteDatabase db = helper.getReadableDatabase();
+
+    String sql = String.format("SELECT * FROM imagenes WHERE id = %d", id);
+    Cursor cursor = db.rawQuery(sql, new String[] {});
+    Bitmap bitmap = null;
+    if(cursor.moveToFirst()){
+        byte[] blob = cursor.getBlob(1);
+        ByteArrayInputStream bais = new ByteArrayInputStream(blob);
+        bitmap = BitmapFactory.decodeStream(bais);
+    }
+    if (cursor != null && !cursor.isClosed()) {
+        cursor.close();
+    }
+    db.close();
+    return bitmap; 
+}
+
+/// MAS DE BLOB 
+
+https://es.stackoverflow.com/questions/205457/guardar-imagenes-en-sqlite
+
+En SQLite 3, puedes definir la columna con afinidad BLOB, que es acrónimo de Binary Large Object y, como su nombre implica, su finalidad es almacenar información binaria, como una imagen en el formato de tu elección.
+
+La adaptación al código de creación de la tabla quedaría, entonces, algo así:
+
+public static final String TABLE_CREATE =               //METODO PARA CREAR TABLA
+        "CREATE TABLE " + TABLE_NEGOCIOS + " (" +
+                COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                COLUMN_NOMBRE + " TEXT, " +
+                COLUMN_DIRECCION + " TEXT, " +
+                COLUMN_DESCRIPCION + " TEXT, " +
+                COLUMN_CATEGORIA + " TEXT " +
+                COLUMN_IMAGEN + " BLOB " +
+                ")";
+En java, este campo puede representarse como un arreglo de bytes. El arreglo es, por definición, de longitud variable. Debes entonces, añadir un miembro a tu clase que representa un negocio, para que contenga un arreglo de bytes que es la imagen.
+
+Un ejemplo, adaptado del tutorial de SQLite, para leer la imágenes del disco, quedaría como este:
+
+private byte[] readFile(String file) {
+        ByteArrayOutputStream bos = null;
+        try {
+            File f = new File(file);
+            FileInputStream fis = new FileInputStream(f);
+            byte[] buffer = new byte[1024];
+            bos = new ByteArrayOutputStream();
+            for (int len; (len = fis.read(buffer)) != -1;) {
+                bos.write(buffer, 0, len);
+            }
+        } catch (FileNotFoundException e) {
+            System.err.println(e.getMessage());
+        } catch (IOException e2) {
+            System.err.println(e2.getMessage());
+        }
+        return bos != null ? bos.toByteArray() : null;
+    }
+Con esta rutina en mano, la preparación de cada negocio podría quedar como sigue:
+
+    negocio = new Negocio();
+    negocio.setNombre("Electronica John");
+    negocio.setDomicilio("Alem");
+    negocio.setDescripcion("De todo");
+    negocio.setCategoria("electronica");
+    negocio.setImagen(readFile("/home/juan/imagenes/logoJohn.png"));
+    dataSource.create(negocio);
+Debes tener en cuenta que un BLOB tiene un tamaño máximo en SQLite, que no puede almacenar cantidades grandes de datos en cada fila. Encontrarás más información en la sección maximum length of a string or blob del documento Limits in SQLite
