@@ -1,11 +1,9 @@
 package com.example.cypher_vault.controller.authentication
 
+import androidx.compose.runtime.MutableState
 import androidx.navigation.NavController
 
 class AuthenticationController(private val navController: NavController) {
-
-    // La app ya empieza en register
-
     fun navigateToCamera() {
         navController.navigate("camera")
     }
@@ -20,4 +18,40 @@ class AuthenticationController(private val navController: NavController) {
 
     // ... acá iria el método de javi por ejemplo
     // fun login()
+
+    fun registerUser(
+        email: String,
+        name: String,
+        showDialog: MutableState<Boolean>,
+        errorMessage: MutableState<String>
+    ) {
+        if (!validateFields(email, name) && validateMail(email) && validateName(name)) {
+            navigateToCamera()
+        }
+        else if(validateFields(name, email)){
+            showDialog.value = true
+            errorMessage.value = "Por favor, rellena todos los campos correctamente."
+        }
+        else if (!validateMail(email)) {
+            showDialog.value = true
+            errorMessage.value = "El email debe ser válido"
+        }
+        else if (!validateName(name)){
+            showDialog.value = true
+            errorMessage.value = "El nombre debe tener menos de 10 carácteres"
+        }
+    }
+
+    private fun validateMail(email: String): Boolean {
+        return android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()
+    }
+
+    private fun validateName(name: String): Boolean{
+        return name.length <= 10;
+    }
+
+    private fun validateFields(email: String, name: String): Boolean{
+        return name.isEmpty() || email.isEmpty()
+    }
+
 }
