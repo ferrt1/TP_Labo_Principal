@@ -38,7 +38,7 @@ class AuthenticationController(private val navController: NavController) {
         }
         else if (!validateName(name)){
             showDialog.value = true
-            errorMessage.value = "El nombre debe tener menos de 10 carácteres"
+            errorMessage.value = "El nombre debe tener más de 3 carácteres"
         }
     }
 
@@ -47,7 +47,7 @@ class AuthenticationController(private val navController: NavController) {
     }
 
     private fun validateName(name: String): Boolean{
-        return name.length <= 10;
+        return name.length >= 3;
     }
 
     private fun validateFields(email: String, name: String): Boolean{
