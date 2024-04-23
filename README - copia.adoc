@@ -1,6 +1,6 @@
 
 :toc:
-:toc-title: Indice
+:toc-title: INDICE
 :icons: font
 :source-highlighter: highlightjs
 :experimental:
@@ -131,6 +131,7 @@ Posteriormente el ingreso del usuario se realizará comparando la foto tomada co
 ** Aplicaciones para IOS y Computadoras.
 ** Varios idiomas.
 ** Registro biometrico en oscuridad.
+** No contemplamos diseño de la aplicacion con interfaz en vertical.
 
 NOTE: *Poca información:* sobre la implementación de la app no podemos confirmar las funcionalidades que quedan por fuera del alcance.
 
@@ -145,68 +146,56 @@ Para gestionar las tareas y el progreso del proyecto, se utilizará Trello. Nos 
 En este apartado se detallarán los requerimientos del sistema, además se hará mención de la nomenclatura a utilizar para la clasificación de dichos requerimientos.
 Los requerimientos funcionales son aquellos que definen la funcionalidades que va a tener el software. Tales requerimientos se clasifican en estos tres tipos:
 
-Requerimientos esenciales: Estos requerimientos hacen que el sistema tenga sentido, es decir, sin esta clases de funcionamientos no se cumplirían el objetivo que necesitan los usuarios.
+*Requerimientos esenciales:* Estos requerimientos hacen que el sistema tenga sentido, es decir, sin esta clases de funcionamientos no se cumplirían el objetivo que necesitan los usuarios.
 
-Requerimientos importantes: Son aquellos que, si no están, el software funciona igual pero se limitará el funcionamiento.
+*Requerimientos importantes:* Son aquellos que, si no están, el software funciona igual pero se limitará el funcionamiento.
 
-Requerimientos deseables: Son componentes adicionales que pueden ser agregados al software pero su prioridad es la mínima.
+*Requerimientos deseables:* Son componentes adicionales que pueden ser agregados al software pero su prioridad es la mínima.
 
 Una vez explicado las clasificación de requerimientos funcionales,  se hará a continuación mención de los requerimientos no funcionales:
 
-Requerimientos No funcionales: El objetivo de estos requerimientos es explicar las limitaciones o restricciones que el sistema posee. Estos requisitos no tienen ningún impacto en la funcionalidad del software, pero garantizan que el sistema satisfaga las necesidades de los usuarios del sistema.
+*Requerimientos No funcionales:* El objetivo de estos requerimientos es explicar las limitaciones o restricciones que el sistema posee. Estos requisitos no tienen ningún impacto en la funcionalidad del software, pero garantizan que el sistema satisfaga las necesidades de los usuarios del sistema.
 
-- Funcionales:
-<ol>
-  <li>Registro:
-    <ol>
-      <li>El sistema debe ser capaz de capturar imágenes de la cámara frontal de la Tablet.</li>
-      <li>Se debe crear una interfaz de login donde el usuario se registre con sus datos (nombre y mail) y su rostro.</li>
-      <li>La interfaz debe tener un boton para capturar la imagen.</li>
-      <li>Tiene que solicitar los permisos necesarios para acceder a la camara</li>
-      <li>Se debera guardar la imagen en una base de datos almacenada en la tablet</li>
-      <li>El sistema debe ser capaz de detectar rostros en las imágenes capturadas.</li>
-      <li>El sistema debe ser capaz de identificar a las personas a partir de sus rostros.</li>
-      <li>Asociar las rostros de las personas a su cuenta de registro</li>
-    </ol> 
-  </li>
-  <li>Autentificación
-    <ol>
-      <li>Una vez registrado el usuario debe ser capaz de loguearse a su cuenta atraves de la verificaion facial</li>
-      <li>El sistema debe ser capaz de autenticar a las personas comparando sus rostros con una base de datos de rostros conocidos almacenada en la Tablet.</li>
-      <li>El sistema debe mostrar un mensaje de "Acceso Permitido" o "Acceso Denegado" en la pantalla de la Tablet en función del resultado de la autenticación.</li>
-      <li>El sistema deberá registrar un log con los datos de ingresos (Hora, ID de persona, etc.)</li>
-      <li>El sistema deberá permitir una alternativa manual de ingreso ante posibles desconexiones (sin Wifi o datos).</li>
-    </ol>
-  </li>
-  <li>Perfil de usuario
-    <ol>
-      <li>El sistema deberá permitir el ALTA/MODIFICACIONES de las personas a autenticar.</li>
-      <li>El usuario podra modificar su informacion personal o registrar otra foto de su rostro</li>
-    </ol>
-  </li>
-</ol>
+* Funcionales:
+** Registro:
+*** El sistema debe ser capaz de capturar imágenes de la cámara frontal de la Tablet.
+*** Se debe crear una interfaz de login donde el usuario se registre con sus datos (nombre y mail) y su rostro.
+*** La interfaz debe tener un boton para capturar la imagen.
+*** Tiene que solicitar los permisos necesarios para acceder a la camara
+*** Se debera guardar la imagen en una base de datos almacenada en la tablet
+*** El sistema debe ser capaz de detectar rostros en las imágenes capturadas.
+*** El sistema debe ser capaz de identificar a las personas a partir de sus rostros.
+*** Asociar las rostros de las personas a su cuenta de registro
+    
+** Autentificación
+    
+*** Una vez registrado el usuario debe ser capaz de loguearse a su cuenta atraves de la verificaion facial
+*** El sistema debe ser capaz de autenticar a las personas comparando sus rostros con una base de datos de rostros conocidos almacenada en la Tablet.
+*** El sistema debe mostrar un mensaje de "Acceso Permitido" o "Acceso Denegado" en la pantalla de la Tablet en función del resultado de la autenticación.
+*** El sistema deberá registrar un log con los datos de ingresos (Hora, ID de persona, etc.)
+*** El sistema deberá permitir una alternativa manual de ingreso ante posibles desconexiones (sin Wifi o datos).
+    
+** Perfil de usuario
 
-- No Funcionales:
+*** El sistema deberá permitir el ALTA/MODIFICACIONES de las personas a autenticar.
+*** El usuario podra modificar su informacion personal o registrar otra foto de su rostro.
+    
+* No Funcionales:
+** Usabilidad:
+*** Si el usuario desea entrar y no esta registrado se le debe mostrar un mensaje de "acceso denegado, primero necesitas registrarte"
+*** Si el usuario desea ingresar a su cuenta con una foto u otro rostro (no asociado a su cuenta) se le debe mostrar un mensaje de "acceso denegado".
+*** Si el usuario pudo ingresar a su cuenta se le debe mostrar un mensaje de "acceso permitido".
+    
+** Rendimiento   
+*** El sistema debe ser eficiente en el uso de la batería, la memoria y el procesador de la Tablet.
+    
+  
 
-<ol>
-  <li>Usabilidad
-    <ol>
-      <li>Si el usuario desea entrar y no esta registrado se le debe mostrar un mensaje de "acceso denegado, primero necesitas registrarte"</li>
-      <li>Si el usuario desea ingresar a su cuenta con una foto u otro rostro (no asociado a su cuenta) se le debe mostrar un mensaje de "acceso denegado".</li>
-      <li>Si el usuario pudo ingresar a su cuenta se le debe mostrar un mensaje de "acceso permitido".</li>
-    </ol>
-  </li>
-  <li>Rendimiento
-    <ol>
-      <li>El sistema debe ser eficiente en el uso de la batería, la memoria y el procesador de la Tablet.</li>
-    </ol>
-  </li>
-</ol>
 
 
 === WBS
 
-![alt text](WBS.jpg)
+image::imagenAdoc/WBS.jpg[700,700]
 
 === Diccionario
 
@@ -215,97 +204,107 @@ Los pesos se clasifican en base a:
 - 2: Importante
 - 1: Deseable
 
-| ID | NOMBRE | DESCRIPCIÓN | TAREA  | RESPONSABLE | PESO |
-|---------|-------|--------|--------|--------|--------|
-| 1 | Planificación | Planificación sobre las tareas que la componen | Planificación, investigación | Todo el equipo | 3 | 
-| 1.1 | Tecnologías a utilizar | Investigar sobre las tecnologías a utilizar | Investigación | Todo el equipo | 3 |
-| 1.2 | Herramientas a utilizar | Investigar sobre las herramientas a utilizar | Investigación | Todo el equipo | 3 |
-| 1.3 | Definición de requerimientos | Definir los requerimientos del proyecto | Documentación | Todo el equipo | 3 |
-| 1.4 | Creación del backlog | Crear backlog | Planificación  | Scrum Master | 3 |
-| 1.5 | Documentación inicial | Crear la documentación | Planificación | Todo el equipo | 3 |
-| 2 | Desarrollo de Interfaz | Desarrollar la interfaz | Desarrollo | Equipo de desarrollo | 2 |
-| 2.1 | Capacitación del Equipo de Desarrollo | Capacitar al equipo con las tecnologías a utilizar | Capacitación | Equipo de desarrollo | 2 |
-| 2.2 | Registro | Crear interfaz registro | Desarrollo | Equipo de desarrollo | 2 |
-| 2.2.1 | Formulario | Creación del formulario | Desarrollo | Equipo de desarrollo | 2 |
-| 2.2.2 | Cámara | Implementar cámara en interfaz | Desarrollo | Equipo de desarrollo | 2 |
-| 2.3 | Autentificación | Implementar interfaz de autentificación | Desarrollo | Equipo de desarrollo | 2 |
-| 2.3.1 | Formulario | Creación de formulario de autentificación | Desarrollo | Equipo de desarrollo | 2 |
-| 3 | Desarrollo backend | Desarrollar la lógica de la aplicación | Desarrollo | Equipo de desarrollo | 3 |
-| 3.1 | Capacitación del equipo de desarrollo | Capacitar al equipo de desarrollo con las tecnologías a utilizar | Capacitación | Equipo de desarrollo | 2 |
-| 3.2 | Almacenamiento de imágenes | Almacenar las imágenes en el dispositivo del usuario | Desarrollo | Equipo de desarrollo | 2 |
-| 3.2.1 | Creación de Base de Datos | Crear base de datos | Desarrollo | Equipo de desarrollo | 2 |
-| 3.3 | Crear algoritmo reconocimiento facial | Implementación de lógica de reconocimiento facial | Desarrollo | Equipo de desarrollo | 3 |
-| 3.4 | Desarrollo parte Vault | Implementar aplicación de galería privada | Desarrollo | Equipo de desarrollo | 3 |
-| 4 | Implementación | Puesta en servicio de la aplicación | Implementación | Capacitador y Prueba de Usuario, Equipo de desarrollo | 2 |
-| 4.1 | Exportar apk | Compilación del proyecto a formato de dispositivo android | Implementación | Equipo de desarrollo | 2 |
-| 4.2 | Capacitar usuario | Capacitar a usuario final | Capacitación | Capacitador y Prueba de Usuario | 2 |
-| 4.2.1 | Infografía | Mostrar imagen de uso | Capacitación | Capacitador y Prueba de Usuario | 2 |
+[cols=6*,options=header]
+|===
+| ID | NOMBRE | DESCRIPCIÓN | TAREA  | RESPONSABLE | PESO
+| 1 | Planificación | Planificación sobre las tareas que la componen | Planificación, investigación | Todo el equipo | 3 
+| 1.1 | Tecnologías a utilizar | Investigar sobre las tecnologías a utilizar | Investigación | Todo el equipo | 3 
+| 1.2 | Herramientas a utilizar | Investigar sobre las herramientas a utilizar | Investigación | Todo el equipo | 3 
+| 1.3 | Definición de requerimientos | Definir los requerimientos del proyecto | Documentación | Todo el equipo | 3 
+| 1.4 | Creación del backlog | Crear backlog | Planificación  | Scrum Master | 3 
+| 1.5 | Documentación inicial | Crear la documentación | Planificación | Todo el equipo | 3 
+| 2 | Desarrollo de Interfaz | Desarrollar la interfaz | Desarrollo | Equipo de desarrollo | 2 
+| 2.1 | Capacitación del Equipo de Desarrollo | Capacitar al equipo con las tecnologías a utilizar | Capacitación | Equipo de desarrollo | 2 
+| 2.2 | Registro | Crear interfaz registro | Desarrollo | Equipo de desarrollo | 2 
+| 2.2.1 | Formulario | Creación del formulario | Desarrollo | Equipo de desarrollo | 2 
+| 2.2.2 | Cámara | Implementar cámara en interfaz | Desarrollo | Equipo de desarrollo | 2 
+| 2.3 | Autentificación | Implementar interfaz de autentificación | Desarrollo | Equipo de desarrollo | 2 
+| 2.3.1 | Formulario | Creación de formulario de autentificación | Desarrollo | Equipo de desarrollo | 2 
+| 3 | Desarrollo backend | Desarrollar la lógica de la aplicación | Desarrollo | Equipo de desarrollo | 3 
+| 3.1 | Capacitación del equipo de desarrollo | Capacitar al equipo de desarrollo con las tecnologías a utilizar | Capacitación | Equipo de desarrollo | 2 
+| 3.2 | Almacenamiento de imágenes | Almacenar las imágenes en el dispositivo del usuario | Desarrollo | Equipo de desarrollo | 2 
+| 3.2.1 | Creación de Base de Datos | Crear base de datos | Desarrollo | Equipo de desarrollo | 2 
+| 3.3 | Crear algoritmo reconocimiento facial | Implementación de lógica de reconocimiento facial | Desarrollo | Equipo de desarrollo | 3 
+| 3.4 | Desarrollo parte Vault | Implementar aplicación de galería privada | Desarrollo | Equipo de desarrollo | 3 
+| 4 | Implementación | Puesta en servicio de la aplicación | Implementación | Capacitador y Prueba de Usuario, Equipo de desarrollo | 2 
+| 4.1 | Exportar apk | Compilación del proyecto a formato de dispositivo android | Implementación | Equipo de desarrollo | 2 
+| 4.2 | Capacitar usuario | Capacitar a usuario final | Capacitación | Capacitador y Prueba de Usuario | 2 
+| 4.2.1 | Infografía | Mostrar imagen de uso | Capacitación | Capacitador y Prueba de Usuario | 2 
+|===
+
 
 === Calendario
 
-| Entrega | Fecha | Tareas |
-|---------|-------|--------|
-| 1 | (19/4)| Sprint 0 |
-| 2 | (3/4) | Reunión Formal 1 |
-| 3 | (17/5) | Reunión Formal 2 |
-| 4 | (31/5) | Reunión Formal 3 |
-| 5 | (14/6) | Reunión Formal 4 |
-| 6 | (28/6) | Reunión Formal 5 |
+[cols=6*,options=header]
+|===
+| Entrega | Fecha | Tareas 
+| 1 | (19/4)| Sprint 0 
+| 2 | (3/4) | Reunión Formal 1 
+| 3 | (17/5) | Reunión Formal 2 
+| 4 | (31/5) | Reunión Formal 3 
+| 5 | (14/6) | Reunión Formal 4 
+| 6 | (28/6) | Reunión Formal 5 
+|===
 
 === Estimaciones Iniciales
 
 Se entregará un prototipo de la interfaz funcional para el registro, la autentificación y base de datos. Estimamos que el tiempo empleado será:
-- **Capacitación del equipo en las tecnologías**: 5hs por cada desarrollador y tester.
-- **Desarrollo**: 20hs por cada desarrollador.
-- **Testing**: 10hs por tester.
+
+* *Capacitación del equipo en las tecnologías:* 5hs por cada desarrollador y tester.
+* *Desarrollo:* 20hs por cada desarrollador.
+* *Testing:* 10hs por tester.
 
 === Riesgos
 
-- Baja de un integrante del equipo.
-- Superposición de tareas fuera de la materia.
-- Enfermedad de un integrante.
-- Dificultad en la comprensión de nuevas tecnologías.
-- Impedimento con las herramientas de trabajo.
-- Planificación inadecuada por falta de experiencia.
-- Conflicto en el equipo en cuanto a comunicación.
-- Cambios excesivos de los requerimientos.
-- Retrasos en el desarrollo.
+* Baja de un integrante del equipo.
+* Superposición de tareas fuera de la materia.
+* Enfermedad de un integrante.
+* Dificultad en la comprensión de nuevas tecnologías.
+* Impedimento con las herramientas de trabajo.
+* Planificación inadecuada por falta de experiencia.
+* Conflicto en el equipo en cuanto a comunicación.
+* Cambios excesivos de los requerimientos.
+* Retrasos en el desarrollo.
   
 === Entregables
 
 Definimos los hitos que ocurrirán en las diferentes fechas del proyecto. El primer hito se enfocará en la presentación formal del proyecto al cliente. En esta se explicará el plan de gestión que tendremos para administrar el proyecto.
 En los hitos restantes se presentará al cliente los avances en el producto.
-1. Presentación del proyecto el día 19/09
-2. Reunión formal 1 el día 19/04
-3. Reunión formal 2 el día 03/05
-4. Reunión formal 3 el día 17/05
-5. Reunión formal 4 el día 31/05
-6. Reunión formal 5 el día 14/06
-7. Presentación final el día 28/06
+
+* Presentación del proyecto el día 19/09
+* Reunión formal 1 el día 19/04
+* Reunión formal 2 el día 03/05
+* Reunión formal 3 el día 17/05
+* Reunión formal 4 el día 31/05
+* Reunión formal 5 el día 14/06
+* Presentación final el día 28/06
 
 === Administración en el Manejo de Bugs
 
 Ejecutar una gestión eficaz de errores y pruebas es un componente esencial en un sistema de software. Estas tareas son vitales para asegurar que el sistema opere de forma fiable, eficiente y satisfaga las necesidades de los usuarios.
 
-- Haremos un seguimiento de los errores en Trello, proporcionando en la tarjeta una explicación del fallo, el entorno en el que se produce, y datos útiles para su posible corrección. Los categorizaremos en tres niveles de acuerdo a su severidad: bajo, medio o alto. Esto nos permitirá determinar cuáles son las dificultades más urgentes y cuáles son de menor prioridad.
+WARNING: *Haremos un seguimiento de los errores en Trello:* proporcionando en la tarjeta una explicación del fallo, el entorno en el que se produce, y datos útiles para su posible corrección. Los categorizaremos en tres niveles de acuerdo a su severidad: bajo, medio o alto. Esto nos permitirá determinar cuáles son las dificultades más urgentes y cuáles son de menor prioridad.
 
 === Administración de Cambios
+
 La administración eficiente de cambios es crucial para el triunfo de cualquier proyecto. Los cambios pueden aparecer por varias causas, como nuevas demandas del cliente, hallazgos durante el desarrollo, o variaciones en las condiciones del mercado. En este informe, se explica cómo planeamos registrar, validar y supervisar las modificaciones en nuestro proyecto, así como quién es el encargado de cada una de estas tareas.
 
 Para registrar los cambios, emplearemos diversas herramientas y procedimientos: 
-- Trello: como se mencionó previamente, será nuestra plataforma principal para el seguimiento y administración de modificaciones.
-- Recolección de peticiones de cambios: se anexarán todas las peticiones de cambios que incluirán detalles exhaustivos sobre cada petición de modificación. Esto abarcará una descripción de la modificación, su razón, el impacto anticipado en el proyecto y cualquier documentación de apoyo pertinente.
-- Informe de Progreso: se mantendrá un informe de progreso actualizado que contendrá un registro de todas los cambios aprobados y pendientes. Esto ofrecerá una visión general del estado actual del proyecto en relación con las modificaciones.
+* *Trello:* como se mencionó previamente, será nuestra plataforma principal para el seguimiento y administración de modificaciones.
+* *Recolección de peticiones de cambios:* se anexarán todas las peticiones de cambios que incluirán detalles exhaustivos sobre cada petición de modificación. Esto abarcará una descripción de la modificación, su razón, el impacto anticipado en el proyecto y cualquier documentación de apoyo pertinente.
+* *Informe de Progreso:* se mantendrá un informe de progreso actualizado que contendrá un registro de todas los cambios aprobados y pendientes. Esto ofrecerá una visión general del estado actual del proyecto en relación con las modificaciones.
 
 === Indicadores a Utilizar
-- Funcionalidad Completa
-- Nivel de Calidad
-- Evolución de la Prueba
-- Burndown Chart
+
+* Funcionalidad Completa
+* Nivel de Calidad
+* Evolución de la Prueba
+* Burndown Chart
 
 === Tecnologías
-- Android Studio: Es un entorno de desarrollo integrado gratuito diseñado específicamente para el desarrollo de aplicaciones Android. 
-- Kotlin: Kotlin Es un lenguaje de programación de código abierto para aplicaciones Android.
-- OpenCV: Es una biblioteca que proporciona una amplia gama de funciones y algoritmos para el procesamiento de imágenes y vídeo
-- TensorFlow Lite: TensorFlow Lite es un marco de trabajo ligero desarrollado por Google que permite ejecutar modelos de aprendizaje automático en dispositivos móviles e integrados.
-- SQLite: SQLite es un sistema de gestión de bases de datos relacional (RDBMS) ligero, rápido, autónomo y de código abierto.
+
+* *Android Studio:* Es un entorno de desarrollo integrado gratuito diseñado específicamente para el desarrollo de aplicaciones Android. 
+* *Kotlin:* Kotlin Es un lenguaje de programación de código abierto para aplicaciones Android.
+* *OpenCV:* Es una biblioteca que proporciona una amplia gama de funciones y algoritmos para el procesamiento de imágenes y vídeo
+* *TensorFlow Lite* TensorFlow Lite es un marco de trabajo ligero desarrollado por Google que permite ejecutar modelos de aprendizaje automático en dispositivos móviles e integrados.
+* *SQLite:* SQLite es un sistema de gestión de bases de datos relacional (RDBMS) ligero, rápido, autónomo y de código abierto.
