@@ -1,0 +1,30 @@
+
+
+git remote set-url origin https://gitlab.com/spectrelonewolf/datadata.git
+<<< setea el origin
+
+$ git config --local credential.helper  <<< cartelito de credenciales
+
+git config --global http.postBuffer 157286400 <<< aumenta el buffer 
+
+git config --global user.email "spectrelonewolf@gmail.com"
+
+git config --global user.name "spectrelonewolf"
+
+
+git pull origin master --allow-unrelated-histories << mezcla todo sin importar
+
+~ TODO LO QUE TENGO QUE USAR EN LA UNGS
+Primero clonar datadata y dentro de datadata clonar el repo del tp
+
+git clone https://gitlab.com/spectrelonewolf/datadata.git
+
+//Dentro de carpeta datadata
+git remote set-url origin https://gitlab.com/spectrelonewolf/datadata.git
+git config --local credential.helper
+git config --global http.postBuffer 157286400
+git config --global user.email "spectrelonewolf@gmail.com"
+git config --global user.name "Alejandro Moras"
+
+//Dentro de carpeta trabajo practico
+git remote set-url origin https://gitlab.com/spectrelonewolf/ibarra-galeano-gaona-moras-db1.git

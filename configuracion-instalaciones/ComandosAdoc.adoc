@@ -1,0 +1,781 @@
+= Proyecto de Reconocimiento Facial
+:toc:
+:toc-title: Contenido
+:icons: font
+:source-highlighter: highlightjs
+:experimental:
+:leveloffset: 0.
+
+== Parrafos
+
+
+---
+
+- - -
+
+***
+
+* * *
+
+* Pepe
+** Trolo
+** Ninja
+*** Negro
+*** Blanco
+
+==== enters
+:hardbreaks:
+
+Rubies are red,
+Topazes are blue.
+
+==== cartelitos
+
+NOTE: Hola
+
+TIP: Hola
+
+IMPORTANT: Hola
+
+CAUTION: Hola
+
+WARNING: Hola
+
+:sectnums:
+You can also use this attribute entry above any section title in the document to toggle the auto-numbering setting. When you want to turn off the numbering, add an exclamation point to the end of the attribute name:
+
+:sectnums!:
+
+[sidebar]
+.Related information
+--
+This is aside text.
+
+It is used to present information related to the main content.
+--
+
+....
+error: 1954 Forbidden search
+absolutely fatal: operation lost in the dodecahedron of doom
+
+Would you like to try again? y/n
+....
+
+[quote, Abraham Lincoln, Address delivered at the dedication of the Cemetery at Gettysburg]
+____
+Four score and seven years ago our fathers brought forth
+on this continent a new nation...
+____
+
+[quote, Albert Einstein]
+A person who never made a mistake never tried anything new.
+
+____
+A person who never made a mistake never tried anything new.
+____
+
+[quote, Charles Lutwidge Dodgson, 'Mathematician and author, also known as https://en.wikipedia.org/wiki/Lewis_Carroll[Lewis Carroll]']
+____
+If you don't know where you are going, any road will get you there.
+____
+
+"I hold it that a little rebellion now and then is a good thing,
+and as necessary in the political world as storms in the physical."
+-- Thomas Jefferson, Papers of Thomas Jefferson: Volume 11
+
+Linea ANTES
+
+'''
+
+LINEA DESPUES
+
+:url-home: https://asciidoctor.org
+:link-docs: https://asciidoctor.org/docs[documentation]
+:summary: Asciidoctor is a mature, plain-text document format for \
+       writing notes, articles, documentation, books, and more. \
+       It's also a text processor & toolchain for translating \
+       documents into various output formats (i.e., backends), \
+       including HTML, DocBook, PDF and ePub.
+:checkedbox: pass:normal[{startsb}&#10004;{endsb}]
+
+Check out {url-home}[Asciidoctor]!
+
+{summary}
+
+Be sure to read the {link-docs} too!
+
+{checkedbox} That's done!
+
+A statement.footnote:[Clarification about this statement.]
+
+A bold statement!footnote:disclaimer[Opinions are my own.]
+
+Another bold statement.footnote:disclaimer[]
+
+> I hold it that a little rebellion now and then is a good thing,
+> and as necessary in the political world as storms in the physical.
+> -- Thomas Jefferson, Papers of Thomas Jefferson: Volume 11
+
+> > What's new?
+>
+> I've got Markdown in my AsciiDoc!
+>
+> > Like what?
+>
+> * Blockquotes
+> * Headings
+> * Fenced code blocks
+>
+> > Is there more?
+>
+> Yep. AsciiDoc and Markdown share a lot of common syntax already.
+
+[verse, William Blake, from Auguries of Innocence]
+To see a world in a grain of sand,
+And a heaven in a wild flower,
+Hold infinity in the palm of your hand,
+And eternity in an hour.
+
+.Topic Titel                                   
+[[yourId]]                                     
+[yourstyle]                                    
+____
+Four score and seven years ago our fathers brought forth
+on this continent a new nation...
+
+Now we are engaged in a great civil war, testing whether
+that nation, or any nation so conceived and so dedicated,
+can long endure.
+____
+
+[horizontal, role="properties", options="step"]
+property 1:: does stuff
+property 2:: does different stuff
+
+.Gettysburg Address 
+[#gettysburg] 
+[quote, Abraham Lincoln, Address delivered at the dedication of the Cemetery at Gettysburg]     
+____
+Four score and seven years ago our fathers brought forth
+on this continent a new nation...
+
+Now we are engaged in a great civil war, testing whether
+that nation, or any nation so conceived and so dedicated,
+can long endure. ...
+____
+
+****
+valid sidebar block
+****
+
+[listing]
+sudo dnf install asciidoc
+or single-line quotes:
+
+[quote]
+Never do today what you can put off `'til tomorrow.
+
+====
+This is an example
+======
+This is an example inside an example
+======
+====
+
+[.text-center]
+This text is centered.
+
+[%hardbreaks]
+Ruby is red.
+Java is black.
+
+
+
+== Listas
+
+* [*] checked
+* [x] also checked
+* [ ] not checked
+*     normal list item
+
+.Some Ruby code
+[source,ruby]
+----
+require 'sinatra'
+
+get '/hi' do
+  "Hello World!"
+end
+----
+
+. Linux
+* Fedora
+* Ubuntu
+* Slackware
+. BSD
+* FreeBSD
+* NetBSD
+
+[lowerroman, start=5]
+. Five
+. Six
+[loweralpha]
+.. a
+.. b
+.. c
+. Seven
+
+.Kizmet's Favorite Authors
+* Edgar Allan Poe
+* Sheri S. Tepper
+* Bill Bryson
+
+* Apples
+* Oranges
+
+//-
+
+* Walnuts
+* Almonds
+
+. Protons
+. Electrons
+. Neutrons
+
+
+.Possible DefOps manual locations
+* West wood maze
+** Maze heart
+*** Reflection pool
+** Secret exit
+* Untracked file in git repository
+
+[%reversed]
+.Parts of an atom
+. Protons
+. Electrons
+. Neutrons
+
+. Step 1
+. Step 2
+.. Step 2a
+.. Step 2b
+. Step 3
+
+Dairy::
+* Milk
+* Eggs
+Bakery::
+* Bread
+Produce::
+* Bananas
+
+Operating Systems::
+  Linux:::
+    . Fedora
+      * Desktop
+    . Ubuntu
+      * Desktop
+      * Server
+  BSD:::
+    . FreeBSD
+    . NetBSD
+
+Cloud Providers::
+  PaaS:::
+    . OpenShift
+    . CloudBees
+  IaaS:::
+    . Amazon EC2
+    . Rackspace
+
+. {blank}
++
+----
+print("one")
+----
+. {blank}
++
+----
+print("one")
+----
+
+square
+
+circle
+
+disc
+
+none or no-bullet (indented, but no bullet)
+
+unstyled (no indentation or bullet) (HTML only)
+
+[square]
+* one
+* two
+* three
+
+== Descripciones
+
+CPU:: The brain of the computer.
+Hard drive:: Permanent storage for operating system and/or user files.
+RAM:: Temporarily stores information the CPU uses during operation.
+Keyboard:: Used to enter text or control items on the screen.
+Mouse:: Used to point to and select items on your computer screen.
+Monitor:: Displays information in visual form using text and graphics.
+
+== Iconos
+
+// Alternative icon:comment[size="4x"]
+// Possible values: large, 2x, 3x, 4x, 5x
+// Flip and rotate
+//icon:file[flip="vertical", rotate="180", role="lime"]
+//icon:user[link="http://www.mrhaki.com/about", window="_blank"]
+
+* icon:heartbeat[]
+* icon:motorcycle[]
+* icon:street-view[]
+* icon:ship[]
+* icon:comment[]
+* icon:file[]
+* icon:eur[]
+* icon:cab[]
+* icon:calculator[]
+* icon:sitemap[]
+* icon:battery-half[]
+
+FontAwesome/link:https://fontawesome.com/v4.7.0/icons/[Lista Completa]
+
+
+
+
+== Texto
+
+* bold *constrained* & **un**constrained
+* italic _constrained_ & __un__constrained
+* bold italic *_constrained_* & **__un__**constrained
+* monospace `constrained` & ``un``constrained
+* monospace bold `*constrained*` & ``**un**``constrained
+* monospace italic `_constrained_` & ``__un__``constrained
+* monospace bold italic `*_constrained_*` & ``**__un__**``constrained
+
+*Stars* will appear as *Stars*, not as bold text.
+
+&sect; will appear as an entity, not the &sect; symbol.
+
+__func__ will appear as __func__, not as emphasized text.
+
+{two-semicolons} will appear {two-semicolons}, not resolved as ;;.
+
+The text pass:[<u>underline me</u>] is underlined.
+
+[subs=+macros] 
+----
+I better not contain *bold* or _italic_ text.
+pass:quotes[But I should contain *bold* text.] 
+----
+
+The inline pass macro also accepts shorthand values for specifying substitutions.
+
+c = special characters
+
+q = quotes
+
+a = attributes
+
+r = replacements
+
+m = macros
+
+p = post replacements
+
+The text pass:q[<u>underline *me*</u>] is underlined and the word "`me`" is bold.
+
++++content passed directly to the output+++ followed by normal content.
+
+This +*literal*+ will appear as *literal*.
+
+//Document Title (Level 0)
+
+//## Section Level 1
+
+//### Section Level 2
+
+//#### Section Level 3
+
+//##### Section Level 4
+
+//###### Section Level 5
+
+**** 
+Discrete headings are useful for making headings inside of other blocks, like this sidebar.
+
+[discrete] 
+== Discrete Heading 
+
+Discrete headings can be used where sections are not permitted.
+****
+
+"`Well the H~2~O formula written on their whiteboard could be part of a shopping list, but I don't think the local bodega sells E=mc^2^,`" Lazarus replied.
+
+"`Wait!`" Indigo plucked a small vial from her desk's top drawer and held it toward us.
+The vial's label read: `E=mc^2^`; the `_E_` represents _energy_, but also pure _genius!_
+
+Werewolves are #allergic to cinnamon#.
+
+Do werewolves believe in [small]#small print#? 
+
+[big]##O##nce upon an infinite loop.
+
+* [*] checked
+* [x] also checked
+* [ ] not checked
+*     normal list item
+
+[qanda]
+What is Asciidoctor?::
+  An implementation of the AsciiDoc processor in Ruby.
+What is the answer to the Ultimate Question?:: 42
+
+== Links
+
+:hide-uri-scheme:
+
+https://asciidoctor.org
+
+link:url[optional link text, optional target attribute, optional role attribute]
+
+search/link:https://ecosia.org[Ecosia]
+
+Let's view the raw HTML of the link:view-source:asciidoctor.org[Asciidoctor homepage,window=_blank].
+
+Let's view the raw HTML of the link:view-source:asciidoctor.org[Asciidoctor homepage^].
+
+Chat with other Asciidoctor users on the https://discuss.asciidoctor.org/[*mailing list*^,role=green].
+
+=== internos
+
+The section <<Iconos>> describes how to insert images into your document.
+
+The section <<Iconos2>> describes how to insert images into your document.
+
+Learn how to <<Iconos,use attributes within the link macro>>.
+
+[#Iconos3]
+=== Ejemplo1
+Here’s an example of a section with a custom ID and reference text:
+
+[[tiger-subspecies,Tigers]]
+=== Ejemplo2
+The ID can be written using the following shorthand (though there’s no shorthand yet for the reference text):
+
+[#Iconos2,reftext=Iconos]
+=== Ejemplo3
+
+== Imagenes
+
+You can use the imagesdir attribute to avoid hard coding the common path to your images in every image macro. The value of this attribute can be an absolute path, relative path, or base URL. If the image target is a relative path, the attribute’s value is prepended (i.e., it’s resolved relative to the value of the imagesdir attribute). If the image target is a URL or absolute path, the attribute’s value is not prepended.
+
+Example 38. Block image macro
+
+:imagesdir: ./img
+image::vogellacompany.jpg[vogella Company]
+
+image::sunset.jpg[]
+
+image::sunset.jpg[Sunset]
+
+image::sunset.jpg[alt=Sunset,width=300,height=400]
+
+[#img-perro]
+.A mountain sunset
+[link=https://images.app.goo.gl/hpQr4J4A4fgjr6ma9]
+image::perro.jpg[perro,300,200]
+
+Press the image:save.png[Save, title="Save"] button.
+
+image::https://asciidoctor.org/images/octocat.jpg[GitHub mascot]
+
+Click image:play.png[] to get the party started.
+
+Click image:pause.png[title="Pause"] when you need a break.
+
+image:sunset.jpg[Sunset,150,150,role=right] What a beautiful sunset!
+
+image::./img/vogellacompany.jpg[vogella Company]
+
+[.right.text-center]
+[Tux,150,150]
+
+
+image::https://upload.wikimedia.org/wikipedia/commons/3/35/Tux.svg[Flower,300,300,pdfwidth=25%,scaledwidth=25%]
+
+image::image.jpg[{half-size}]
+
+
+You can find image:https://upload.wikimedia.org/wikipedia/commons/3/35/Tux.svg[Linux,25,35] everywhere these days.
+
+image::tiger.png[Tiger,200,200]
+
+image:sunset.jpg[Sunset,150,150,role="right"] What a beautiful sunset!
+
+[.float-group]
+--
+[.left]
+.Image A
+image:https://upload.wikimedia.org/wikipedia/commons/3/35/Tux.svg[Linux,25,35]
+
+[.left]
+.Image B
+image:https://upload.wikimedia.org/wikipedia/commons/3/35/Tux.svg[Linux,25,35]
+--
+
+Text below images.
+
+
+
+
+
+== Videos
+
+video::video_file.mp4[]
+
+video::video_file.mp4[width=640,start=60,end=140,opts=autoplay]
+
+video::rPQoq7ThGAU[youtube]
+o
+video::67480300[vimeo]
+
+
+== Espacio para codigo
+
+[source,java]
+----
+require 'asciidoctor'  # <1>
+
+Asciidoctor.convert_file 'mysample.adoc'  # <2>
+----
+<1> Imports the library
+<2> Reads, parses, and converts the file
+
+[source,python]
+if n < 0: print 'Hello World!'
+
+:language: python
+
+[source]
+if n < 0: print 'Hello World!'
+
+[source,ruby,numbered]
+[true, false].cycle([0, 1, 2, 3, 4]) do |a, b|
+    puts "#{a.inspect} => #{b.inspect}"
+
+[source,ruby,numbered]
+
+
+
+== Tablas
+
+[cols=2*]
+|===
+|Firefox
+|Web Browser
+
+|Ruby
+|Programming Language
+
+|TorqueBox
+|Application Server
+|===
+
+[cols=2*,options=header]
+|===
+|Name
+|Group
+
+|Firefox
+|Web Browser
+
+|Ruby
+|Programming Language
+
+
+|===
+
+
+
+
+|===
+|Name |Group
+
+|Firefox
+|Web Browser
+
+
+|===
+
+
+
+
+|===
+|Name |Group |Description
+
+|Firefox
+|Web Browser
+|Mozilla Firefox is an open-source web browser.
+It's designed for standards compliance,
+performance, portability.
+
+|Ruby
+|Programming Language
+|A programmer's best friend.
+
+
+|===
+
+[cols="2,3,5"]
+|===
+|Name |Group |Description
+
+|Firefox
+|Web Browser
+|Mozilla Firefox is an open-source web browser.
+It's designed for standards compliance,
+performance and portability.
+
+|Ruby
+|Programming Language
+|A programmer's best friend.
+
+
+|===
+
+[cols="2,3,5a"]
+|===
+|Name |Group |Description
+
+|Firefox
+|Web Browser
+|Mozilla Firefox is an open-source web browser.
+It's designed for:
+
+* standards compliance,
+* performance and
+* portability.
+
+|Ruby
+|Programming Language
+|A programmer's best friend.
+
+
+|===
+
+
+
+[width="15%"]
+|=======
+|1 |2 |A
+|3 |4 |B
+|5 |6 |C
+|=======
+
+[cols="e,m,^,>s",width="25%"]
+|============================
+|1 >s|2 |3 |4
+^|5 2.2+^.^|6 .3+<.>m|7
+^|8
+|9 2+>|10
+|============================
+
+[options="header,footer,autowidth"]
+|===
+| Cell A | Cell B
+|===
+
+|===
+|Source Code 1 |Source Code 2
+
+a|
+[source,python]
+----
+import os
+print "%s" %(os.uname())
+----
+
+a|
+[source,python]
+----
+import os
+print ("%s" %(os.uname()))
+----
+|===
+
+
+|===
+
+2*>m|This content is duplicated across two columns.
+
+It is aligned right horizontally.
+
+And it is monospaced.
+
+.3+^.>s|This cell spans 3 rows. The content is centered horizontally, aligned to the bottom of the cell, and strong.
+e|This content is emphasized.
+
+.^l|This content is aligned to the top of the cell and literal.
+
+v|This cell contains a verse
+that may one day expound on the
+wonders of tables in an
+epic sonnet.
+
+|===
+
+
+== Teclas de teclado y macros
+set experimental attirbute
+
+|===
+|Shortcut |Purpose
+
+| kbd:[F11]
+|Toggle fullscreen
+
+| kbd:[Ctrl+T]
+|Open a new tab
+|===
+
+To save the file, select menu:File[Save].
+
+Select menu:View[Zoom > Reset] to reset the zoom level to the default setting.
+
+Press the btn:[OK] button when you are finished.
+
+Select a file in the file navigator and click btn:[Open].
+
+== Elemento Colapse 
+
+.Title
+[%collapsible]
+====
+Normal asciidoc markup here
+====
+
+== Audio
+
+options
+
+autoplay, loop, controls, nocontrols
+
+audio::ocean_waves.mp3[options="autoplay,loop"]
+
+The controls value is enabled by default
+
+
+
+
+
+
+
+
+
