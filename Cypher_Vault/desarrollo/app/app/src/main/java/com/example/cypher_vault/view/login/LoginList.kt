@@ -24,12 +24,11 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.style.TextAlign
-import com.example.cypher_vault.controller.authentication.AuthenticationController
+import com.example.cypher_vault.viewmodel.authentication.AuthenticationViewModel
 import com.example.cypher_vault.view.registration.CameraPreview
 
 @Composable
-fun NavigationLogin(authenticationController: AuthenticationController) {
+fun NavigationLogin(authenticationViewModel: AuthenticationViewModel) {
     val personas = listOf("Juan", "Miguel", "Pedro", "Isabel", "Miguelina")
 
     var selectedPersona by remember { mutableStateOf<String?>(null) }
@@ -55,7 +54,7 @@ fun NavigationLogin(authenticationController: AuthenticationController) {
         contentAlignment = Alignment.BottomCenter
     ) {
         OutlinedButton(
-            onClick = { authenticationController.navigateToRegister() },
+            onClick = { authenticationViewModel.navigateToRegister() },
             border = BorderStroke(0.dp, Color.Transparent),
             modifier = Modifier.padding(8.dp)
         ) {
@@ -67,7 +66,7 @@ fun NavigationLogin(authenticationController: AuthenticationController) {
 
     selectedPersona?.let { persona ->
         RegistrationCameraScreen(
-            authenticationController = authenticationController,
+            authenticationViewModel = authenticationViewModel,
             persona = persona
         )
     }
@@ -75,7 +74,7 @@ fun NavigationLogin(authenticationController: AuthenticationController) {
 }
 
 @Composable
-fun RegistrationCameraScreen(authenticationController: AuthenticationController, persona: String) {
+fun RegistrationCameraScreen(authenticationViewModel: AuthenticationViewModel, persona: String) {
     val context = LocalContext.current
     val cameraProviderFuture = remember { ProcessCameraProvider.getInstance(context) }
     val lifecycleOwner = LocalLifecycleOwner.current
@@ -95,16 +94,16 @@ fun RegistrationCameraScreen(authenticationController: AuthenticationController,
         contentAlignment = Alignment.BottomCenter
     ) {
         CameraPreview(preview)
-        CloseCameraButton(cameraProvider, authenticationController)
+        CloseCameraButton(cameraProvider, authenticationViewModel)
     }
 }
 
 @Composable
-fun CloseCameraButton(cameraProvider: ProcessCameraProvider, authenticationController: AuthenticationController) {
+fun CloseCameraButton(cameraProvider: ProcessCameraProvider, authenticationViewModel: AuthenticationViewModel) {
     Button(onClick = {
         // Cierra la cámara
         cameraProvider.unbindAll()
-        authenticationController.navigateToListLogin()
+        authenticationViewModel.navigateToListLogin()
     }, modifier = Modifier.padding(bottom = 50.dp)) {
         Text(text = "Cerrar cámara")
     }

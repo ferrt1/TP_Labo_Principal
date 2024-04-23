@@ -22,10 +22,10 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
-import com.example.cypher_vault.controller.authentication.AuthenticationController
+import com.example.cypher_vault.viewmodel.authentication.AuthenticationViewModel
 
 @Composable
-fun InitialScreen(authenticationController: AuthenticationController) {
+fun InitialScreen(authenticationViewModel: AuthenticationViewModel) {
     val emailState = remember { mutableStateOf(TextFieldValue()) }
     val nameState = remember { mutableStateOf(TextFieldValue()) }
     val showDialog = remember { mutableStateOf(false) }
@@ -58,7 +58,7 @@ fun InitialScreen(authenticationController: AuthenticationController) {
             Spacer(modifier = Modifier.height(16.dp))
 
             Button(onClick = {
-                authenticationController.registerUser(emailState.value.text, nameState.value.text, showDialog, errorMessage)
+                authenticationViewModel.registerUser(emailState.value.text, nameState.value.text, showDialog, errorMessage)
             }) {
                 Text("Registrarse")
             }
@@ -66,7 +66,7 @@ fun InitialScreen(authenticationController: AuthenticationController) {
             Spacer(modifier = Modifier.height(16.dp))
 
             OutlinedButton(
-                onClick = { authenticationController.navigateToListLogin() },
+                onClick = { authenticationViewModel.navigateToListLogin() },
                 border = BorderStroke(0.dp, Color.Transparent)
             ) {
                 Text("Iniciar sesión")

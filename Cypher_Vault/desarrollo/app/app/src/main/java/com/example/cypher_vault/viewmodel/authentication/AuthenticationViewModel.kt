@@ -1,31 +1,32 @@
-package com.example.cypher_vault.controller.authentication
+package com.example.cypher_vault.viewmodel.authentication
 
 import androidx.compose.runtime.MutableState
-import androidx.navigation.NavController
+import androidx.lifecycle.ViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 
-class AuthenticationController(private val navController: NavController) {
-    fun navigateToCamera() {
-        navController.navigate("camera")
+class AuthenticationViewModel : ViewModel() {
+
+    private val _navigateTo = MutableStateFlow<String?>(null)
+    val navigateTo: StateFlow<String?> get() = _navigateTo
+
+
+    private fun navigateToCamera() {
+        _navigateTo.value = "camera"
     }
 
     fun navigateToConfirmation() {
-        navController.navigate("confirmation")
-    }
-
-    fun navigateToLogin() {
-        navController.navigate("login")
+        _navigateTo.value = "confirmation"
     }
 
     fun navigateToListLogin(){
-        navController.navigate("list")
+        _navigateTo.value = "list"
     }
 
     fun navigateToRegister(){
-        navController.navigate("register")
+        _navigateTo.value = "register"
     }
 
-    // ... acá iria el método de javi por ejemplo
-    // fun login()
 
     fun registerUser(
         email: String,

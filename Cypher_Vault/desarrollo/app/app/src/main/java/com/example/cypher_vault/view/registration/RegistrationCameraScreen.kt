@@ -5,9 +5,7 @@ import androidx.camera.core.Preview
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.PreviewView
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
@@ -22,10 +20,10 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
-import com.example.cypher_vault.controller.authentication.AuthenticationController
+import com.example.cypher_vault.viewmodel.authentication.AuthenticationViewModel
 
 @Composable
-fun RegistrationCameraScreen(authenticationController: AuthenticationController) {
+fun RegistrationCameraScreen(authenticationViewModel: AuthenticationViewModel) {
     val context = LocalContext.current
     val cameraProviderFuture = remember { ProcessCameraProvider.getInstance(context) }
     val lifecycleOwner = LocalLifecycleOwner.current
@@ -47,19 +45,19 @@ fun RegistrationCameraScreen(authenticationController: AuthenticationController)
     ) {
         if (isCameraOpen.value) {
             CameraPreview(preview)
-            CloseCameraButton(isCameraOpen, cameraProvider, authenticationController)
+            CloseCameraButton(isCameraOpen, cameraProvider, authenticationViewModel)
         }
     }
 }
 
 
 @Composable
-fun CloseCameraButton(isCameraOpen: MutableState<Boolean>, cameraProvider: ProcessCameraProvider, authenticationController: AuthenticationController) {
+fun CloseCameraButton(isCameraOpen: MutableState<Boolean>, cameraProvider: ProcessCameraProvider, authenticationViewModel: AuthenticationViewModel) {
     Button(onClick = {
         // Cierra la cámara
         isCameraOpen.value = false
         cameraProvider.unbindAll()
-        authenticationController.navigateToConfirmation()
+        authenticationViewModel.navigateToConfirmation()
     },  modifier = Modifier.padding(bottom = 50.dp)
         ) {
         Text("Tomar foto")

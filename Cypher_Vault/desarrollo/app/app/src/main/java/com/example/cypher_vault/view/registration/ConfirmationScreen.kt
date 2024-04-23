@@ -9,10 +9,10 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import com.example.cypher_vault.controller.authentication.AuthenticationController
+import com.example.cypher_vault.viewmodel.authentication.AuthenticationViewModel
 
 @Composable
-fun ConfirmationScreen(authenticationController: AuthenticationController) {
+fun ConfirmationScreen(authenticationViewModel: AuthenticationViewModel) {
     Box(
         contentAlignment = Alignment.Center,
         modifier = Modifier.fillMaxSize()
@@ -23,7 +23,7 @@ fun ConfirmationScreen(authenticationController: AuthenticationController) {
         ) {
             Text( "¡Ya estás registrado! ")
             Button(onClick = {
-                authenticationController.navigateToLogin()
+                authenticationViewModel.navigateToListLogin()
             }) {
                 Text("Iniciar sesión")
             }
