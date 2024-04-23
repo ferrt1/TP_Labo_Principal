@@ -133,3 +133,11 @@ fun ConfirmationScreen(authenticationController: AuthenticationController)
 Recibe como parametro authenticationController para luego poder navegar por la aplicacion
 
 `ConfirmationScreen` Es una pantalla que muestra un mensaje de que se pudo registrar y un botón para iniciar sesión
+
+
+## Links
+
+https://developer.android.com/develop/ui/compose
+https://developer.android.com/reference/androidx/navigation/NavController
+https://developer.android.com/reference/kotlin/androidx/compose/runtime/Composable
+https://developer.android.com/reference/android/util/Patterns
