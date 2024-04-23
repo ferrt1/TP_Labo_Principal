@@ -88,8 +88,9 @@ dependencies {
     implementation("androidx.camera:camera-extensions:${camerax_version}")
 
 
-    //la parte de javi
-    var  appcompat_version="1.1.0"
-    implementation ("androidx.appcompat:appcompat:$appcompat_version")
+    //la parte de javi//
+    //por ahora no hay nada//
+    //----------------//
+
 
 }
