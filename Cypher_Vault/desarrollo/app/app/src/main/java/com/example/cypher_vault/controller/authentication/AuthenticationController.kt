@@ -16,6 +16,14 @@ class AuthenticationController(private val navController: NavController) {
         navController.navigate("login")
     }
 
+    fun navigateToListLogin(){
+        navController.navigate("list")
+    }
+
+    fun navigateToRegister(){
+        navController.navigate("register")
+    }
+
     // ... acá iria el método de javi por ejemplo
     // fun login()
 

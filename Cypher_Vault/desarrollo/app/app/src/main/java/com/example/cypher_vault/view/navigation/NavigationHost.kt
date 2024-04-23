@@ -1,4 +1,4 @@
-package com.example.cypher_vault.view.registration
+package com.example.cypher_vault.view.navigation
 
 
 import androidx.compose.runtime.Composable
@@ -6,6 +6,10 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.cypher_vault.controller.authentication.AuthenticationController
+import com.example.cypher_vault.view.login.NavigationLogin
+import com.example.cypher_vault.view.registration.ConfirmationScreen
+import com.example.cypher_vault.view.registration.InitialScreen
+import com.example.cypher_vault.view.registration.RegistrationCameraScreen
 
 @Composable
 fun NavigationHost() {
@@ -24,5 +28,9 @@ fun NavigationHost() {
         composable("login") {
             // Aquí puedes agregar la vista de inicio de sesión
         }
+        composable("list") {
+            NavigationLogin(authenticationController)
+        }
+
     }
 }

@@ -66,7 +66,7 @@ fun InitialScreen(authenticationController: AuthenticationController) {
             Spacer(modifier = Modifier.height(16.dp))
 
             OutlinedButton(
-                onClick = { /*TODO: Handle click*/ },
+                onClick = { authenticationController.navigateToListLogin() },
                 border = BorderStroke(0.dp, Color.Transparent)
             ) {
                 Text("Iniciar sesión")
