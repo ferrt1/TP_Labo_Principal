@@ -29,10 +29,6 @@ class AuthenticationController(private val navController: NavController) {
         navController.navigate("confirmation")
     }
 
-    fun navigateToLogin() {
-        navController.navigate("login")
-    }
-
     fun navigateToListLogin(){
         navController.navigate("list")
     }
@@ -68,11 +64,11 @@ class AuthenticationController(private val navController: NavController) {
         }
         else if (!validateName(name)){
             showDialog.value = true
-            errorMessage.value = "El nombre debe tener más de 3 carácteres"
+            errorMessage.value = "El nombre debe tener más de 3 carácteres y menos de 50"
         }
     }
 
-    fun getAllUsers() {
+    private fun getAllUsers() {
         CoroutineScope(Dispatchers.IO).launch {
             _users.value = DatabaseManager.getAllUsers()
         }
@@ -83,7 +79,7 @@ class AuthenticationController(private val navController: NavController) {
     }
 
     private fun validateName(name: String): Boolean{
-        return name.length >= 3;
+        return name.length in 3..50;
     }
 
     private fun validateFields(email: String, name: String): Boolean{

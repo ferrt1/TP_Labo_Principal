@@ -11,5 +11,5 @@ interface ImageRegisterDao {
     @Query("SELECT * FROM images WHERE user_id = :userId")
     fun getImagesForUser(userId: Long): List<ImagesRegister>
 
-    // Otros métodos según sea necesario
+
 }
