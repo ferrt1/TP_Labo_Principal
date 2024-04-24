@@ -304,3 +304,164 @@ Para registrar los cambios, emplearemos diversas herramientas y procedimientos:
 * *OpenCV:* Es una biblioteca que proporciona una amplia gama de funciones y algoritmos para el procesamiento de imágenes y vídeo
 * *TensorFlow Lite* TensorFlow Lite es un marco de trabajo ligero desarrollado por Google que permite ejecutar modelos de aprendizaje automático en dispositivos móviles e integrados.
 * *SQLite:* SQLite es un sistema de gestión de bases de datos relacional (RDBMS) ligero, rápido, autónomo y de código abierto.
+
+==== Visual Studio Code
+
+image::imagenAdoc/logovisualstudio.png[100,100]
+
+Fuente: link:https://visualstudio.microsoft.com/es/[Microsoft.com/VisualStudio]
+
+*Dentro del proyecto su uso no es primario, pero si se utiliza para revisar las clases dentro del proyecto de Android Studio, por otro lado es una gran herramienta a la hora de confeccionar el informe / documentacion del proyecto.*
+
+Editor de código fuente independiente que se ejecuta en Windows, macOS y Linux. El IDE de Visual Studio es una plataforma de lanzamiento creativa que puede utilizar para editar, depurar y compilar código y, finalmente, publicar una aplicación. Además del editor y depurador estándar que ofrecen la mayoría de IDE, Visual Studio incluye compiladores, herramientas de completado de código, diseñadores gráficos y muchas más funciones para mejorar el proceso de desarrollo de software.
+
+==== Android Studio
+
+image::imagenAdoc/logoandroidstudio.png[200,200]
+
+Fuente: link:https://developer.android.com/studio?hl=es-419[Android.com/Developer]
+
+*Es la herramienta principal del desarrollo de la aplicacion, el mismo es un IDE robusto el cual cuenta con varias funcionalidades las cuales acompañan las etapas de desarrollo, depuracion, testeo e implementacion.*
+
+Entorno de desarrollo integrado (IDE) oficial del desarrollo de apps para Android. Basado en el potente editor de código y las herramientas para desarrolladores de IntelliJ IDEA, Android Studio ofrece aún más funciones que mejoran tu productividad cuando compilas apps para Android, como las siguientes:
+
+* Un sistema de compilación flexible basado en Gradle
+* Un emulador rápido y cargado de funciones
+* Un entorno unificado donde puedes desarrollar para todos los dispositivos Android
+* Ediciones en vivo para actualizar elementos componibles en emuladores y dispositivos físicos, en tiempo real
+* Integración con GitHub y plantillas de código para ayudarte a compilar funciones de apps comunes y también importar código de muestra
+Variedad de marcos de trabajo y herramientas de prueba
+* Herramientas de Lint para identificar problemas de rendimiento, usabilidad y compatibilidad de versiones, entre otros
+* Compatibilidad con C++ y NDK
+* Compatibilidad integrada con Google Cloud Platform, que facilita la integración con Google Cloud Messaging y App Engine.
+
+NOTE: *Aclaracion:* Dentro del equipo de desarrollo y testeo utilizamos los mismos dispositivos celulares para emular y testear la implementacion/desarrollo, ya que en algunos casos es imposible por las capacidades computacionales de los equipos ( computadoras ) de cada uno de los integrantes.
+
+===== Implementacion
+
+*En esta seccion se pasa a detallar cada una de las partes del desarrollo, junto a sus herramientas, ya que dentro de android studio como se detallo anteriormente se encuentran funcionalidades especificas.*
+
+Para comenzar nos encontramos con el ultimo IDE estable lanzado por Android, el cual es la version Iguana, luego se creo un proyecto con la version minima compatible recomendada por el mismo. Teniendo esto en cuenta nuestra aplicacion es compatible desde Android 7 hasta la ultima version lanzada al dia de hoy.
+
+NOTE: *¿Por que no versiones anteriores?:* Porque esto genera problemas en las dependencias ( funcionalidades ofrecidas por android ) disponibles, lo cual provoca que la aplicacion pierda posibilidades de escalado, ya que hay versiones anteriores que resultan incompatibles con las mismas dependencias.
+
+====== INTERFAZ
+
+Fuente: link:https://developer.android.com/develop/ui/compose[android.com/compose]
+
+Fuente: link:https://developer.android.com/reference/androidx/navigation/NavController[android.com/nav_controller]
+
+Fuente: link:https://developer.android.com/reference/kotlin/androidx/compose/runtime/Composable[android.com/composable]
+
+Fuente: link:https://developer.android.com/reference/android/util/Patterns[android.com/patterns]
+
+El código se divide en tres paquetes que se encuentran en `app > src > main > java > com.example.cypher_vault`. Acá hay dos paquetes: uno llamado 'controller' y otro llamado 'view'.
+
+*Paquete Controller > Authentication*
+
+** AuthenticationController.kt
+*** `AuthenticationController` es una clase que toma como parámetro un `NavController` y devuelve el `NavController` con la dirección a la que debe navegar. 
+Cada dirección tiene su propia función: `fun navigateToCamera()`, `fun navigateToConfirmation()`, `fun navigateToLogin()` (esta última falta implementar).
+
+[source,kotlin]
+----
+fun registerUser( # <1>
+        email: String,
+        name: String,
+        showDialog: MutableState<Boolean>,
+        errorMessage: MutableState<String>
+    )
+----
+<1> La función `registerUser` valida los campos por el momento. Más adelante deberá enviarlos al modelo para guardarlos en la base de datos. 
+Recibe como parámetros `email`, `name`, `showDialog` y `errorMessage`. Estos parámetros son para que salga la alerta y mostrarla con sus respectivos mensajes.
+Si todos los campos están bien, llama a `navigateToCamera` y los manda a la cámara.
+
+* Las funciones `validateMail()`, `validateName()` y `validateFields` verifican la validez de los campos de entrada.
+** `validateMail(email: String)`: Se fija que se cumpla android.util.Patterns.EMAIL_ADDRESS.matcher(email).
+** `validateName(name: String)`: Se fija que no tenga menos de 3 carácteres el nombre.
+** `validateFields(name: String, email: String)`: Se fija que no esten vacios.
+
+*Paquete View > Registration*
+
+.NavigationHost.kt
+[source,kotlin]
+----
+fun NavigationHost() # <1>
+----
+<1> `NavigationHost()` es una función que se utiliza para manejar la navegación en la aplicación, cada vez que se presiona un botón cambia las pantallas. 
+
+NOTE: *Aclaracion:* Empieza en register por predeterminado y luego va cambiando, toma como parámetro las direcciones que le pasa el AuthenticationController, .
+
+* **Definición de pantallas**: Dentro de esta función `NavHost`, se definen varias pantallas que representan diferentes partes:
+** *register*: Esta es la pantalla inicial donde los usuarios pueden registrarse. Muestra `InitialScreen`.
+** *camera* Esta es la pantalla donde los usuarios pueden usar la cámara durante el proceso de registro. Muestra `RegistrationCameraScreen`.
+** *confirmation*: Esta es la pantalla donde los usuarios pueden confirmar su registro. Muestra `ConfirmationScreen`.
+** *login*: Esta es la pantalla donde los usuarios pueden iniciar sesión. Falta implementar.
+
+.InitialScreen.kt
+[source,kotlin]
+----
+fun RegistrationCameraScreen(authenticationController: AuthenticationController) # <1>
+----
+<1> Recibe como parametro authenticationController para luego poder navegar por la aplicacion
+
+`InitialScreen` es la pantalla inicial donde los usuarios se van a registrar. Se encuentran los campos de entrada para el correo electrónico y el nombre. Al hacer clic en el botón "Registrarse", se llama al método `registerUser` del 
+`AuthenticationController`.
+
+.RegistrationCameraScreen.kt
+[source,kotlin]
+----
+fun RegistrationCameraScreen(authenticationController: AuthenticationController) # <1>
+----
+<1> Recibe como parametro authenticationController para luego poder navegar por la aplicacion
+
+Esta función Muestra la vista previa de la cámara
+`ProcessCameraProvider:` Esta es una clase que se utiliza para interactuar con las cámaras disponibles en el dispositivo. En este caso, se obtiene una instancia de ProcessCameraProvider y 
+se recuerda para su uso posterior.
+
+`CameraSelector:` Esta es una clase que se utiliza para seleccionar una cámara en el dispositivo. En este caso, se está seleccionando la cámara frontal.
+
+[source,kotlin]
+----
+fun CloseCameraButton(isCameraOpen: MutableState<Boolean>,
+                      cameraProvider: ProcessCameraProvider,
+                        authenticationController: AuthenticationController) # <1>
+----
+<1> Botón que se muestra para cerrar la cámara e ir a la parte de ConfirmationScreen
+
+[source,kotlin]
+----
+fun CameraPreview(preview: Preview) # <1>
+----
+<1> Muestra la vista previa de la cámara en la interfaz de usuario. Utiliza la clase AndroidView para mostrar la vista previa de la cámara en la interfaz de usuario de Compose.
+
+.ConfirmationScreen.kt
+[source,kotlin]
+----
+fun ConfirmationScreen(authenticationController: AuthenticationController) # <1>
+----
+<1> Recibe como parametro authenticationController para luego poder navegar por la aplicacion
+
+`ConfirmationScreen` Es una pantalla que muestra un mensaje de que se pudo registrar y un botón para iniciar sesión
+
+*Paquete View > Login*
+
+.LoginList.kt
+[source,kotlin]
+----
+fun NavigationLogin(authenticationController: AuthenticationController) # <1>
+----
+<1> `NavigationLogin()`: Esta función se encarga de mostrar un lista de los usuarios que ya están registrados en la aplicación. Permite a los usuarios navegar a través de sus cuentas de forma eficiente.  
+
+[source,kotlin]
+----
+fun loginCamera(authenticationController: AuthenticationController, user: String) # <1>
+----
+<1> La función `loginCamera` se activa después de que el usuario ha seleccionado su cuenta. Su propósito es encender la cámara frontal para realizar una verificación biométrica,asegurándose de que la cuenta seleccionada pertenezca realmente al usuario en cuestión. Esta validación permite mantener la seguridad y la integridad de la cuenta.
+
+[source,kotlin]
+----
+fun CloseCameraButton(cameraProvider: ProcessCameraProvider, authenticationController: AuthenticationController) # <1>
+----
+<1> La función `CloseCameraButton` permite al usuario cerrar la cámara frontal si se ha seleccionado una cuenta incorrecta. Ofrece una interfaz para regresar de manera rápida al inicio de sesión, específicamente a la pantalla de `NavigationLogin`, facilitando el desplazamiento dentro de la aplicación.
+
