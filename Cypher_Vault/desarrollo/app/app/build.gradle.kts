@@ -1,6 +1,9 @@
 plugins {
     alias(libs.plugins.androidApplication)
     alias(libs.plugins.jetbrainsKotlinAndroid)
+
+    // BASE DE DATOS ///////////////////////
+    kotlin("kapt")
 }
 
 android {
@@ -50,6 +53,14 @@ android {
 }
 
 dependencies {
+
+    // BASE DE DATOS ///////////////////////
+
+    implementation("androidx.room:room-runtime:2.6.1")
+    annotationProcessor("androidx.room:room-compiler:2.6.1")
+    kapt("androidx.room:room-compiler:2.6.1")
+    //////////////////////////////////////////////
+
     implementation("androidx.navigation:navigation-compose:2.7.7")
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
@@ -85,4 +96,8 @@ dependencies {
     implementation("androidx.camera:camera-mlkit-vision:${camerax_version}")
     // If you want to additionally use the CameraX Extensions library
     implementation("androidx.camera:camera-extensions:${camerax_version}")
+
+    // BASE DE DATOS ///////////////////////
+
+    //////////////////////////////////////////////
 }

@@ -23,7 +23,7 @@ fun ConfirmationScreen(authenticationController: AuthenticationController) {
         ) {
             Text( "¡Ya estás registrado! ")
             Button(onClick = {
-                authenticationController.navigateToLogin()
+                authenticationController.navigateToListLogin()
             }) {
                 Text("Iniciar sesión")
             }

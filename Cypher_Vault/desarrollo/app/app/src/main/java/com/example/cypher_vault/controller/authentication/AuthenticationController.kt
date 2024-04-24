@@ -1,10 +1,27 @@
 package com.example.cypher_vault.controller.authentication
 
 import androidx.compose.runtime.MutableState
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.liveData
 import androidx.navigation.NavController
+import com.example.cypher_vault.database.User
+import com.example.cypher_vault.model.dbmanager.DatabaseManager
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.launch
 
 class AuthenticationController(private val navController: NavController) {
-    fun navigateToCamera() {
+
+    init{
+        getAllUsers()
+    }
+
+    private val _users = MutableStateFlow<List<User>>(emptyList())
+    val users: StateFlow<List<User>> get() = _users
+
+    private fun navigateToCamera() {
         navController.navigate("camera")
     }
 
@@ -34,6 +51,11 @@ class AuthenticationController(private val navController: NavController) {
         errorMessage: MutableState<String>
     ) {
         if (!validateFields(email, name) && validateMail(email) && validateName(name)) {
+            // Inserta el nuevo usuario en la base de datos en un hilo secundario
+            CoroutineScope(Dispatchers.IO).launch {
+                val user = User(firstName = name, email = email, entryDate = System.currentTimeMillis(), pin = null)
+                DatabaseManager.insertUser(user)
+            }
             navigateToCamera()
         }
         else if(validateFields(name, email)){
@@ -47,6 +69,12 @@ class AuthenticationController(private val navController: NavController) {
         else if (!validateName(name)){
             showDialog.value = true
             errorMessage.value = "El nombre debe tener más de 3 carácteres"
+        }
+    }
+
+    fun getAllUsers() {
+        CoroutineScope(Dispatchers.IO).launch {
+            _users.value = DatabaseManager.getAllUsers()
         }
     }
 

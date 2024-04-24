@@ -23,6 +23,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.foundation.layout.Box
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import com.example.cypher_vault.controller.authentication.AuthenticationController
@@ -30,7 +31,7 @@ import com.example.cypher_vault.view.registration.CameraPreview
 
 @Composable
 fun NavigationLogin(authenticationController: AuthenticationController) {
-    val personas = listOf("Juan", "Miguel", "Pedro", "Isabel", "Miguelina")
+    val users by authenticationController.users.collectAsState()
 
     var selectedPersona by remember { mutableStateOf<String?>(null) }
 
@@ -38,14 +39,14 @@ fun NavigationLogin(authenticationController: AuthenticationController) {
         modifier = Modifier.fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        items(personas) { persona ->
+        items(users) { user ->
             Button(
                 onClick = {
-                    selectedPersona = persona
+                    selectedPersona = user.firstName
                 },
                 modifier = Modifier.padding(8.dp) // Añade un espacio entre los botones
             ) {
-                Text(text = persona)
+                Text(text = user.firstName ?: "")
             }
         }
 
@@ -65,17 +66,17 @@ fun NavigationLogin(authenticationController: AuthenticationController) {
 
 
 
-    selectedPersona?.let { persona ->
+    selectedPersona?.let { user ->
         RegistrationCameraScreen(
             authenticationController = authenticationController,
-            persona = persona
+            user = user
         )
     }
 
 }
 
 @Composable
-fun RegistrationCameraScreen(authenticationController: AuthenticationController, persona: String) {
+fun RegistrationCameraScreen(authenticationController: AuthenticationController, user: String) {
     val context = LocalContext.current
     val cameraProviderFuture = remember { ProcessCameraProvider.getInstance(context) }
     val lifecycleOwner = LocalLifecycleOwner.current
