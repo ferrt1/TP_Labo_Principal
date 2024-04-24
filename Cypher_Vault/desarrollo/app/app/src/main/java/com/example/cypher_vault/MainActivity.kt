@@ -9,6 +9,8 @@ import com.example.cypher_vault.view.navigation.NavigationHost
 
 
 class MainActivity : ComponentActivity() {
+
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         DatabaseManager.initialize(this)

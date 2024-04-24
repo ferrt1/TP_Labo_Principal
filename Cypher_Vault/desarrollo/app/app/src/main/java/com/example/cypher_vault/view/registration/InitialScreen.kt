@@ -1,5 +1,10 @@
 package com.example.cypher_vault.view.registration
 
+import android.Manifest
+import android.app.Activity
+import android.content.Context
+import android.content.ContextWrapper
+import android.content.pm.PackageManager
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -20,12 +25,22 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import com.example.cypher_vault.controller.authentication.AuthenticationController
 
 @Composable
 fun InitialScreen(authenticationController: AuthenticationController) {
+    val context = LocalContext.current
+    val activity = context.findAncestorActivity()
+
+    if (ContextCompat.checkSelfPermission(context, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+        ActivityCompat.requestPermissions(activity!!, arrayOf(Manifest.permission.CAMERA), 200)
+    }
+
     val emailState = remember { mutableStateOf(TextFieldValue()) }
     val nameState = remember { mutableStateOf(TextFieldValue()) }
     val showDialog = remember { mutableStateOf(false) }
@@ -86,4 +101,15 @@ fun InitialScreen(authenticationController: AuthenticationController) {
             }
         )
     }
+}
+
+fun Context.findAncestorActivity(): Activity? {
+    var context = this
+    while (context is ContextWrapper) {
+        if (context is Activity) {
+            return context
+        }
+        context = context.baseContext
+    }
+    return null
 }
