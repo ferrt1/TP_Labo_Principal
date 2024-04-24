@@ -189,10 +189,6 @@ Una vez explicado las clasificación de requerimientos funcionales,  se hará a 
 ** Rendimiento   
 *** El sistema debe ser eficiente en el uso de la batería, la memoria y el procesador de la Tablet.
     
-  
-
-
-
 === WBS
 
 image::imagenAdoc/WBS.jpg[700,700]
