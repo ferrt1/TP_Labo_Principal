@@ -226,8 +226,8 @@ Los pesos se clasifican en base a:
 | 1.2 | Herramientas a utilizar | Investigar sobre las herramientas a utilizar | Investigación | Todo el equipo | 3 
 | 1.3 | Definición de requerimientos | Definir los requerimientos del proyecto | Documentación | Todo el equipo | 3 
 | 1.4 | Creación del backlog | Crear backlog | Planificación  | Scrum Master | 3 
+| 1.4.1 | Asignación de Story Points | Estimar esfuerzo de los requerimientos | Planificación, Estimación | Scrum Master | 3 
 | 1.5 | Documentación inicial | Crear la documentación | Planificación | Todo el equipo | 3 
-| 1.5.1| Asignación de Story Points | Estimar esfuerzo de los requerimientos | Planificación, Estimación | Scrum Master | 3 
 | 1.6 | Administración de cambio | Planificar el flujo de los cambios | Planificación | Scrum Master | 2 
 | 1.7 | Gestión | Gestión general de indicadores y comunicación del equipo | Planificación, Gestión | Scrum Master | 3 
 | 1.7.1 | Capacitación Scrum Master | Capacitación en herramientas de gestión e indicadores | Capacitación | Scrum master | 3 
@@ -263,11 +263,12 @@ Los pesos se clasifican en base a:
 |===
 | Entrega | Fecha | Tareas 
 | 1 | (19/4)| Presentación de Plan de Proyecto
-| 2 | (3/4) | Implementacion de interfaz inicial
-| 3 | (17/5) | Implementación de algoritmo de reconocimiento facial
-| 4 | (31/5) | A definir
-| 5 | (14/6) | A definir 
-| 6 | (28/6) | A definir 
+| 2 | (26/4) | Implementacion de interfaz inicial
+| 3 | (8/5) | Implementación de algoritmo de reconocimiento facial
+| 4 | (22/5) | A definir
+| 5 | (5/6) | A definir 
+| 6 | (14/6) | A definir 
+| 7 | (26/6) | A definir 
 |===
 
 === Estimaciones Iniciales
@@ -277,6 +278,12 @@ Se entregará un prototipo de la interfaz funcional para el registro, la autenti
 * *Capacitación del equipo en las tecnologías:* 5hs por cada desarrollador y tester.
 * *Desarrollo:* 20hs por cada desarrollador.
 * *Testing:* 10hs por tester.
+
+=== Horas empleadas
+
+* *Capacitación del equipo en las tecnologías:* 10hs por cada desarrollador y tester.
+* *Desarrollo:* 25hs por cada desarrollador.
+* *Testing:* 2hs por tester.
 
 === Riesgos
 
