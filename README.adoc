@@ -191,7 +191,7 @@ Una vez explicado las clasificación de requerimientos funcionales,  se hará a 
     
 === WBS
 
-image::imagenAdoc/WBS.jpg[700,700]
+image::Recursos/WBSRF1.jpg[700,700]
 
 === Diccionario
 
