@@ -241,15 +241,15 @@ Los pesos se clasifican en base a:
 
 === Calendario
 
-[cols=6*,options=header]
+[cols=3*,options=header]
 |===
 | Entrega | Fecha | Tareas 
-| 1 | (19/4)| Sprint 0 
-| 2 | (3/4) | Reunión Formal 1 
-| 3 | (17/5) | Reunión Formal 2 
-| 4 | (31/5) | Reunión Formal 3 
-| 5 | (14/6) | Reunión Formal 4 
-| 6 | (28/6) | Reunión Formal 5 
+| 1 | (19/4)| Presentación de Plan de Proyecto
+| 2 | (3/4) | Implementacion de interfaz inicial
+| 3 | (17/5) | Implementación de algoritmo de reconocimiento facial
+| 4 | (31/5) | A definir
+| 5 | (14/6) | A definir 
+| 6 | (28/6) | A definir 
 |===
 
 === Estimaciones Iniciales
