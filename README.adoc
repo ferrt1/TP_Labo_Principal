@@ -94,7 +94,7 @@ Con este enfoque, nuestro equipo podrá gestionar eficazmente el proyecto, adapt
 == Enlaces
 
 * *Repositorio:* se decidió utilizar Github para que todos los miembros del equipo puedan acceder y trabajar con mayor comodidad. 
-<a href="https://github.com/ferrt1/TP_Labo_Principal" target="_blank">Repositorio Github</a>
+link:https://github.com/ferrt1/TP_Labo_Principal[Repositorio Github]
 
 * *WBS:* Se decidio utilizar Miro que es una plataforma de colaboración digital para realizar la WBS. Por motivos de seguridad no se compartirá el link pero la misma se mostrará en la documentación.
 
@@ -296,7 +296,7 @@ Se entregará un prototipo de la interfaz funcional para el registro, la autenti
 * R7 La curva de aprendizaje en nuevas tecnologias podria afectar la eficiencia de los desarrolladores
 * R8 Variación en los tiempos de dedicación entre los miembros del equipo
 
-(imagen aqui)
+image::imagenAdoc/riesgos_para_informe.PNG[]
 
 ** Plan de mitigacion
 * R1 = Armado detallado de la WBS. Organizar reuniones para revisar y aclarar los objetivos.
