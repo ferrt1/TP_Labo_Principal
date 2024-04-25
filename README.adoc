@@ -211,9 +211,9 @@ Los pesos se clasifican en base a:
 | 1.5 | Documentación inicial | Crear la documentación | Planificación | Todo el equipo | 3 
 | 1.5.1| Asignación de Story Points | Estimar esfuerzo de los requerimientos | Planificación, Estimación | Scrum Master | 3 
 | 1.6 | Administración de cambio | Planificar el flujo de los cambios | Planificación | Scrum Master | 2 
-| 1.7 | Gestión | Gestión general de indicadores y comunicación del equipo | Planificación, Gestión | 3 
+| 1.7 | Gestión | Gestión general de indicadores y comunicación del equipo | Planificación, Gestión | Scrum Master | 3 
 | 1.7.1 | Capacitación Scrum Master | Capacitación en herramientas de gestión e indicadores | Capacitación | Scrum master | 3 
-| 1.7.2 | Ceremonias | Planificación de las ceremonias de Scrum. Sprint planning, dailys, Sprint review, Sprint retrospective | 3 
+| 1.7.2 | Ceremonias | Planificación de las ceremonias de Scrum. Sprint planning, dailys, Sprint review, Sprint retrospective | Scrum Master | 3 
 | 1.7.3 | Indicadores | Control de inidcadores generales | Planificación, Gestión | Scrum Master | 3 
 | 1.7.4 | Riesgos | Control e identificación de riesgos | Planificación | Scrum master | 2 
 | 2 | Desarrollo de Interfaz | Desarrollar la interfaz | Desarrollo | Equipo de desarrollo | 2 
