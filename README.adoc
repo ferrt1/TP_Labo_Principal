@@ -298,20 +298,46 @@ Se entregará un prototipo de la interfaz funcional para el registro, la autenti
 
 (imagen aqui)
 
+** Plan de mitigacion
+* R1 = Armado detallado de la WBS. Organizar reuniones para revisar y aclarar los objetivos.
+* R2 = Documentar las lecciones aprendidas durante el proyecto. Contar con miembros experimentados que brinde asistencia y orientacion al equipo
+* R3 = Investigar y comunicarse con las autoridades reguladoras pertinentes
+* R4 = Designar roles suplentes para asegurar la continuidad del trabajo en caso de ausencia de algun miembro
+* R5 = Programar reuniones periodicas y practicar la escucha activa durante las interacciones
+* R6 = Realizar estimaciones realistas teniendo en cuenta la experiencia del equipo y los recursos disponibles, utilizando enfoques de metodologias apropiadas
+* R7 = Investigar , evaluar y capacitarse en nuevas tecnologias antes de su implementacion en el proyecto
+* R8 = Elaborar un calendario que refleje los horarios disponibles de cada miembro del equipo
 
-  
+** Plan de contingencia
+* R1 = Definir y compartir los objetivos del proyecto de manera clara en todo el equipo
+* R2 = Ampliar conocimientos tanto mediante la teoria como consultando a profesores
+* R3 = Adaptarse a los nuevos cambios que surjan durante el proyecto.
+* R4 = Brindar apoyo a los compañeros que enfrenten dificultades personales y, de ser necesario, redistribuir tareas
+* R5 = Asignar un mediador para resolver los conflictos internos de manera efectiva
+* R6 = Establecer un margen de contingencia para hacer frente a situaciones imprevistas.  Aprender de tareas realizadas previamente.
+* R7 = Falicitar la tranferencia de conocimiento mediante la colaboracion de un miembro mas experimentado
+* R8 = Adaptar las tareas según el ritmo de trabajo y conocimiento de cada miembro del equipo
+
+ 
 === Entregables
 
 Definimos los hitos que ocurrirán en las diferentes fechas del proyecto. El primer hito se enfocará en la presentación formal del proyecto al cliente. En esta se explicará el plan de gestión que tendremos para administrar el proyecto.
 En los hitos restantes se presentará al cliente los avances en el producto.
 
-* Presentación del proyecto el día 19/09
-* Reunión formal 1 el día 19/04
-* Reunión formal 2 el día 03/05
-* Reunión formal 3 el día 17/05
-* Reunión formal 4 el día 31/05
+* Presentación del proyecto el día 19/04
+* Reunión formal 1 el día 26/04
+* Reunión formal 2 el día 8/05
+* Reunión formal 3 el día 22/05
+* Reunión formal 4 el día 5/06
 * Reunión formal 5 el día 14/06
-* Presentación final el día 28/06
+* Presentación final el día 26/06
+
+** Entregables para el proximo sprint del dia 8/05:
+* Resolución de bugs del sprint anterior
+* Investigación de reconocimiento facial
+* Mejoras en interfaz 
+* Implementación y desarrollo de algoritmo de reconocimiento facial (deseable)
+
 
 === Administración en el Manejo de Bugs
 
