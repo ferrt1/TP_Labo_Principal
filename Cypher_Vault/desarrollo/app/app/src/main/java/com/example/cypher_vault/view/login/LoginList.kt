@@ -67,7 +67,7 @@ fun NavigationLogin(authenticationController: AuthenticationController) {
 
 
     selectedPersona?.let { user ->
-        RegistrationCameraScreen(
+        loginCamera(
             authenticationController = authenticationController,
             user = user
         )
@@ -76,7 +76,7 @@ fun NavigationLogin(authenticationController: AuthenticationController) {
 }
 
 @Composable
-fun RegistrationCameraScreen(authenticationController: AuthenticationController, user: String) {
+fun loginCamera(authenticationController: AuthenticationController, user: String) {
     val context = LocalContext.current
     val cameraProviderFuture = remember { ProcessCameraProvider.getInstance(context) }
     val lifecycleOwner = LocalLifecycleOwner.current
