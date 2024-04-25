@@ -305,7 +305,11 @@ Para registrar los cambios, emplearemos diversas herramientas y procedimientos:
 * *TensorFlow Lite* TensorFlow Lite es un marco de trabajo ligero desarrollado por Google que permite ejecutar modelos de aprendizaje automático en dispositivos móviles e integrados.
 * *SQLite:* SQLite es un sistema de gestión de bases de datos relacional (RDBMS) ligero, rápido, autónomo y de código abierto.
 
-==== Visual Studio Code
+NOTE: *Continua:* por motivos de estetica y facil acceso se implementa dentro del indice Herramientas / Implementacion.
+
+== Herramientas / Implementacion
+
+=== Visual Studio Code
 
 image::imagenAdoc/logovisualstudio.png[100,100]
 
@@ -315,11 +319,11 @@ Fuente: link:https://visualstudio.microsoft.com/es/[Microsoft.com/VisualStudio]
 
 Editor de código fuente independiente que se ejecuta en Windows, macOS y Linux. El IDE de Visual Studio es una plataforma de lanzamiento creativa que puede utilizar para editar, depurar y compilar código y, finalmente, publicar una aplicación. Además del editor y depurador estándar que ofrecen la mayoría de IDE, Visual Studio incluye compiladores, herramientas de completado de código, diseñadores gráficos y muchas más funciones para mejorar el proceso de desarrollo de software.
 
-==== Android Studio
+=== Android Studio 
 
 image::imagenAdoc/logoandroidstudio.png[200,200]
 
-Fuente: link:https://developer.android.com/studio?hl=es-419[Android.com/Developer]
+Fuente: link:https://developer.android.com/studio?hl=es-419[android.com/developer]
 
 *Es la herramienta principal del desarrollo de la aplicacion, el mismo es un IDE robusto el cual cuenta con varias funcionalidades las cuales acompañan las etapas de desarrollo, depuracion, testeo e implementacion.*
 
@@ -337,15 +341,37 @@ Variedad de marcos de trabajo y herramientas de prueba
 
 NOTE: *Aclaracion:* Dentro del equipo de desarrollo y testeo utilizamos los mismos dispositivos celulares para emular y testear la implementacion/desarrollo, ya que en algunos casos es imposible por las capacidades computacionales de los equipos ( computadoras ) de cada uno de los integrantes.
 
-===== Implementacion
+==== IMPLEMENTACION
 
 *En esta seccion se pasa a detallar cada una de las partes del desarrollo, junto a sus herramientas, ya que dentro de android studio como se detallo anteriormente se encuentran funcionalidades especificas.*
 
 Para comenzar nos encontramos con el ultimo IDE estable lanzado por Android, el cual es la version Iguana, luego se creo un proyecto con la version minima compatible recomendada por el mismo. Teniendo esto en cuenta nuestra aplicacion es compatible desde Android 7 hasta la ultima version lanzada al dia de hoy.
 
-NOTE: *¿Por que no versiones anteriores?:* Porque esto genera problemas en las dependencias ( funcionalidades ofrecidas por android ) disponibles, lo cual provoca que la aplicacion pierda posibilidades de escalado, ya que hay versiones anteriores que resultan incompatibles con las mismas dependencias.
+NOTE: *¿Por que no versiones anteriores?:* Porque esto genera problemas en las dependencias ( funcionalidades ofrecidas por android ) disponibles, lo cual provoca que la aplicacion pierda posibilidades de escalado, ya que hay versiones anteriores que resultan incompatibles con las mismas dependencias..
 
-====== INTERFAZ
+*Modelo de diseño*
+
+Fuente: link:https://barcelonageeks.com/patron-de-arquitectura-mvvm-model-view-viewmodel-en-android/[barcelonageeks.com/mvvm]
+
+
+* Al organizar los códigos de acuerdo con un patrón de diseño, ayuda en el mantenimiento del software. Al tener conocimiento de todas las partes lógicas cruciales de la aplicación de Android , es más fácil agregar y eliminar funciones de la aplicación. Además, los patrones de diseño también aseguran que todos los códigos se cubran en las pruebas unitarias sin la interferencia de otras clases. Model — View — ViewModel (MVVM) es el patrón de arquitectura de software reconocido en la industria que supera todos los inconvenientes de los patrones de diseño MVP y MVC . MVVM sugiere separar la lógica de presentación de datos (vistas o interfaz de usuario) de la parte lógica empresarial central de la aplicación. 
+
+* Las capas de código separadas de MVVM son:
+** *Modelo:* esta capa es responsable de la abstracción de las fuentes de datos. Model y ViewModel trabajan juntos para obtener y guardar los datos.
+** *Vista:* El propósito de esta capa es informar al ViewModel sobre la acción del usuario. Esta capa observa el ViewModel y no contiene ningún tipo de lógica de aplicación.
+** *ViewModel:* Expone esos flujos de datos que son relevantes para la Vista. Además, sirve como enlace entre el Modelo y la Vista.
+
+image::imagenAdoc/mvvm.png[700,700]
+
+* El patrón MVVM tiene algunas similitudes con el patrón de diseño MVP (Modelo, Vista, Presentador) ya que ViewModel desempeña el rol de Presentador. Sin embargo, los inconvenientes del patrón MVP han sido resueltos por MVVM de las siguientes maneras:
+
+** ViewModel no contiene ningún tipo de referencia a la Vista.
+** Existe una relación de muchos a 1 entre View y ViewModel.
+** No hay métodos de activación para actualizar la Vista.
+
+==== INTERFAZ
+
+image::imagenAdoc/icondisplay.jpg[100,100]
 
 Fuente: link:https://developer.android.com/develop/ui/compose[android.com/compose]
 
@@ -464,4 +490,256 @@ fun loginCamera(authenticationController: AuthenticationController, user: String
 fun CloseCameraButton(cameraProvider: ProcessCameraProvider, authenticationController: AuthenticationController) # <1>
 ----
 <1> La función `CloseCameraButton` permite al usuario cerrar la cámara frontal si se ha seleccionado una cuenta incorrecta. Ofrece una interfaz para regresar de manera rápida al inicio de sesión, específicamente a la pantalla de `NavigationLogin`, facilitando el desplazamiento dentro de la aplicación.
+
+==== ALMACENAMIENTO
+
+image::imagenAdoc/icondatabase.png[100,100]
+
+
+*Guardar datos en una base de datos es ideal para los datos estructurados o que se repiten, como la información de contacto. En esta página, en la que se asume que estás familiarizado con las bases de datos SQL en general, encontrarás información que te ayudará a comenzar a usar bases de datos SQLite en Android. Las APIs que necesitarás para utilizar una base de datos en Android están disponibles en el paquete android.database.sqlite.*
+
+*Consideramos utilizar:* la libreria Room de Android Studio.
+
+Fuente : link:https://developer.android.com/training/data-storage/room?hl=es-419#kts[android.com/room]
+
+Fuente : link:https://developer.android.com/training/data-storage/room/defining-data?hl=es-419[android.com/room/definir_datos]
+
+Fuente : link:https://developer.android.com/training/data-storage/room/accessing-data?hl=es-419[android.com/room/accesando_datos]
+
+Fuente : link:https://developer.android.com/reference/kotlin/androidx/room/RoomDatabase?hl=en[android.com/room/interface]
+
+Fuente : link:https://medium.com/@sdranju/step-by-step-how-to-setting-up-and-implementing-room-database-aeb211c56702[medium.com/tutorial_room]
+
+WARNING: *¿Por que Room?:* Si bien estas APIs son potentes, se caracterizan por ser bastante específicas y su uso requiere de mucho tiempo y esfuerzo. No hay verificación en tiempo de compilación de las consultas de SQL sin procesar. A medida que cambia tu grafo de datos, debes actualizar manualmente las consultas de SQL afectadas. Este proceso puede llevar mucho tiempo y causar errores.
+Debes usar mucho código estándar para convertir entre consultas de SQL y objetos de datos. Por estos motivos, usamos la Biblioteca de persistencias Room como una capa de abstracción para acceder a la información de las bases de datos SQLite la app.
+
+*Componentes principales*
+
+* Estos son los tres componentes principales de Room:
+
+** La clase de la base de datos que contiene la base de datos y sirve como punto de acceso principal para la conexión subyacente a los datos persistentes de la app.
+
+** Las entidades de datos que representan tablas de la base de datos de tu app.
+
+** Los objetos de acceso a datos (DAOs) que proporcionan métodos que tu app puede usar para consultar, actualizar, insertar y borrar datos en la base de datos.
+
+*Implementacion dentro de Android Studio*
+
+Dentro de Android Studio es necesario la implementacion de de dependencias, especificamente dentro del  archivo `build.gradle`. A continuacion los agregados dentro la misma.
+
+.Gradle module app
+[source,kotlin]
+----
+plugins {
+    kotlin("kapt") # <1>
+}
+dependencies {
+  implementation("androidx.room:room-runtime:2.6.1") # <2>
+  annotationProcessor("androidx.room:room-compiler:2.6.1") # <3>
+	kapt("androidx.room:room-compiler:2.6.1") # <4>
+}
+----
+<1> Libreria encargada de las anotaciones dentro de kotlin, se implementa para la correcta interpretacion de la anotacion 4.
+<2> Declaracion de la dependencia Room
+<3> Declaracion de las anotacionesde de Room.
+<4> Agregado de las anotaciones dentro de Room.
+
+*Paquete database*
+
+* El mismo consta de siete archivos, como se nombro anteriormente, la base de datos en Room consta de 3 partes principales, la clase de la base de datos, las entidades de datos (tablas) y los objetos de acceso a datos (DAO) ( Interfaces en las cuales estan descriptas las querys ). 
+
+* Los archivos son:
+** AppDatabase.kt
+** User.kt
+** UserDao.kt
+** Images.kt
+** ImagesDao.kt
+** ImagesRegister.kt
+** ImagesRegisterDao.kt
+
+
+.AppDatabase.kt
+[source, kotlin]
+----
+@Database(entities = [User::class, Images::class, ImagesRegister::class], version = 2) # <1>
+abstract class AppDatabase : RoomDatabase() {
+    abstract fun userDao(): UserDao
+    abstract fun imageDao(): ImageDao
+    abstract fun imageRegisterDao(): ImageRegisterDao
+}
+----
+<1> Creacion/Definicion de una base de datos con tres tablas (Usuarios, imagenes y registro de imagenes).
+
+.User.kt
+[source, kotlin]
+----
+@Entity
+data class User(
+    @PrimaryKey val uid: Long,
+    @ColumnInfo(name = "first_name") val firstName: String?,
+    @ColumnInfo(name = "email") val email: String?,
+    @ColumnInfo(name = "entry_date") val entryDate: Long, // Fecha de ingreso
+    @ColumnInfo(name = "pin") val pin: String? // PIN del usuario
+) # <1>
+----
+<1> Definicion de la entidad User
+
+.UserDao.kt
+[source, kotlin]
+----
+@Dao
+interface UserDao { # <1>
+    @Query("SELECT * FROM user")
+    fun getAll(): List<User>
+
+    @Query("SELECT * FROM user WHERE uid IN (:userIds)")
+    fun loadAllByIds(userIds: IntArray): List<User>
+
+    @Query("SELECT * FROM user WHERE first_name LIKE :first AND " +
+            "email LIKE :last LIMIT 1")
+    fun findByName(first: String, last: String): User
+
+    @Insert
+    fun insert(user: User) // Método para insertar un solo usuario
+
+    @Query("SELECT * FROM user WHERE email = :email LIMIT 1")
+    fun findByEmail(email: String): User? // Método para buscar un usuario por su correo electrónico
+
+    @Delete
+    fun delete(user: User)
+
+    @Insert
+    fun insertAll(vararg users: User)
+
+    @Query("SELECT * FROM user WHERE uid = :userId")
+    fun getUserById(userId: Int): User?
+}
+----
+<1> Interfaz de la entidad User
+
+.Images.kt
+[source, kotlin]
+----
+@Entity(
+    tableName = "images",
+    foreignKeys = [ForeignKey(
+        entity = User::class,
+        parentColumns = ["uid"],
+        childColumns = ["user_id"],
+        onDelete = ForeignKey.CASCADE
+    )]
+)
+data class Images(
+    @PrimaryKey(autoGenerate = true) val id: Long = 0,
+    val imageData: ByteArray,
+    val user_id: Int
+) # <1>
+----
+<1> Definicion de la entidad Images, la misma es para el almacenamiento de las imagenes privadas ( galeria principal de la aplicacion ).
+
+.ImageDao.kt
+[source, kotlin]
+----
+@Dao
+interface ImageDao { # <1>
+    @Insert
+    fun insertImage(images: Images)
+
+    @Query("SELECT * FROM images WHERE user_id = :userId")
+    fun getImagesForUser(userId: Int): List<Images>
+
+    // Otros métodos según sea necesario
+}
+----
+<1> Interfaz de la entidad Images
+
+.ImagesRegister.kt
+[source, kotlin]
+----
+@Entity(
+    tableName = "images_register",
+    foreignKeys = [ForeignKey(
+        entity = User::class,
+        parentColumns = ["uid"],
+        childColumns = ["user_id"],
+        onDelete = ForeignKey.CASCADE
+    )]
+)
+data class ImagesRegister(
+    @PrimaryKey(autoGenerate = true) val id: Long = 0,
+    val imageData: ByteArray,
+    val user_id: Int // referencia al usuario que posee la imagen
+) # <1>
+----
+<1> Definicion de la entidad  ImagesRegister, aqui se almacenaran las imagenes de registro del usuario.
+
+.ImagesRegisterDao.kt
+[source, kotlin]
+----
+@Dao
+interface ImageRegisterDao { # <1>
+    @Insert
+    fun insertImage(imagesRegister: ImagesRegister)
+
+    @Query("SELECT * FROM images WHERE user_id = :userId")
+    fun getImagesForUser(userId: Long): List<ImagesRegister>
+}
+----
+<1> Interfaz de la entidad ImagesRegister.
+
+*Paquete model > dbmanager*
+
+* Se define la interfaz DataBaseManager la cual contiene las tres interfases principales UserDao, ImagesDao e ImagesRegisterDao, la misma se implementa para aislar y organizar los llamados aparte de facilitar la inicializacion de la base de datos.
+
+.DataBaseManager.kt
+[source, kotlin]
+----
+object DatabaseManager {
+    private lateinit var database: AppDatabase
+
+    fun initialize(context: Context) {
+        database = Room.databaseBuilder(
+            context.applicationContext,
+            AppDatabase::class.java, "my_database"
+        ).build()
+    }
+
+    // Métodos relacionados con la tabla de usuarios
+    fun getAllUsers(): List<User> {
+        return database.userDao().getAll()
+    }
+
+    fun getUserById(userId: Int): User? {
+        return database.userDao().getUserById(userId)
+    }
+
+    fun insertUser(user: User) {
+        database.userDao().insert(user)
+    }
+
+    fun deleteUser(user: User) {
+        database.userDao().delete(user)
+    }
+
+    // Métodos relacionados con la tabla de imágenes
+    fun insertImage(image: Images) {
+        database.imageDao().insertImage(image)
+    }
+
+    fun getImagesForUser(userId: Int): List<Images> {
+        return database.imageDao().getImagesForUser(userId)
+    }
+
+    // Métodos relacionados con la tabla de registros de imágenes
+    fun insertImageRegister(imageRegister: ImagesRegister) {
+        database.imageRegisterDao().insertImage(imageRegister)
+    }
+
+    fun getImageRegistersForImage(user_id: Long): List<ImagesRegister> {
+        return database.imageRegisterDao().getImagesForUser(user_id)
+    }
+
+    // Otros métodos según sea necesario para otras operaciones con usuarios, imágenes e imágenes registros
+}
+----
 
