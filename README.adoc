@@ -287,15 +287,18 @@ Se entregará un prototipo de la interfaz funcional para el registro, la autenti
 
 === Riesgos
 
-* Baja de un integrante del equipo.
-* Superposición de tareas fuera de la materia.
-* Enfermedad de un integrante.
-* Dificultad en la comprensión de nuevas tecnologías.
-* Impedimento con las herramientas de trabajo.
-* Planificación inadecuada por falta de experiencia.
-* Conflicto en el equipo en cuanto a comunicación.
-* Cambios excesivos de los requerimientos.
-* Retrasos en el desarrollo.
+* R1 Falta de claridad en los objetivos
+* R2 Escasez de práctica en la gestión de proyectos
+* R3 Constantes modificaciones en los requerimientos
+* R4 Ausencia de un miembro del equipo
+* R5 Tensiones comunicativas dentro del equipo
+* R6 Estimación  erroneas debido a la falta de experiencia
+* R7 La curva de aprendizaje en nuevas tecnologias podria afectar la eficiencia de los desarrolladores
+* R8 Variación en los tiempos de dedicación entre los miembros del equipo
+
+
+
+
   
 === Entregables
 
