@@ -352,15 +352,15 @@ La adecuada administración de cambios es crucial para el éxito de cualquier pr
 
 Para documentar los cambios se emplearán:
 
-*Informe de avance: se mantendrá actualizado un informe de avance que puede incluir un registro de todos los cambios. Además, se registrarán los cambios en las minutas de las reuniones.
+* Informe de avance: se mantendrá actualizado un informe de avance que puede incluir un registro de todos los cambios. Además, se registrarán los cambios en las minutas de las reuniones.
 
-*Trello: como se mencionó previamente, será nuestra principal plataforma para el seguimiento y gestión de cambios.
+* Trello: como se mencionó previamente, será nuestra principal plataforma para el seguimiento y gestión de cambios.
 
-*Aprobación o rechazo de cambios: Un comité de cambios evaluará cada solicitud de cambio basándose en los siguientes factores:
+Aprobación o rechazo de cambios: Un comité de cambios evaluará cada solicitud de cambio basándose en los siguientes factores:
 
-**Cronograma: se considerará si el cambio afecta al cronograma del proyecto. Aquellos cambios que impacten serán evaluados en función de su urgencia y prioridad.
+** Cronograma: se considerará si el cambio afecta al cronograma del proyecto. Aquellos cambios que impacten serán evaluados en función de su urgencia y prioridad.
 
-**Alcance: se analizará si el cambio está en línea con los objetivos y el alcance del proyecto.
+** Alcance: se analizará si el cambio está en línea con los objetivos y el alcance del proyecto.
 
 
 === Indicadores a Utilizar
