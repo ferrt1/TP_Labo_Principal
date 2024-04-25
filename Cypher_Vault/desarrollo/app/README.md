@@ -42,7 +42,7 @@ Las funciones `validateMail()`, `validateName()` y `validateFields` verifican la
 
 <br>
 
-### Paquete View > Registration
+### Paquete View > Navigation
 
 ---
 
@@ -68,6 +68,9 @@ Empieza en register por predeterminado y luego va cambiando, toma como parámetr
 
 <br>
 <hr>
+
+
+### Paquete View > Registration
 
 #### InitialScreen.kt
 <hr>
