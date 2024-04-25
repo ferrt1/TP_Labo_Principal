@@ -209,6 +209,13 @@ Los pesos se clasifican en base a:
 | 1.3 | Definición de requerimientos | Definir los requerimientos del proyecto | Documentación | Todo el equipo | 3 
 | 1.4 | Creación del backlog | Crear backlog | Planificación  | Scrum Master | 3 
 | 1.5 | Documentación inicial | Crear la documentación | Planificación | Todo el equipo | 3 
+| 1.5.1| Asignación de Story Points | Estimar esfuerzo de los requerimientos | Planificación, Estimación | Scrum Master | 3 
+| 1.6 | Administración de cambio | Planificar el flujo de los cambios | Planificación | Scrum Master | 2
+| 1.7 | Gestión | Gestión general de indicadores y comunicación del equipo | Planificación, Gestión | 3
+| 1.7.1 | Capacitación Scrum Master | Capacitación en herramientas de gestión e indicadores | Capacitación | Scrum master | 3
+| 1.7.2 | Ceremonias | Planificación de las ceremonias de Scrum. Sprint planning, dailys, Sprint review, Sprint retrospective | 3
+| 1.7.3 | Indicadores | Control de inidcadores generales | Planificación, Gestión | Scrum Master | 3
+| 1.7.4 | Riesgos | Control e identificación de riesgos | Planificación | Scrum master | 2
 | 2 | Desarrollo de Interfaz | Desarrollar la interfaz | Desarrollo | Equipo de desarrollo | 2 
 | 2.1 | Capacitación del Equipo de Desarrollo | Capacitar al equipo con las tecnologías a utilizar | Capacitación | Equipo de desarrollo | 2 
 | 2.2 | Registro | Crear interfaz registro | Desarrollo | Equipo de desarrollo | 2 
@@ -219,6 +226,9 @@ Los pesos se clasifican en base a:
 | 3 | Desarrollo backend | Desarrollar la lógica de la aplicación | Desarrollo | Equipo de desarrollo | 3 
 | 3.1 | Capacitación del equipo de desarrollo | Capacitar al equipo de desarrollo con las tecnologías a utilizar | Capacitación | Equipo de desarrollo | 2 
 | 3.2 | Almacenamiento de imágenes | Almacenar las imágenes en el dispositivo del usuario | Desarrollo | Equipo de desarrollo | 2 
+| 3.2.2 | Guardar imágenes | Guadar imágenes en la base de datos | Desarrollo | Equipo de desarrollo | 3
+| 3.2.2.1 | Imagen registro | Guardar imagenes del registro facial | Desarrollo | Equipo de desarrollo | 3
+| 3.2.2.2 | Imagen vault | Guardar imagenes para la galeria | Desarrollo | Equipo de desarrollo | 3
 | 3.2.1 | Creación de Base de Datos | Crear base de datos | Desarrollo | Equipo de desarrollo | 2 
 | 3.3 | Crear algoritmo reconocimiento facial | Implementación de lógica de reconocimiento facial | Desarrollo | Equipo de desarrollo | 3 
 | 3.4 | Desarrollo parte Vault | Implementar aplicación de galería privada | Desarrollo | Equipo de desarrollo | 3 
