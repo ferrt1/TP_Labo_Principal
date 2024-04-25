@@ -56,17 +56,16 @@ Este documento tiene como objetivo explicar cuáles son los pasos a seguir  en e
 
 == Definición de Roles
 
-- **Líder del Proyecto**: Es el individuo responsable de administrar el proyecto.
+- **Product Owner**: Es el individuo que representa al cliente en el proyecto.
 - **Scrum Master**: Supervisa el progreso del proyecto y se asegura de que se cumplan los plazos.
-- **Desarrolladores**: Encargados de la codificación y la implementación de la aplicación.
-- **Tester**: Responsable de probar la aplicación en diferentes escenarios y reportar errores.
+- **Development team**: Encargados de la codificación, el testeo y la implementación de la aplicación.
 
 == Equipo de Trabajo y Roles
 
 [cols=3*]
 |===
 | Nombre | Rol Primario | Rol Secundario
-| Profesor | Líder del Proyecto | Sponsor
+| Francisco Orozco De La Hoz | Product Owner | -
 | Flavio Ybarra | Scrum Master | Tester
 | Alejandro Moras | Desarrollador | UX/UI
 | Fernando Trejo | Desarrollador | UX/UI
@@ -125,6 +124,7 @@ Posteriormente el ingreso del usuario se realizará comparando la foto tomada co
 ** Registro por reconocimiento facial.
 ** Login por reconocimiento fácil.
 ** Almacenamiento de imágenes en el dispositivo.
+** Registro Alternativo
 
 * *Fuera del alcance:*
 
@@ -132,13 +132,15 @@ Posteriormente el ingreso del usuario se realizará comparando la foto tomada co
 ** Varios idiomas.
 ** Registro biometrico en oscuridad.
 ** No contemplamos diseño de la aplicacion con interfaz en vertical.
+** Multiples formatos de archivos (videos, audios, etc)
 
 NOTE: *Poca información:* sobre la implementación de la app no podemos confirmar las funcionalidades que quedan por fuera del alcance.
 
 === Plan de Comunicaciones
 
-Para facilitar la comunicación utilizamos la plataforma WhatApps y Discord, ya que nos proporcionan un canal de comunicación instantánea y versátil, que permite una interacción ágil entre los miembros del equipo. Esto nos permite compartir actualizaciones rápidas, discutir ideas y mantenernos conectados en tiempo real.
-Para gestionar las tareas y el progreso del proyecto, se utilizará Trello. Nos permitió crear un flujo de trabajo estructurado y asignar tareas, asegurando que cada miembro del equipo esté al tanto de sus responsabilidades y plazos.
+Para facilitar la comunicación, empleamos la plataforma WhatsApp, que nos brinda un canal de comunicación instantánea y versátil. Esto nos permite interactuar ágilmente entre los miembros del equipo, compartir actualizaciones rápidas y discutir ideas en tiempo real. Además, utilizamos Discord para llevar a cabo reuniones diarias y charlas técnicas.
+En cuanto a la gestión de tareas y el seguimiento del proyecto, recurrimos a Trello. Esta herramienta nos permitió crear un flujo de trabajo estructurado y asignar tareas, asegurando que cada miembro del equipo estuviera al tanto de sus responsabilidades y plazos.
+Adicionalmente, mantenemos reuniones presenciales con nuestro product owner para garantizar que nuestro producto final cumpliera con los requisitos del cliente. Además de la posibilidad de mantener contacto a través de Telegram
 
 
 === Requerimientos
@@ -179,16 +181,32 @@ Una vez explicado las clasificación de requerimientos funcionales,  se hará a 
 
 *** El sistema deberá permitir el ALTA/MODIFICACIONES de las personas a autenticar.
 *** El usuario podra modificar su informacion personal o registrar otra foto de su rostro.
-    
+
+** Galeria
+
+*** Ver imagenes de la tablet en la aplicación.
+*** Agregar imagenes de la galeria de la tablet a la galeria de la aplicación.
+*** Las imagenes de la aplicación no se ven dentro de la galeria de la tablet
+
+** Deseables
+
+*** Re-Autentificación de usuario mientras se encuentra en la aplicación.
+*** Comprobar que el usuario este frente al dispositivo cada cierto tiempo.
+*** Cuando se detecta otro rostro en la captura de la cámara se debe bloquear la aplicación.
+*** Capturar imagenes dentro de la aplicación
+*** Implementación de la aplicación en vista horizontal
+
 * No Funcionales:
 ** Usabilidad:
 *** Si el usuario desea entrar y no esta registrado se le debe mostrar un mensaje de "acceso denegado, primero necesitas registrarte"
 *** Si el usuario desea ingresar a su cuenta con una foto u otro rostro (no asociado a su cuenta) se le debe mostrar un mensaje de "acceso denegado".
 *** Si el usuario pudo ingresar a su cuenta se le debe mostrar un mensaje de "acceso permitido".
+*** Por cada interfaz en la que el usuario se encuentre el sistema debe mostrar el mensaje adecuado correspondiente a la interacción del mismo con la aplicación.
     
 ** Rendimiento   
 *** El sistema debe ser eficiente en el uso de la batería, la memoria y el procesador de la Tablet.
-    
+
+
 === WBS
 
 image::Recursos/WBSRF1.jpg[700,700]
