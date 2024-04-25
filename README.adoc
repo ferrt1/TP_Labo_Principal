@@ -296,7 +296,7 @@ Se entregará un prototipo de la interfaz funcional para el registro, la autenti
 * R7 La curva de aprendizaje en nuevas tecnologias podria afectar la eficiencia de los desarrolladores
 * R8 Variación en los tiempos de dedicación entre los miembros del equipo
 
-
+(imagen aqui)
 
 
   
