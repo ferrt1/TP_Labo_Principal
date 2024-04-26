@@ -284,6 +284,9 @@ Se entregará un prototipo de la interfaz funcional para el registro, la autenti
 * *Capacitación del equipo en las tecnologías:* 10hs por cada desarrollador y tester.
 * *Desarrollo:* 25hs por cada desarrollador.
 * *Testing:* 2hs por tester.
+* *Ceremonias y reuniones técnicas:* 15hs con todo el equipo presente
+
+image::Recursos/HORAS.PNG[700,700]
 
 === Riesgos
 
