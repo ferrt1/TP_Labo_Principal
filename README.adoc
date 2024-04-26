@@ -349,6 +349,8 @@ Ejecutar una gestión eficaz de errores y pruebas es un componente esencial en u
 WARNING: *Haremos un seguimiento de los errores en una planilla de excel en un drive compartido con todo el equipo en el cual se detalla fecha de descubrimiento, funcionalidad afectada, tester que lo identifico, desarrollador responsable, detalle del bug, estado y fecha de cierre.
 Los categorizaremos en tres niveles de acuerdo a su severidad: bajo, medio o alto. Esto nos permitirá determinar cuáles son las dificultades más urgentes y cuáles son de menor prioridad.*
 
+image::Recursos/Manejo de bugs - diagrama.png[700,700]
+
 === Administración de Cambios
 
 La adecuada administración de cambios es crucial para el éxito de cualquier proyecto. Los cambios pueden surgir por distintos motivos, como nuevos requerimientos del cliente, descubrimientos durante el desarrollo, o variaciones en las condiciones del mercado.
@@ -365,13 +367,22 @@ Aprobación o rechazo de cambios: Un comité de cambios evaluará cada solicitud
 
 ** Alcance: se analizará si el cambio está en línea con los objetivos y el alcance del proyecto.
 
+image::Recursos/diagrama de flujo cambios.png[700,700]
 
 === Indicadores a Utilizar
 
 * Funcionalidad Completa
+
+image::Recursos/funcionalidad_completa_y_nivel.PNG[700,700]
+
 * Nivel de Calidad
 * Evolución de la Prueba
+
+image::Recursos/Evolucion_de_la_prueba.PNG[700,700]
+
 * Burndown Chart
+
+image::Recursos/Burndown_chart.PNG[700,700]
 
 === Tecnologías
 
