@@ -369,7 +369,7 @@ Aprobación o rechazo de cambios: Un comité de cambios evaluará cada solicitud
 
 image::Recursos/diagrama de flujo cambios.png[700,700]
 
-=== Indicadores a Utilizar
+=== Indicadores
 
 * Funcionalidad Completa
 
