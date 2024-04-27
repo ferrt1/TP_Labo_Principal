@@ -1,0 +1,176 @@
+
+
+
+Conceptos: 
+
+* Reconocimiento facial: compara dos caras y nos dice si son o no de la misma persona.
+
+* Seguimiento facial: seguimiento del rostro dentro la toma
+
+* Detección de landmarks: son los puntos de interes del rostro, como ojos la barbilla orejas orejas etc.
+
+* Clasificacion: si esta con los ojos abiertos la boca abierta etc.
+
+/////////////////////////////////////////////////////////////
+https://baturamobile.com/blog/reconocimiento-facial-apps-procesamiento-imagen-2/ <<<< esta en version anterior de android lo remarcable esta que usa vision una libreria de google
+/////////////////////////////////////////////////////////////
+
+Documentacion oficial de Google:
+
+https://developers.google.com/ml-kit/vision/face-detection/android?hl=es-419
+
+* Para empaquetar el modelo con tu app, haz lo siguiente:
+
+dependencies {
+  // ...
+  // Use this dependency to bundle the model with your app
+  implementation 'com.google.mlkit:face-detection:16.1.6'
+}
+
+
+* Para usar el modelo en los Servicios de Google Play:
+
+dependencies {
+  // ...
+  // Use this dependency to use the dynamically downloaded model in Google Play Services
+  implementation 'com.google.android.gms:play-services-mlkit-face-detection:17.1.0'
+}
+
+
+* Si eliges usar el modelo en los Servicios de Google Play, puedes configurar tu app para que descargue automáticamente el modelo al dispositivo después de instalar la app desde Play Store. Para ello, agrega la siguiente declaración al archivo AndroidManifest.xml de la app:
+
+
+<application ...>
+      ...
+      <meta-data
+          android:name="com.google.mlkit.vision.DEPENDENCIES"
+          android:value="face" >
+      <!-- To use multiple models: android:value="face,model2,model3" -->
+</application>
+
+*** Lineamientos para imágenes de entrada
+
+Para el reconocimiento facial, debes usar una imagen con una dimensión de al menos 480 × 360 píxeles. Para que el Kit de AA detecte rostros con precisión, las imágenes de entrada deben contener rostros representados con datos de píxeles suficientes. En general, cada rostro que quieras detectar en una imagen debe tener al menos 100 x 100 píxeles. Si deseas detectar los contornos de los rostros, ML Kit requiere una entrada de mayor resolución: cada rostro debe tener al menos 200 x 200 píxeles.
+
+Si detectas rostros en una aplicación en tiempo real, te recomendamos que también consideres las dimensiones generales de las imágenes de entrada. Las imágenes más pequeñas se pueden procesar más rápido. Para reducir la latencia, captura imágenes con resoluciones más bajas, pero ten en cuenta los requisitos de precisión que se mencionaron anteriormente y asegúrate de que el rostro del sujeto ocupe la mayor parte posible de la imagen.
+
+*** Puntos de referencia
+
+Un punto de referencia es un lugar de interés en un rostro. El ojo izquierdo, el ojo derecho y la base de la nariz son ejemplos de puntos de referencia.
+
+ML Kit detecta rostros sin buscar puntos de referencia. La detección de puntos de referencia es un paso opcional que está inhabilitado de forma predeterminada.
+
+En la siguiente tabla, se resumen todos los puntos de referencia que se pueden detectar dado el ángulo Euler Y de un rostro asociado:
+
+Ángulo Euler Y	Puntos de referencia detectables
+
+Menos de -36 grados	ojo izquierdo, boca izquierda, oreja izquierda, base de la nariz, mejilla izquierda
+
+De -36 a -12 grados	boca izquierda, base de la nariz, parte inferior de la boca, ojo derecho, ojo izquierdo, mejilla izquierda, punta de la oreja izquierda
+
+De -12 a 12 grados	ojo derecho, ojo izquierdo, base de la nariz, mejilla izquierda, mejilla derecha, boca izquierda, boca derecha, parte inferior de la boca
+
+De 12 a 36 grados	boca derecha, base de la nariz, parte inferior de la boca, ojo izquierdo, ojo derecho, mejilla derecha, punta de la oreja derecha
+
+Más de 36 grados	ojo derecho, boca derecha, oreja derecha, base de la nariz, mejilla derecha
+
+Cada punto de referencia detectado incluye su posición asociada en la imagen.
+
+** Contornos
+
+Un contorno es un conjunto de puntos que representan la forma de una característica facial. Se basa en puntajes que arroja la libreria por ejemplo :
+
+Óvalo de rostro	36 puntos	
+Labio superior (parte superior)	11 puntos
+Ceja izquierda (parte superior)	5 puntos	
+Labio superior (parte inferior)	9 puntos
+Ceja izquierda (parte inferior)	5 puntos	
+Labio inferior (parte superior)	9 puntos
+Ceja derecha (parte superior)	5 puntos	
+Labio inferior (parte inferior)	9 puntos
+Ceja derecha (parte inferior)	5 puntos	
+Puente nasal	2 puntos
+Ojo izquierdo	16 puntos	
+Parte inferior de la nariz	3 puntos
+Ojo derecho	16 puntos
+Mejilla izquierda (centro)	1 punto
+Mejilla derecha (centro)	1 punto
+
+Cuando obtienes todos los contornos de un rostro a la vez, se obtiene un array de 133 puntos, que se asignan a los contornos de los rasgos como se muestra a continuación:
+
+Índices de contornos de características
+0-35	Óvalo de rostro
+36-40	Ceja izquierda (parte superior)
+41-45	Ceja izquierda (parte inferior)
+46-50	Ceja derecha (parte superior)
+51-55	Ceja derecha (parte inferior)
+56-71	Ojo izquierdo
+72-87	Ojo derecho
+88-96	Labio superior (parte inferior)
+97-105	Labio inferior (parte superior)
+106-116	Labio superior (parte superior)
+117-125	Labio inferior (parte inferior)
+126, 127	Puente nasal
+128-130	Parte inferior de la nariz (ten en cuenta que el punto central está en el índice 128)
+131	Mejilla izquierda (centro)
+132	Mejilla derecha (centro)
+
+** Clasificación
+
+La clasificación determina si se encuentra alguna característica facial. Actualmente, el Kit de AA es compatible con dos clasificaciones: ojos abiertos y sonriendo.
+
+La clasificación es un valor de certeza. Indica la confianza en que una característica facial está presente. Por ejemplo, un valor de 0.7 o más para la clasificación de sonrisa indica que es probable que una persona esté sonriendo.
+
+Ambas clasificaciones se basan en la detección de puntos de referencia.
+
+También ten en cuenta que las clasificaciones "ojos abiertos" y "sonriente" solo funcionan para rostros frontales, es decir, rostros con un pequeño ángulo de Euler Y (entre -18 y 18 grados).
+
+***Tamaño mínimo de la cara
+
+El tamaño mínimo del rostro corresponde al tamaño deseado, expresado como la proporción entre el ancho de la cabeza y el ancho de la imagen. Por ejemplo, el valor de 0.1 significa que el rostro más pequeño que se debe buscar es aproximadamente el 10% del ancho de la imagen que se está buscando.
+
+El tamaño mínimo de rostro es una compensación entre el rendimiento y la precisión: establecer un tamaño mínimo más pequeño permite que el detector encuentre rostros más pequeños, pero la detección tardará más tiempo; si lo estableces más grande, es posible que se excluyan los rostros más pequeños, pero se ejecutará más rápido.
+
+El tamaño mínimo del rostro no es un límite estricto; el detector podría encontrar rostros un poco más pequeños que lo especificado.
+//////////////////////////////////////////
+https://developer.android.com/media/camera/camerax?hl=es-419
+
+** Descripción general de CameraX   
+
+CameraX es una biblioteca de Jetpack creada para que el desarrollo de una apps de cámara sea más fácil. Para las apps nuevas, te recomendamos que comiences con CameraX. Proporciona una API coherente y fácil de usar que funcione en la gran mayoría de los dispositivos Android y ofrece retrocompatibilidad con Android 5.0 (nivel de API 21).
+
+** Facilidad de uso
+
+CameraX destaca los casos de uso, que te permiten concentrarte en la tarea que debes completar en lugar de administrar variaciones específicas del dispositivo. Se admiten los casos de uso de la cámara más comunes:
+
+Vista previa: Permite obtener una imagen en la pantalla.
+
+Análisis de imágenes: Permite acceder a un búfer sin inconvenientes a fin de utilizarlo en tus algoritmos, por ejemplo, para pasar contenido a ML Kit.
+
+Captura de imágenes: Permite guardar imágenes.
+
+Captura de video: Permite guardar videos y audio.
+
+https://developer.android.com/codelabs/camerax-getting-started?hl=es-419#0 <<< Android Studio anterior
+
+https://medium.com/@deepugeorge2007travel/mastering-camerax-in-jetpack-compose-a-comprehensive-guide-for-android-developers-92ec3591a189 <<<< tiene cosas interesantes que se necesitan
+
+https://developers.google.com/ml-kit/vision/face-detection/android?hl=es-419 <<< este me parece adecuado
+
+https://github.com/android/camera-samples/tree/main/CameraX-MLKit <<<< CameraX Ml Kit
+
+///////////////////////////////////////////////////////////////////
+https://developer.android.com/media/camera/camerax/mlkitanalyzer?hl=es-419
+
+Analizador de ML Kit 
+
+El ML Kit de Google proporciona las APIs de Vision de aprendizaje automático integradas en el dispositivo para detectar rostros, escanear códigos de barras, etiquetar imágenes y mucho más. El Analizador de ML Kit facilita la integración del kit con tu app de CameraX.
+
+El Analizador de ML Kit es una implementación de la interfaz de ImageAnalysis.Analyzer. Anula la resolución objetivo predeterminada (si es necesario) para optimizar el uso del ML Kit, controla las transformaciones de coordenadas y pasa los marcos al ML Kit, que muestra los resultados agregados del análisis.
+
+/////////////////////////////////////////////////////////////////
+https://developer.android.com/reference/androidx/camera/view/CameraController
+
+CameraController
+
+Interfaz del controlador de la camara.
