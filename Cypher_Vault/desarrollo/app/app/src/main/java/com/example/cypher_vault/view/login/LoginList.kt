@@ -114,8 +114,14 @@ fun NavigationLogin(authenticationController: AuthenticationController) {
                     Column (
                         horizontalAlignment = Alignment.CenterHorizontally,
                     ){
-                        Text(text = user.firstName ?: "", style = buttonTextStyle)
-                        Text(text = user.email ?: "", style = buttonTextStyle)
+                        Text(
+                            text = user.firstName?.take(21)?.let { if (it.length <= 21) it else "$it..." } ?: "",
+                            fontSize = 20.sp // Tamaño de fuente más grande para el nombre
+                        )
+                        Text(
+                            text = user.email?.take(21)?.let { if (it.length <= 21) "$it..." else it } ?: "",
+                            fontSize = 14.sp // Tamaño de fuente más pequeño para el correo electrónico
+                        )
                     }
                 }
             }
