@@ -137,6 +137,35 @@ https://developer.android.com/media/camera/camerax?hl=es-419
 
 ** Descripción general de CameraX   
 
+------------------------------
+AndroidManifiest.xml 
+
+agregar:
+
+<uses-feature
+        android:name="android.hardware.camera"
+        android:required="false" />
+    <uses-permission android:name="android.permission.CAMERA"/>
+
+------------------------------
+build.gradle.app
+
+agregar:
+
+    // CameraX /////////////////////////////////////
+    val camerax_version = "1.4.0-alpha05"
+    implementation("androidx.camera:camera-core:${camerax_version}")
+    implementation("androidx.camera:camera-camera2:${camerax_version}")
+    implementation("androidx.camera:camera-lifecycle:${camerax_version}")
+    implementation("androidx.camera:camera-video:${camerax_version}")
+    implementation("androidx.camera:camera-view:${camerax_version}")
+    implementation("androidx.camera:camera-mlkit-vision:${camerax_version}")
+    implementation("androidx.camera:camera-extensions:${camerax_version}")
+    /////////////////////////////////////////////////
+
+------------------------------------
+
+
 CameraX es una biblioteca de Jetpack creada para que el desarrollo de una apps de cámara sea más fácil. Para las apps nuevas, te recomendamos que comiences con CameraX. Proporciona una API coherente y fácil de usar que funcione en la gran mayoría de los dispositivos Android y ofrece retrocompatibilidad con Android 5.0 (nivel de API 21).
 
 ** Facilidad de uso
