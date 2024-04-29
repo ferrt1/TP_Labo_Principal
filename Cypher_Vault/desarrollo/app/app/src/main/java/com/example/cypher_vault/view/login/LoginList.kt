@@ -54,6 +54,7 @@ import com.example.cypher_vault.view.resources.CustomTitle
 val firstColor = Color(0xFF02a6c3)
 val secondColor = Color(0xFF01243a)
 val thirdColor = Color(0xFF005767)
+val mainBackgroundColor = Color(0xFFdcdcdc)
 val fontFamily = FontFamily(
     Font(R.font.expandedconsolabold, FontWeight.Normal)
 )
@@ -83,7 +84,7 @@ fun NavigationLogin(authenticationController: AuthenticationController) {
     Box(
         modifier = Modifier
             .fillMaxSize()
-            //.background(Color.DarkGray) //tono de gris
+            .background(mainBackgroundColor)
     ) {
     Column (
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -114,7 +115,6 @@ fun NavigationLogin(authenticationController: AuthenticationController) {
             },
         )
 
-
         LazyColumn(
             modifier = Modifier.padding(top = 20.dp).heightIn(max = 200.dp),
             horizontalAlignment = Alignment.CenterHorizontally
@@ -136,47 +136,20 @@ fun NavigationLogin(authenticationController: AuthenticationController) {
                     Column(
                         horizontalAlignment = Alignment.CenterHorizontally,
                     ) {
-                        //Basicamente medimos en pixel la cantidad caracteres y lo comparamos con el limite del ancho del boton
-                        val density = LocalDensity.current
-                        val nombrePaint = remember {
-                            TextPaint().apply {
-                                // Usa 'with(density)' para proporcionar el contexto de 'Density' necesario.
-                                with(density) {
-                                    textSize = 20.sp.toPx()
-                                }
-                                // Otros ajustes de estilo de texto si es necesario
-                            }
-                        }
-                        val correoPaint = remember {
-                            TextPaint().apply {
-                                // Usa 'with(density)' para proporcionar el contexto de 'Density' necesario.
-                                with(density) {
-                                    textSize = 14.sp.toPx()
-                                }
-                                // Otros ajustes de estilo de texto si es necesario
-                            }
-                        }
-                        val maxWidth = with(density) { 225.dp.toPx() }
-
-                        val nombre = user.firstName ?: ""
-                        val correo = user.email ?: ""
-
                         Text(
-                            text = truncateText(nombre, nombrePaint, maxWidth),
-                            fontSize = 20.sp, // Tamaño de fuente más grande para el nombre
+                            text = user.firstName?.take(16)?.let { if (it.length < 16) it else "$it..." } ?: "",
+                            fontSize = 20.sp,
                             fontFamily = fontFamily,
                             color = thirdColor,
                             fontWeight = FontWeight.Bold
                         )
-
                         Text(
-                            text = truncateText(correo, correoPaint, maxWidth),
-                            fontSize = 14.sp, // Tamaño de fuente más pequeño para el correo
+                            text = user.email?.take(23)?.let { if (it.length < 23) it else "$it..." } ?: "",
+                            fontSize = 14.sp,
                             fontFamily = fontFamily,
                             color = thirdColor,
                             fontWeight = FontWeight.Bold
                         )
-
                     }
                 }
             }
@@ -203,24 +176,6 @@ fun NavigationLogin(authenticationController: AuthenticationController) {
         )
     }
 }
-
-fun truncateText(text: String, paint: TextPaint, maxWidth: Float): String {
-    var currentWidth = 0f
-    var result = ""
-
-    for (char in text) {
-        val charWidth = paint.measureText(char.toString())
-        if (currentWidth + charWidth > maxWidth) {
-            return "$result..."
-        }
-        currentWidth += charWidth
-        result += char
-    }
-
-    return text // Retorna el texto completo si no excede el ancho máximo
-}
-
-
 
 @Composable
 fun LoginCamera(authenticationController: AuthenticationController, user: String) {
