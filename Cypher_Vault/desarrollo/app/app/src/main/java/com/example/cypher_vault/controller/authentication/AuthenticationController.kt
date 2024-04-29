@@ -10,6 +10,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import java.util.UUID
 
 class AuthenticationController(private val navController: NavController) {
 
@@ -43,11 +44,12 @@ class AuthenticationController(private val navController: NavController) {
         name: String,
         showDialog: MutableState<Boolean>,
         errorMessage: MutableState<String>
-    ): Long? {
+    ): UUID? {
+        val uid = UUID.randomUUID()
         if (!validateFields(email, name) && validateMail(email) && validateName(name)) {
 
             CoroutineScope(Dispatchers.IO).launch {
-                val user = User(uid = uid, firstName = name, email = email, entryDate = System.currentTimeMillis(), pin = null)
+                val user = User(uid = uid.toString(), firstName = name, email = email, entryDate = System.currentTimeMillis(), pin = null)
                 DatabaseManager.insertUser(user)
             }
             navigateToCamera()

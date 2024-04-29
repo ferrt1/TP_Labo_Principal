@@ -83,7 +83,7 @@ fun NavigationLogin(authenticationController: AuthenticationController) {
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color.DarkGray) //tono de gris
+            //.background(Color.DarkGray) //tono de gris
     ) {
     Column (
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -163,12 +163,18 @@ fun NavigationLogin(authenticationController: AuthenticationController) {
 
                         Text(
                             text = truncateText(nombre, nombrePaint, maxWidth),
-                            fontSize = 20.sp // Tamaño de fuente más grande para el nombre
+                            fontSize = 20.sp, // Tamaño de fuente más grande para el nombre
+                            fontFamily = fontFamily,
+                            color = thirdColor,
+                            fontWeight = FontWeight.Bold
                         )
 
                         Text(
                             text = truncateText(correo, correoPaint, maxWidth),
-                            fontSize = 14.sp // Tamaño de fuente más pequeño para el correo
+                            fontSize = 14.sp, // Tamaño de fuente más pequeño para el correo
+                            fontFamily = fontFamily,
+                            color = thirdColor,
+                            fontWeight = FontWeight.Bold
                         )
 
                     }
