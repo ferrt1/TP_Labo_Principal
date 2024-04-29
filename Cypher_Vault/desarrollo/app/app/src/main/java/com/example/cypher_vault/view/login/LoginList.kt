@@ -38,8 +38,11 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.Font
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
+import com.example.cypher_vault.R
 import com.example.cypher_vault.controller.authentication.AuthenticationController
 import com.example.cypher_vault.view.registration.CameraPreview
 import com.example.cypher_vault.view.resources.CustomTitle
@@ -48,19 +51,20 @@ import com.example.cypher_vault.view.resources.CustomTitle
 val firstColor = Color(0xFF02a6c3)
 val secondColor = Color(0xFF01243a)
 val thirdColor = Color(0xFF005767)
-
+val fontFamily = FontFamily(
+    Font(R.font.consola, FontWeight.Normal)
+)
 
 @androidx.compose.ui.tooling.preview.Preview
 @Composable
 fun LoginText(){
-    val textStyle = TextStyle(fontWeight = FontWeight.Bold, fontSize = 25.sp, color = thirdColor)
-
-        Text(
-            "Inicio de sesión",
-            style = textStyle,
-            modifier = Modifier
-                .padding(top = 70.dp)
-                .offset(x = -(60.dp)),
+    val textStyle = TextStyle(fontWeight = FontWeight.Bold, fontSize = 25.sp, color = thirdColor, fontFamily = fontFamily)
+    Text(
+        "Inicio de sesión",
+        style = textStyle,
+        modifier = Modifier
+                        .padding(top = 70.dp)
+                        .offset(x = -(60.dp)),
         )
 
 }
@@ -69,7 +73,7 @@ fun LoginText(){
 @Composable
 fun NavigationLogin(authenticationController: AuthenticationController) {
     val users by authenticationController.users.collectAsState()
-    val buttonTextStyle = TextStyle(fontWeight = FontWeight.Bold, fontSize = 16.sp, color = thirdColor)
+    val buttonTextStyle = TextStyle(fontWeight = FontWeight.Bold, fontSize = 16.sp, color = thirdColor, fontFamily = fontFamily)
     var selectedPersona by remember { mutableStateOf<String?>(null) }
     var searchQuery by remember { mutableStateOf("") }
 
