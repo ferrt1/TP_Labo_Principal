@@ -29,13 +29,13 @@ import com.example.cypher_vault.view.login.firstColor
 import com.example.cypher_vault.view.login.secondColor
 
 val fontFamily = FontFamily(
-    Font(R.font.consolabold, FontWeight.Normal)
+    Font(R.font.expandedblack, FontWeight.ExtraBold)
 )
 
 @Preview
 @Composable
 fun CustomTitle() {
-    val textStyle = TextStyle(fontWeight = FontWeight.Bold, fontSize = 54.sp, fontFamily = fontFamily)
+    val textStyle = TextStyle(fontWeight = FontWeight.ExtraBold, fontSize = 54.sp, fontFamily = fontFamily, letterSpacing = 2.sp)
 
     Row(modifier = Modifier.wrapContentSize().offset(16.dp).padding( top = 40.dp), )
     {

@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.AlertDialog
@@ -26,11 +27,39 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.Font
+import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import com.example.cypher_vault.R
 import com.example.cypher_vault.controller.authentication.AuthenticationController
+import com.example.cypher_vault.view.resources.CustomTitle
+
+
+val firstColor = Color(0xFF02a6c3)
+val secondColor = Color(0xFF01243a)
+val thirdColor = Color(0xFF005767)
+val fontFamily = FontFamily(
+    Font(R.font.expandedconsolabold, FontWeight.Normal)
+)
+
+@Composable
+fun RegisterText(){
+    val textStyle = TextStyle(fontWeight = FontWeight.Bold, fontSize = 25.sp, color = thirdColor, fontFamily = fontFamily)
+    Text(
+        "Registro",
+        style = textStyle,
+        modifier = Modifier
+            .padding(top = 70.dp)
+            .offset(x = -(60.dp)),
+    )
+
+}
 
 @Composable
 fun InitialScreen(authenticationController: AuthenticationController) {
@@ -46,14 +75,19 @@ fun InitialScreen(authenticationController: AuthenticationController) {
     val showDialog = remember { mutableStateOf(false) }
     val errorMessage = remember { mutableStateOf("") }
 
+
+
     Box(
         modifier = Modifier.fillMaxSize(),
-        contentAlignment = Alignment.Center
     ) {
+
         Column(
-            modifier = Modifier.padding(16.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
+            horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = Modifier.fillMaxSize()
         ) {
+            CustomTitle()
+            RegisterText()
+
             TextField(
                 value = emailState.value,
                 onValueChange = { emailState.value = it },
