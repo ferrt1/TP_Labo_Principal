@@ -1,9 +1,11 @@
 package com.example.cypher_vault.view.login
 
+import android.text.TextPaint
 import androidx.camera.core.CameraSelector
 import androidx.camera.core.Preview
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -37,6 +39,7 @@ import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
@@ -77,6 +80,11 @@ fun NavigationLogin(authenticationController: AuthenticationController) {
     var selectedPersona by remember { mutableStateOf<String?>(null) }
     var searchQuery by remember { mutableStateOf("") }
 
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Color.DarkGray) //tono de gris
+    ) {
     Column (
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier.fillMaxSize()
@@ -97,7 +105,13 @@ fun NavigationLogin(authenticationController: AuthenticationController) {
                 disabledBorderColor = firstColor,
             ),
             shape = RoundedCornerShape(4.dp),
-            trailingIcon = { Icon(Icons.Default.Send, contentDescription = "Icono de envío", tint = thirdColor) },
+            trailingIcon = {
+                Icon(
+                    Icons.Default.Send,
+                    contentDescription = "Icono de envío",
+                    tint = thirdColor
+                )
+            },
         )
 
 
@@ -105,31 +119,63 @@ fun NavigationLogin(authenticationController: AuthenticationController) {
             modifier = Modifier.padding(top = 20.dp).heightIn(max = 200.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            items(users.filter { it.firstName?.contains(searchQuery, ignoreCase = true) == true }.take(5)) { user ->
-            Button(
+            items(users.filter { it.firstName?.contains(searchQuery, ignoreCase = true) == true }
+                .take(5)) { user ->
+                Button(
                     onClick = {
                         selectedPersona = user.firstName
                     },
                     shape = RoundedCornerShape(4.dp),
                     border = BorderStroke(1.dp, firstColor),
-                    colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent, contentColor = firstColor),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = Color.Transparent,
+                        contentColor = firstColor
+                    ),
                     modifier = Modifier.width(290.dp).padding(top = 15.dp)
                 ) {
-                    Column (
+                    Column(
                         horizontalAlignment = Alignment.CenterHorizontally,
-                    ){
+                    ) {
+                        //Basicamente medimos en pixel la cantidad caracteres y lo comparamos con el limite del ancho del boton
+                        val density = LocalDensity.current
+                        val nombrePaint = remember {
+                            TextPaint().apply {
+                                // Usa 'with(density)' para proporcionar el contexto de 'Density' necesario.
+                                with(density) {
+                                    textSize = 20.sp.toPx()
+                                }
+                                // Otros ajustes de estilo de texto si es necesario
+                            }
+                        }
+                        val correoPaint = remember {
+                            TextPaint().apply {
+                                // Usa 'with(density)' para proporcionar el contexto de 'Density' necesario.
+                                with(density) {
+                                    textSize = 14.sp.toPx()
+                                }
+                                // Otros ajustes de estilo de texto si es necesario
+                            }
+                        }
+                        val maxWidth = with(density) { 225.dp.toPx() }
+
+                        val nombre = user.firstName ?: ""
+                        val correo = user.email ?: ""
+
                         Text(
-                            text = user.firstName?.take(21)?.let { if (it.length <= 21) it else "$it..." } ?: "",
+                            text = truncateText(nombre, nombrePaint, maxWidth),
                             fontSize = 20.sp // Tamaño de fuente más grande para el nombre
                         )
+
                         Text(
-                            text = user.email?.take(21)?.let { if (it.length <= 21) "$it..." else it } ?: "",
-                            fontSize = 14.sp // Tamaño de fuente más pequeño para el correo electrónico
+                            text = truncateText(correo, correoPaint, maxWidth),
+                            fontSize = 14.sp // Tamaño de fuente más pequeño para el correo
                         )
+
                     }
                 }
             }
         }
+    }
 
         Box(
             modifier = Modifier.fillMaxSize(),
@@ -151,6 +197,23 @@ fun NavigationLogin(authenticationController: AuthenticationController) {
         )
     }
 }
+
+fun truncateText(text: String, paint: TextPaint, maxWidth: Float): String {
+    var currentWidth = 0f
+    var result = ""
+
+    for (char in text) {
+        val charWidth = paint.measureText(char.toString())
+        if (currentWidth + charWidth > maxWidth) {
+            return "$result..."
+        }
+        currentWidth += charWidth
+        result += char
+    }
+
+    return text // Retorna el texto completo si no excede el ancho máximo
+}
+
 
 
 @Composable
