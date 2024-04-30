@@ -54,14 +54,13 @@ val thirdColor = Color(0xFF005767)
 @Composable
 fun LoginText(){
     val textStyle = TextStyle(fontWeight = FontWeight.Bold, fontSize = 25.sp, color = thirdColor)
-
-        Text(
-            "Inicio de sesión",
-            style = textStyle,
-            modifier = Modifier
-                .padding(top = 70.dp)
-                .offset(x = -(60.dp)),
-        )
+    Text(
+        "Inicio de sesión",
+        style = textStyle,
+        modifier = Modifier
+            .padding(top = 70.dp)
+            .offset(x = -(60.dp)),
+    )
 
 }
 

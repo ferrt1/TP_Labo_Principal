@@ -1,7 +1,8 @@
 package com.example.cypher_vault.view.registration
 
 import android.annotation.SuppressLint
-import android.widget.Toast
+import android.content.Context
+import android.graphics.Bitmap
 import androidx.camera.core.CameraSelector
 import androidx.camera.core.ImageCapture
 import androidx.camera.core.ImageCaptureException
@@ -21,73 +22,101 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.ContextCompat
 import com.example.cypher_vault.controller.authentication.AuthenticationController
-import com.example.cypher_vault.database.ImagesRegister
+import com.example.cypher_vault.model.facermanager.FaceDetectionActivity
+import android.graphics.BitmapFactory
+import android.util.Log
+import com.google.common.util.concurrent.ListenableFuture
+import java.io.ByteArrayOutputStream
+
+
 
 @SuppressLint("UnsafeExperimentalUsageError")
 @Composable
 fun RegistrationCameraXScreen(authenticationController: AuthenticationController, userId: Int) {
+
+//    val cameraProviderFuture = remember { ProcessCameraProvider.getInstance(context) }
+
+//    val cameraSelector = CameraSelector.Builder()
+//        .requireLensFacing(CameraSelector.LENS_FACING_FRONT)
+//        .build()
+//
+//    val cameraProvider = cameraProviderFuture.get()
+//    val imageCapture = ImageCapture.Builder().build()
+//    val preview = Preview.Builder().build()
+//
+//    LaunchedEffect(cameraProviderFuture) {
+//        cameraProvider.bindToLifecycle(lifecycleOwner, cameraSelector, imageCapture, preview)
+//    }
+//    val outputFileOptions = ImageCapture.OutputFileOptions.Builder(file).build()
     val context = LocalContext.current
     val lifecycleOwner = LocalLifecycleOwner.current
-    val cameraProviderFuture = remember { ProcessCameraProvider.getInstance(context) }
     val isCameraOpen = remember { mutableStateOf(true) }
+    Log.d("faceDetection", "antes de imageCapture 1")
     val cameraSelector = CameraSelector.Builder()
         .requireLensFacing(CameraSelector.LENS_FACING_FRONT)
         .build()
-
-    val cameraProvider = remember { mutableStateOf<ProcessCameraProvider?>(null) }
-    val preview = remember { Preview.Builder().build() }
-    val imageCapture = remember { ImageCapture.Builder().build() }
-
+    Log.d("faceDetection", "antes de imageCapture 2")
+    val imageCapture = ImageCapture.Builder()
+        .setCaptureMode(ImageCapture.CAPTURE_MODE_MAXIMIZE_QUALITY)
+        .build()
+    val cameraProviderFuture: ListenableFuture<ProcessCameraProvider> = remember { ProcessCameraProvider.getInstance(context) }
+    val processCameraProvider = cameraProviderFuture.get()
+    val preview = Preview.Builder().build()
+    Log.d("faceDetection", "antes de imageCapture 3")
     LaunchedEffect(cameraProviderFuture) {
-        cameraProvider.value = cameraProviderFuture.get()
-        cameraProvider.value?.bindToLifecycle(lifecycleOwner, cameraSelector, preview, imageCapture)
+        processCameraProvider.bindToLifecycle(lifecycleOwner, cameraSelector, imageCapture, preview)
     }
-
+    Log.d("faceDetection", "antes de imageCapture 3.3")
     Box(
         modifier = Modifier.fillMaxSize(),
         contentAlignment = Alignment.BottomCenter
     ) {
         if (isCameraOpen.value) {
+            Log.d("faceDetection", "antes de imageCapture 4")
             CameraXPreview(preview)
-            CloseCameraXButton(isCameraOpen, cameraProvider, authenticationController, userId)
+            CloseCameraXButton(processCameraProvider, imageCapture,context, isCameraOpen, authenticationController, userId)
         }
     }
 }
 
 @Composable
 fun CloseCameraXButton(
+    processCameraProvider: ProcessCameraProvider,
+    imageCapture: ImageCapture,
+    context: Context,
     isCameraOpen: MutableState<Boolean>,
-    cameraProvider: MutableState<ProcessCameraProvider?>,
     authenticationController: AuthenticationController,
-    userId: Int // ID del usuario asociado a la imagen
+    userId: Int // ID del usuario asociado a la imagen){}){}){}){}){}){}
 ) {
-    val context = LocalContext.current
-    val imageCapture = remember { ImageCapture.Builder().build() }
-
     Button(
         onClick = {
-            // Cierra la cámara
-            isCameraOpen.value = false
-            cameraProvider.value?.unbindAll()
-
+            Log.d("faceDetection", "antes de imageCapture 6")
             // Captura la imagen
-            imageCapture.takePicture(ContextCompat.getMainExecutor(context), object : ImageCapture.OnImageCapturedCallback() {
-                override fun onCaptureSuccess(image: ImageProxy) {
-                    val buffer = image.planes[0].buffer
-                    val bytes = ByteArray(buffer.remaining())
-                    buffer.get(bytes)
+            imageCapture.takePicture(ContextCompat.getMainExecutor(context),
+                object : ImageCapture.OnImageCapturedCallback() {
+                    override fun onCaptureSuccess(image: ImageProxy) {
+                        // Convertir la imagen a un bitmap
+                        val bitmap = imageProxyToBitmap(image)
 
-                    // Guarda la imagen en la base de datos
-                    authenticationController.getDataBaseManager().insertImageRegister(ImagesRegister(imageData = bytes, user_id = userId))
+                        // Convertir el bitmap a bytes
+                        val bytes = bitmapToByteArray(bitmap)
 
-                    // Libera recursos
-                    image.close()
-                }
+                        // Ejecutar la detección de rostros
+                        val faceDetector = FaceDetectionActivity()
+                        faceDetector.detectFaces(bitmap)
 
-                override fun onError(exception: ImageCaptureException) {
-                    Toast.makeText(context, "Error capturando imagen: ${exception.message}", Toast.LENGTH_SHORT).show()
-                }
-            })
+                        // Cerrar el ImageProxy después de usarlo
+                        image.close()
+                        // Cierra la cámara
+                        isCameraOpen.value = false
+                        processCameraProvider.unbindAll()
+                    }
+                    override fun onError(error: ImageCaptureException)
+                    {
+                        Log.d("faceDetection", "error: ImageCaptureException : $error")
+                    }
+                })
+            authenticationController.navigateToConfirmation()
         },
         modifier = Modifier.padding(bottom = 50.dp)
     ) {
@@ -97,6 +126,7 @@ fun CloseCameraXButton(
 
 @Composable
 fun CameraXPreview(preview: Preview) {
+    Log.d("faceDetection", "antes de imageCapture 5")
     val context = LocalContext.current
 
     AndroidView(
@@ -107,4 +137,23 @@ fun CameraXPreview(preview: Preview) {
         },
         modifier = Modifier.fillMaxSize()
     )
+
+
+}
+
+fun byteArrayToBitmap(byteArray: ByteArray): Bitmap {
+    return BitmapFactory.decodeByteArray(byteArray, 0, byteArray.size)
+}
+
+fun bitmapToByteArray(bitmap: Bitmap): ByteArray {
+    val stream = ByteArrayOutputStream()
+    bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream)
+    return stream.toByteArray()
+}
+
+private fun imageProxyToBitmap(image: ImageProxy): Bitmap {
+    val buffer = image.planes[0].buffer
+    val bytes = ByteArray(buffer.remaining())
+    buffer.get(bytes)
+    return BitmapFactory.decodeByteArray(bytes, 0, bytes.size)
 }
