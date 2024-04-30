@@ -38,6 +38,10 @@ class AuthenticationController(private val navController: NavController) {
         navController.navigate("register")
     }
 
+    fun getDataBaseManager(): DatabaseManager {
+        return DatabaseManager
+    }
+
     fun registerUser(
         email: String,
         name: String,

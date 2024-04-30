@@ -10,6 +10,7 @@ import com.example.cypher_vault.view.login.NavigationLogin
 import com.example.cypher_vault.view.registration.ConfirmationScreen
 import com.example.cypher_vault.view.registration.InitialScreen
 import com.example.cypher_vault.view.registration.RegistrationCameraScreen
+import com.example.cypher_vault.view.registration.RegistrationCameraXScreen
 
 @Composable
 fun NavigationHost() {
@@ -22,7 +23,7 @@ fun NavigationHost() {
         composable("camera/{userId}") { backStackEntry ->
             val userId = backStackEntry.arguments?.getString("userId")?.toLongOrNull()
             if (userId != null) {
-                RegistrationCameraScreen(authenticationController, userId)
+                RegistrationCameraXScreen(authenticationController, userId.toInt())
             } else {
                 // Manejar el caso en que el userId no se pudo recuperar
             }
