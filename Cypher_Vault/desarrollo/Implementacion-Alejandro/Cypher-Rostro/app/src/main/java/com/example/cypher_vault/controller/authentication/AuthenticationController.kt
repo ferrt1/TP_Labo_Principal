@@ -27,7 +27,7 @@ class AuthenticationController(private val navController: NavController) {
     }
 
     fun navigateToConfirmation() {
-        navController.navigate("confirmation")
+        navController.navigate("confirmation/$uid")
     }
 
     fun navigateToListLogin(){
