@@ -17,7 +17,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.Font
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -25,9 +28,14 @@ import com.example.cypher_vault.R
 import com.example.cypher_vault.view.login.firstColor
 import com.example.cypher_vault.view.login.secondColor
 
+val fontFamily = FontFamily(
+    Font(R.font.expandedblack, FontWeight.ExtraBold)
+)
+
+@Preview
 @Composable
 fun CustomTitle() {
-    val textStyle = TextStyle(fontWeight = FontWeight.Bold, fontSize = 54.sp)
+    val textStyle = TextStyle(fontWeight = FontWeight.ExtraBold, fontSize = 54.sp, fontFamily = fontFamily, letterSpacing = 2.sp)
 
     Row(modifier = Modifier.wrapContentSize().offset(16.dp).padding( top = 40.dp), )
     {
@@ -61,7 +69,7 @@ fun CustomTitle() {
         }
         Box(
             modifier = Modifier
-                .offset { IntOffset(-(32).dp.roundToPx(), 14.dp.roundToPx()) }
+                .offset { IntOffset(-(24).dp.roundToPx(), 14.dp.roundToPx()) }
                 .size(94.dp)
                 .align(Alignment.Bottom)
                 .border(2.dp, firstColor, RoundedCornerShape(50))

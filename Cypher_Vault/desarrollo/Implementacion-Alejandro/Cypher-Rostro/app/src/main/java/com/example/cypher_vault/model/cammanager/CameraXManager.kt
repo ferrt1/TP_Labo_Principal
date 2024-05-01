@@ -110,7 +110,7 @@ private fun captureImage(
 
                 // Cerrar el ImageProxy después de usarlo
                 image.close()
-                
+
                 // Cambiar de pantalla
                 Log.e("faceDetection", "antes del navigate")
                 authenticationController.navigateToConfirmation()
