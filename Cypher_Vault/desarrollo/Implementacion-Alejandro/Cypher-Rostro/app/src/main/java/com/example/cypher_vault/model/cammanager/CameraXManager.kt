@@ -2,12 +2,15 @@ package com.example.cypher_vault.view.registration
 
 import android.content.ContentValues
 import android.content.Context
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.os.Build
 import android.provider.MediaStore
 import android.util.Log
 import androidx.camera.core.CameraSelector
 import androidx.camera.core.ImageCapture
 import androidx.camera.core.ImageCaptureException
+import androidx.camera.core.ImageProxy
 import androidx.camera.core.Preview
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.PreviewView
@@ -25,6 +28,8 @@ import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.ContextCompat
 import com.example.cypher_vault.controller.authentication.AuthenticationController
+import com.example.cypher_vault.model.facermanager.FaceDetectionActivity
+import java.io.ByteArrayOutputStream
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
 
@@ -86,18 +91,58 @@ private fun captureImage(
             contentValues
         )
         .build()
-    imageCapture.takePicture(
-        outputOptions,
-        ContextCompat.getMainExecutor(context),
-        object : ImageCapture.OnImageSavedCallback {
-            override fun onImageSaved(outputFileResults: ImageCapture.OutputFileResults) {
-                Log.d("faceDetection", "Image captured successfully") // Agrego un log aquí
-                authenticationController.navigateToConfirmation()
-            }
+    Log.d("faceDetection", "antes de imageCapture")
+    // Captura la imagen
+    imageCapture.takePicture(ContextCompat.getMainExecutor(context),
+        object : ImageCapture.OnImageCapturedCallback() {
+            override fun onCaptureSuccess(image: ImageProxy) {
+                // Convertir la imagen a un bitmap
+                val bitmap = imageProxyToBitmap(image)
 
-            override fun onError(exception: ImageCaptureException) {
-                Log.e("faceDetection", "Error capturing image: $exception") // Agrego un log aquí
-            }
+                // Convertir el bitmap a bytes
+                val bytes = bitmapToByteArray(bitmap)
 
+                // Ejecutar la detección de rostros
+                val faceDetector = FaceDetectionActivity()
+                faceDetector.detectFaces(bitmap)
+
+                // Cerrar el ImageProxy después de usarlo
+                image.close()
+            }
+            override fun onError(error: ImageCaptureException)
+            {
+                Log.d("faceDetection", "error: ImageCaptureException : $error")
+            }
         })
+//    imageCapture.takePicture(
+//        outputOptions,
+//        ContextCompat.getMainExecutor(context),
+//        object : ImageCapture.OnImageSavedCallback {
+//            override fun onImageSaved(outputFileResults: ImageCapture.OutputFileResults) {
+//                Log.d("faceDetection", "Image captured successfully") // Agrego un log aquí
+//                authenticationController.navigateToConfirmation()
+//            }
+//
+//            override fun onError(exception: ImageCaptureException) {
+//                Log.e("faceDetection", "Error capturing image: $exception") // Agrego un log aquí
+//            }
+//
+//        })
+}
+
+fun byteArrayToBitmap(byteArray: ByteArray): Bitmap {
+    return BitmapFactory.decodeByteArray(byteArray, 0, byteArray.size)
+}
+
+fun bitmapToByteArray(bitmap: Bitmap): ByteArray {
+    val stream = ByteArrayOutputStream()
+    bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream)
+    return stream.toByteArray()
+}
+
+private fun imageProxyToBitmap(image: ImageProxy): Bitmap {
+    val buffer = image.planes[0].buffer
+    val bytes = ByteArray(buffer.remaining())
+    buffer.get(bytes)
+    return BitmapFactory.decodeByteArray(bytes, 0, bytes.size)
 }
