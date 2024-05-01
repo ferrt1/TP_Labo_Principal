@@ -16,6 +16,7 @@ import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.PreviewView
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -25,6 +26,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.ContextCompat
 import com.example.cypher_vault.controller.authentication.AuthenticationController
@@ -55,8 +57,8 @@ fun CameraPreviewScreen(authenticationController: AuthenticationController, user
     }
     Box(contentAlignment = Alignment.BottomCenter, modifier = Modifier.fillMaxSize()) {
         AndroidView({ previewView }, modifier = Modifier.fillMaxSize())
-        Button(onClick = { captureImage(imageCapture, context, authenticationController, userId) }) {
-            Text(text = "Capture Image")
+        Button(onClick = { captureImage(imageCapture, context, authenticationController, userId) },modifier = Modifier.padding(bottom = 50.dp)) {
+            Text(text = "Tomar Foto")
         }
     }
 }
@@ -76,21 +78,21 @@ private fun captureImage(
     authenticationController: AuthenticationController,
     userId: Long
 ) {
-    val name = "CameraxImage.jpeg"
-    val contentValues = ContentValues().apply {
-        put(MediaStore.MediaColumns.DISPLAY_NAME, name)
-        put(MediaStore.MediaColumns.MIME_TYPE, "image/jpeg")
-        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.P) {
-            put(MediaStore.Images.Media.RELATIVE_PATH, "Pictures/CameraX-Image")
-        }
-    }
-    val outputOptions = ImageCapture.OutputFileOptions
-        .Builder(
-            context.contentResolver,
-            MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
-            contentValues
-        )
-        .build()
+//    val name = "CameraxImage.jpeg"
+//    val contentValues = ContentValues().apply {
+//        put(MediaStore.MediaColumns.DISPLAY_NAME, name)
+//        put(MediaStore.MediaColumns.MIME_TYPE, "image/jpeg")
+//        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.P) {
+//            put(MediaStore.Images.Media.RELATIVE_PATH, "Pictures/CameraX-Image")
+//        }
+//    }
+//    val outputOptions = ImageCapture.OutputFileOptions
+//        .Builder(
+//            context.contentResolver,
+//            MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
+//            contentValues
+//        )
+//        .build()
     Log.d("faceDetection", "antes de imageCapture")
     // Captura la imagen
     imageCapture.takePicture(ContextCompat.getMainExecutor(context),
@@ -108,12 +110,18 @@ private fun captureImage(
 
                 // Cerrar el ImageProxy después de usarlo
                 image.close()
+                
+                // Cambiar de pantalla
+                Log.e("faceDetection", "antes del navigate")
+                authenticationController.navigateToConfirmation()
+
             }
             override fun onError(error: ImageCaptureException)
             {
                 Log.d("faceDetection", "error: ImageCaptureException : $error")
             }
         })
+
 //    imageCapture.takePicture(
 //        outputOptions,
 //        ContextCompat.getMainExecutor(context),

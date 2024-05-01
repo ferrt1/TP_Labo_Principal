@@ -30,6 +30,7 @@ class FaceDetectionActivity {
     private val detector = FaceDetection.getClient(highAccuracyOpts)
 
     fun detectFaces(image: Bitmap) {
+        Log.d("faceDetection", "Comienza el proceso de deteccion de imagen")
         val inputImage = InputImage.fromBitmap(image, 0)
         detector.process(inputImage)
             .addOnSuccessListener(OnSuccessListener { faces ->
