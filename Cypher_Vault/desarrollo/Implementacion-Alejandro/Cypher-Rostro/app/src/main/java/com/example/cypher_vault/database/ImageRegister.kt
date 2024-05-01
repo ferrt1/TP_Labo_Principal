@@ -16,5 +16,5 @@ import androidx.room.PrimaryKey
 data class ImagesRegister(
     @PrimaryKey(autoGenerate = true) val id: Long = 0,
     val imageData: ByteArray,
-    val user_id: Int // referencia al usuario que posee la imagen
+    val user_id: String // referencia al usuario que posee la imagen
 )

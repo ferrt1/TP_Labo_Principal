@@ -10,6 +10,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import java.util.UUID
 
 class AuthenticationController(private val navController: NavController) {
 
@@ -38,20 +39,17 @@ class AuthenticationController(private val navController: NavController) {
         navController.navigate("register")
     }
 
-    fun getDataBaseManager(): DatabaseManager {
-        return DatabaseManager
-    }
-
     fun registerUser(
         email: String,
         name: String,
         showDialog: MutableState<Boolean>,
         errorMessage: MutableState<String>
-    ): Long? {
+    ): UUID? {
+        val uid = UUID.randomUUID()
         if (!validateFields(email, name) && validateMail(email) && validateName(name)) {
 
             CoroutineScope(Dispatchers.IO).launch {
-                val user = User(uid = uid, firstName = name, email = email, entryDate = System.currentTimeMillis(), pin = null)
+                val user = User(uid = uid.toString(), firstName = name, email = email, entryDate = System.currentTimeMillis(), pin = null)
                 DatabaseManager.insertUser(user)
             }
             navigateToCamera()
@@ -72,9 +70,9 @@ class AuthenticationController(private val navController: NavController) {
         return null
     }
 
-    fun saveImage(imageData: ByteArray, userId: Long) {
+    fun saveImage(imageData: ByteArray, userId: String) {
         CoroutineScope(Dispatchers.IO).launch {
-            val imageRegister = ImagesRegister(imageData = imageData, user_id = userId.toInt())
+            val imageRegister = ImagesRegister(imageData = imageData, user_id = userId)
             DatabaseManager.insertImageRegister(imageRegister)
         }
     }

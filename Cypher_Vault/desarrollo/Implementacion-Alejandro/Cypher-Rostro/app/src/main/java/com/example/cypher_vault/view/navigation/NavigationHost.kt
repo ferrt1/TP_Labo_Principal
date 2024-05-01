@@ -24,7 +24,7 @@ fun NavigationHost() {
             Log.d("faceDetection", "Salida InitialScreen")
         }
         composable("camera/{userId}") { backStackEntry ->
-            val userId = backStackEntry.arguments?.getString("userId")?.toLongOrNull()
+            val userId = backStackEntry.arguments?.getString("userId")
             if (userId != null) {
                 Log.d("faceDetection", "Inicio CameraPreviewScreen")
                 CameraPreviewScreen(authenticationController, userId)
@@ -33,7 +33,7 @@ fun NavigationHost() {
                 // Manejar el caso en que el userId no se pudo recuperar
             }
         }
-        composable("confirmation") {
+        composable("confirmation/{userId}") {
             Log.d("faceDetection", "Inicio ConfirmationScreen")
             ConfirmationScreen(authenticationController)
             Log.d("faceDetection", "Salida ConfirmationScreen")

@@ -49,7 +49,7 @@ object DatabaseManager {
         database.imageRegisterDao().insertImage(imageRegister)
     }
 
-    fun getImageRegistersForImage(user_id: Long): List<ImagesRegister> {
+    fun getImageRegistersForImage(user_id: String): List<ImagesRegister> {
         return database.imageRegisterDao().getImagesForUser(user_id)
     }
 

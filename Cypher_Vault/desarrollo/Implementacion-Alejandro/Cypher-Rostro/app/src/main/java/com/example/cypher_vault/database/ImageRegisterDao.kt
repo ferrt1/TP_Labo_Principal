@@ -9,7 +9,7 @@ interface ImageRegisterDao {
     fun insertImage(imagesRegister: ImagesRegister)
 
     @Query("SELECT * FROM images WHERE user_id = :userId")
-    fun getImagesForUser(userId: Long): List<ImagesRegister>
+    fun getImagesForUser(userId: String): List<ImagesRegister>
 
 
 }

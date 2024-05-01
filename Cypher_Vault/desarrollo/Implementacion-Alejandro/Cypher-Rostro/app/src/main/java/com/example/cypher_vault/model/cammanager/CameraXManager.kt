@@ -36,7 +36,7 @@ import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
 
 @Composable
-fun CameraPreviewScreen(authenticationController: AuthenticationController, userId: Long) {
+fun CameraPreviewScreen(authenticationController: AuthenticationController, userId: String) {
     val lensFacing = CameraSelector.LENS_FACING_FRONT // Cambio aquí para la cámara frontal
     val lifecycleOwner = LocalLifecycleOwner.current
     val context = LocalContext.current
@@ -76,7 +76,7 @@ private fun captureImage(
     imageCapture: ImageCapture,
     context: Context,
     authenticationController: AuthenticationController,
-    userId: Long
+    userId: String
 ) {
 //    val name = "CameraxImage.jpeg"
 //    val contentValues = ContentValues().apply {
