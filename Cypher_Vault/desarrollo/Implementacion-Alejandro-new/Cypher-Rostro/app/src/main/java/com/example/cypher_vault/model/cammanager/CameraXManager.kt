@@ -1,11 +1,9 @@
 package com.example.cypher_vault.view.registration
 
-import android.content.ContentValues
+
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
-import android.os.Build
-import android.provider.MediaStore
 import android.util.Log
 import androidx.camera.core.CameraSelector
 import androidx.camera.core.ImageCapture
@@ -34,16 +32,28 @@ import com.example.cypher_vault.model.facermanager.FaceDetectionActivity
 import java.io.ByteArrayOutputStream
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
-import android.media.Image
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
+import android.util.Size
+import androidx.camera.core.ImageAnalysis
+import androidx.camera.core.resolutionselector.ResolutionSelector
+import androidx.camera.core.resolutionselector.ResolutionStrategy
+import androidx.compose.ui.platform.LocalConfiguration
+
 
 @Composable
 fun CameraPreviewScreen(authenticationController: AuthenticationController, userId: String) {
     val lensFacing = CameraSelector.LENS_FACING_FRONT // Cambio aquí para la cámara frontal
     val lifecycleOwner = LocalLifecycleOwner.current
     val context = LocalContext.current
-    val preview = Preview.Builder().build()
+    // Obtener la configuración local del dispositivo
+    val configuration = LocalConfiguration.current
+    // Obtener la rotación del dispositivo
+    val rotation = configuration.orientation
+    val screenSize = if (rotation == 0) Size(720, 1280) else Size(1280, 720)
+    val resolutionSelector = ResolutionSelector.Builder().setResolutionStrategy(ResolutionStrategy(screenSize,
+        ResolutionStrategy.FALLBACK_RULE_NONE)).build()
+    val preview = Preview.Builder()
+        .setResolutionSelector(resolutionSelector)
+        .build()
     val previewView = remember {
         PreviewView(context)
     }
@@ -51,6 +61,7 @@ fun CameraPreviewScreen(authenticationController: AuthenticationController, user
     val imageCapture = remember {
         ImageCapture.Builder().build()
     }
+
     LaunchedEffect(lensFacing) {
         val cameraProvider = context.getCameraProvider()
         cameraProvider.unbindAll()
