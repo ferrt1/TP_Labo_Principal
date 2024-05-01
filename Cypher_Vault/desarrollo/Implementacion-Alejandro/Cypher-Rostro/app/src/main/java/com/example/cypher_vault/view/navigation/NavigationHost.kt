@@ -11,7 +11,6 @@ import com.example.cypher_vault.view.login.NavigationLogin
 import com.example.cypher_vault.view.registration.CameraPreviewScreen
 import com.example.cypher_vault.view.registration.ConfirmationScreen
 import com.example.cypher_vault.view.registration.InitialScreen
-import com.example.cypher_vault.view.registration.RegistrationCameraScreen
 
 @Composable
 fun NavigationHost() {
@@ -47,6 +46,5 @@ fun NavigationHost() {
             NavigationLogin(authenticationController)
             Log.d("faceDetection", "Salida NavigationLogin")
         }
-
     }
 }

@@ -47,7 +47,6 @@ class FaceDetectionActivity {
                         val leftEarPos = leftEar.position
                         Log.d("faceDetection", "Left ear position: $leftEarPos")
                     }
-
                     val leftEyeContour = face.getContour(FaceContour.LEFT_EYE)?.points
                     leftEyeContour?.let {
                         Log.d("faceDetection", "Left eye contour points: $it")
@@ -57,7 +56,6 @@ class FaceDetectionActivity {
                     upperLipBottomContour?.let {
                         Log.d("faceDetection", "Upper lip bottom contour points: $it")
                     }
-
                     if (face.smilingProbability != null) {
                         val smileProb = face.smilingProbability
                         Log.d("faceDetection", "Smiling probability: $smileProb")
@@ -66,7 +64,6 @@ class FaceDetectionActivity {
                         val rightEyeOpenProb = face.rightEyeOpenProbability
                         Log.d("faceDetection", "Right eye open probability: $rightEyeOpenProb")
                     }
-
                     if (face.trackingId != null) {
                         val id = face.trackingId
                         Log.d("faceDetection", "Tracking ID: $id")
