@@ -34,6 +34,9 @@ import com.example.cypher_vault.model.facermanager.FaceDetectionActivity
 import java.io.ByteArrayOutputStream
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
+import android.media.Image
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 
 @Composable
 fun CameraPreviewScreen(authenticationController: AuthenticationController, userId: String) {
@@ -93,26 +96,27 @@ private fun captureImage(
 //            contentValues
 //        )
 //        .build()
-    Log.d("faceDetection", "antes de imageCapture")
+    Log.d("faceDetection", "imageCapture 0")
     // Captura la imagen
     imageCapture.takePicture(ContextCompat.getMainExecutor(context),
         object : ImageCapture.OnImageCapturedCallback() {
             override fun onCaptureSuccess(image: ImageProxy) {
                 // Convertir la imagen a un bitmap
+                Log.d("faceDetection", "imageCapture 1")
                 val bitmap = imageProxyToBitmap(image)
-
                 // Convertir el bitmap a bytes
                 val bytes = bitmapToByteArray(bitmap)
-
+                Log.d("faceDetection", "imageCapture 2")
                 // Ejecutar la detección de rostros
                 val faceDetector = FaceDetectionActivity()
+                Log.d("faceDetection", "imageCapture 3")
                 faceDetector.detectFaces(bitmap)
 
                 // Cerrar el ImageProxy después de usarlo
                 image.close()
 
                 // Cambiar de pantalla
-                Log.e("faceDetection", "antes del navigate")
+                Log.e("faceDetection", "antes del navigateToConfirmation()")
                 authenticationController.navigateToConfirmation()
 
             }
@@ -148,9 +152,22 @@ fun bitmapToByteArray(bitmap: Bitmap): ByteArray {
     return stream.toByteArray()
 }
 
+//private fun imageProxyToBitmap(image: ImageProxy): Bitmap {
+//    val buffer = image.planes[0].buffer
+//    val bytes = ByteArray(buffer.remaining())
+//    buffer.get(bytes)
+//    return BitmapFactory.decodeByteArray(bytes, 0, bytes.size)
+//}
+
 private fun imageProxyToBitmap(image: ImageProxy): Bitmap {
     val buffer = image.planes[0].buffer
     val bytes = ByteArray(buffer.remaining())
     buffer.get(bytes)
-    return BitmapFactory.decodeByteArray(bytes, 0, bytes.size)
+    return BitmapFactory.decodeByteArray(bytes, 0, bytes.size, getBitmapOptions())
+}
+
+private fun getBitmapOptions(): BitmapFactory.Options {
+    val options = BitmapFactory.Options()
+    options.inSampleSize = 3 // Reduce el tamaño de la imagen a la mitad. Puedes ajustar este valor según tus necesidades.
+    return options
 }
