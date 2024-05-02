@@ -19,9 +19,10 @@ faceDetectionActivity.detectFaces(yourBitmap)
 */
 
 
-class FaceDetectionActivity {
+class FaceDetectionManager {
 
     private val highAccuracyOpts = FaceDetectorOptions.Builder()
+        .setContourMode(FaceDetectorOptions.CONTOUR_MODE_ALL)
         .setPerformanceMode(FaceDetectorOptions.PERFORMANCE_MODE_ACCURATE)
         .setLandmarkMode(FaceDetectorOptions.LANDMARK_MODE_ALL)
         .setClassificationMode(FaceDetectorOptions.CLASSIFICATION_MODE_ALL)
@@ -35,13 +36,38 @@ class FaceDetectionActivity {
         detector.process(inputImage)
             .addOnSuccessListener(OnSuccessListener { faces ->
                 for (face in faces) {
-                    val bounds = face.boundingBox
-                    Log.d("faceDetection", "Bounds: $bounds")
+                    val faceContours = face.allContours
+                    val faceLandMarks = face.allLandmarks
+                    for (contours in faceContours)
+                        Log.d("faceDetection", "contours: $contours")
+                    for (landMarks in faceLandMarks)
+                        Log.d("faceDetection", "landMarks: $landMarks")
+
+                    /// Probabilidades de ojos abiertos y sonrisa
+                    if (face.leftEyeOpenProbability != null) {
+                        val leftEyeOpenProb = face.leftEyeOpenProbability
+                        Log.d("faceDetection", "Left eye open probability: $leftEyeOpenProb")
+                    }
+                    if (face.rightEyeOpenProbability != null) {
+                        val rightEyeOpenProb = face.rightEyeOpenProbability
+                        Log.d("faceDetection", "Right eye open probability: $rightEyeOpenProb")
+                    }
+                    if (face.smilingProbability != null) {
+                        val smileProb = face.smilingProbability
+                        Log.d("faceDetection", "Smiling probability: $smileProb")
+                    }
+
+                    /// Rotacion de rostro
                     val rotY = face.headEulerAngleY
                     Log.d("faceDetection", "Head rotation Y: $rotY degrees")
                     val rotZ = face.headEulerAngleZ
                     Log.d("faceDetection", "Head tilt Z: $rotZ degrees")
 
+                    // Axis-aligned bounding rectangle of the detected face
+                    val bounds = face.boundingBox
+                    Log.d("faceDetection", "Bounds: $bounds")
+
+                    // Datos landMark otro metodo
                     val leftEar = face.getLandmark(FaceLandmark.LEFT_EAR)
                     leftEar?.let {
                         val leftEarPos = leftEar.position
@@ -56,14 +82,7 @@ class FaceDetectionActivity {
                     upperLipBottomContour?.let {
                         Log.d("faceDetection", "Upper lip bottom contour points: $it")
                     }
-                    if (face.smilingProbability != null) {
-                        val smileProb = face.smilingProbability
-                        Log.d("faceDetection", "Smiling probability: $smileProb")
-                    }
-                    if (face.rightEyeOpenProbability != null) {
-                        val rightEyeOpenProb = face.rightEyeOpenProbability
-                        Log.d("faceDetection", "Right eye open probability: $rightEyeOpenProb")
-                    }
+
                     if (face.trackingId != null) {
                         val id = face.trackingId
                         Log.d("faceDetection", "Tracking ID: $id")

@@ -28,12 +28,11 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.ContextCompat
 import com.example.cypher_vault.controller.authentication.AuthenticationController
-import com.example.cypher_vault.model.facermanager.FaceDetectionActivity
+import com.example.cypher_vault.model.facermanager.FaceDetectionManager
 import java.io.ByteArrayOutputStream
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
 import android.util.Size
-import androidx.camera.core.ImageAnalysis
 import androidx.camera.core.resolutionselector.ResolutionSelector
 import androidx.camera.core.resolutionselector.ResolutionStrategy
 import androidx.compose.ui.platform.LocalConfiguration
@@ -49,8 +48,12 @@ fun CameraPreviewScreen(authenticationController: AuthenticationController, user
     // Obtener la rotación del dispositivo
     val rotation = configuration.orientation
     val screenSize = if (rotation == 0) Size(720, 1280) else Size(1280, 720)
-    val resolutionSelector = ResolutionSelector.Builder().setResolutionStrategy(ResolutionStrategy(screenSize,
-        ResolutionStrategy.FALLBACK_RULE_NONE)).build()
+    val resolutionSelector = ResolutionSelector.Builder().setResolutionStrategy(
+        ResolutionStrategy(
+            screenSize,
+            ResolutionStrategy.FALLBACK_RULE_NONE
+        )
+    ).build()
     val preview = Preview.Builder()
         .setResolutionSelector(resolutionSelector)
         .build()
@@ -67,11 +70,17 @@ fun CameraPreviewScreen(authenticationController: AuthenticationController, user
         cameraProvider.unbindAll()
         cameraProvider.bindToLifecycle(lifecycleOwner, cameraxSelector, preview, imageCapture)
         preview.setSurfaceProvider(previewView.surfaceProvider)
-        Log.d("faceDetection", "Camera preview bound to lifecycle with lens facing: $lensFacing") // Agrego un log aquí
+        Log.d(
+            "faceDetection",
+            "Camera preview bound to lifecycle with lens facing: $lensFacing"
+        ) // Agrego un log aquí
     }
     Box(contentAlignment = Alignment.BottomCenter, modifier = Modifier.fillMaxSize()) {
         AndroidView({ previewView }, modifier = Modifier.fillMaxSize())
-        Button(onClick = { captureImage(imageCapture, context, authenticationController, userId) },modifier = Modifier.padding(bottom = 50.dp)) {
+        Button(
+            onClick = { captureImage(imageCapture, context, authenticationController, userId) },
+            modifier = Modifier.padding(bottom = 50.dp)
+        ) {
             Text(text = "Tomar Foto")
         }
     }
@@ -92,6 +101,70 @@ private fun captureImage(
     authenticationController: AuthenticationController,
     userId: String
 ) {
+    Log.d("faceDetection", "imageCapture 0")
+    // Captura la imagen
+    imageCapture.takePicture(ContextCompat.getMainExecutor(context),
+        object : ImageCapture.OnImageCapturedCallback() {
+            override fun onCaptureSuccess(image: ImageProxy) {
+                // Convertir la imagen a un bitmap
+                Log.d("faceDetection", "imageCapture 1")
+                val bitmap = imageProxyToBitmap(image)
+                // Convertir el bitmap a bytes
+                val bytes = bitmapToByteArray(bitmap)
+                Log.d("faceDetection", "imageCapture 2")
+                // Ejecutar la detección de rostros
+                val faceDetector = FaceDetectionManager()
+                Log.d("faceDetection", "imageCapture 3")
+                faceDetector.detectFaces(bitmap)
+                // Cerrar el ImageProxy después de usarlo
+                image.close()
+                // Cambiar de pantalla
+                Log.e("faceDetection", "antes del navigateToConfirmation()")
+                authenticationController.navigateToConfirmation()
+            }
+            override fun onError(error: ImageCaptureException) {
+                Log.d("faceDetection", "error: ImageCaptureException : $error")
+            }
+        })
+}
+
+private fun imageProxyToBitmap(image: ImageProxy): Bitmap {
+    val buffer = image.planes[0].buffer
+    val bytes = ByteArray(buffer.remaining())
+    buffer.get(bytes)
+    return BitmapFactory.decodeByteArray(bytes, 0, bytes.size, getBitmapOptions())
+}
+
+private fun getBitmapOptions(): BitmapFactory.Options {
+    val options = BitmapFactory.Options()
+    options.inSampleSize =
+        3 // Reduce el tamaño de la imagen a la mitad. Puedes ajustar este valor según tus necesidades.
+    return options
+}
+
+fun byteArrayToBitmap(byteArray: ByteArray): Bitmap {
+    return BitmapFactory.decodeByteArray(byteArray, 0, byteArray.size)
+}
+
+fun bitmapToByteArray(bitmap: Bitmap): ByteArray {
+    val stream = ByteArrayOutputStream()
+    bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream)
+    return stream.toByteArray()
+}
+
+private fun imageProxyToBitmapWOBF(image: ImageProxy): Bitmap {
+    val buffer = image.planes[0].buffer
+    val bytes = ByteArray(buffer.remaining())
+    buffer.get(bytes)
+    return BitmapFactory.decodeByteArray(bytes, 0, bytes.size)
+}
+
+//private fun captureImageJpg(
+//    imageCapture: ImageCapture,
+//    context: Context,
+//    authenticationController: AuthenticationController,
+//    userId: String
+//) {
 //    val name = "CameraxImage.jpeg"
 //    val contentValues = ContentValues().apply {
 //        put(MediaStore.MediaColumns.DISPLAY_NAME, name)
@@ -107,36 +180,6 @@ private fun captureImage(
 //            contentValues
 //        )
 //        .build()
-    Log.d("faceDetection", "imageCapture 0")
-    // Captura la imagen
-    imageCapture.takePicture(ContextCompat.getMainExecutor(context),
-        object : ImageCapture.OnImageCapturedCallback() {
-            override fun onCaptureSuccess(image: ImageProxy) {
-                // Convertir la imagen a un bitmap
-                Log.d("faceDetection", "imageCapture 1")
-                val bitmap = imageProxyToBitmap(image)
-                // Convertir el bitmap a bytes
-                val bytes = bitmapToByteArray(bitmap)
-                Log.d("faceDetection", "imageCapture 2")
-                // Ejecutar la detección de rostros
-                val faceDetector = FaceDetectionActivity()
-                Log.d("faceDetection", "imageCapture 3")
-                faceDetector.detectFaces(bitmap)
-
-                // Cerrar el ImageProxy después de usarlo
-                image.close()
-
-                // Cambiar de pantalla
-                Log.e("faceDetection", "antes del navigateToConfirmation()")
-                authenticationController.navigateToConfirmation()
-
-            }
-            override fun onError(error: ImageCaptureException)
-            {
-                Log.d("faceDetection", "error: ImageCaptureException : $error")
-            }
-        })
-
 //    imageCapture.takePicture(
 //        outputOptions,
 //        ContextCompat.getMainExecutor(context),
@@ -151,34 +194,6 @@ private fun captureImage(
 //            }
 //
 //        })
-}
-
-fun byteArrayToBitmap(byteArray: ByteArray): Bitmap {
-    return BitmapFactory.decodeByteArray(byteArray, 0, byteArray.size)
-}
-
-fun bitmapToByteArray(bitmap: Bitmap): ByteArray {
-    val stream = ByteArrayOutputStream()
-    bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream)
-    return stream.toByteArray()
-}
-
-//private fun imageProxyToBitmap(image: ImageProxy): Bitmap {
-//    val buffer = image.planes[0].buffer
-//    val bytes = ByteArray(buffer.remaining())
-//    buffer.get(bytes)
-//    return BitmapFactory.decodeByteArray(bytes, 0, bytes.size)
 //}
 
-private fun imageProxyToBitmap(image: ImageProxy): Bitmap {
-    val buffer = image.planes[0].buffer
-    val bytes = ByteArray(buffer.remaining())
-    buffer.get(bytes)
-    return BitmapFactory.decodeByteArray(bytes, 0, bytes.size, getBitmapOptions())
-}
 
-private fun getBitmapOptions(): BitmapFactory.Options {
-    val options = BitmapFactory.Options()
-    options.inSampleSize = 3 // Reduce el tamaño de la imagen a la mitad. Puedes ajustar este valor según tus necesidades.
-    return options
-}
