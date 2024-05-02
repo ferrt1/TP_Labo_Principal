@@ -28,7 +28,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.ContextCompat
 import com.example.cypher_vault.controller.authentication.AuthenticationController
-import com.example.cypher_vault.model.facermanager.FaceDetectionManager
+import com.example.cypher_vault.model.facermanager.FaceDetectionActivity
 import java.io.ByteArrayOutputStream
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
@@ -113,7 +113,7 @@ private fun captureImage(
                 val bytes = bitmapToByteArray(bitmap)
                 Log.d("faceDetection", "imageCapture 2")
                 // Ejecutar la detección de rostros
-                val faceDetector = FaceDetectionManager()
+                val faceDetector = FaceDetectionActivity()
                 Log.d("faceDetection", "imageCapture 3")
                 faceDetector.detectFaces(bitmap)
                 // Cerrar el ImageProxy después de usarlo

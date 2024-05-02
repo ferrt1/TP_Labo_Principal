@@ -72,7 +72,7 @@ class AuthenticationController(private val navController: NavController) {
 
     fun saveImage(imageData: ByteArray, userId: String) {
         CoroutineScope(Dispatchers.IO).launch {
-            val imageRegister = ImagesRegister(imageData = imageData, user_id = userId)
+            val imageRegister = ImagesRegister(imageData = imageData, user_id = userId, faceContours =  null, faceLandmarks = null)
             DatabaseManager.insertImageRegister(imageRegister)
         }
     }

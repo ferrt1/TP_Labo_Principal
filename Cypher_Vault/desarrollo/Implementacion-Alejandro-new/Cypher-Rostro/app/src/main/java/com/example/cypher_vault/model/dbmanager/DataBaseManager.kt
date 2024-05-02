@@ -6,6 +6,8 @@ import com.example.cypher_vault.database.AppDatabase
 import com.example.cypher_vault.database.Images
 import com.example.cypher_vault.database.ImagesRegister
 import com.example.cypher_vault.database.User
+import com.google.mlkit.vision.face.FaceContour
+import com.google.mlkit.vision.face.FaceLandmark
 
 
 object DatabaseManager {
@@ -44,13 +46,34 @@ object DatabaseManager {
         return database.imageDao().getImagesForUser(userId)
     }
 
-    // Métodos relacionados con la tabla de registros de imágenes
-    fun insertImageRegister(imageRegister: ImagesRegister) {
-        database.imageRegisterDao().insertImage(imageRegister)
+    // Funciones de inserción, actualización y consulta de imágenes
+    fun insertImageRegister(imagesRegister: ImagesRegister) {
+        database.imageRegisterDao().insertImage(imagesRegister)
     }
 
-    fun getImageRegistersForImage(user_id: String): List<ImagesRegister> {
-        return database.imageRegisterDao().getImagesForUser(user_id)
+    fun getImagesForUser(userId: String): List<ImagesRegister> {
+        return  database.imageRegisterDao().getImagesForUser(userId)
+    }
+
+    fun updateImage(imagesRegister: ImagesRegister) {
+        database.imageRegisterDao().updateImage(imagesRegister)
+    }
+
+    // Funciones para actualizar y obtener contornos faciales y landmarks faciales
+    fun updateFaceContours(userId: String, faceContours: List<FaceContour>) {
+        database.imageRegisterDao().updateFaceContours(userId, faceContours)
+    }
+
+    fun updateFaceLandmarks(userId: String, faceLandmarks: List<FaceLandmark>) {
+        database.imageRegisterDao().updateFaceLandmarks(userId, faceLandmarks)
+    }
+
+    fun getFaceContoursForUser(userId: String): List<FaceContour> {
+        return  database.imageRegisterDao().getFaceContoursForUser(userId)
+    }
+
+    fun getFaceLandmarksForUser(userId: String): List<FaceLandmark> {
+        return  database.imageRegisterDao().getFaceLandmarksForUser(userId)
     }
 
     // Otros métodos según sea necesario para otras operaciones con usuarios, imágenes e imágenes registros
