@@ -49,9 +49,15 @@ object DatabaseManager {
         database.imageRegisterDao().insertImage(imageRegister)
     }
 
-    fun getImageRegistersForImage(user_id: Long): List<ImagesRegister> {
+    fun getImageRegistersForImage(user_id: String): List<ImagesRegister> {
         return database.imageRegisterDao().getImagesForUser(user_id)
     }
+
+    fun getLastImageRegisterForUser(user_id: String): ImagesRegister? {
+        val imageRegisters = database.imageRegisterDao().getImagesForUser(user_id)
+        return imageRegisters.lastOrNull()
+    }
+
 
     // Otros métodos según sea necesario para otras operaciones con usuarios, imágenes e imágenes registros
 }

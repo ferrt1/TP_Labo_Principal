@@ -20,15 +20,20 @@ fun NavigationHost() {
             InitialScreen(authenticationController)
         }
         composable("camera/{userId}") { backStackEntry ->
-            val userId = backStackEntry.arguments?.getString("userId")?.toLongOrNull()
+            val userId = backStackEntry.arguments?.getString("userId")
             if (userId != null) {
                 RegistrationCameraScreen(authenticationController, userId)
             } else {
                 // Manejar el caso en que el userId no se pudo recuperar
             }
         }
-        composable("confirmation") {
-            ConfirmationScreen(authenticationController)
+        composable("confirmation/{userId}") {backStackEntry ->
+            val userId = backStackEntry.arguments?.getString("userId")
+            if (userId != null) {
+                ConfirmationScreen(authenticationController, userId)
+            } else {
+                // Manejar el caso en que el userId no se pudo recuperar
+            }
         }
         composable("login") {
             // Aquí puedes agregar la vista de inicio de sesión

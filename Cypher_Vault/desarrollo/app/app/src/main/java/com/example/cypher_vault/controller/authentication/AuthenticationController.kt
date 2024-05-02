@@ -6,10 +6,13 @@ import com.example.cypher_vault.database.ImagesRegister
 import com.example.cypher_vault.database.User
 import com.example.cypher_vault.model.dbmanager.DatabaseManager
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.util.UUID
 
 class AuthenticationController(private val navController: NavController) {
@@ -17,17 +20,15 @@ class AuthenticationController(private val navController: NavController) {
     init{
         getAllUsers()
     }
-
-    private val uid = System.currentTimeMillis()
     private val _users = MutableStateFlow<List<User>>(emptyList())
     val users: StateFlow<List<User>> get() = _users
 
-    private fun navigateToCamera() {
+    private fun navigateToCamera(uid: String) {
         navController.navigate("camera/$uid")
     }
 
-    fun navigateToConfirmation() {
-        navController.navigate("confirmation")
+    fun navigateToConfirmation(uid: String) {
+        navController.navigate("confirmation/$uid")
     }
 
     fun navigateToListLogin(){
@@ -52,7 +53,7 @@ class AuthenticationController(private val navController: NavController) {
                 val user = User(uid = uid.toString(), firstName = name, email = email, entryDate = System.currentTimeMillis(), pin = null)
                 DatabaseManager.insertUser(user)
             }
-            navigateToCamera()
+            navigateToCamera(uid.toString())
             return uid
         }
         else if(validateFields(name, email)){
@@ -70,11 +71,27 @@ class AuthenticationController(private val navController: NavController) {
         return null
     }
 
-    fun saveImage(imageData: ByteArray, userId: Long) {
-        CoroutineScope(Dispatchers.IO).launch {
-            val imageRegister = ImagesRegister(imageData = imageData, user_id = userId.toInt())
+    fun saveImage(imageData: ByteArray, userId: String): Deferred<Unit> {
+        return CoroutineScope(Dispatchers.IO).async {
+            val imageRegister = ImagesRegister(imageData = imageData, user_id = userId)
             DatabaseManager.insertImageRegister(imageRegister)
         }
+    }
+
+    suspend fun getImageRegistersForUser(userId: String): List<ImagesRegister> {
+        return withContext(Dispatchers.IO) {
+            DatabaseManager.getImageRegistersForImage(userId)
+        }
+    }
+
+    fun getLastImageRegister(userId: String): ImagesRegister? {
+        var imageRegister: ImagesRegister? = null
+        CoroutineScope(Dispatchers.IO).launch {
+            imageRegister = withContext(Dispatchers.IO) {
+                DatabaseManager.getLastImageRegisterForUser(userId)
+            }
+        }
+        return imageRegister
     }
 
     private fun getAllUsers() {

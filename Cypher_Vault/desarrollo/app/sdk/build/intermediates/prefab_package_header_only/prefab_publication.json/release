@@ -1,5 +1,5 @@
 {
-  "installationFolder": "C:\\Users\\javier\\StudioProjects\\proyecto\\Cypher_Vault\\desarrollo\\app\\sdk\\build\\intermediates\\prefab_package\\release\\prefab",
+  "installationFolder": "C:\\Users\\l\\Desktop\\TPFaceAuthn\\Cypher_Vault\\desarrollo\\app\\sdk\\build\\intermediates\\prefab_package\\release\\prefab",
   "gradlePath": ":sdk",
   "packageInfo": {
     "packageName": "sdk",
@@ -8,7 +8,7 @@
     "modules": [
       {
         "moduleName": "opencv_jni_shared",
-        "moduleHeaders": "C:\\Users\\javier\\StudioProjects\\proyecto\\Cypher_Vault\\desarrollo\\app\\sdk\\native\\jni\\include",
+        "moduleHeaders": "C:\\Users\\l\\Desktop\\TPFaceAuthn\\Cypher_Vault\\desarrollo\\app\\sdk\\native\\jni\\include",
         "moduleExportLibraries": [],
         "abis": []
       }

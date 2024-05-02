@@ -1,2 +1,2 @@
-ninja: Entering directory `C:\Users\javier\StudioProjects\proyecto\Cypher_Vault\desarrollo\app\sdk\.cxx\Debug\2d1b7303\arm64-v8a'
+ninja: Entering directory `C:\Users\l\Desktop\TPFaceAuthn\Cypher_Vault\desarrollo\app\sdk\.cxx\Debug\2d1b7303\arm64-v8a'
 ninja: no work to do.
