@@ -84,7 +84,7 @@ fun NavigationLogin(authenticationController: AuthenticationController) {
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(mainBackgroundColor)
+            //.background(mainBackgroundColor)
     ) {
     Column (
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -116,11 +116,10 @@ fun NavigationLogin(authenticationController: AuthenticationController) {
         )
 
         LazyColumn(
-            modifier = Modifier.padding(top = 20.dp).heightIn(max = 200.dp),
+            modifier = Modifier.padding(top = 20.dp).heightIn(max = 250.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            items(users.filter { it.firstName?.contains(searchQuery, ignoreCase = true) == true }
-                .take(5)) { user ->
+            items(users.filter { it.firstName?.contains(searchQuery, ignoreCase = true) == true } ) { user ->
                 Button(
                     onClick = {
                         selectedPersona = user.firstName

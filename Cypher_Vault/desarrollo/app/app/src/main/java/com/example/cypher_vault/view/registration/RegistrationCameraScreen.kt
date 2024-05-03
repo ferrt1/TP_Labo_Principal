@@ -67,7 +67,7 @@ class FaceContourView(context: Context) : View(context) {
 
     fun updateFaceContours(newContours: Map<String, List<PointF>>) {
         allContours = newContours
-        invalidate() // Redibuja la vista
+        invalidate()
     }
 }
 
@@ -141,13 +141,13 @@ fun RegistrationCameraScreen(authenticationController: AuthenticationController,
                         val bytes = ByteArray(buffer.remaining())
                         buffer.get(bytes)
                         imageState.value = bytes
-                        //val saveImageDeferred = authenticationController.saveImage(bytes, userId)
-                       // coroutineScope.launch {
-                            //saveImageDeferred.await()
-                            //isCameraOpen.value = false
-                            //cameraProvider.unbindAll()
-                           // authenticationController.navigateToConfirmation(userId)
-                        //}
+                        val saveImageDeferred = authenticationController.saveImage(bytes, userId)
+                        coroutineScope.launch {
+                            saveImageDeferred.await()
+                            isCameraOpen.value = false
+                            cameraProvider.unbindAll()
+                           authenticationController.navigateToConfirmation(userId)
+                        }
                     }
                 }
                 }
