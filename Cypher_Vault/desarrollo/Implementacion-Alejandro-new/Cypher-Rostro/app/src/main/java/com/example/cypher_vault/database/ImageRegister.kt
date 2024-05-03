@@ -21,6 +21,6 @@ data class ImagesRegister(
     @PrimaryKey(autoGenerate = true) val id: Long = 0,
     val imageData: ByteArray,
     val user_id: String, // referencia al usuario que posee la imagen
-    var faceContours: List<FaceContour?>?,
-    var faceLandmarks: List<FaceLandmark?>?,
+    var faceContours: List<FaceContour>?,
+    var faceLandmarks: List<FaceLandmark>?,
 )

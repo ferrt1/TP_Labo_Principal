@@ -21,14 +21,14 @@ interface ImageRegisterDao {
     fun updateImage(imagesRegister: ImagesRegister)
 
     @Query("UPDATE images_register SET faceContours = :faceContours WHERE user_id = :userId")
-    fun updateFaceContours(userId: String, faceContours: List<FaceContour>)
+    fun updateFaceContours(userId: String, faceContours: String) // Cambiado a String
 
     @Query("UPDATE images_register SET faceLandmarks = :faceLandmarks WHERE user_id = :userId")
-    fun updateFaceLandmarks(userId: String, faceLandmarks: List<FaceLandmark>)
+    fun updateFaceLandmarks(userId: String, faceLandmarks: String) // Cambiado a String
 
     @Query("SELECT faceContours FROM images_register WHERE user_id = :userId")
-    fun getFaceContoursForUser(userId: String): List<FaceContour>
+    fun getFaceContoursForUser(userId: String): String // Cambiado a String
 
     @Query("SELECT faceLandmarks FROM images_register WHERE user_id = :userId")
-    fun getFaceLandmarksForUser(userId: String): List<FaceLandmark>
+    fun getFaceLandmarksForUser(userId: String): String // Cambiado a String
 }
