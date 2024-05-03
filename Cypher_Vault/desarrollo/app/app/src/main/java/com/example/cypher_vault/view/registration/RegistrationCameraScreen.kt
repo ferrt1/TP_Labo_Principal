@@ -155,79 +155,79 @@ fun RegistrationCameraScreen(authenticationController: AuthenticationController,
 
     val coroutineScope = rememberCoroutineScope()
     val timerState = remember { mutableIntStateOf(10) }
+    val timerStarted = remember { mutableStateOf(false) } // Nueva variable para controlar el inicio del temporizador
 
     val imageState = remember { mutableStateOf<ByteArray?>(null) }
 
-
-
     val timerFinished = remember { mutableStateOf(false) }
-     imageAnalysis.setAnalyzer(ContextCompat.getMainExecutor(context)) { imageProxy ->
-            val mediaImage = imageProxy.image
-            if (mediaImage != null) {
-                val image = InputImage.fromMediaImage(mediaImage, imageProxy.imageInfo.rotationDegrees)
+    imageAnalysis.setAnalyzer(ContextCompat.getMainExecutor(context)) { imageProxy ->
+        val mediaImage = imageProxy.image
+        if (mediaImage != null) {
+            val image = InputImage.fromMediaImage(mediaImage, imageProxy.imageInfo.rotationDegrees)
 
-                val realTimeOpts = FaceDetectorOptions.Builder()
-                    .setContourMode(FaceDetectorOptions.CONTOUR_MODE_ALL)
-                    .build()
+            val realTimeOpts = FaceDetectorOptions.Builder()
+                .setContourMode(FaceDetectorOptions.CONTOUR_MODE_ALL)
+                .setPerformanceMode(FaceDetectorOptions.PERFORMANCE_MODE_FAST)
+                .enableTracking()
+                .build()
 
-                val detector = FaceDetection.getClient(realTimeOpts)
-                detector.process(image)
-                    .addOnSuccessListener { faces ->
-                        var faceDetected = false
-                        for (face in faces) {
-                            val hasLeftEye = face.getContour(FaceContour.LEFT_EYE)?.points?.isNotEmpty()
-                            val hasRightEye = face.getContour(FaceContour.RIGHT_EYE)?.points?.isNotEmpty()
-                            val hasNose = face.getContour(FaceContour.NOSE_BRIDGE)?.points?.isNotEmpty()
-                            val hasMouth = face.getContour(FaceContour.UPPER_LIP_TOP)?.points?.isNotEmpty() == true && face.getContour(FaceContour.LOWER_LIP_BOTTOM)?.points?.isNotEmpty()!!
+            val detector = FaceDetection.getClient(realTimeOpts)
+            detector.process(image)
+                .addOnSuccessListener { faces ->
+                    var faceDetected = false
+                    for (face in faces) {
+                        val hasLeftEye = face.getContour(FaceContour.LEFT_EYE)?.points?.isNotEmpty()
+                        val hasRightEye = face.getContour(FaceContour.RIGHT_EYE)?.points?.isNotEmpty()
+                        val hasNose = face.getContour(FaceContour.NOSE_BRIDGE)?.points?.isNotEmpty()
+                        val hasMouth = face.getContour(FaceContour.UPPER_LIP_TOP)?.points?.isNotEmpty() == true && face.getContour(FaceContour.LOWER_LIP_BOTTOM)?.points?.isNotEmpty()!!
 
-                            if (hasLeftEye == true && hasRightEye == true && hasNose == true && hasMouth) {
-                                faceDetected = true
-                                if (timerState.value == 0) {
-                                    timerState.value = 3
-                                    coroutineScope.launch {
-                                        while (timerState.value > 0) {
-                                            delay(1000)
-                                            timerState.value--
-                                        }
-                                        timerFinished.value = true
+                        if (hasLeftEye == true && hasRightEye == true && hasNose == true && hasMouth) {
+                            faceDetected = true
+                            if (!timerStarted.value) {
+                                timerStarted.value = true
+                                timerState.value = 3
+                                coroutineScope.launch {
+                                    while (timerState.value > 0) {
+                                        delay(1000)
+                                        timerState.value--
                                     }
+                                    timerFinished.value = true
                                 }
                             }
                         }
+                    }
 
-                        if (!faceDetected) {
-                            // Si no se detecta un rostro completo, reinicia el temporizador
-                            timerState.value = 0
-                            timerFinished.value = false
+                    if (!faceDetected) {
+                        // Si no se detecta un rostro completo, reinicia el temporizador
+                        timerState.value = 0
+                        timerFinished.value = false
+                        timerStarted.value = false
+                    }
+                }
+                .addOnFailureListener { e ->
+                    // Manejar cualquier error aquí
+                }
+                .addOnCompleteListener {
+
+                    if (timerFinished.value) {
+                        // Aquí es donde capturas la imagen y la guardas
+                        val buffer = mediaImage.planes[0].buffer
+                        val bytes = ByteArray(buffer.remaining())
+                        buffer.get(bytes)
+                        imageState.value = bytes
+                        val saveImageDeferred = authenticationController.saveImage(bytes, userId)
+                        coroutineScope.launch {
+                            saveImageDeferred.await()
+                            isCameraOpen.value = false
+                            cameraProvider.unbindAll()
+                            authenticationController.navigateToConfirmation(userId)
                         }
                     }
-                    .addOnFailureListener { e ->
-                        // Manejar cualquier error aquí
-                    }
-                    .addOnCompleteListener {
-
-                        if (timerFinished.value) {
-                            // Aquí es donde capturas la imagen y la guardas
-                            val buffer = mediaImage.planes[0].buffer
-                            val bytes = ByteArray(buffer.remaining())
-                            buffer.get(bytes)
-                            imageState.value = bytes
-                            val saveImageDeferred = authenticationController.saveImage(bytes, userId)
-                            coroutineScope.launch {
-                                saveImageDeferred.await()
-                                isCameraOpen.value = false
-                                cameraProvider.unbindAll()
-                                authenticationController.navigateToConfirmation(userId)
-                            }
-                        }
-                        // Cerrar la imagen cuando hayas terminado
-                        imageProxy.close()
-                    }
-            }
+                    // Cerrar la imagen cuando hayas terminado
+                    imageProxy.close()
+                }
         }
-
-
-
+    }
 
     LaunchedEffect(cameraProviderFuture) {
         cameraProvider.bindToLifecycle(lifecycleOwner, cameraSelector, imageAnalysis, preview)
@@ -252,7 +252,6 @@ fun RegistrationCameraScreen(authenticationController: AuthenticationController,
     }
 }
 
-
 @Composable
 fun CameraPreview(preview: Preview) {
     AndroidView(
@@ -264,6 +263,7 @@ fun CameraPreview(preview: Preview) {
         modifier = Modifier.fillMaxSize()
     )
 }
+
 
 fun isUserFaceAligned(face: Face): Boolean {
     // Aquí es donde defines el contorno facial predeterminado.
