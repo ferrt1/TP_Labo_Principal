@@ -3,7 +3,6 @@ package com.example.cypher_vault.view.registration
 import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Canvas
-import android.graphics.Color
 import android.graphics.Paint
 import android.graphics.PointF
 import android.view.View
@@ -16,44 +15,102 @@ import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.PreviewView
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.ContextCompat
 import com.example.cypher_vault.controller.authentication.AuthenticationController
 import com.google.mlkit.vision.common.InputImage
+import com.google.mlkit.vision.face.Face
 import com.google.mlkit.vision.face.FaceContour
 import com.google.mlkit.vision.face.FaceDetection
 import com.google.mlkit.vision.face.FaceDetector
 import com.google.mlkit.vision.face.FaceDetectorOptions
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 
 class FaceContourView(context: Context) : View(context) {
-    var allContours: Map<String, List<PointF>> = mapOf()
+    private var allContours: Map<String, List<PointF>> = mapOf()
+    private val paint = Paint()
 
-    @SuppressLint("DrawAllocation")
-    override fun onDraw(canvas: Canvas) {
-        super.onDraw(canvas)
-        val paint = Paint()
-        paint.color = Color.RED
+    init {
+        paint.color = 255
         paint.style = Paint.Style.FILL
         paint.strokeWidth = 5f
+    }
+    override fun onDraw(canvas: Canvas) {
+        super.onDraw(canvas)
 
-        for ((_, points) in allContours) {
-            for (point in points) {
-                val scaledPoint = PointF(point.x * scaleX, point.y * scaleY)
-                canvas.drawPoint(scaledPoint.x, scaledPoint.y, paint)
+        if (allContours.isNotEmpty()) {
+            val allPoints = allContours.values.flatten()
+            val minX = allPoints.minOfOrNull { it.x }
+            val maxX = allPoints.maxOfOrNull { it.x }
+            val minY = allPoints.minOfOrNull { it.y }
+            val maxY = allPoints.maxOfOrNull { it.y }
+
+            if (minX != null && maxX != null && minY != null && maxY != null) {
+                // Dibuja el rectángulo delimitador alrededor de la cara
+                paint.style = Paint.Style.STROKE
+                canvas.drawRect(minX, minY, maxX, maxY, paint)
+
+                // Dibuja los puntos de contorno
+                paint.style = Paint.Style.FILL
+                for ((_, points) in allContours) {
+                    for (point in points) {
+                        canvas.drawPoint(point.x, point.y, paint)
+                    }
+                }
             }
+        }
+        drawDefaultFaceContour(canvas)
+    }
+
+
+
+
+    private fun drawDefaultFaceContour(canvas: Canvas) {
+        val paint = Paint()
+        paint.color = 255
+        paint.style = Paint.Style.STROKE
+        paint.strokeWidth = 10f
+
+        // Aquí es donde defines el contorno facial predeterminado.
+        // Deberás ajustar estos valores según tus necesidades.
+        val defaultFaceContour = listOf(
+           // PointF(0f, 0f),  // Punto de inicio
+
+            PointF(350f, 800f),  // Punto de la ceja derecha
+            PointF(350f, 950f),  // Punto del ojo derecho
+
+            PointF(750f, 800f),  // Punto de la ceja izquierda
+            PointF(750f, 950f),  // Punto del ojo izquierdo
+
+
+            PointF(550f, 1100f),  // Punto de la nariz
+
+
+            PointF(550f, 1400f)   // Punto de boca
+        )
+
+        for (point in defaultFaceContour) {
+            canvas.drawPoint(point.x, point.y, paint)
         }
     }
 
@@ -97,65 +154,80 @@ fun RegistrationCameraScreen(authenticationController: AuthenticationController,
         .build()
 
     val coroutineScope = rememberCoroutineScope()
-    val allContours = remember { mutableStateOf<Map<String, List<PointF>>>(mapOf()) }
+    val timerState = remember { mutableIntStateOf(10) }
 
     val imageState = remember { mutableStateOf<ByteArray?>(null) }
 
-    imageAnalysis.setAnalyzer(ContextCompat.getMainExecutor(context)) { imageProxy ->
-        val mediaImage = imageProxy.image
-        if (mediaImage != null) {
-            val image = InputImage.fromMediaImage(mediaImage, imageProxy.imageInfo.rotationDegrees)
 
-            val realTimeOpts = FaceDetectorOptions.Builder()
-                .setContourMode(FaceDetectorOptions.CONTOUR_MODE_ALL)
-                .build()
 
-            val detector = FaceDetection.getClient(realTimeOpts)
-            detector.process(image)
-                .addOnSuccessListener { faces ->
-                    for (face in faces) {
-                        val newContours = mutableMapOf<String, List<PointF>>()
-                        newContours["FACE"] = face.getContour(FaceContour.FACE)?.points ?: listOf()
-                        newContours["LEFT_EYE"] = face.getContour(FaceContour.LEFT_EYE)?.points ?: listOf()
-                        newContours["LEFT_EYEBROW_BOTTOM"] = face.getContour(FaceContour.LEFT_EYEBROW_BOTTOM)?.points ?: listOf()
-                        newContours["LEFT_EYEBROW_TOP"] = face.getContour(FaceContour.LEFT_EYEBROW_TOP)?.points ?: listOf()
-                        newContours["RIGHT_EYE"] = face.getContour(FaceContour.RIGHT_EYE)?.points ?: listOf()
-                        newContours["RIGHT_EYEBROW_TOP"] = face.getContour(FaceContour.RIGHT_EYEBROW_TOP)?.points ?: listOf()
-                        newContours["RIGHT_EYEBROW_BOTTOM"] = face.getContour(FaceContour.RIGHT_EYEBROW_BOTTOM)?.points ?: listOf()
-                        newContours["UPPER_LIP_TOP"] = face.getContour(FaceContour.UPPER_LIP_TOP)?.points ?: listOf()
-                        newContours["UPPER_LIP_BOTTOM"] = face.getContour(FaceContour.UPPER_LIP_BOTTOM)?.points ?: listOf()
-                        newContours["LOWER_LIP_TOP"] = face.getContour(FaceContour.LOWER_LIP_TOP)?.points ?: listOf()
-                        newContours["LOWER_LIP_BOTTOM"] = face.getContour(FaceContour.LOWER_LIP_BOTTOM)?.points ?: listOf()
-                        newContours["NOSE_BRIDGE"] = face.getContour(FaceContour.NOSE_BRIDGE)?.points ?: listOf()
-                        newContours["NOSE_BOTTOM"] = face.getContour(FaceContour.NOSE_BOTTOM)?.points ?: listOf()
+    val timerFinished = remember { mutableStateOf(false) }
+     imageAnalysis.setAnalyzer(ContextCompat.getMainExecutor(context)) { imageProxy ->
+            val mediaImage = imageProxy.image
+            if (mediaImage != null) {
+                val image = InputImage.fromMediaImage(mediaImage, imageProxy.imageInfo.rotationDegrees)
 
-                        allContours.value = newContours
+                val realTimeOpts = FaceDetectorOptions.Builder()
+                    .setContourMode(FaceDetectorOptions.CONTOUR_MODE_ALL)
+                    .build()
 
-                        if (face.allContours.isNotEmpty()) {
+                val detector = FaceDetection.getClient(realTimeOpts)
+                detector.process(image)
+                    .addOnSuccessListener { faces ->
+                        var faceDetected = false
+                        for (face in faces) {
+                            val hasLeftEye = face.getContour(FaceContour.LEFT_EYE)?.points?.isNotEmpty()
+                            val hasRightEye = face.getContour(FaceContour.RIGHT_EYE)?.points?.isNotEmpty()
+                            val hasNose = face.getContour(FaceContour.NOSE_BRIDGE)?.points?.isNotEmpty()
+                            val hasMouth = face.getContour(FaceContour.UPPER_LIP_TOP)?.points?.isNotEmpty() == true && face.getContour(FaceContour.LOWER_LIP_BOTTOM)?.points?.isNotEmpty()!!
 
-                        //val buffer = mediaImage.planes[0].buffer
-                        //val bytes = ByteArray(buffer.remaining())
-                        //buffer.get(bytes)
-                        //imageState.value = bytes
-                        //val saveImageDeferred = authenticationController.saveImage(bytes, userId)
-                        //coroutineScope.launch {
-                            //saveImageDeferred.await()
-                            //isCameraOpen.value = false
-                            //cameraProvider.unbindAll()
-                           //authenticationController.navigateToConfirmation(userId)
-                        //}
+                            if (hasLeftEye == true && hasRightEye == true && hasNose == true && hasMouth) {
+                                faceDetected = true
+                                if (timerState.value == 0) {
+                                    timerState.value = 3
+                                    coroutineScope.launch {
+                                        while (timerState.value > 0) {
+                                            delay(1000)
+                                            timerState.value--
+                                        }
+                                        timerFinished.value = true
+                                    }
+                                }
+                            }
+                        }
+
+                        if (!faceDetected) {
+                            // Si no se detecta un rostro completo, reinicia el temporizador
+                            timerState.value = 0
+                            timerFinished.value = false
+                        }
                     }
-                }
-                }
-                .addOnFailureListener { e ->
-                    // Manejar cualquier error aquí
-                }
-                .addOnCompleteListener {
-                    // Cerrar la imagen cuando hayas terminado
-                    imageProxy.close()
-                }
+                    .addOnFailureListener { e ->
+                        // Manejar cualquier error aquí
+                    }
+                    .addOnCompleteListener {
+
+                        if (timerFinished.value) {
+                            // Aquí es donde capturas la imagen y la guardas
+                            val buffer = mediaImage.planes[0].buffer
+                            val bytes = ByteArray(buffer.remaining())
+                            buffer.get(bytes)
+                            imageState.value = bytes
+                            val saveImageDeferred = authenticationController.saveImage(bytes, userId)
+                            coroutineScope.launch {
+                                saveImageDeferred.await()
+                                isCameraOpen.value = false
+                                cameraProvider.unbindAll()
+                                authenticationController.navigateToConfirmation(userId)
+                            }
+                        }
+                        // Cerrar la imagen cuando hayas terminado
+                        imageProxy.close()
+                    }
+            }
         }
-    }
+
+
+
 
     LaunchedEffect(cameraProviderFuture) {
         cameraProvider.bindToLifecycle(lifecycleOwner, cameraSelector, imageAnalysis, preview)
@@ -163,11 +235,19 @@ fun RegistrationCameraScreen(authenticationController: AuthenticationController,
 
     Box(
         modifier = Modifier.fillMaxSize(),
-        contentAlignment = Alignment.BottomCenter
+        contentAlignment = Alignment.Center
     ) {
         if (isCameraOpen.value) {
             CameraPreview(preview)
-            FaceContourOverlay(allContours)
+            val textColor = Color(0xFFFFFFFF)
+            val textStyle = TextStyle(fontWeight = FontWeight.Bold, fontSize = 36.sp, color = thirdColor, fontFamily = fontFamily)
+            if (timerState.value > 0) {
+                Text(
+                    text = "${timerState.intValue}",
+                    color = textColor,
+                    style = textStyle,
+                )
+            }
         }
     }
 }
@@ -183,4 +263,49 @@ fun CameraPreview(preview: Preview) {
         },
         modifier = Modifier.fillMaxSize()
     )
+}
+
+fun isUserFaceAligned(face: Face): Boolean {
+    // Aquí es donde defines el contorno facial predeterminado.
+    // Deberás ajustar estos valores según tus necesidades.
+    val defaultFaceContour = listOf(
+        //PointF(0f, 0f),  // Punto de inicio
+
+
+        PointF(350f, 800f),  // Punto de la ceja derecha
+        PointF(350f, 950f),  // Punto del ojo derecho
+
+        PointF(750f, 800f),  // Punto de la ceja izquierda
+        PointF(750f, 950f),  // Punto del ojo izquierdo
+
+
+        PointF(550f, 1100f),  // Punto de la nariz
+
+
+        PointF(550f, 1400f)   // Punto de boca
+    )
+
+    // Aquí es donde verificas si los puntos de contorno detectados para los ojos, la nariz y la boca del usuario
+    // están dentro de las áreas correspondientes en el contorno facial predeterminado.
+    // Deberás implementar la lógica de esta verificación según tus necesidades.
+    for (point in defaultFaceContour) {
+        if (!isPointInsideArea(face.getContour(FaceContour.FACE)?.points ?: listOf(), point)) {
+            return false
+        }
+    }
+
+    return true
+}
+
+fun isPointInsideArea(faceContourPoints: List<PointF>, point: PointF): Boolean {
+    var j = faceContourPoints.size - 1
+    var inside = false
+    for (i in faceContourPoints.indices) {
+        if (faceContourPoints[i].y > point.y != faceContourPoints[j].y > point.y &&
+            point.x < (faceContourPoints[j].x - faceContourPoints[i].x) * (point.y - faceContourPoints[i].y) / (faceContourPoints[j].y - faceContourPoints[i].y) + faceContourPoints[i].x) {
+            inside = !inside
+        }
+        j = i
+    }
+    return inside
 }
