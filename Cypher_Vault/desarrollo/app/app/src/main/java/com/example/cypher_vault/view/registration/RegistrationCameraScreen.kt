@@ -1,5 +1,13 @@
 package com.example.cypher_vault.view.registration
 
+import android.annotation.SuppressLint
+import android.content.Context
+import android.graphics.Canvas
+import android.graphics.Color
+import android.graphics.Paint
+import android.graphics.PointF
+import android.util.Log
+import android.view.View
 import androidx.annotation.OptIn
 import androidx.camera.core.CameraSelector
 import androidx.camera.core.ExperimentalGetImage
@@ -30,11 +38,53 @@ import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.ContextCompat
 import com.example.cypher_vault.controller.authentication.AuthenticationController
 import com.google.mlkit.vision.common.InputImage
+import com.google.mlkit.vision.face.FaceContour
 import com.google.mlkit.vision.face.FaceDetection
 import com.google.mlkit.vision.face.FaceDetector
 import com.google.mlkit.vision.face.FaceDetectorOptions
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
+
+
+class FaceContourView(context: Context) : View(context) {
+    var allContours: Map<String, List<PointF>> = mapOf()
+
+    @SuppressLint("DrawAllocation")
+    override fun onDraw(canvas: Canvas) {
+        super.onDraw(canvas)
+        val paint = Paint()
+        paint.color = Color.RED
+        paint.style = Paint.Style.FILL
+        paint.strokeWidth = 10f
+
+        for ((_, points) in allContours) {
+            for (point in points) {
+                val scaledPoint = PointF(point.x * scaleX, point.y * scaleY)
+                canvas.drawPoint(scaledPoint.x, scaledPoint.y, paint)
+            }
+        }
+    }
+
+    fun updateFaceContours(newContours: Map<String, List<PointF>>) {
+        allContours = newContours
+        invalidate() // Redibuja la vista
+    }
+}
+
+@Composable
+fun FaceContourOverlay(allContours: MutableState<Map<String, List<PointF>>>) {
+    val context = LocalContext.current
+    val faceContourView = remember { FaceContourView(context) }
+
+    LaunchedEffect(allContours.value) {
+        faceContourView.updateFaceContours(allContours.value)
+    }
+
+    AndroidView(
+        factory = { faceContourView },
+        modifier = Modifier.fillMaxSize()
+    )
+}
 
 
 @OptIn(ExperimentalGetImage::class)
@@ -55,6 +105,7 @@ fun RegistrationCameraScreen(authenticationController: AuthenticationController,
         .build()
 
     val coroutineScope = rememberCoroutineScope()
+    val allContours = remember { mutableStateOf<Map<String, List<PointF>>>(mapOf()) }
 
     val imageState = remember { mutableStateOf<ByteArray?>(null) }
 
@@ -62,22 +113,43 @@ fun RegistrationCameraScreen(authenticationController: AuthenticationController,
         val mediaImage = imageProxy.image
         if (mediaImage != null) {
             val image = InputImage.fromMediaImage(mediaImage, imageProxy.imageInfo.rotationDegrees)
-            val detector = FaceDetection.getClient()
+
+            val realTimeOpts = FaceDetectorOptions.Builder()
+                .setContourMode(FaceDetectorOptions.CONTOUR_MODE_ALL)
+                .build()
+
+            val detector = FaceDetection.getClient(realTimeOpts)
             detector.process(image)
                 .addOnSuccessListener { faces ->
-                    if (faces.size > 0) {
+                    for (face in faces) {
+                        val newContours = mutableMapOf<String, List<PointF>>()
+                        newContours["FACE"] = face.getContour(FaceContour.FACE)?.points ?: listOf()
+                        newContours["LEFT_EYE"] = face.getContour(FaceContour.LEFT_EYE)?.points ?: listOf()
+                        newContours["RIGHT_EYE"] = face.getContour(FaceContour.RIGHT_EYE)?.points ?: listOf()
+                        newContours["UPPER_LIP_TOP"] = face.getContour(FaceContour.UPPER_LIP_TOP)?.points ?: listOf()
+                        newContours["UPPER_LIP_BOTTOM"] = face.getContour(FaceContour.UPPER_LIP_BOTTOM)?.points ?: listOf()
+                        newContours["LOWER_LIP_TOP"] = face.getContour(FaceContour.LOWER_LIP_TOP)?.points ?: listOf()
+                        newContours["LOWER_LIP_BOTTOM"] = face.getContour(FaceContour.LOWER_LIP_BOTTOM)?.points ?: listOf()
+                        newContours["NOSE_BRIDGE"] = face.getContour(FaceContour.NOSE_BRIDGE)?.points ?: listOf()
+                        newContours["NOSE_BOTTOM"] = face.getContour(FaceContour.NOSE_BOTTOM)?.points ?: listOf()
+
+                        allContours.value = newContours
+
+                        if (face.allContours.isNotEmpty()) {
+
                         val buffer = mediaImage.planes[0].buffer
                         val bytes = ByteArray(buffer.remaining())
                         buffer.get(bytes)
                         imageState.value = bytes
-                        val saveImageDeferred = authenticationController.saveImage(bytes, userId)
-                        coroutineScope.launch {
-                            saveImageDeferred.await()
-                            isCameraOpen.value = false
-                            cameraProvider.unbindAll()
-                            authenticationController.navigateToConfirmation(userId)
-                        }
+                        //val saveImageDeferred = authenticationController.saveImage(bytes, userId)
+                       // coroutineScope.launch {
+                            //saveImageDeferred.await()
+                            //isCameraOpen.value = false
+                            //cameraProvider.unbindAll()
+                           // authenticationController.navigateToConfirmation(userId)
+                        //}
                     }
+                }
                 }
                 .addOnFailureListener { e ->
                     // Manejar cualquier error aquí
@@ -99,11 +171,12 @@ fun RegistrationCameraScreen(authenticationController: AuthenticationController,
     ) {
         if (isCameraOpen.value) {
             CameraPreview(preview)
-            Text("Pon tu cara en la cámara", modifier = Modifier.align(Alignment.Center))
-
+            FaceContourOverlay(allContours)
+            //Text("Pon tu cara en la cámara", modifier = Modifier.align(Alignment.Center))
         }
     }
 }
+
 
 @Composable
 fun CameraPreview(preview: Preview) {
