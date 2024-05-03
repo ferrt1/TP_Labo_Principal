@@ -6,6 +6,10 @@ import com.example.cypher_vault.database.AppDatabase
 import com.example.cypher_vault.database.Images
 import com.example.cypher_vault.database.ImagesRegister
 import com.example.cypher_vault.database.User
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
+import com.google.mlkit.vision.face.FaceContour
+import com.google.mlkit.vision.face.FaceLandmark
 
 
 object DatabaseManager {
@@ -44,13 +48,38 @@ object DatabaseManager {
         return database.imageDao().getImagesForUser(userId)
     }
 
-    // Métodos relacionados con la tabla de registros de imágenes
-    fun insertImageRegister(imageRegister: ImagesRegister) {
-        database.imageRegisterDao().insertImage(imageRegister)
+    // Funciones de inserción, actualización y consulta de imágenes
+    fun insertImageRegister(imagesRegister: ImagesRegister) {
+        database.imageRegisterDao().insertImage(imagesRegister)
     }
 
-    fun getImageRegistersForImage(user_id: String): List<ImagesRegister> {
-        return database.imageRegisterDao().getImagesForUser(user_id)
+    fun getImagesForUser(userId: String): List<ImagesRegister> {
+        return database.imageRegisterDao().getImagesForUser(userId)
+    }
+
+    fun updateImage(imagesRegister: ImagesRegister) {
+        database.imageRegisterDao().updateImage(imagesRegister)
+    }
+
+    // Funciones para actualizar y obtener contornos faciales y landmarks faciales
+    fun updateFaceContours(userId: String, faceContours: List<FaceContour>) {
+        val faceContoursJson = Gson().toJson(faceContours)
+        database.imageRegisterDao().updateFaceContours(userId, faceContoursJson)
+    }
+
+    fun updateFaceLandmarks(userId: String, faceLandmarks: List<FaceLandmark>) {
+        val faceLandmarksJson = Gson().toJson(faceLandmarks)
+        database.imageRegisterDao().updateFaceLandmarks(userId, faceLandmarksJson)
+    }
+
+    fun getFaceContoursForUser(userId: String): List<FaceContour> {
+        val faceContoursJson = database.imageRegisterDao().getFaceContoursForUser(userId)
+        return Gson().fromJson(faceContoursJson, object : TypeToken<List<FaceContour>>() {}.type)
+    }
+
+    fun getFaceLandmarksForUser(userId: String): List<FaceLandmark> {
+        val faceLandmarksJson = database.imageRegisterDao().getFaceLandmarksForUser(userId)
+        return Gson().fromJson(faceLandmarksJson, object : TypeToken<List<FaceLandmark>>() {}.type)
     }
 
     // Otros métodos según sea necesario para otras operaciones con usuarios, imágenes e imágenes registros
