@@ -6,23 +6,16 @@ import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
 import android.graphics.PointF
-import android.util.Log
 import android.view.View
 import androidx.annotation.OptIn
 import androidx.camera.core.CameraSelector
 import androidx.camera.core.ExperimentalGetImage
 import androidx.camera.core.ImageAnalysis
-import androidx.camera.core.ImageProxy
 import androidx.camera.core.Preview
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.PreviewView
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Button
-import androidx.compose.material3.SnackbarHost
-import androidx.compose.material3.SnackbarHostState
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
@@ -33,7 +26,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
-import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.ContextCompat
 import com.example.cypher_vault.controller.authentication.AuthenticationController
@@ -55,7 +47,7 @@ class FaceContourView(context: Context) : View(context) {
         val paint = Paint()
         paint.color = Color.RED
         paint.style = Paint.Style.FILL
-        paint.strokeWidth = 10f
+        paint.strokeWidth = 5f
 
         for ((_, points) in allContours) {
             for (point in points) {
@@ -125,7 +117,11 @@ fun RegistrationCameraScreen(authenticationController: AuthenticationController,
                         val newContours = mutableMapOf<String, List<PointF>>()
                         newContours["FACE"] = face.getContour(FaceContour.FACE)?.points ?: listOf()
                         newContours["LEFT_EYE"] = face.getContour(FaceContour.LEFT_EYE)?.points ?: listOf()
+                        newContours["LEFT_EYEBROW_BOTTOM"] = face.getContour(FaceContour.LEFT_EYEBROW_BOTTOM)?.points ?: listOf()
+                        newContours["LEFT_EYEBROW_TOP"] = face.getContour(FaceContour.LEFT_EYEBROW_TOP)?.points ?: listOf()
                         newContours["RIGHT_EYE"] = face.getContour(FaceContour.RIGHT_EYE)?.points ?: listOf()
+                        newContours["RIGHT_EYEBROW_TOP"] = face.getContour(FaceContour.RIGHT_EYEBROW_TOP)?.points ?: listOf()
+                        newContours["RIGHT_EYEBROW_BOTTOM"] = face.getContour(FaceContour.RIGHT_EYEBROW_BOTTOM)?.points ?: listOf()
                         newContours["UPPER_LIP_TOP"] = face.getContour(FaceContour.UPPER_LIP_TOP)?.points ?: listOf()
                         newContours["UPPER_LIP_BOTTOM"] = face.getContour(FaceContour.UPPER_LIP_BOTTOM)?.points ?: listOf()
                         newContours["LOWER_LIP_TOP"] = face.getContour(FaceContour.LOWER_LIP_TOP)?.points ?: listOf()
@@ -137,17 +133,17 @@ fun RegistrationCameraScreen(authenticationController: AuthenticationController,
 
                         if (face.allContours.isNotEmpty()) {
 
-                        val buffer = mediaImage.planes[0].buffer
-                        val bytes = ByteArray(buffer.remaining())
-                        buffer.get(bytes)
-                        imageState.value = bytes
-                        val saveImageDeferred = authenticationController.saveImage(bytes, userId)
-                        coroutineScope.launch {
-                            saveImageDeferred.await()
-                            isCameraOpen.value = false
-                            cameraProvider.unbindAll()
-                           authenticationController.navigateToConfirmation(userId)
-                        }
+                        //val buffer = mediaImage.planes[0].buffer
+                        //val bytes = ByteArray(buffer.remaining())
+                        //buffer.get(bytes)
+                        //imageState.value = bytes
+                        //val saveImageDeferred = authenticationController.saveImage(bytes, userId)
+                        //coroutineScope.launch {
+                            //saveImageDeferred.await()
+                            //isCameraOpen.value = false
+                            //cameraProvider.unbindAll()
+                           //authenticationController.navigateToConfirmation(userId)
+                        //}
                     }
                 }
                 }
@@ -172,7 +168,6 @@ fun RegistrationCameraScreen(authenticationController: AuthenticationController,
         if (isCameraOpen.value) {
             CameraPreview(preview)
             FaceContourOverlay(allContours)
-            //Text("Pon tu cara en la cámara", modifier = Modifier.align(Alignment.Center))
         }
     }
 }
