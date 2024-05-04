@@ -117,29 +117,17 @@ private fun captureImage(
                 val faceDetector = FaceDetectionActivity()
                 Log.d("faceDetection", "imageCapture 3")
                 faceDetector.detectFaces(authenticationController, bitmap, userId)
+                Log.e("faceDetection", "salio del DetectFaces")
                 image.close()
-                val testVariable = existeID(userId)
-                Log.e("faceDetection", "if(existeID(userId)) = $testVariable")
-                // Cambiar de pantalla
-                if(existeID(userId)){
-                    Log.e("faceDetection", "antes del navigateToConfirmation()")
-                    authenticationController.navigateToConfirmation()
-                }else{
-                    Log.e("faceDetection", "antes del navigateToCamera()")
-                    authenticationController.navigateToCamera()
-                }
             }
-
-            private fun existeID(userId: String): Boolean {
-                val imageRegister = authenticationController.getUserImagesRegister(userId)
-                return imageRegister.value.isNotEmpty()
-            }
-
             override fun onError(error: ImageCaptureException) {
                 Log.d("faceDetection", "error: ImageCaptureException : $error")
             }
         })
 }
+
+
+
 
 private fun imageProxyToBitmap(image: ImageProxy): Bitmap {
     val buffer = image.planes[0].buffer
