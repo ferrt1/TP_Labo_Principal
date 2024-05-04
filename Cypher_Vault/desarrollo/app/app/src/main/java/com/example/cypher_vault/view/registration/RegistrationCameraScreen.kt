@@ -5,6 +5,8 @@ import android.content.Context
 import android.graphics.Canvas
 import android.graphics.Paint
 import android.graphics.PointF
+import android.media.Image
+import android.util.Log
 import android.view.View
 import androidx.annotation.OptIn
 import androidx.camera.core.CameraSelector
@@ -14,11 +16,13 @@ import androidx.camera.core.Preview
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.PreviewView
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.MutableIntState
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -31,6 +35,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.ContextCompat
@@ -44,6 +49,7 @@ import com.google.mlkit.vision.face.FaceDetectorOptions
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlin.math.abs
 
 
 class FaceContourView(context: Context) : View(context) {
@@ -94,7 +100,7 @@ class FaceContourView(context: Context) : View(context) {
         // Aquí es donde defines el contorno facial predeterminado.
         // Deberás ajustar estos valores según tus necesidades.
         val defaultFaceContour = listOf(
-           // PointF(0f, 0f),  // Punto de inicio
+            // PointF(0f, 0f),  // Punto de inicio
 
             PointF(350f, 800f),  // Punto de la ceja derecha
             PointF(350f, 950f),  // Punto del ojo derecho
@@ -154,12 +160,17 @@ fun RegistrationCameraScreen(authenticationController: AuthenticationController,
         .build()
 
     val coroutineScope = rememberCoroutineScope()
-    val timerState = remember { mutableIntStateOf(10) }
-    val timerStarted = remember { mutableStateOf(false) } // Nueva variable para controlar el inicio del temporizador
 
     val imageState = remember { mutableStateOf<ByteArray?>(null) }
 
+    val timer = remember { mutableIntStateOf(3) }
+    val timerStarted = remember { mutableStateOf(false) }
     val timerFinished = remember { mutableStateOf(false) }
+
+    val isImageCaptured = remember { mutableStateOf(false) }
+
+    val currentOrientation = remember { mutableStateOf("front") }
+
     imageAnalysis.setAnalyzer(ContextCompat.getMainExecutor(context)) { imageProxy ->
         val mediaImage = imageProxy.image
         if (mediaImage != null) {
@@ -167,6 +178,7 @@ fun RegistrationCameraScreen(authenticationController: AuthenticationController,
 
             val realTimeOpts = FaceDetectorOptions.Builder()
                 .setContourMode(FaceDetectorOptions.CONTOUR_MODE_ALL)
+                .setLandmarkMode(FaceDetectorOptions.LANDMARK_MODE_ALL)
                 .setPerformanceMode(FaceDetectorOptions.PERFORMANCE_MODE_FAST)
                 .enableTracking()
                 .build()
@@ -174,56 +186,93 @@ fun RegistrationCameraScreen(authenticationController: AuthenticationController,
             val detector = FaceDetection.getClient(realTimeOpts)
             detector.process(image)
                 .addOnSuccessListener { faces ->
-                    var faceDetected = false
+                    if (faces.isEmpty()) {
+                        // Si no hay rostros en la imagen, detén el temporizador y restablécelo a 3
+                        timer.value = 3
+                        timerStarted.value = false
+                    } else {
                     for (face in faces) {
                         val hasLeftEye = face.getContour(FaceContour.LEFT_EYE)?.points?.isNotEmpty()
-                        val hasRightEye = face.getContour(FaceContour.RIGHT_EYE)?.points?.isNotEmpty()
+                        val hasRightEye =
+                            face.getContour(FaceContour.RIGHT_EYE)?.points?.isNotEmpty()
                         val hasNose = face.getContour(FaceContour.NOSE_BRIDGE)?.points?.isNotEmpty()
-                        val hasMouth = face.getContour(FaceContour.UPPER_LIP_TOP)?.points?.isNotEmpty() == true && face.getContour(FaceContour.LOWER_LIP_BOTTOM)?.points?.isNotEmpty()!!
+                        val hasMouth =
+                            face.getContour(FaceContour.UPPER_LIP_TOP)?.points?.isNotEmpty() == true && face.getContour(
+                                FaceContour.LOWER_LIP_BOTTOM
+                            )?.points?.isNotEmpty()!!
 
                         if (hasLeftEye == true && hasRightEye == true && hasNose == true && hasMouth) {
-                            faceDetected = true
-                            if (!timerStarted.value) {
-                                timerStarted.value = true
-                                timerState.value = 3
-                                coroutineScope.launch {
-                                    while (timerState.value > 0) {
-                                        delay(1000)
-                                        timerState.value--
-                                    }
-                                    timerFinished.value = true
+                            when (currentOrientation.value) {
+                                "front" -> if (face.headEulerAngleY in -10.0..10.0) startTimer(
+                                    timer,
+                                    timerStarted,
+                                    timerFinished,
+                                    coroutineScope
+                                )
+
+                                "left" -> if (face.headEulerAngleY > 30) startTimer(
+                                    timer,
+                                    timerStarted,
+                                    timerFinished,
+                                    coroutineScope
+                                )
+
+                                "right" -> if (face.headEulerAngleY < -30) startTimer(
+                                    timer,
+                                    timerStarted,
+                                    timerFinished,
+                                    coroutineScope
+                                )
+
+                                "below" -> if (face.headEulerAngleX < -20) startTimer(
+                                    timer,
+                                    timerStarted,
+                                    timerFinished,
+                                    coroutineScope
+                                )
+
+                                "above" -> if (face.headEulerAngleX > 20) startTimer(
+                                    timer,
+                                    timerStarted,
+                                    timerFinished,
+                                    coroutineScope
+                                )
+                            }
+
+                            if (timer.value == 0 && !isImageCaptured.value) {
+                                captureImage(
+                                    mediaImage,
+                                    isImageCaptured,
+                                    coroutineScope,
+                                    authenticationController,
+                                    userId
+                                )
+                                timer.value = 3 // Reinicia el temporizador
+                                timerStarted.value = false // Reinicia el estado del temporizador
+                                isImageCaptured.value =
+                                    false // Reinicia el estado de la captura de la imagen
+
+                                // Cambia a la siguiente orientación
+                                currentOrientation.value = when (currentOrientation.value) {
+                                    "front" -> "left"
+                                    "left" -> "right"
+                                    "right" -> "below"
+                                    "below" -> "above"
+                                    else -> "done"
                                 }
                             }
                         }
                     }
-
-                    if (!faceDetected) {
-                        // Si no se detecta un rostro completo, reinicia el temporizador
-                        timerState.value = 0
-                        timerFinished.value = false
-                        timerStarted.value = false
-                    }
                 }
+        }
                 .addOnFailureListener { e ->
                     // Manejar cualquier error aquí
                 }
                 .addOnCompleteListener {
-
-                    if (timerFinished.value) {
-                        // Aquí es donde capturas la imagen y la guardas
-                        val buffer = mediaImage.planes[0].buffer
-                        val bytes = ByteArray(buffer.remaining())
-                        buffer.get(bytes)
-                        imageState.value = bytes
-                        val saveImageDeferred = authenticationController.saveImage(bytes, userId)
-                        coroutineScope.launch {
-                            saveImageDeferred.await()
-                            isCameraOpen.value = false
-                            cameraProvider.unbindAll()
-                            authenticationController.navigateToConfirmation(userId)
-                        }
+                    if (currentOrientation.value == "done") {
+                        cameraProvider.unbindAll()
+                        authenticationController.navigateToConfirmation(userId)
                     }
-                    // Cerrar la imagen cuando hayas terminado
                     imageProxy.close()
                 }
         }
@@ -235,24 +284,111 @@ fun RegistrationCameraScreen(authenticationController: AuthenticationController,
 
     Box(
         modifier = Modifier.fillMaxSize(),
-        contentAlignment = Alignment.Center
+        contentAlignment = Alignment.BottomCenter
     ) {
         if (isCameraOpen.value) {
             CameraPreview(preview)
             val textColor = Color(0xFFFFFFFF)
-            val textStyle = TextStyle(fontWeight = FontWeight.Bold, fontSize = 36.sp, color = thirdColor, fontFamily = fontFamily)
-            if (timerState.value > 0) {
-                Text(
-                    text = "${timerState.intValue}",
-                    color = textColor,
-                    style = textStyle,
-                )
+            val textStyle =
+                TextStyle(fontWeight = FontWeight.Bold, color = thirdColor, fontFamily = fontFamily)
+
+            when (currentOrientation.value) {
+                "front" -> if (timer.value > 0) {
+                    Column {
+                        Text(
+                            text = "${timer.intValue}",
+                            color = textColor,
+                            style = textStyle,
+                            fontSize = 36.sp,
+                            textAlign = TextAlign.Center
+                        )
+                        Text(
+                            "Por favor, Mire hacia la cámara.",
+                            color = textColor,
+                            style = textStyle,
+                            textAlign = TextAlign.Center
+                        )
+                    }
+                }
+
+                "left" -> if (timer.value > 0) {
+                    Column {
+                        Text(
+                            text = "${timer.intValue}",
+                            color = textColor,
+                            style = textStyle,
+                            fontSize = 36.sp,
+                            textAlign = TextAlign.Center
+                        )
+                        Text(
+                            "Por favor, gire la cabeza hacia la izquierda.",
+                            color = textColor,
+                            style = textStyle,
+                            textAlign = TextAlign.Center
+                        )
+                    }
+                }
+
+                "right" -> if (timer.value > 0) {
+                    Column {
+                        Text(
+                            text = "${timer.intValue}",
+                            color = textColor,
+                            style = textStyle,
+                            fontSize = 36.sp,
+                            textAlign = TextAlign.Center
+                        )
+                        Text(
+                            "Por favor, gire la cabeza hacia la derecha.",
+                            color = textColor,
+                            style = textStyle,
+                            textAlign = TextAlign.Center
+                        )
+                    }
+                }
+
+                "below" -> if (timer.value > 0) {
+                    Column {
+                        Text(
+                            text = "${timer.intValue}",
+                            color = textColor,
+                            style = textStyle,
+                            fontSize = 36.sp,
+                            textAlign = TextAlign.Center
+                        )
+                        Text(
+                            "Por favor, gire la cabeza hacia abajo.",
+                            color = textColor,
+                            style = textStyle,
+                            textAlign = TextAlign.Center
+                        )
+                    }
+                }
+
+                "above" -> if (timer.value > 0) {
+                    Column {
+                        Text(
+                            text = "${timer.intValue}",
+                            color = textColor,
+                            style = textStyle,
+                            fontSize = 36.sp,
+                            textAlign = TextAlign.Center
+                        )
+                        Text(
+                            "Por favor, gire la cabeza hacia arriba.",
+                            color = textColor,
+                            style = textStyle,
+                            textAlign = TextAlign.Center
+                        )
+                    }
+                }
             }
         }
     }
+
 }
 
-@Composable
+    @Composable
 fun CameraPreview(preview: Preview) {
     AndroidView(
         factory = {
@@ -262,6 +398,32 @@ fun CameraPreview(preview: Preview) {
         },
         modifier = Modifier.fillMaxSize()
     )
+}
+
+fun startTimer(timer: MutableIntState, timerStarted: MutableState<Boolean>, timerFinished: MutableState<Boolean>, coroutineScope: CoroutineScope) {
+    if (!timerStarted.value) {
+        timerStarted.value = true
+        timer.value = 3
+        coroutineScope.launch {
+            while (timer.value > 0) {
+                delay(1000)
+                timer.value--
+            }
+            timerFinished.value = true
+        }
+    }
+}
+
+fun captureImage(mediaImage: Image, state: MutableState<Boolean>, coroutineScope: CoroutineScope, authenticationController: AuthenticationController, userId: String) {
+    val buffer = mediaImage.planes[0].buffer
+    val bytes = ByteArray(buffer.remaining())
+    buffer.get(bytes)
+    val saveImageDeferred = authenticationController.saveImage(bytes, userId)
+    coroutineScope.launch {
+        saveImageDeferred.await()
+        state.value = true
+        state.value = false
+    }
 }
 
 
