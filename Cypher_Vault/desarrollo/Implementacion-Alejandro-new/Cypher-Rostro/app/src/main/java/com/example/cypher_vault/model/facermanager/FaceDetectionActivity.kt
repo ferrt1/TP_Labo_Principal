@@ -1,6 +1,8 @@
 package com.example.cypher_vault.model.facermanager
 
 import android.graphics.Bitmap
+import android.os.Handler
+import android.os.Looper
 import android.util.Log
 import com.example.cypher_vault.controller.authentication.AuthenticationController
 import com.google.android.gms.tasks.OnFailureListener
@@ -62,8 +64,8 @@ class FaceDetectionActivity {
                     /// TEST HARD CODEADO EN FACETOOLS
                     Log.e("faceDetection", "Test HardCodeado")
                     val faceTools = FaceDetectionTools()
-                    Log.e("faceDetection", "fin de faceDetectionActivity")
                     faceTools.testDeContornosHardCodeados()
+                    Log.e("faceDetection", "fin de faceDetectionActivity")
                 }
             })
             .addOnFailureListener(OnFailureListener { e ->
@@ -83,29 +85,21 @@ class FaceDetectionActivity {
     ) {
         val imageArrayBites = bitmapToByteArray(image)
         if (exito) {
-            Log.d("faceDetection", "Exito y guardo Imagenes con UID: $userId")
-            authenticationController.saveImage(imageArrayBites, userId, faceContours, faceLandMarks)
-            verificacionDeAlmacenamiento(userId, authenticationController)
+            Log.d("faceDetection", "Éxito y va a guardar Imagenes con UID: $userId")
+            authenticationController.saveImage(imageArrayBites, userId, faceContours, faceLandMarks) { guardadoCorrectamente ->
+                if (guardadoCorrectamente) {
+                    Handler(Looper.getMainLooper()).post {
+                        Log.e("faceDetection", "antes del navigateToConfirmation()")
+                        authenticationController.navigateToConfirmation()
+                    }
+                } else {
+                    Handler(Looper.getMainLooper()).post {
+                        Log.e("faceDetection", "antes del navigateToCamera()")
+                        authenticationController.navigateToCamera()
+                    }
+                }
+            }
         }
-    }
-
-    private fun verificacionDeAlmacenamiento(userId: String, authenticationController: AuthenticationController) {
-        val testVariable = existeID(userId, authenticationController)
-        Log.e("faceDetection", "if(existeID(userId)) = $testVariable")
-        // Cambiar de pantalla
-        if(existeID(userId, authenticationController)){
-            Log.e("faceDetection", "antes del navigateToConfirmation()")
-            authenticationController.navigateToConfirmation()
-        }else{
-            Log.e("faceDetection", "antes del navigateToCamera()")
-            authenticationController.navigateToCamera()
-        }
-    }
-
-    private fun existeID(userId: String, authenticationController: AuthenticationController): Boolean {
-        Log.d("faceDetection", "entro en existeID")
-        val imageRegister = authenticationController.getUserImagesRegister(userId)
-        return imageRegister.value.isNotEmpty()
     }
 
     fun bitmapToByteArray(bitmap: Bitmap): ByteArray {

@@ -13,7 +13,10 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.util.UUID
+import kotlin.coroutines.resume
+import kotlin.coroutines.suspendCoroutine
 
 class AuthenticationController(private val navController: NavController) {
 
@@ -23,9 +26,8 @@ class AuthenticationController(private val navController: NavController) {
 
     private var _uid : String? = null
     private val _users = MutableStateFlow<List<User>>(emptyList())
-    private val _userImagesRegister = MutableStateFlow<List<ImagesRegister>>(emptyList())
+    private var _userImagesRegister : List<ImagesRegister?>? = null
     val users: StateFlow<List<User>> get() = _users
-    val userImagesRegister: MutableStateFlow<List<ImagesRegister>> get() = _userImagesRegister
 
     fun navigateToCamera() {
         navController.navigate("camera/$_uid")
@@ -78,21 +80,26 @@ class AuthenticationController(private val navController: NavController) {
     }
 
     fun saveImage(imageData: ByteArray, userId: String, faceContours: List<FaceContour>,
-                  faceLandMarks: List<FaceLandmark>) {
+                  faceLandMarks: List<FaceLandmark>, onComplete: (Boolean) -> Unit) {
         CoroutineScope(Dispatchers.IO).launch {
             val cambioDeTipo = Converters()
             val faceContoursString = cambioDeTipo.faceContourListToString(faceContours)
             val faceLandMarksString = cambioDeTipo.faceLandmarkListToString(faceLandMarks)
             val imageRegister = ImagesRegister(imageData = imageData, user_id = userId, faceContours =  faceContoursString, faceLandmarks = faceLandMarksString)
-            DatabaseManager.insertImageRegister(imageRegister)
+            val success = DatabaseManager.insertImageRegister(imageRegister)
+            onComplete(success)
         }
     }
 
-    fun getUserImagesRegister(userId: String): MutableStateFlow<List<ImagesRegister>> {
-        CoroutineScope(Dispatchers.IO).launch {
-            _userImagesRegister.value = DatabaseManager.getImagesForUser(userId)
+    suspend fun getUserImagesRegister(userId: String): List<ImagesRegister?>? {
+        return suspendCoroutine { continuation ->
+            CoroutineScope(Dispatchers.IO).launch {
+                val images = DatabaseManager.getImagesForUser(userId)
+                withContext(Dispatchers.Main) {
+                    continuation.resume(images)
+                }
+            }
         }
-        return _userImagesRegister
     }
 
     fun getAllUsers() {

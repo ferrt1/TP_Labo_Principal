@@ -49,8 +49,14 @@ object DatabaseManager {
     }
 
     // Funciones de inserción, actualización y consulta de imágenes
-    fun insertImageRegister(imagesRegister: ImagesRegister) {
-        database.imageRegisterDao().insertImage(imagesRegister)
+    fun insertImageRegister(imagesRegister: ImagesRegister): Boolean {
+        return try {
+            database.imageRegisterDao().insertImage(imagesRegister)
+            true // La inserción fue exitosa
+        } catch (e: Exception) {
+            e.printStackTrace()
+            false // Ocurrió un error durante la inserción
+        }
     }
 
     fun getImagesForUser(userId: String): List<ImagesRegister> {
