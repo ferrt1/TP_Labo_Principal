@@ -179,37 +179,5 @@ fun NavigationLogin(authenticationController: AuthenticationController) {
 
 @Composable
 fun LoginCamera(authenticationController: AuthenticationController, user: String) {
-    val context = LocalContext.current
-    val cameraProviderFuture = remember { ProcessCameraProvider.getInstance(context) }
-    val lifecycleOwner = LocalLifecycleOwner.current
-
-    val cameraProvider = cameraProviderFuture.get()
-    val preview = Preview.Builder().build()
-    val cameraSelector = CameraSelector.Builder()
-        .requireLensFacing(CameraSelector.LENS_FACING_FRONT)
-        .build()
-
-    LaunchedEffect(cameraProviderFuture) {
-        cameraProvider.bindToLifecycle(lifecycleOwner, cameraSelector, preview)
-    }
-
-    Box(
-        modifier = Modifier.fillMaxSize(),
-        contentAlignment = Alignment.BottomCenter
-    ) {
-        CameraPreview(preview)
-        CloseCameraButton(cameraProvider, authenticationController)
-    }
-}
-
-@Composable
-fun CloseCameraButton(cameraProvider: ProcessCameraProvider, authenticationController: AuthenticationController) {
-    Button(onClick = {
-        // Cierra la cámara
-        cameraProvider.unbindAll()
-        authenticationController.navigateToListLogin()
-    }, modifier = Modifier.padding(bottom = 50.dp)) {
-        Text(text = "Cerrar cámara")
-    }
-
+    authenticationController.navigateToLoginCamera(user)
 }

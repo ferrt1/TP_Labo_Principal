@@ -36,11 +36,10 @@ import android.util.Size
 import androidx.camera.core.resolutionselector.ResolutionSelector
 import androidx.camera.core.resolutionselector.ResolutionStrategy
 import androidx.compose.ui.platform.LocalConfiguration
-import com.example.cypher_vault.model.dbmanager.DatabaseManager
 
 
 @Composable
-fun CameraPreviewScreen(authenticationController: AuthenticationController, userId: String) {
+fun CameraRegisterPreviewScreen(authenticationController: AuthenticationController, userId: String) {
     val lensFacing = CameraSelector.LENS_FACING_FRONT // Cambio aquí para la cámara frontal
     val lifecycleOwner = LocalLifecycleOwner.current
     val context = LocalContext.current
@@ -79,7 +78,7 @@ fun CameraPreviewScreen(authenticationController: AuthenticationController, user
     Box(contentAlignment = Alignment.BottomCenter, modifier = Modifier.fillMaxSize()) {
         AndroidView({ previewView }, modifier = Modifier.fillMaxSize())
         Button(
-            onClick = { captureImage(imageCapture, context, authenticationController, userId) },
+            onClick = { captureImageForRegister(imageCapture, context, authenticationController, userId) },
             modifier = Modifier.padding(bottom = 50.dp)
         ) {
             Text(text = "Tomar Foto")
@@ -87,22 +86,13 @@ fun CameraPreviewScreen(authenticationController: AuthenticationController, user
     }
 }
 
-private suspend fun Context.getCameraProvider(): ProcessCameraProvider =
-    suspendCoroutine { continuation ->
-        ProcessCameraProvider.getInstance(this).also { cameraProvider ->
-            cameraProvider.addListener({
-                continuation.resume(cameraProvider.get())
-            }, ContextCompat.getMainExecutor(this))
-        }
-    }
-
-private fun captureImage(
+private fun captureImageForRegister(
     imageCapture: ImageCapture,
     context: Context,
     authenticationController: AuthenticationController,
     userId: String
 ) {
-    Log.d("faceDetection", "imageCapture 0")
+    Log.e("faceDetection", "imageCapture Register")
     // Captura la imagen
     imageCapture.takePicture(ContextCompat.getMainExecutor(context),
         object : ImageCapture.OnImageCapturedCallback() {
@@ -127,6 +117,87 @@ private fun captureImage(
 }
 
 
+@Composable
+fun CameraLoginPreviewScreen(authenticationController: AuthenticationController, userId: String) {
+    val lensFacing = CameraSelector.LENS_FACING_FRONT // Cambio aquí para la cámara frontal
+    val lifecycleOwner = LocalLifecycleOwner.current
+    val context = LocalContext.current
+    // Obtener la configuración local del dispositivo
+    val configuration = LocalConfiguration.current
+    // Obtener la rotación del dispositivo
+    val rotation = configuration.orientation
+    val screenSize = if (rotation == 0) Size(720, 1280) else Size(1280, 720)
+    val resolutionSelector = ResolutionSelector.Builder().setResolutionStrategy(
+        ResolutionStrategy(
+            screenSize,
+            ResolutionStrategy.FALLBACK_RULE_NONE
+        )
+    ).build()
+    val preview = Preview.Builder()
+        .setResolutionSelector(resolutionSelector)
+        .build()
+    val previewView = remember {
+        PreviewView(context)
+    }
+    val cameraxSelector = CameraSelector.Builder().requireLensFacing(lensFacing).build()
+    val imageCapture = remember {
+        ImageCapture.Builder().build()
+    }
+
+    LaunchedEffect(lensFacing) {
+        val cameraProvider = context.getCameraProvider()
+        cameraProvider.unbindAll()
+        cameraProvider.bindToLifecycle(lifecycleOwner, cameraxSelector, preview, imageCapture)
+        preview.setSurfaceProvider(previewView.surfaceProvider)
+        Log.d(
+            "faceDetection",
+            "Camera preview bound to lifecycle with lens facing: $lensFacing"
+        ) // Agrego un log aquí
+    }
+    Box(contentAlignment = Alignment.BottomCenter, modifier = Modifier.fillMaxSize()) {
+        AndroidView({ previewView }, modifier = Modifier.fillMaxSize())
+        Button(
+            onClick = { captureImageForLogin(imageCapture, context, authenticationController, userId) },
+            modifier = Modifier.padding(bottom = 50.dp)
+        ) {
+            Text(text = "Tomar Foto")
+        }
+    }
+}
+
+fun captureImageForLogin(imageCapture: ImageCapture, context: Context, authenticationController: AuthenticationController, userId: String) {
+    Log.e("faceDetection", "imageCapture Login")
+    // Captura la imagen
+    imageCapture.takePicture(ContextCompat.getMainExecutor(context),
+        object : ImageCapture.OnImageCapturedCallback() {
+            override fun onCaptureSuccess(image: ImageProxy) {
+                // Convertir la imagen a un bitmap
+                Log.d("faceDetection", "imageCapture 1")
+                val bitmap = imageProxyToBitmap(image)
+                // Convertir el bitmap a bytes
+                val bytes = bitmapToByteArray(bitmap)
+                Log.d("faceDetection", "imageCapture 2")
+                // Ejecutar la detección de rostros
+                val faceDetector = FaceDetectionActivity()
+                Log.d("faceDetection", "imageCapture 3")
+                faceDetector.detectFaces(authenticationController, bitmap, userId)
+                Log.e("faceDetection", "salio del DetectFaces")
+                image.close()
+            }
+            override fun onError(error: ImageCaptureException) {
+                Log.d("faceDetection", "error: ImageCaptureException : $error")
+            }
+        })
+}
+
+private suspend fun Context.getCameraProvider(): ProcessCameraProvider =
+    suspendCoroutine { continuation ->
+        ProcessCameraProvider.getInstance(this).also { cameraProvider ->
+            cameraProvider.addListener({
+                continuation.resume(cameraProvider.get())
+            }, ContextCompat.getMainExecutor(this))
+        }
+    }
 
 
 private fun imageProxyToBitmap(image: ImageProxy): Bitmap {

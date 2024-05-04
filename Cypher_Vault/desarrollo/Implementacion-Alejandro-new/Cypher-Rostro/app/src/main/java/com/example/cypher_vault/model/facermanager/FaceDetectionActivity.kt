@@ -95,7 +95,7 @@ class FaceDetectionActivity {
                 } else {
                     Handler(Looper.getMainLooper()).post {
                         Log.e("faceDetection", "antes del navigateToCamera()")
-                        authenticationController.navigateToCamera()
+                        authenticationController.navigateToRegisterCamera()
                     }
                 }
             }

@@ -8,7 +8,8 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.cypher_vault.controller.authentication.AuthenticationController
 import com.example.cypher_vault.view.login.NavigationLogin
-import com.example.cypher_vault.view.registration.CameraPreviewScreen
+import com.example.cypher_vault.view.registration.CameraLoginPreviewScreen
+import com.example.cypher_vault.view.registration.CameraRegisterPreviewScreen
 import com.example.cypher_vault.view.registration.ConfirmationScreen
 import com.example.cypher_vault.view.registration.InitialScreen
 
@@ -22,11 +23,21 @@ fun NavigationHost() {
             InitialScreen(authenticationController)
             Log.d("faceDetection", "Salida InitialScreen")
         }
-        composable("camera/{userId}") { backStackEntry ->
+        composable("cameraR/{userId}") { backStackEntry ->
             val userId = backStackEntry.arguments?.getString("userId")
             if (userId != null) {
                 Log.d("faceDetection", "Inicio CameraPreviewScreen")
-                CameraPreviewScreen(authenticationController, userId)
+                CameraRegisterPreviewScreen(authenticationController, userId)
+                Log.d("faceDetection", "Salida CameraPreviewScreen")
+            } else {
+                // Manejar el caso en que el userId no se pudo recuperar
+            }
+        }
+        composable("cameraL/{userId}") { backStackEntry ->
+            val userId = backStackEntry.arguments?.getString("userId")
+            if (userId != null) {
+                Log.d("faceDetection", "Inicio CameraPreviewScreen")
+                CameraLoginPreviewScreen(authenticationController, userId)
                 Log.d("faceDetection", "Salida CameraPreviewScreen")
             } else {
                 // Manejar el caso en que el userId no se pudo recuperar

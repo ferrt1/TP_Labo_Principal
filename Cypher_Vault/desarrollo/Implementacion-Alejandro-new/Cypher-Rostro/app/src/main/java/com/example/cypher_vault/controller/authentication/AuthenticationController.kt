@@ -29,12 +29,16 @@ class AuthenticationController(private val navController: NavController) {
     private var _userImagesRegister : List<ImagesRegister?>? = null
     val users: StateFlow<List<User>> get() = _users
 
-    fun navigateToCamera() {
-        navController.navigate("camera/$_uid")
+    fun navigateToRegisterCamera() {
+        navController.navigate("cameraR/$_uid")
     }
 
     fun navigateToConfirmation() {
         navController.navigate("confirmation/$_uid")
+    }
+
+    fun navigateToLoginCamera(uidParam : String) {
+        navController.navigate("cameraL/$uidParam")
     }
 
     fun navigateToListLogin(){
@@ -61,7 +65,7 @@ class AuthenticationController(private val navController: NavController) {
                 DatabaseManager.insertUser(user)
 
             }
-            navigateToCamera()
+            navigateToRegisterCamera()
             return uid
         }
         else if(validateFields(name, email)){
