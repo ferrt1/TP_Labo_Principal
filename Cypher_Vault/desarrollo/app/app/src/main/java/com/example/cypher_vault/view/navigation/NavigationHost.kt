@@ -8,6 +8,7 @@ import androidx.navigation.compose.rememberNavController
 import com.example.cypher_vault.controller.authentication.AuthenticationController
 import com.example.cypher_vault.view.login.NavigationLogin
 import com.example.cypher_vault.view.registration.ConfirmationScreen
+import com.example.cypher_vault.view.registration.Gallery
 import com.example.cypher_vault.view.registration.InitialScreen
 import com.example.cypher_vault.view.registration.RegistrationCameraScreen
 
@@ -31,6 +32,14 @@ fun NavigationHost() {
             val userId = backStackEntry.arguments?.getString("userId")
             if (userId != null) {
                 ConfirmationScreen(authenticationController, userId)
+            } else {
+                // Manejar el caso en que el userId no se pudo recuperar
+            }
+        }
+        composable("gallery/{userId}") {backStackEntry ->
+            val userId = backStackEntry.arguments?.getString("userId")
+            if (userId != null) {
+                Gallery(authenticationController, userId)
             } else {
                 // Manejar el caso en que el userId no se pudo recuperar
             }

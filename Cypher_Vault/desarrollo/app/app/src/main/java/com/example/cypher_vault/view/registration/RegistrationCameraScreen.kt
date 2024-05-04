@@ -3,11 +3,15 @@ package com.example.cypher_vault.view.registration
 import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Canvas
+import android.graphics.ImageFormat
 import android.graphics.Paint
 import android.graphics.PointF
+import android.graphics.Rect
+import android.graphics.YuvImage
 import android.media.Image
 import android.util.Log
 import android.view.View
+import android.widget.Toast
 import androidx.annotation.OptIn
 import androidx.camera.core.CameraSelector
 import androidx.camera.core.ExperimentalGetImage
@@ -49,6 +53,7 @@ import com.google.mlkit.vision.face.FaceDetectorOptions
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import java.io.ByteArrayOutputStream
 import kotlin.math.abs
 
 
@@ -271,10 +276,17 @@ fun RegistrationCameraScreen(authenticationController: AuthenticationController,
                 .addOnCompleteListener {
                     if (currentOrientation.value == "done") {
                         cameraProvider.unbindAll()
-                        authenticationController.navigateToConfirmation(userId)
+                        // Muestra un Toast con el mensaje "¡Listo!"
+                        Toast.makeText(context, "¡Listo!", Toast.LENGTH_SHORT).show()
+                        // Agrega un retraso antes de navegar a la pantalla de confirmación
+                        coroutineScope.launch {
+                            delay(2000) // Espera 2 segundos
+                            authenticationController.navigateToConfirmation(userId)
+                        }
                     }
                     imageProxy.close()
                 }
+
         }
     }
 
@@ -415,16 +427,38 @@ fun startTimer(timer: MutableIntState, timerStarted: MutableState<Boolean>, time
 }
 
 fun captureImage(mediaImage: Image, state: MutableState<Boolean>, coroutineScope: CoroutineScope, authenticationController: AuthenticationController, userId: String) {
-    val buffer = mediaImage.planes[0].buffer
-    val bytes = ByteArray(buffer.remaining())
-    buffer.get(bytes)
-    val saveImageDeferred = authenticationController.saveImage(bytes, userId)
+    val jpegBytes = convertYUV420888ToJpeg(mediaImage)
+    val saveImageDeferred = authenticationController.saveImage(jpegBytes, userId)
     coroutineScope.launch {
         saveImageDeferred.await()
         state.value = true
         state.value = false
     }
 }
+
+fun convertYUV420888ToJpeg(image: Image): ByteArray {
+    val yBuffer = image.planes[0].buffer
+    val uBuffer = image.planes[1].buffer
+    val vBuffer = image.planes[2].buffer
+
+    val ySize = yBuffer.remaining()
+    val uSize = uBuffer.remaining()
+    val vSize = vBuffer.remaining()
+
+    val nv21 = ByteArray(ySize + uSize + vSize)
+
+    //U and V are swapped
+    yBuffer.get(nv21, 0, ySize)
+    vBuffer.get(nv21, ySize, vSize)
+    uBuffer.get(nv21, ySize + vSize, uSize)
+
+    val yuvImage = YuvImage(nv21, ImageFormat.NV21, image.width, image.height, null)
+    val out = ByteArrayOutputStream()
+    yuvImage.compressToJpeg(Rect(0, 0, yuvImage.width, yuvImage.height), 100, out)
+
+    return out.toByteArray()
+}
+
 
 
 fun isUserFaceAligned(face: Face): Boolean {

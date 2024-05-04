@@ -1,6 +1,7 @@
 package com.example.cypher_vault.model.dbmanager
 
 import android.content.Context
+import android.util.Log
 import androidx.room.Room
 import com.example.cypher_vault.database.AppDatabase
 import com.example.cypher_vault.database.Images

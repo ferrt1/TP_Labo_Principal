@@ -19,8 +19,22 @@ class AuthenticationController(private val navController: NavController) {
     init{
         getAllUsers()
     }
+
     private val _users = MutableStateFlow<List<User>>(emptyList())
     val users: StateFlow<List<User>> get() = _users
+
+    fun saveImage(imageData: ByteArray, userId: String): Deferred<Unit> {
+        return CoroutineScope(Dispatchers.IO).async {
+            val imageRegister = ImagesRegister(imageData = imageData, user_id = userId)
+            DatabaseManager.insertImageRegister(imageRegister)
+        }
+    }
+
+    suspend fun getImageRegistersForUser(userId: String): List<ImagesRegister> {
+        return withContext(Dispatchers.IO) {
+            DatabaseManager.getImageRegistersForImage(userId)
+        }
+    }
 
     private fun navigateToCamera(uid: String) {
         navController.navigate("camera/$uid")
@@ -37,6 +51,10 @@ class AuthenticationController(private val navController: NavController) {
 
     fun navigateToRegister(){
         navController.navigate("register")
+    }
+
+    fun navigateToGallery(uid: String){
+        navController.navigate("gallery/$uid")
     }
 
     fun registerUser(
@@ -82,19 +100,6 @@ class AuthenticationController(private val navController: NavController) {
         }
 
         return null
-    }
-
-    fun saveImage(imageData: ByteArray, userId: String): Deferred<Unit> {
-        return CoroutineScope(Dispatchers.IO).async {
-            val imageRegister = ImagesRegister(imageData = imageData, user_id = userId)
-            DatabaseManager.insertImageRegister(imageRegister)
-        }
-    }
-
-    suspend fun getImageRegistersForUser(userId: String): List<ImagesRegister> {
-        return withContext(Dispatchers.IO) {
-            DatabaseManager.getImageRegistersForImage(userId)
-        }
     }
 
     fun getLastImageRegister(userId: String): ImagesRegister? {
