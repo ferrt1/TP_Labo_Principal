@@ -54,7 +54,7 @@ class AuthenticationController(private val navController: NavController) {
 
         else if (!validateNameLettersOnly(email)) {
             showDialog.value = true
-            errorMessage.value = "El nombre dece contener caracteres alfabéticos únicamente"
+            errorMessage.value = "El nombre debe contener caracteres alfabéticos únicamente"
         }
 
         else if (!validateMail(email)) {
