@@ -1,5 +1,4 @@
 package com.example.cypher_vault.controller.authentication
-
 import androidx.compose.runtime.MutableState
 import androidx.navigation.NavController
 import com.example.cypher_vault.database.ImagesRegister
@@ -84,7 +83,6 @@ class AuthenticationController(private val navController: NavController) {
 
         return null
     }
-
 
     fun saveImage(imageData: ByteArray, userId: String): Deferred<Unit> {
         return CoroutineScope(Dispatchers.IO).async {
