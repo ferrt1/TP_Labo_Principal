@@ -51,6 +51,12 @@ class AuthenticationController(private val navController: NavController) {
             showDialog.value = true
             errorMessage.value = "Por favor, rellena todos los campos correctamente."
         }
+
+        else if (!validateNameLettersOnly(email)) {
+            showDialog.value = true
+            errorMessage.value = "El nombre dece contener caracteres alfabéticos únicamente"
+        }
+
         else if (!validateMail(email)) {
             showDialog.value = true
             errorMessage.value = "El email debe ser válido"
@@ -107,6 +113,9 @@ class AuthenticationController(private val navController: NavController) {
         CoroutineScope(Dispatchers.IO).launch {
             _users.value = DatabaseManager.getAllUsers()
         }
+    }
+    private fun validateNameLettersOnly(name: String): Boolean {
+        return name.all { it.isLetter() }
     }
 
     private fun validateMail(email: String): Boolean {
