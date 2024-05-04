@@ -31,14 +31,11 @@ fun RegistrationCameraScreen(authenticationController: AuthenticationController,
     val cameraSelector = CameraSelector.Builder()
         .requireLensFacing(CameraSelector.LENS_FACING_FRONT)
         .build()
-
     val cameraProvider = cameraProviderFuture.get()
     val preview = Preview.Builder().build()
-
     LaunchedEffect(cameraProviderFuture) {
         cameraProvider.bindToLifecycle(lifecycleOwner, cameraSelector, preview)
     }
-
     Box(
         modifier = Modifier.fillMaxSize(),
         contentAlignment = Alignment.BottomCenter
@@ -49,7 +46,6 @@ fun RegistrationCameraScreen(authenticationController: AuthenticationController,
         }
     }
 }
-
 
 @Composable
 fun CloseCameraButton(isCameraOpen: MutableState<Boolean>, cameraProvider: ProcessCameraProvider, authenticationController: AuthenticationController) {
