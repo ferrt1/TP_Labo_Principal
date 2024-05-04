@@ -79,6 +79,7 @@ fun NavigationLogin(authenticationController: AuthenticationController) {
     val users by authenticationController.users.collectAsState()
     val buttonTextStyle = TextStyle(fontWeight = FontWeight.Bold, fontSize = 16.sp, color = thirdColor, fontFamily = fontFamily)
     var selectedPersona by remember { mutableStateOf<String?>(null) }
+    var selectedUIDPersona by remember { mutableStateOf<String?>(null) }
     var searchQuery by remember { mutableStateOf("") }
 
     Box(
@@ -124,6 +125,8 @@ fun NavigationLogin(authenticationController: AuthenticationController) {
                     Button(
                         onClick = {
                             selectedPersona = user.firstName
+                            selectedUIDPersona = user.uid
+
                         },
                         shape = RoundedCornerShape(4.dp),
                         border = BorderStroke(3.dp, firstColor),
@@ -169,11 +172,8 @@ fun NavigationLogin(authenticationController: AuthenticationController) {
             }
         }
     }
-    selectedPersona?.let { user ->
-        LoginCamera(
-            authenticationController = authenticationController,
-            user = user
-        )
+    selectedUIDPersona?.let { userId ->
+        LoginCamera(authenticationController, userId)
     }
 }
 

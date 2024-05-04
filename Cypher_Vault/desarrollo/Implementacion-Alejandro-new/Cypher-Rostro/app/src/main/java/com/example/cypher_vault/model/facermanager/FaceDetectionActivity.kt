@@ -170,7 +170,7 @@ class FaceDetectionActivity {
         exito: Boolean
     ) {
         if (exito) {
-            Log.d("faceDetection", "Éxito y va a guardar Imagenes con UID: $userId")
+            Log.e("faceDetection", "prueba de similitud con UID: $userId")
             val faceTools = FaceDetectionTools<Any>()
             val haySimilitud = faceTools.similitudDeCapturas(
                 authenticationController,
@@ -178,6 +178,7 @@ class FaceDetectionActivity {
                 faceContours,
                 faceLandMarks
             )
+            Log.e("faceDetection", "similitud : $haySimilitud")
             if (haySimilitud) {
                 Handler(Looper.getMainLooper()).post {
                     Log.e("faceDetection", "antes del navigateToConfirmation()")

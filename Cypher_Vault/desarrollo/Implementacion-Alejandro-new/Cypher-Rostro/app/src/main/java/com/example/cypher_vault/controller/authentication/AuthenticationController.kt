@@ -1,5 +1,6 @@
 package com.example.cypher_vault.controller.authentication
 
+import android.util.Log
 import androidx.compose.runtime.MutableState
 import androidx.navigation.NavController
 import com.example.cypher_vault.database.Converters
@@ -13,6 +14,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.withContext
 import java.util.UUID
 import kotlin.coroutines.resume
@@ -104,21 +106,24 @@ class AuthenticationController(private val navController: NavController) {
         }
     }
 
-    fun obtenerContour(userId: String, onComplete: (
-        List<FaceContour>) -> Unit)  {
-        CoroutineScope(Dispatchers.IO).launch {
-            val images = DatabaseManager.getFaceContoursForUser(userId)
-            withContext(Dispatchers.Main) {
-                onComplete(images)
+    suspend fun obtenerContour(userId: String): List<FaceContour> {
+        return suspendCancellableCoroutine { continuation ->
+            CoroutineScope(Dispatchers.IO).launch {
+                Log.d("faceDetection", "obtenerContour antes de getFaceContoursForUser")
+                val images = DatabaseManager.getFaceContoursForUser(userId)
+                Log.d("faceDetection", "obtenerContour despues de getFaceContoursForUser")
+                continuation.resume(images) // Reanuda la ejecución con los resultados obtenidos
             }
         }
     }
 
-    fun obtenerLandMark(userId: String, onComplete: (List<FaceLandmark>) -> Unit)  {
-        CoroutineScope(Dispatchers.IO).launch {
-            val images = DatabaseManager.getFaceLandmarksForUser(userId)
-            withContext(Dispatchers.Main) {
-                onComplete(images)
+    suspend fun obtenerLandMark(userId: String): List<FaceLandmark> {
+        return suspendCancellableCoroutine { continuation ->
+            CoroutineScope(Dispatchers.IO).launch {
+                Log.d("faceDetection", "obtenerLandMark antes de getFaceLandmarksForUser")
+                val images = DatabaseManager.getFaceLandmarksForUser(userId)
+                Log.d("faceDetection", "obtenerLandMark despues de getFaceLandmarksForUser")
+                continuation.resume(images) // Reanuda la ejecución con los resultados obtenidos
             }
         }
     }

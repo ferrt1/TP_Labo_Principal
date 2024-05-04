@@ -1,8 +1,11 @@
 package com.example.cypher_vault.model.dbmanager
 
 import android.content.Context
+import android.graphics.PointF
+import android.util.Log
 import androidx.room.Room
 import com.example.cypher_vault.database.AppDatabase
+import com.example.cypher_vault.database.Converters
 import com.example.cypher_vault.database.Images
 import com.example.cypher_vault.database.ImagesRegister
 import com.example.cypher_vault.database.User
@@ -79,14 +82,22 @@ object DatabaseManager {
     }
 
     fun getFaceContoursForUser(userId: String): List<FaceContour> {
-        val faceContoursJson = database.imageRegisterDao().getFaceContoursForUser(userId)
-        return Gson().fromJson(faceContoursJson, object : TypeToken<List<FaceContour>>() {}.type)
+        val json = database.imageRegisterDao().getFaceContoursForUser(userId)
+        val cambioDeTipo = Converters()
+        val contours: List<FaceContour> = cambioDeTipo.faceContourListFromString(json)
+        Log.e("faceDetection", "getFaceContoursForUser json : $json")
+        Log.d("faceDetection", "getFaceContoursForUser List<FaceContour> : $contours")
+        return contours
     }
 
     fun getFaceLandmarksForUser(userId: String): List<FaceLandmark> {
-        val faceLandmarksJson = database.imageRegisterDao().getFaceLandmarksForUser(userId)
-        return Gson().fromJson(faceLandmarksJson, object : TypeToken<List<FaceLandmark>>() {}.type)
+        val json = database.imageRegisterDao().getFaceLandmarksForUser(userId)
+        val cambioDeTipo = Converters()
+        val landmarks: List<FaceLandmark> = cambioDeTipo.faceLandmarkListFromString(json)
+        Log.e("faceDetection", "getFaceLandmarksForUser json : $json")
+        Log.d("faceDetection", "getFaceLandmarksForUser List<FaceLandmark> : $landmarks")
+        return landmarks
     }
 
-    // Otros métodos según sea necesario para otras operaciones con usuarios, imágenes e imágenes registros
+
 }
