@@ -36,6 +36,7 @@ import android.util.Size
 import androidx.camera.core.resolutionselector.ResolutionSelector
 import androidx.camera.core.resolutionselector.ResolutionStrategy
 import androidx.compose.ui.platform.LocalConfiguration
+import com.example.cypher_vault.model.dbmanager.DatabaseManager
 
 
 @Composable
@@ -115,13 +116,25 @@ private fun captureImage(
                 // Ejecutar la detección de rostros
                 val faceDetector = FaceDetectionActivity()
                 Log.d("faceDetection", "imageCapture 3")
-                faceDetector.detectFaces(bitmap)
-                // Cerrar el ImageProxy después de usarlo
+                faceDetector.detectFaces(authenticationController, bitmap, userId)
                 image.close()
+                val testVariable = existeID(userId)
+                Log.e("faceDetection", "if(existeID(userId)) = $testVariable")
                 // Cambiar de pantalla
-                Log.e("faceDetection", "antes del navigateToConfirmation()")
-                authenticationController.navigateToConfirmation()
+                if(existeID(userId)){
+                    Log.e("faceDetection", "antes del navigateToConfirmation()")
+                    authenticationController.navigateToConfirmation()
+                }else{
+                    Log.e("faceDetection", "antes del navigateToCamera()")
+                    authenticationController.navigateToCamera()
+                }
             }
+
+            private fun existeID(userId: String): Boolean {
+                val imageRegister = authenticationController.getUserImagesRegister(userId)
+                return imageRegister.value.isNotEmpty()
+            }
+
             override fun onError(error: ImageCaptureException) {
                 Log.d("faceDetection", "error: ImageCaptureException : $error")
             }
