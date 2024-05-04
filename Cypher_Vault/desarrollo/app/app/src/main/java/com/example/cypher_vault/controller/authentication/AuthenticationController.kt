@@ -52,7 +52,7 @@ class AuthenticationController(private val navController: NavController) {
             errorMessage.value = "Por favor, rellena todos los campos correctamente."
         }
 
-        else if (!validateNameLettersOnly(name)) {
+        else if (!validateNameLettersOnly(email)) {
             showDialog.value = true
             errorMessage.value = "El nombre debe contener caracteres alfabéticos únicamente"
         }
