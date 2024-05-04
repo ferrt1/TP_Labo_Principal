@@ -2,8 +2,12 @@ package com.example.cypher_vault.model.facermanager
 
 import android.graphics.PointF
 import android.util.Log
+import com.example.cypher_vault.controller.authentication.AuthenticationController
+import com.example.cypher_vault.database.Converters
+import com.google.mlkit.vision.face.FaceContour
+import com.google.mlkit.vision.face.FaceLandmark
 
-class FaceDetectionTools {
+class FaceDetectionTools<ImagesRegister> {
 
     val threshold = 50.0
 
@@ -58,4 +62,70 @@ class FaceDetectionTools {
         Log.d("faceDetection", "¿La segunda y la tercera muestra son similares? $areSimilar23")
         Log.d("faceDetection", "¿La primera y la tercera muestra son similares? $areSimilar13")
     }
+
+//    fun similitudDeCapturas(imagesRegister: List<ImagesRegister?>?, faceContours: List<FaceContour>, faceLandMarks: List<FaceLandmark>): Boolean {
+//        val convertImagesRegisterContour : List<FaceContour> = convertirJsonToListContour(imagesRegister)
+//        val convertImagesRegisterLandmark : List<FaceLandmark> = convertirJsonToListLandmark(imagesRegister)
+//        val ret : Boolean = false
+//        return ret
+//    }
+
+    fun similitudDeCapturas(authenticationController: AuthenticationController, userId: String, faceContours: List<FaceContour>, faceLandMarks: List<FaceLandmark>): Boolean {
+        lateinit var imagesRegisterContour: List<FaceContour>
+        lateinit var imagesRegisterLandmark: List<FaceLandmark>
+
+        authenticationController.obtenerContour(userId) { faceContourList ->
+            imagesRegisterContour = faceContourList
+        }
+        authenticationController.obtenerLandMark(userId) { faceLandMark ->
+            imagesRegisterLandmark = faceLandMark
+        }
+
+        // Verificar si alguna lista está vacía
+        if ( imagesRegisterContour.isEmpty() || imagesRegisterLandmark.isEmpty()) {
+            return false
+        }
+
+        // Calcular la cantidad de elementos necesarios para cumplir el 60% del total
+        val requiredSimilarityCount = (imagesRegisterContour.size * 0.6).toInt()
+
+        // Contador de similitudes
+        var contourSimilarityCount = 0
+        var landmarkSimilarityCount = 0
+
+        // Comparar los puntos uno a uno y calcular la similitud
+        for (i in 0 until faceContours.size) {
+            val irc = convertirAStringC(imagesRegisterContour[i])
+            val fc = convertirAStringC(faceContours[i])
+            val ircP = extractPoints(irc)
+            val fcP = extractPoints(fc)
+            val contourSimilar = areFacesSimilar(ircP, fcP, threshold)
+
+            if (contourSimilar) contourSimilarityCount++
+        }
+        // Comparar los puntos uno a uno y calcular la similitud
+        for (i in 0 until faceLandMarks.size) {
+            val irl = convertirAStringL(imagesRegisterLandmark[i])
+            val fl = convertirAStringL(faceLandMarks[i])
+            val irlP = extractPoints(irl)
+            val flP = extractPoints(fl)
+
+            val landmarkSimilar = areFacesSimilar(irlP, flP, threshold)
+
+            if (landmarkSimilar) landmarkSimilarityCount++
+        }
+
+        // Verificar si la cantidad de similitudes cumple con el 60% requerido
+        return contourSimilarityCount >= requiredSimilarityCount && landmarkSimilarityCount >= requiredSimilarityCount
+    }
+
+    private fun convertirAStringC(faceContour: FaceContour): String {
+        return faceContour.toString()
+    }
+
+    private fun convertirAStringL(faceLandmark: FaceLandmark): String {
+        return faceLandmark.toString()
+    }
+
+
 }

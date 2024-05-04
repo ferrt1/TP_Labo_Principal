@@ -106,7 +106,7 @@ private fun captureImageForRegister(
                 // Ejecutar la detección de rostros
                 val faceDetector = FaceDetectionActivity()
                 Log.d("faceDetection", "imageCapture 3")
-                faceDetector.detectFaces(authenticationController, bitmap, userId)
+                faceDetector.detectFacesForRegister(authenticationController, bitmap, userId)
                 Log.e("faceDetection", "salio del DetectFaces")
                 image.close()
             }
@@ -180,7 +180,7 @@ fun captureImageForLogin(imageCapture: ImageCapture, context: Context, authentic
                 // Ejecutar la detección de rostros
                 val faceDetector = FaceDetectionActivity()
                 Log.d("faceDetection", "imageCapture 3")
-                faceDetector.detectFaces(authenticationController, bitmap, userId)
+                faceDetector.detectFacesForLogin(authenticationController, bitmap, userId)
                 Log.e("faceDetection", "salio del DetectFaces")
                 image.close()
             }

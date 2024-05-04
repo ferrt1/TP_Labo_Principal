@@ -95,13 +95,30 @@ class AuthenticationController(private val navController: NavController) {
         }
     }
 
-    suspend fun getUserImagesRegister(userId: String): List<ImagesRegister?>? {
-        return suspendCoroutine { continuation ->
-            CoroutineScope(Dispatchers.IO).launch {
-                val images = DatabaseManager.getImagesForUser(userId)
-                withContext(Dispatchers.Main) {
-                    continuation.resume(images)
-                }
+    fun getUserImagesRegister(userId: String, onComplete: (List<ImagesRegister?>?) -> Unit) {
+        CoroutineScope(Dispatchers.IO).launch {
+            val images = DatabaseManager.getImagesForUser(userId)
+            withContext(Dispatchers.Main) {
+                onComplete(images)
+            }
+        }
+    }
+
+    fun obtenerContour(userId: String, onComplete: (
+        List<FaceContour>) -> Unit)  {
+        CoroutineScope(Dispatchers.IO).launch {
+            val images = DatabaseManager.getFaceContoursForUser(userId)
+            withContext(Dispatchers.Main) {
+                onComplete(images)
+            }
+        }
+    }
+
+    fun obtenerLandMark(userId: String, onComplete: (List<FaceLandmark>) -> Unit)  {
+        CoroutineScope(Dispatchers.IO).launch {
+            val images = DatabaseManager.getFaceLandmarksForUser(userId)
+            withContext(Dispatchers.Main) {
+                onComplete(images)
             }
         }
     }
@@ -123,5 +140,7 @@ class AuthenticationController(private val navController: NavController) {
     private fun validateFields(email: String, name: String): Boolean{
         return name.isEmpty() || email.isEmpty()
     }
+
+
 
 }

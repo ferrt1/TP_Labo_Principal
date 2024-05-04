@@ -35,7 +35,7 @@ class FaceDetectionActivity {
 
     private val detector = FaceDetection.getClient(highAccuracyOpts)
 
-    fun detectFaces(
+    fun detectFacesForRegister(
         authenticationController: AuthenticationController,
         image: Bitmap,
         userId: String
@@ -45,8 +45,8 @@ class FaceDetectionActivity {
         detector.process(inputImage)
             .addOnSuccessListener(OnSuccessListener { faces ->
                 for (face in faces) {
-                    val faceContours : List<FaceContour> = face.allContours
-                    val faceLandMarks : List<FaceLandmark> = face.allLandmarks
+                    val faceContours: List<FaceContour> = face.allContours
+                    val faceLandMarks: List<FaceLandmark> = face.allLandmarks
                     Log.e("faceDetection", "For faceContours")
                     for (contours in faceContours)
                         Log.d("faceDetection", "contours: $contours")
@@ -59,11 +59,18 @@ class FaceDetectionActivity {
 
                     // Procesar datos
                     Log.d("faceDetection", "Antes de procesarDatosDeteccion")
-                    procesarDatosDeteccion(authenticationController, userId, image, faceContours, faceLandMarks, true)
+                    procesarDatosDeteccionRegister(
+                        authenticationController,
+                        userId,
+                        image,
+                        faceContours,
+                        faceLandMarks,
+                        true
+                    )
 
                     /// TEST HARD CODEADO EN FACETOOLS
                     Log.e("faceDetection", "Test HardCodeado")
-                    val faceTools = FaceDetectionTools()
+                    val faceTools = FaceDetectionTools<Any>()
                     faceTools.testDeContornosHardCodeados()
                     Log.e("faceDetection", "fin de faceDetectionActivity")
                 }
@@ -75,7 +82,7 @@ class FaceDetectionActivity {
     }
 
     // Función para procesar los datos de detección de rostros
-    private fun procesarDatosDeteccion(
+    private fun procesarDatosDeteccionRegister(
         authenticationController: AuthenticationController,
         userId: String,
         image: Bitmap,
@@ -86,7 +93,12 @@ class FaceDetectionActivity {
         val imageArrayBites = bitmapToByteArray(image)
         if (exito) {
             Log.d("faceDetection", "Éxito y va a guardar Imagenes con UID: $userId")
-            authenticationController.saveImage(imageArrayBites, userId, faceContours, faceLandMarks) { guardadoCorrectamente ->
+            authenticationController.saveImage(
+                imageArrayBites,
+                userId,
+                faceContours,
+                faceLandMarks
+            ) { guardadoCorrectamente ->
                 if (guardadoCorrectamente) {
                     Handler(Looper.getMainLooper()).post {
                         Log.e("faceDetection", "antes del navigateToConfirmation()")
@@ -100,6 +112,85 @@ class FaceDetectionActivity {
                 }
             }
         }
+    }
+
+
+    fun detectFacesForLogin(
+        authenticationController: AuthenticationController,
+        image: Bitmap,
+        userId: String
+    ) {
+        Log.d("faceDetection", "Comienza el proceso de deteccion de imagen")
+        val inputImage = InputImage.fromBitmap(image, 0)
+        detector.process(inputImage)
+            .addOnSuccessListener(OnSuccessListener { faces ->
+                for (face in faces) {
+                    val faceContours: List<FaceContour> = face.allContours
+                    val faceLandMarks: List<FaceLandmark> = face.allLandmarks
+                    Log.e("faceDetection", "For faceContours")
+                    for (contours in faceContours)
+                        Log.d("faceDetection", "contours: $contours")
+                    Log.e("faceDetection", "For faceLandMarks")
+                    for (landMarks in faceLandMarks)
+                        Log.d("faceDetection", "landMarks: $landMarks")
+
+                    // Imprimir los datos en LogCat
+                    imprimirDatosFaceDetection(face)
+
+                    // Procesar datos
+                    Log.d("faceDetection", "Antes de procesarDatosDeteccion")
+                    procesarDatosDeteccionLogin(
+                        authenticationController,
+                        userId,
+                        image,
+                        faceContours,
+                        faceLandMarks,
+                        true
+                    )
+
+                    /// TEST HARD CODEADO EN FACETOOLS
+                    Log.e("faceDetection", "Test HardCodeado")
+                    val faceTools = FaceDetectionTools<Any>()
+                    faceTools.testDeContornosHardCodeados()
+                    Log.e("faceDetection", "fin de faceDetectionActivity")
+                }
+            })
+            .addOnFailureListener(OnFailureListener { e ->
+                Log.e("errorFaceDetection", "Error detecting faces: $e")
+                //caso de fallo
+            })
+    }
+
+    private fun procesarDatosDeteccionLogin(
+        authenticationController: AuthenticationController,
+        userId: String,
+        image: Bitmap,
+        faceContours: List<FaceContour>,
+        faceLandMarks: List<FaceLandmark>,
+        exito: Boolean
+    ) {
+        if (exito) {
+            Log.d("faceDetection", "Éxito y va a guardar Imagenes con UID: $userId")
+            val faceTools = FaceDetectionTools<Any>()
+            val haySimilitud = faceTools.similitudDeCapturas(
+                authenticationController,
+                userId,
+                faceContours,
+                faceLandMarks
+            )
+            if (haySimilitud) {
+                Handler(Looper.getMainLooper()).post {
+                    Log.e("faceDetection", "antes del navigateToConfirmation()")
+                    authenticationController.navigateToConfirmation()
+                }
+            } else {
+                Handler(Looper.getMainLooper()).post {
+                    Log.e("faceDetection", "antes del navigateToCamera()")
+                    authenticationController.navigateToLoginCamera(userId)
+                }
+            }
+        }
+
     }
 
     fun bitmapToByteArray(bitmap: Bitmap): ByteArray {
@@ -279,3 +370,4 @@ class FaceDetectionActivity {
         }
     }
 }
+
