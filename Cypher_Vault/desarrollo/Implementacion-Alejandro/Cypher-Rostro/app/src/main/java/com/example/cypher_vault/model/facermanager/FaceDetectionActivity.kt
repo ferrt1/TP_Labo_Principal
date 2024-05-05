@@ -47,12 +47,6 @@ class FaceDetectionActivity {
                 for (face in faces) {
                     val faceContours: List<FaceContour> = face.allContours
                     val faceLandMarks: List<FaceLandmark> = face.allLandmarks
-                    Log.e("faceDetection", "For faceContours")
-                    for (contours in faceContours)
-                        Log.d("faceDetection", "contours: $contours")
-                    Log.e("faceDetection", "For faceLandMarks")
-                    for (landMarks in faceLandMarks)
-                        Log.d("faceDetection", "landMarks: $landMarks")
 
                     // Imprimir los datos en LogCat
                     //imprimirDatosFaceDetection(face)
@@ -127,12 +121,6 @@ class FaceDetectionActivity {
                 for (face in faces) {
                     val faceContours: List<FaceContour> = face.allContours
                     val faceLandMarks: List<FaceLandmark> = face.allLandmarks
-                    Log.e("faceDetection", "For faceContours")
-                    for (contours in faceContours)
-                        Log.d("faceDetection", "contours: $contours")
-                    Log.e("faceDetection", "For faceLandMarks")
-                    for (landMarks in faceLandMarks)
-                        Log.d("faceDetection", "landMarks: $landMarks")
 
                     // Imprimir los datos en LogCat
 //                    imprimirDatosFaceDetection(face)

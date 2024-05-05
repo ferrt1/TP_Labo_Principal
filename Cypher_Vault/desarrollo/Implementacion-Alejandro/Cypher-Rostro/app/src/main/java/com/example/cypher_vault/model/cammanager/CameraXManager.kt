@@ -233,7 +233,7 @@ private fun imageProxyToBitmap(image: ImageProxy): Bitmap {
 private fun getBitmapOptions(): BitmapFactory.Options {
     val options = BitmapFactory.Options()
     options.inSampleSize =
-        3 // Reduce el tamaño de la imagen a la mitad. Puedes ajustar este valor según tus necesidades.
+        4 // Reduce el tamaño de la imagen a la mitad. Puedes ajustar este valor según tus necesidades.
     return options
 }
 
