@@ -57,7 +57,6 @@ dependencies {
     // BASE DE DATOS ///////////////////////
 
     implementation("androidx.room:room-runtime:2.6.1")
-    implementation(project(":sdk"))
     annotationProcessor("androidx.room:room-compiler:2.6.1")
     kapt("androidx.room:room-compiler:2.6.1")
     //////////////////////////////////////////////
@@ -65,6 +64,9 @@ dependencies {
     // MLKIT ///
     implementation("com.google.mlkit:face-detection:16.1.6")
 
+    // MEDIAPIPE ///
+    implementation("com.google.mediapipe:tasks-vision:latest.release")
+    
     //////////////////////////////////////////////
     implementation("androidx.navigation:navigation-compose:2.7.7")
     implementation(libs.androidx.core.ktx)

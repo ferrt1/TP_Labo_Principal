@@ -5,6 +5,7 @@ import android.util.Log
 import androidx.room.Room
 import com.example.cypher_vault.database.AppDatabase
 import com.example.cypher_vault.database.Images
+import com.example.cypher_vault.database.ImagesLogin
 import com.example.cypher_vault.database.ImagesRegister
 import com.example.cypher_vault.database.User
 
@@ -57,6 +58,24 @@ object DatabaseManager {
     fun getLastImageRegisterForUser(user_id: String): ImagesRegister? {
         val imageRegisters = database.imageRegisterDao().getImagesForUser(user_id)
         return imageRegisters.lastOrNull()
+    }
+
+
+    fun insertImageLogin(imagesLogin: ImagesLogin) {
+        database.imageLoginDao().insertImage(imagesLogin)
+    }
+
+    fun getImageLoginForImage(user_id: String): List<ImagesLogin> {
+        return database.imageLoginDao().getImagesForUser(user_id)
+    }
+
+    fun deleteLoginImagesForUser(userId: String) {
+        database.imageLoginDao().deleteImagesForUser(userId)
+    }
+
+    fun getLastImageLoginForUser(user_id: String): ImagesLogin? {
+        val imagesLogin = database.imageLoginDao().getImagesForUser(user_id)
+        return imagesLogin.lastOrNull()
     }
 
 

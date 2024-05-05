@@ -1,5 +1,3 @@
-include(":sdk")
-
 pluginManagement {
     repositories {
         google {

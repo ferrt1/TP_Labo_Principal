@@ -80,7 +80,7 @@ fun NavigationLogin(authenticationController: AuthenticationController) {
     val buttonTextStyle = TextStyle(fontWeight = FontWeight.Bold, fontSize = 16.sp, color = thirdColor, fontFamily = fontFamily)
     var selectedPersona by remember { mutableStateOf<String?>(null) }
     var searchQuery by remember { mutableStateOf("") }
-
+    var userSelected by remember { mutableStateOf("") }
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -121,6 +121,7 @@ fun NavigationLogin(authenticationController: AuthenticationController) {
             items(users.filter { it.firstName?.contains(searchQuery, ignoreCase = true) == true } ) { user ->
                 Button(
                     onClick = {
+                        userSelected = user.uid
                         selectedPersona = user.firstName
                     },
                     shape = RoundedCornerShape(4.dp),
@@ -170,7 +171,7 @@ fun NavigationLogin(authenticationController: AuthenticationController) {
     selectedPersona?.let { user ->
         LoginCamera(
             authenticationController = authenticationController,
-            user = user
+            userId = userSelected
         )
     }
 }

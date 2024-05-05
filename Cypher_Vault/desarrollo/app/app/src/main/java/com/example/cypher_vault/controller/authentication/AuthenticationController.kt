@@ -1,6 +1,8 @@
 package com.example.cypher_vault.controller.authentication
+import android.graphics.Bitmap
 import androidx.compose.runtime.MutableState
 import androidx.navigation.NavController
+import com.example.cypher_vault.database.ImagesLogin
 import com.example.cypher_vault.database.ImagesRegister
 import com.example.cypher_vault.database.User
 import com.example.cypher_vault.model.dbmanager.DatabaseManager
@@ -36,6 +38,36 @@ class AuthenticationController(private val navController: NavController) {
         }
     }
 
+    fun saveImageLogin(imageData: ByteArray, userId: String): Deferred<Unit> {
+        return CoroutineScope(Dispatchers.IO).async {
+            val imageLogin = ImagesLogin(imageData = imageData, user_id = userId)
+            DatabaseManager.insertImageLogin(imageLogin)
+        }
+    }
+
+    fun deleteImageLogin(userId: String): Deferred<Unit> {
+        return CoroutineScope(Dispatchers.IO).async {
+            DatabaseManager.deleteLoginImagesForUser(userId)
+        }
+    }
+
+    suspend fun getImageLoginForUser(userId: String): List<ImagesLogin> {
+        return withContext(Dispatchers.IO) {
+            DatabaseManager.getImageLoginForImage(userId)
+        }
+    }
+
+    fun getLastImageLogin(userId: String): ImagesLogin? {
+        var imageLogin: ImagesLogin? = null
+        CoroutineScope(Dispatchers.IO).launch {
+            imageLogin = withContext(Dispatchers.IO) {
+                DatabaseManager.getLastImageLoginForUser(userId)
+            }
+        }
+        return imageLogin
+    }
+
+
     private fun navigateToCamera(uid: String) {
         navController.navigate("camera/$uid")
     }
@@ -49,6 +81,10 @@ class AuthenticationController(private val navController: NavController) {
         navController.navigate("list")
     }
 
+    fun navigateToConfirmationLogin(uid: String) {
+        navController.navigate("authenticate/$uid")
+    }
+
     fun navigateToRegister(){
         navController.navigate("register")
     }
@@ -56,6 +92,8 @@ class AuthenticationController(private val navController: NavController) {
     fun navigateToGallery(uid: String){
         navController.navigate("gallery/$uid")
     }
+
+
 
     fun registerUser(
         email: String,
