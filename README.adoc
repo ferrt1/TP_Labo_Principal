@@ -428,7 +428,7 @@ Variedad de marcos de trabajo y herramientas de prueba
 
 NOTE: *Aclaracion:* Dentro del equipo de desarrollo y testeo utilizamos los mismos dispositivos celulares para emular y testear la implementacion/desarrollo, ya que en algunos casos es imposible por las capacidades computacionales de los equipos ( computadoras ) de cada uno de los integrantes.
 
-==== IMPLEMENTACION
+=== Implementacion
 
 *En esta seccion se pasa a detallar cada una de las partes del desarrollo, junto a sus herramientas, ya que dentro de android studio como se detallo anteriormente se encuentran funcionalidades especificas.*
 
@@ -456,7 +456,7 @@ image::imagenAdoc/mvvm.png[700,700]
 ** Existe una relación de muchos a 1 entre View y ViewModel.
 ** No hay métodos de activación para actualizar la Vista.
 
-==== INTERFAZ
+=== Interfaz
 
 image::imagenAdoc/icondisplay.jpg[100,100]
 
@@ -578,7 +578,7 @@ fun CloseCameraButton(cameraProvider: ProcessCameraProvider, authenticationContr
 ----
 <1> La función `CloseCameraButton` permite al usuario cerrar la cámara frontal si se ha seleccionado una cuenta incorrecta. Ofrece una interfaz para regresar de manera rápida al inicio de sesión, específicamente a la pantalla de `NavigationLogin`, facilitando el desplazamiento dentro de la aplicación.
 
-==== ALMACENAMIENTO
+=== Almacenamiento
 
 image::imagenAdoc/icondatabase.png[100,100]
 
