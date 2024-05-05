@@ -85,7 +85,6 @@ fun NavigationLogin(authenticationController: AuthenticationController) {
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(mainBackgroundColor)
     ) {
         Column (
             horizontalAlignment = Alignment.CenterHorizontally,
@@ -117,11 +116,10 @@ fun NavigationLogin(authenticationController: AuthenticationController) {
             )
 
             LazyColumn(
-                modifier = Modifier.padding(top = 20.dp).heightIn(max = 200.dp),
+                modifier = Modifier.padding(top = 20.dp).heightIn(max = 250.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                items(users.filter { it.firstName?.contains(searchQuery, ignoreCase = true) == true }
-                    .take(5)) { user ->
+                items(users.filter { it.firstName?.contains(searchQuery, ignoreCase = true) == true } ) { user ->
                     Button(
                         onClick = {
                             selectedPersona = user.firstName
@@ -165,10 +163,20 @@ fun NavigationLogin(authenticationController: AuthenticationController) {
         ) {
             OutlinedButton(
                 onClick = { authenticationController.navigateToRegister() },
-                border = BorderStroke(2.dp, Color.White),
-                modifier = Modifier.padding(8.dp)
+                shape = RoundedCornerShape(15.dp), // Esto hará que los bordes sean completamente redondos
+                border = BorderStroke(3.dp, Color.Gray), // Establece el color del borde a gris
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = Color.Transparent,
+                    contentColor = Color.Gray // Establece el color del contenido (texto) a gris
+                ),
+                modifier = Modifier
+                    .width(200.dp)
+                    .padding(bottom = 30.dp)
             ) {
-                Text("Registrarse", style = buttonTextStyle)
+                Text("Registrarse",
+                    fontFamily = com.example.cypher_vault.view.login.fontFamily,
+                    color = Color.Gray, // Establece el color del texto a gris
+                    fontWeight = FontWeight.Bold)
             }
         }
     }

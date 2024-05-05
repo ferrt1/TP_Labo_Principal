@@ -1,4 +1,4 @@
-package com.example.cypher_vault.view.registration
+package com.example.cypher_vault.view.gallery
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box

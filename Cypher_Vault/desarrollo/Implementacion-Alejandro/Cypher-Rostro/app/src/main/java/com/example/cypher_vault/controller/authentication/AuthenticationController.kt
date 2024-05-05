@@ -64,27 +64,39 @@ class AuthenticationController(private val navController: NavController) {
     ): UUID? {
         val uid = UUID.randomUUID()
         _uid = uid.toString()
-        if (!validateFields(email, name) && validateMail(email) && validateName(name)) {
-
-            CoroutineScope(Dispatchers.IO).launch {
-                val user = User(uid = uid.toString(), firstName = name, email = email, entryDate = System.currentTimeMillis(), pin = null)
-                DatabaseManager.insertUser(user)
-
-            }
-            navigateToRegisterCamera()
-            return uid
-        }
-        else if(validateFields(name, email)){
+        if (validateFields(name, email)){
             showDialog.value = true
             errorMessage.value = "Por favor, rellena todos los campos correctamente."
         }
+
+        else if (!validateNameLettersOnly(name)) {
+            showDialog.value = true
+            errorMessage.value = "El nombre debe contener caracteres alfabéticos únicamente"
+        }
+
         else if (!validateMail(email)) {
             showDialog.value = true
             errorMessage.value = "El email debe ser válido"
         }
+        else if (validateNameSpacesAndLineBreaks(name)){
+            showDialog.value = true
+            errorMessage.value = "El nombre no puede contener espacios en blanco"
+        }
+        else if (validateNameNumbers(name)){
+            showDialog.value = true
+            errorMessage.value = "El nombre no puede tener números"
+        }
         else if (!validateName(name)){
             showDialog.value = true
             errorMessage.value = "El nombre debe tener más de 3 carácteres y menos de 50"
+        }
+        else {
+            CoroutineScope(Dispatchers.IO).launch {
+                val user = User(uid = uid.toString(), firstName = name, email = email, entryDate = System.currentTimeMillis(), pin = null)
+                DatabaseManager.insertUser(user)
+            }
+            navigateToRegisterCamera()
+            return uid
         }
         return null
     }
@@ -138,12 +150,24 @@ class AuthenticationController(private val navController: NavController) {
         }
     }
 
+    private fun validateNameLettersOnly(name: String): Boolean {
+        return name.all { it.isLetter() }
+    }
+
     private fun validateMail(email: String): Boolean {
         return android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()
     }
 
+    private fun validateNameNumbers(name: String): Boolean {
+        return name.any { it.isDigit() }
+    }
+
+    private fun validateNameSpacesAndLineBreaks(name: String): Boolean {
+        return name.contains(" ") || name.contains("\n") || name.contains("\r\n")
+    }
+
     private fun validateName(name: String): Boolean{
-        return name.length in 3..50;
+        return name.length in 3..50
     }
 
     private fun validateFields(email: String, name: String): Boolean{

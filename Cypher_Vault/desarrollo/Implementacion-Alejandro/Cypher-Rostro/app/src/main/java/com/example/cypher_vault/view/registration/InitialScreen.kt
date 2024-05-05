@@ -6,6 +6,7 @@ import android.content.Context
 import android.content.ContextWrapper
 import android.content.pm.PackageManager
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.border
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -20,9 +21,11 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -67,6 +70,7 @@ fun RegisterText(){
 }
 
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun InitialScreen(authenticationController: AuthenticationController) {
     val context = LocalContext.current
@@ -94,21 +98,39 @@ fun InitialScreen(authenticationController: AuthenticationController) {
             CustomTitle()
             RegisterText()
 
+
             TextField(
                 value = emailState.value,
                 onValueChange = { emailState.value = it },
+                textStyle = TextStyle(
+                    color = firstColor,
+                    fontSize = 16.sp,
+                    fontFamily = fontFamily,
+                    fontWeight = FontWeight.Bold
+                ),
                 label = {
                     Text(
                         "Correo electrónico",
-                        fontFamily = com.example.cypher_vault.view.login.fontFamily,
-                        //color = com.example.cypher_vault.view.login.thirdColor,
-                        fontWeight = FontWeight.Bold
-                    ) },
+                        fontSize = 20.sp,
+                        fontFamily = fontFamily,
+                        color = thirdColor,
+                        fontWeight = FontWeight.Bold,
+                    )
+                },
                 singleLine = true,
-
+                shape = RoundedCornerShape(4.dp),
+                colors = TextFieldDefaults.colors(
+                    focusedContainerColor = Color.Transparent,
+                    unfocusedContainerColor = Color.Transparent,
+                    disabledContainerColor = Color.Transparent,
+                    cursorColor = thirdColor,
+                    focusedIndicatorColor = com.example.cypher_vault.view.login.firstColor,
+                    unfocusedIndicatorColor = com.example.cypher_vault.view.login.firstColor,
+                ),
                 modifier = Modifier
-                    .width(280.dp) // Establece un ancho fijo para el TextField
-                    .clip(RoundedCornerShape(10.dp))
+                    .width(290.dp) // Establece un ancho fijo para el TextField
+                    .padding(top = 15.dp)
+                    .border(BorderStroke(3.dp, com.example.cypher_vault.view.login.firstColor), shape =  RoundedCornerShape(4.dp))
             )
 
             Spacer(modifier = Modifier.height(10.dp))
@@ -116,19 +138,36 @@ fun InitialScreen(authenticationController: AuthenticationController) {
             TextField(
                 value = nameState.value,
                 onValueChange = { nameState.value = it },
+                textStyle = TextStyle(
+                    color = firstColor,
+                    fontSize = 16.sp,
+                    fontFamily = fontFamily,
+                    fontWeight = FontWeight.Bold
+                ),
                 label = {
                     Text(
                         "Nombre",
-                        fontFamily = com.example.cypher_vault.view.login.fontFamily,
-                        //color = com.example.cypher_vault.view.login.thirdColor,
+                        fontSize = 20.sp,
+                        fontFamily = fontFamily,
+                        color = thirdColor,
                         fontWeight = FontWeight.Bold
-                    ) },
+                    )
+                },
                 singleLine = true,
+                colors = TextFieldDefaults.colors(
+                    focusedContainerColor = Color.Transparent,
+                    unfocusedContainerColor = Color.Transparent,
+                    disabledContainerColor = Color.Transparent,
+                    cursorColor = thirdColor,
+                    focusedIndicatorColor = com.example.cypher_vault.view.login.firstColor,
+                    unfocusedIndicatorColor = com.example.cypher_vault.view.login.firstColor,
+                ),
                 modifier = Modifier
-                    .width(280.dp) // Establece un ancho fijo para el TextField
-                    .clip(RoundedCornerShape(10.dp))
-
+                    .width(290.dp) // Establece un ancho fijo para el TextField
+                    .padding(top = 15.dp)
+                    .border(BorderStroke(3.dp, com.example.cypher_vault.view.login.firstColor), shape =  RoundedCornerShape(4.dp),)
             )
+
 
             Spacer(modifier = Modifier.height(10.dp))
 

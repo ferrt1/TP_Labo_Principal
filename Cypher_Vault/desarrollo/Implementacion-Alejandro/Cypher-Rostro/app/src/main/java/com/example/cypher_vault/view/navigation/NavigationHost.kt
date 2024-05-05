@@ -11,7 +11,7 @@ import com.example.cypher_vault.view.login.NavigationLogin
 import com.example.cypher_vault.view.registration.CameraLoginPreviewScreen
 import com.example.cypher_vault.view.registration.CameraRegisterPreviewScreen
 import com.example.cypher_vault.view.registration.ConfirmationScreen
-import com.example.cypher_vault.view.registration.GalleryScreen
+import com.example.cypher_vault.view.gallery.GalleryScreen
 import com.example.cypher_vault.view.registration.InitialScreen
 
 @Composable
