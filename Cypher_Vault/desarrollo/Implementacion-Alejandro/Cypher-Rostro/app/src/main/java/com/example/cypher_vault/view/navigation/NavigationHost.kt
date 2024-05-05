@@ -11,6 +11,7 @@ import com.example.cypher_vault.view.login.NavigationLogin
 import com.example.cypher_vault.view.registration.CameraLoginPreviewScreen
 import com.example.cypher_vault.view.registration.CameraRegisterPreviewScreen
 import com.example.cypher_vault.view.registration.ConfirmationScreen
+import com.example.cypher_vault.view.registration.GalleryScreen
 import com.example.cypher_vault.view.registration.InitialScreen
 
 @Composable
@@ -51,6 +52,11 @@ fun NavigationHost() {
         composable("login") {
             Log.d("faceDetection", "Inicio login")
             // Aquí puedes agregar la vista de inicio de sesión
+        }
+        composable("galery") {
+            Log.d("faceDetection", "Inicio Galery")
+            GalleryScreen(authenticationController)
+            Log.d("faceDetection", "Salida Galery")
         }
         composable("list") {
             Log.d("faceDetection", "Inicio NavigationLogin")

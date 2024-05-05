@@ -12,10 +12,12 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.runBlocking
 import kotlin.coroutines.suspendCoroutine
+import kotlin.math.sqrt
 
 class FaceDetectionTools<ImagesRegister> {
 
-    val threshold = 50.0
+    val thresholdContours = 20.0
+    val thresholdLandmarks = 20.0
 
     fun calculateEuclideanDistance(points1: List<PointF>, points2: List<PointF>): Double {
         require(points1.size == points2.size) { "Lists must have the same size" }
@@ -30,12 +32,24 @@ class FaceDetectionTools<ImagesRegister> {
         return Math.sqrt(distanceSquared)
     }
 
+    fun calcularDistanciaEuclidiana(lista1: List<PointF>, lista2: List<PointF>): Double {
+        if (lista1.size != lista2.size) {
+            throw IllegalArgumentException("Las listas deben tener el mismo tamaño")
+        }
+
+        return lista1.zip(lista2) { punto1, punto2 ->
+            val dx = punto1.x - punto2.x
+            val dy = punto1.y - punto2.y
+            sqrt(dx * dx + dy * dy.toDouble())
+        }.sum()
+    }
+
     fun areFacesSimilar(
         face1Points: List<PointF>,
         face2Points: List<PointF>,
         threshold: Double
     ): Boolean {
-        val distance = calculateEuclideanDistance(face1Points, face2Points)
+        val distance = calcularDistanciaEuclidiana(face1Points, face2Points)
         return distance <= threshold
     }
 
@@ -66,9 +80,9 @@ class FaceDetectionTools<ImagesRegister> {
 
     fun testDeContornosHardCodeados() {
         // Compara las muestras
-        val areSimilar12 = areFacesSimilar(contours1, contours2, threshold)
-        val areSimilar23 = areFacesSimilar(contours2, contours3, threshold)
-        val areSimilar13 = areFacesSimilar(contours1, contours3, threshold)
+        val areSimilar12 = areFacesSimilar(contours1, contours2, thresholdContours)
+        val areSimilar23 = areFacesSimilar(contours2, contours3, thresholdContours)
+        val areSimilar13 = areFacesSimilar(contours1, contours3, thresholdContours)
 
         // Imprime los resultados
         Log.d("faceDetection", "¿La primera y la segunda muestra son similares? $areSimilar12")
@@ -124,7 +138,7 @@ class FaceDetectionTools<ImagesRegister> {
             val tamano2 = fcP.size
             var contourSimilar : Boolean = false
             if(ircP.size == fcP.size){
-                contourSimilar = areFacesSimilar(ircP, fcP, threshold)
+                contourSimilar = areFacesSimilar(ircP, fcP, thresholdContours)
                 Log.d("faceDetection", "El size de la lista Contours:  TRUE")
             }else{
                 Log.e("faceDetection", "El size de la lista Contours:  es diferente : 1: $tamano1 2: $tamano2")
@@ -141,7 +155,8 @@ class FaceDetectionTools<ImagesRegister> {
             val irlP = extractPoints(irl)
             val flP = extractPoints(fl)
             Log.d("faceDetection", "// Puntos Extraidos: Lista 1: $irlP Lista 2: $flP")
-            val landmarkSimilar = areFacesSimilar(irlP, flP, threshold)
+
+            val landmarkSimilar = areFacesSimilar(irlP, flP, thresholdLandmarks)
             if (landmarkSimilar) landmarkSimilarityCount++
         }
 
@@ -149,7 +164,7 @@ class FaceDetectionTools<ImagesRegister> {
         Log.e("faceDetection", "Contador de TRUE similitud contorno: $contourSimilarityCount y requiero : $requiredSimilarityCount")
         Log.e("faceDetection", "Contador de TRUE similitud landmark: $landmarkSimilarityCount y requiero : $requiredSimilarityCount")
 
-        return@runBlocking  landmarkSimilarityCount >= requiredSimilarityCount || contourSimilarityCount >= requiredSimilarityCount
+        return@runBlocking  landmarkSimilarityCount >= (requiredSimilarityCount+1) || contourSimilarityCount >= requiredSimilarityCount
     }
 
     private fun convertirAStringC(faceContour: FaceContour): String {

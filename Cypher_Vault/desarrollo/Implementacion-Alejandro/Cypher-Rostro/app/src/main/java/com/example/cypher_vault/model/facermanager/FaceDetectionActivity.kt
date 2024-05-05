@@ -41,7 +41,7 @@ class FaceDetectionActivity {
         userId: String
     ) {
         Log.d("faceDetection", "Comienza el proceso de deteccion de imagen")
-        val inputImage = InputImage.fromBitmap(image, 0)
+        val inputImage = InputImage.fromBitmap(image, 270)
         detector.process(inputImage)
             .addOnSuccessListener(OnSuccessListener { faces ->
                 for (face in faces) {
@@ -55,7 +55,7 @@ class FaceDetectionActivity {
                         Log.d("faceDetection", "landMarks: $landMarks")
 
                     // Imprimir los datos en LogCat
-                    imprimirDatosFaceDetection(face)
+                    //imprimirDatosFaceDetection(face)
 
                     // Procesar datos
                     Log.d("faceDetection", "Antes de procesarDatosDeteccion")
@@ -69,10 +69,10 @@ class FaceDetectionActivity {
                     )
 
                     /// TEST HARD CODEADO EN FACETOOLS
-                    Log.e("faceDetection", "Test HardCodeado")
-                    val faceTools = FaceDetectionTools<Any>()
-                    faceTools.testDeContornosHardCodeados()
-                    Log.e("faceDetection", "fin de faceDetectionActivity")
+//                    Log.e("faceDetection", "Test HardCodeado")
+//                    val faceTools = FaceDetectionTools<Any>()
+//                    faceTools.testDeContornosHardCodeados()
+//                    Log.e("faceDetection", "fin de faceDetectionActivity")
                 }
             })
             .addOnFailureListener(OnFailureListener { e ->
@@ -121,7 +121,7 @@ class FaceDetectionActivity {
         userId: String
     ) {
         Log.d("faceDetection", "Comienza el proceso de deteccion de imagen")
-        val inputImage = InputImage.fromBitmap(image, 0)
+        val inputImage = InputImage.fromBitmap(image, 270)
         detector.process(inputImage)
             .addOnSuccessListener(OnSuccessListener { faces ->
                 for (face in faces) {
@@ -135,7 +135,7 @@ class FaceDetectionActivity {
                         Log.d("faceDetection", "landMarks: $landMarks")
 
                     // Imprimir los datos en LogCat
-                    imprimirDatosFaceDetection(face)
+//                    imprimirDatosFaceDetection(face)
 
                     // Procesar datos
                     Log.d("faceDetection", "Antes de procesarDatosDeteccion")
@@ -149,10 +149,10 @@ class FaceDetectionActivity {
                     )
 
                     /// TEST HARD CODEADO EN FACETOOLS
-                    Log.e("faceDetection", "Test HardCodeado")
-                    val faceTools = FaceDetectionTools<Any>()
-                    faceTools.testDeContornosHardCodeados()
-                    Log.e("faceDetection", "fin de faceDetectionActivity")
+//                    Log.e("faceDetection", "Test HardCodeado")
+//                    val faceTools = FaceDetectionTools<Any>()
+//                    faceTools.testDeContornosHardCodeados()
+//                    Log.e("faceDetection", "fin de faceDetectionActivity")
                 }
             })
             .addOnFailureListener(OnFailureListener { e ->
@@ -181,8 +181,8 @@ class FaceDetectionActivity {
             Log.e("faceDetection", "similitud : $haySimilitud")
             if (haySimilitud) {
                 Handler(Looper.getMainLooper()).post {
-                    Log.e("faceDetection", "antes del navigateToConfirmation()")
-                    authenticationController.navigateToConfirmation()
+                    Log.e("faceDetection", "antes del navigateToGalery()")
+                    authenticationController.navigateToGalery()
                 }
             } else {
                 Handler(Looper.getMainLooper()).post {

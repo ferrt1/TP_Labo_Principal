@@ -2,6 +2,7 @@ package com.example.cypher_vault
 
 
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import com.example.cypher_vault.model.dbmanager.DatabaseManager
@@ -15,6 +16,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         DatabaseManager.initialize(this)
         setContent {
+            Log.d("faceDetection","Inicio de la app")
             NavigationHost()
         }
     }

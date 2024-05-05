@@ -52,6 +52,10 @@ class AuthenticationController(private val navController: NavController) {
         navController.navigate("register")
     }
 
+    fun navigateToGalery(){
+        navController.navigate("galery")
+    }
+
     fun registerUser(
         email: String,
         name: String,

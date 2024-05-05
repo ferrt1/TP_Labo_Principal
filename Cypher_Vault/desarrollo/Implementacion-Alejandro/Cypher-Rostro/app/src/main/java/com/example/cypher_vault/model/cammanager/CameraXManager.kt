@@ -35,7 +35,12 @@ import kotlin.coroutines.suspendCoroutine
 import android.util.Size
 import androidx.camera.core.resolutionselector.ResolutionSelector
 import androidx.camera.core.resolutionselector.ResolutionStrategy
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.res.painterResource
+import com.example.cypher_vault.R
 
 
 @Composable
@@ -83,6 +88,15 @@ fun CameraRegisterPreviewScreen(authenticationController: AuthenticationControll
         ) {
             Text(text = "Tomar Foto")
         }
+        // Añadir imagen superpuesta desde recursos
+        val painter = painterResource(id = R.drawable.silueta) // Reemplaza R.drawable.overlay_image con el ID de tu imagen en la carpeta res
+        Image(
+            painter = painter,
+            contentDescription = null,
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(1.dp) // Ajusta el padding según sea necesario
+        )
     }
 }
 
@@ -162,6 +176,15 @@ fun CameraLoginPreviewScreen(authenticationController: AuthenticationController,
         ) {
             Text(text = "Tomar Foto")
         }
+        // Añadir imagen superpuesta desde recursos
+        val painter = painterResource(id = R.drawable.silueta) // Reemplaza R.drawable.overlay_image con el ID de tu imagen en la carpeta res
+        Image(
+            painter = painter,
+            contentDescription = null,
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(1.dp) // Ajusta el padding según sea necesario
+        )
     }
 }
 
