@@ -51,8 +51,6 @@ fun ConfirmationLoginScreen(authenticationController: AuthenticationController, 
     val imagePrintRegister = remember { mutableStateOf<Bitmap?>(null) }
     val imagePrintLogin = remember { mutableStateOf<Bitmap?>(null) }
 
-
-
     val minFaceDetectionConfidence = 0.5f
     val minFaceTrackingConfidence = 0.5f
     val minFacePresenceConfidence = 0.5f
@@ -87,6 +85,8 @@ fun ConfirmationLoginScreen(authenticationController: AuthenticationController, 
             val registerBitmap = BitmapFactory.decodeByteArray(registerImage.imageData, 0, registerImage.imageData.size)
             val loginBitmap = BitmapFactory.decodeByteArray(loginImage.imageData, 0, loginImage.imageData.size)
 
+            imagePrintRegister.value = registerBitmap
+            imagePrintLogin.value = loginBitmap
 
             val mpImageRegister  = BitmapImageBuilder(registerBitmap).build()
             val mpImageLogin  = BitmapImageBuilder(loginBitmap).build()
