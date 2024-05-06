@@ -830,3 +830,190 @@ object DatabaseManager {
 }
 ----
 
+
+=== Reconocimiento facial
+
+image::Recursos/siluetaDeRostro.png[100,100]
+
+
+WARNING: *Aun en desarrollo*: Se dara un breve repaso a las herramientas que se  utilizaron para el reconocimiento facial, ya que aun esta en proceso de desarrollo y para optimizar los tiempos de armado de informe se resuelve que no ira esta documentacion a detalle, pero si los conceptos utilizados hasta el momento.
+
+.*Conceptos  preliminares*
+
+* *Reconocimiento facial:* compara dos caras y nos dice si son o no de la misma persona.
+
+* *Seguimiento facial:* seguimiento del rostro dentro la toma
+
+* *Detección de landmarks:* son los puntos de interes del rostro, como ojos la barbilla orejas orejas etc.
+
+* *Detección de contornos:* son tambien los puntos de interes del rostro, como ojos la barbilla, etc.
+
+* *Clasificacion:* si esta con los ojos abiertos la boca abierta etc.
+
+Fuente: link:https://developers.google.com/android/reference/com/google/mlkit/vision/face/Face[Android\Developer\MlKit\Vision\Face]
+
+Fuente: link:https://developers.google.com/ml-kit/vision/face-detection/android?hl=es-419[Android\Developer\MlKit\Vision\FaceDetection]
+
+Fuente: link:https://developer.android.com/media/camera/camerax?hl=es-419[Android\Developer\CameraX]
+
+.Deteccion de Contornos
+image::Recursos/face_contours.svg[700,700]
+
+* *Librerias utilizadas en Android Studio:*
+
+** *MLkit - FaceDetection:*
+*** Con la API de detección de rostro del Kit de AA, puedes detectar rostros en una imagen, identificar rasgos faciales clave y obtener los contornos de los rostros detectados.
+
+*** El ML Kit de Google proporciona las APIs de Vision de aprendizaje automático integradas en el dispositivo para detectar rostros, escanear códigos de barras, etiquetar imágenes y mucho más. El Analizador de ML Kit facilita la integración del kit con tu app de CameraX.
+
+*** El Analizador de ML Kit es una implementación de la interfaz de ImageAnalysis.Analyzer. Anula la resolución objetivo predeterminada (si es necesario) para optimizar el uso del ML Kit, controla las transformaciones de coordenadas y pasa los marcos al ML Kit, que muestra los resultados agregados del análisis.
+
+** *CameraX:*
+*** CameraX es una biblioteca de Jetpack creada para que el desarrollo de una apps de cámara sea más fácil. Para las apps nuevas, te recomendamos que comiences con CameraX. Proporciona una API coherente y fácil de usar que funcione en la gran mayoría de los dispositivos Android y ofrece retrocompatibilidad con Android 5.0 (nivel de API 21).
+
+*** CameraX destaca los casos de uso, que te permiten concentrarte en la tarea que debes completar en lugar de administrar variaciones específicas del dispositivo. Se admiten los casos de uso de la cámara más comunes:
+
+**** *Vista previa:* Permite obtener una imagen en la pantalla.
+
+**** *Análisis de imágenes:* Permite acceder a un búfer sin inconvenientes a fin de utilizarlo en tus algoritmos, por ejemplo, para pasar contenido a ML Kit.
+
+**** *Captura de imágenes:* Permite guardar imágenes.
+
+**** *Captura de video:* Permite guardar videos y audio.
+
+* *Lineamientos para imágenes de entrada*
+
+** Para el reconocimiento facial, se debe usar una imagen con una dimensión de al menos 480 × 360 píxeles. Para que el Kit de AA detecte rostros con precisión, las imágenes de entrada deben contener rostros representados con datos de píxeles suficientes. En general, cada rostro que quieras detectar en una imagen debe tener al menos 100 x 100 píxeles. Si deseas detectar los contornos de los rostros, ML Kit requiere una entrada de mayor resolución: cada rostro debe tener al menos 200 x 200 píxeles.
+
+** Si detectas rostros en una aplicación en tiempo real, te recomendamos que también consideres las dimensiones generales de las imágenes de entrada. Las imágenes más pequeñas se pueden procesar más rápido. Para reducir la latencia, captura imágenes con resoluciones más bajas, pero ten en cuenta los requisitos de precisión que se mencionaron anteriormente y asegúrate de que el rostro del sujeto ocupe la mayor parte posible de la imagen.
+
+* *Puntos de referencia*
+
+** Un punto de referencia es un lugar de interés en un rostro. El ojo izquierdo, el ojo derecho y la base de la nariz son ejemplos de puntos de referencia.
+
+** ML Kit detecta rostros sin buscar puntos de referencia. La detección de puntos de referencia es un paso opcional que está inhabilitado de forma predeterminada.
+
+** En la siguiente tabla, se resumen todos los puntos de referencia que se pueden detectar dado el ángulo Euler Y de un rostro asociado:
+
+.*Ángulo Euler Y Puntos de referencia detectables*
+====
+*Menos de -36 grados:* ojo izquierdo, boca izquierda, oreja izquierda, base de la nariz, mejilla izquierda.
+
+*De -36 a -12 grados:* boca izquierda, base de la nariz, parte inferior de la boca, ojo derecho, ojo izquierdo, mejilla izquierda, punta de la oreja izquierda
+
+*De -12 a 12 grados:* ojo derecho, ojo izquierdo, base de la nariz, mejilla izquierda, mejilla derecha, boca izquierda, boca derecha, parte inferior de la boca
+
+*De 12 a 36 grados:* boca derecha, base de la nariz, parte inferior de la boca, ojo izquierdo, ojo derecho, mejilla derecha, punta de la oreja derecha
+
+*Más de 36 grados:*	ojo derecho, boca derecha, oreja derecha, base de la nariz, mejilla derecha
+
+Cada punto de referencia detectado incluye su posición asociada en la imagen.
+====
+
+* *Contornos*
+
+** Un contorno es un conjunto de puntos que representan la forma de una característica facial. Se basa en puntajes que arroja la libreria por ejemplo :
+
+.Óvalo de rostro 36 puntos:
+[cols=2*,options=header]
+|===
+|Parte del rostro | Cantidad
+|Labio superior (parte superior) |	11 puntos
+|Ceja izquierda (parte superior) |	5 puntos	
+|Labio superior (parte inferior) |	9 puntos
+|Ceja izquierda (parte inferior) |	5 puntos	
+|Labio inferior (parte superior) |	9 puntos
+|Ceja derecha (parte superior) |	5 puntos	
+|Labio inferior (parte inferior) |	9 puntos
+|Ceja derecha (parte inferior) |	5 puntos	
+|Puente nasal |	2 puntos
+|Ojo izquierdo |	16 puntos	
+|Parte inferior de la nariz	| 3 puntos
+|Ojo derecho |	16 puntos
+|Mejilla izquierda (centro) |	1 punto
+|Mejilla derecha (centro) |	1 punto
+|===
+
+** Cuando obtienes todos los contornos de un rostro a la vez, se obtiene un array de 133 puntos, que se asignan a los contornos de los rasgos como se muestra a continuación:
+
+.Índices de contornos de características
+[cols=2*,options=header]
+|===
+|Cantidad de puntos | Parte del rostro
+|0-35|	Óvalo de rostro
+|36-40|	Ceja izquierda (parte superior)
+|41-45|	Ceja izquierda (parte inferior)
+|46-50|	Ceja derecha (parte superior)
+|51-55|	Ceja derecha (parte inferior)
+|56-71|	Ojo izquierdo
+|72-87|	Ojo derecho
+|88-96|	Labio superior (parte inferior)
+|97-105|	Labio inferior (parte superior)
+|106-116|	Labio superior (parte superior)
+|117-125|	Labio inferior (parte inferior)
+|126-127|	Puente nasal
+|128-130|	Parte inferior de la nariz (ten en cuenta que el punto central está en el índice 128)
+|131|	Mejilla izquierda (centro)
+|132|	Mejilla derecha (centro)
+|===
+
+* *Distancia Euclidiana*
+
+** La distancia euclidiana es una medida de distancia entre dos puntos en un espacio euclidiano. En el contexto del reconocimiento facial, los landmarks son puntos específicos en la cara, como la punta de la nariz, las esquinas de los ojos, etc. Para calcular la distancia euclidiana entre dos landmarks (puntos), primero necesitas tener las coordenadas de cada punto en forma de lista o tupla.
+
+** Supongamos que tienes dos landmarks representados por tuplas (x1, y1) y (x2, y2). Se utiliza a distancia euclidiana entre dos puntos los cuales pertenecen a un Landmark especifico del rostro, estos estan contenidos en las listas de informacion de cada una de las capturas, luego hay un margen de error o umbral de error de distancia entre los puntos llamado threshold. Esta distancia calculada si esta dentro del umbral o margen impuesto por nosotros puede utilizarse para reconocer rostros, ya que los landmarks son puntos especificos de cada rostro lo cual arman la singularidad de la persona. A este tipo de reconocimiento se podria llamarlo de similaridad y tiene una formula especifica:
+
+====
+image::Recursos/formulaDistanciaEuclidea.jpeg[700,700]
+====
+
+* Para lo cual dentro de nuestra aplicacion tenemos una herramienta que  nos permite calcular la distancia euclidiana.
+
+.Dentro de nuestra aplicacion
+[source, kotlin]
+----
+val thresholdLandmarks = 20.0
+
+fun calcularDistanciaEuclidiana(lista1: List<PointF>, lista2: List<PointF>): Double { # <1>
+    if (lista1.size != lista2.size) {
+        throw IllegalArgumentException("Las listas deben tener el mismo tamaño")
+    }
+
+    return lista1.zip(lista2) { punto1, punto2 ->
+        val dx = punto1.x - punto2.x
+        val dy = punto1.y - punto2.y
+        sqrt(dx * dx + dy * dy.toDouble())
+    }.sum()
+}
+
+fun areFacesSimilar( # <2>
+    face1Points: List<PointF>,
+    face2Points: List<PointF>,
+    threshold: Double
+): Boolean {
+    val distance = calcularDistanciaEuclidiana(face1Points, face2Points)
+    return distance <= threshold
+}
+----
+<1> Funcion para calcular la distancia Euclidea entre dos puntos en un plano, en nuestro caso la distancia que hay entre la posicion de una parte del rostro de una captura y otra ( Imagen del registro y la Imagen del login )
+<2> Funcion en donde entran los dos puntos, llama a la funcion de distancia y se lo compara con el threshold.
+
+.*Explicacion de la logica del sistema de reconocimiento facial dentro del proyecto*
+
+* Luego de llenar el formulario de registro se posiciona al usuario dentro de la pantalla de captura de imagenes.
+
+* La captura se realiza y se almacenan la informacion de la imagen en la base datos junto a los Landmarks y los Contornos con el ID del usuario. Luego pasa a la pantalla de confirmacion de registro, donde se encuentra un boton para inicio de sesion, al presionalo se redirige al usuario a la pantalla lo inicio de sesion.
+
+* En la pantalla de inicio de sesion nos encontramos con una lista donde aparece el nombre y el mail del usuario. El usuario presiona el boton y se lo redirige automaticamente al area de captura de imagenes y se toma la foto.
+
+* Al momento de tomarse la foto, se compara la informacion de Landmarks de la foto del registro y la foto del logueo punto a punto, mediante la funcion de distancia euclidiana.
+
+* Si hay mas de 8 puntos de los 10 que son en total que verifican dentro del threshold Landmarks, entonces retorna true. Y pasa a la pantalla de galeria, en caso de no verificar se reintenta la toma fotografica, hasta que verifique.
+
+*Notas de implementacion al 5 de mayo*
+
+NOTE: *Mejora herramientas basicas:* como esta en fase de desarrollo las comprobaciones son basicas pero se tienen pensadas varias herramientas para la mejora de la comprobacion de persona, ya que no estamos utilizando modelos entrenados de Inteligencia Artificial. El unico que se utiliza es la API MLKIT, pero la misma es para deteccion de rostros no para reconocimiento (link:https://developers.google.com/ml-kit/vision/face-detection?hl=es-419[documentacion, solo ver el inicio, donde aparece esto nombrado anteriormente]) pero dice que la api sive tambien para "identificar rasgos faciales clave", entonces para el reconocimiento se implementaran herramientas ( codigo ) que utilicen Landmarks y Contornos del rostro, es decir, sera de diseño propio.
+
+NOTE: *Mejora en la captura:* mejora en la captura fotografica, realizando el recorte del rostro y recien en ese momento la toma de datos ( landmarks y contornos ), luego enderezamientos utilizando puntos del rostro, para que los rostros queden alineados al eje Y.
+
+NOTE: *Mejoras visuales:* verificacion del tamaño del rostro en pantalla, ya que si los rostros son de distintas dimensiones, el codigo no funciona, avisos visuales al usuario los cuales le iran indicando que tiene que tiene que hacer en el area de captura de fotos ( Acercarse a la camara, alejarse, inclinacion de rostro en ese Y y Z, subir o bajar el rostro dentro del area de captura ), con verificaciones visuales para asegurar el margen de error en este area tan critica.
