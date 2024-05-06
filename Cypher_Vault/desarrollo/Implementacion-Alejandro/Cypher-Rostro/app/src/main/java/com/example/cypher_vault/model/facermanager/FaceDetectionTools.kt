@@ -17,7 +17,7 @@ import kotlin.math.sqrt
 class FaceDetectionTools<ImagesRegister> {
 
     val thresholdContours = 20.0
-    val thresholdLandmarks = 20.0
+    val thresholdLandmarks = 9.0
 
     fun calculateEuclideanDistance(points1: List<PointF>, points2: List<PointF>): Double {
         require(points1.size == points2.size) { "Lists must have the same size" }
