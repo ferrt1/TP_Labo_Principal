@@ -87,6 +87,12 @@ dependencies {
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
 
+    //RETROFIT
+
+    implementation("com.squareup.retrofit2:retrofit:2.9.0")
+    implementation("com.squareup.retrofit2:converter-gson:2.9.0")
+    implementation(libs.okhttp)
+
 
     // CameraX core library using the camera2 implementation
     val camerax_version = "1.4.0-alpha05"

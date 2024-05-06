@@ -26,12 +26,15 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Shadow
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.ContextCompat
@@ -194,28 +197,28 @@ fun LoginCamera(authenticationController: AuthenticationController, userId: Stri
     ) {
         if (isCameraOpen.value) {
             CameraPreview(preview)
-            Button(onClick = { authenticationController.navigateToConfirmationLogin(userId)}) {
-                
-            }
-            val textColor = Color(0xFFFFFFFF)
+            val textColor = thirdColor
             val textStyle =
-                TextStyle(fontWeight = FontWeight.Bold, color = thirdColor, fontFamily = fontFamily)
+                TextStyle(fontWeight = FontWeight.ExtraBold, color = thirdColor, fontFamily = fontFamily)
 
             when (currentOrientation.value) {
                 "front" -> if (timer.value > 0) {
-                    Column {
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
                         Text(
                             text = "${timer.intValue}",
-                            color = textColor,
-                            style = textStyle,
+                            color = Color.White,
                             fontSize = 36.sp,
+                            style = textStyle.copy(shadow = Shadow(color = firstColor, offset = Offset(-3f,3f), blurRadius = 0f)),
                             textAlign = TextAlign.Center
                         )
                         Text(
-                            "Por favor, Mire hacia la cámara.",
-                            color = textColor,
-                            style = textStyle,
-                            textAlign = TextAlign.Center
+                            "Mire hacia la cámara.",
+                            color = Color.White,
+                            fontSize = 36.sp,
+                            style = textStyle.copy(shadow = Shadow(color = firstColor, offset = Offset(-3f,3f), blurRadius = 0f)),
+                            textAlign = TextAlign.Center,
                         )
                     }
                 }
