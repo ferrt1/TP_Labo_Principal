@@ -1010,6 +1010,7 @@ fun areFacesSimilar( # <2>
 
 * Si hay mas de 8 puntos de los 10 que son en total que verifican dentro del threshold Landmarks, entonces retorna true. Y pasa a la pantalla de galeria, en caso de no verificar se reintenta la toma fotografica, hasta que verifique.
 
+
 *Notas de implementacion al 5 de mayo*
 
 NOTE: *Mejora herramientas basicas:* como esta en fase de desarrollo las comprobaciones son basicas pero se tienen pensadas varias herramientas para la mejora de la comprobacion de persona, ya que no estamos utilizando modelos entrenados de Inteligencia Artificial. El unico que se utiliza es la API MLKIT, pero la misma es para deteccion de rostros no para reconocimiento (link:https://developers.google.com/ml-kit/vision/face-detection?hl=es-419[documentacion, solo ver el inicio, donde aparece esto nombrado anteriormente]) pero dice que la api sive tambien para "identificar rasgos faciales clave", entonces para el reconocimiento se implementaran herramientas ( codigo ) que utilicen Landmarks y Contornos del rostro, es decir, sera de diseño propio.
@@ -1017,3 +1018,45 @@ NOTE: *Mejora herramientas basicas:* como esta en fase de desarrollo las comprob
 NOTE: *Mejora en la captura:* mejora en la captura fotografica, realizando el recorte del rostro y recien en ese momento la toma de datos ( landmarks y contornos ), luego enderezamientos utilizando puntos del rostro, para que los rostros queden alineados al eje Y.
 
 NOTE: *Mejoras visuales:* verificacion del tamaño del rostro en pantalla, ya que si los rostros son de distintas dimensiones, el codigo no funciona, avisos visuales al usuario los cuales le iran indicando que tiene que tiene que hacer en el area de captura de fotos ( Acercarse a la camara, alejarse, inclinacion de rostro en ese Y y Z, subir o bajar el rostro dentro del area de captura ), con verificaciones visuales para asegurar el margen de error en este area tan critica.
+
+== Mejora de interfaz
+
+=== Cambio de tipo de letra
+
+** Elección del tipo de letra: Se selecciono la fuente de tipo `consola` para nuestra aplicación, ya que proporciona una estética adecuada y profesional para nuestra aplicación.
+
+** Color de Letra: El color seleccionado para el texto es un tono celeste, que no solo combina con el logotipo de nuestra aplicación, sino que también mejora la visibilidad y el contraste, facilitando la lectura y escritura.
+
+
+NOTE: *Aclaracion:* La uniformidad en el tamaño de los caracteres de la fuente `consola`, independientemente de que sean mayúsculas o minúsculas, nos permite calcular con precisión la longitud de los textos. Esto es especialmente útil para optimizar el espacio disponible dentro de los botones de inicio de sección, donde se mostrarán el nombre de usuario y su correo electrónico correspondiente. 
+
+image::Recursos/mejora_De_Interfaz/largo-de-usuario.JPG[]
+
+
+
+
+=== Cambios de botones
+
+** Estética: Se implementó un nuevo diseño para los botones, optando por formas más cuadradas en lugar de redondeadas, Esto amplía el ancho de los botones, permitiendo así un espacio adecuado para ingresar tanto el nombre de usuario como el correo electrónico.
+
+image::Recursos/mejora_De_Interfaz/mejora-de-interfaz.JPG[]
+
+** Tipografía: Continuamos utilizando la fuente Consola por su claridad y hemos incrementado el tamaño de la letra del nombre de usuario para mejorar la legibilidad.
+
+** Organización de la Información: El correo electrónico del usuario ahora se muestra debajo del nombre, pero con un tamaño menor que el nombre de usuario, lo que facilita la distinción entre usuarios con nombres idénticos, ya que sus correos serán únicos.
+
+
+
+=== Sócalo de sistema
+** Espacio de Mensajes: Se ha diseñado un área específica para mensajes del sistema que orientará al usuario durante el proceso de registro, informando sobre cualquier incidencia. Este sócalo de sistema se ha incluido como una característica deseable en la tarjeta de diseño 2.5.
+
+=== Optimización del Buscador de Usuarios:
+** Búsqueda por Nombre de Cuenta: Hemos integrado una función de búsqueda que permite localizar una cuenta de usuario específica mediante su nombre. Esta herramienta es especialmente útil en situaciones donde hay numerosas cuentas, simplificando así la experiencia del usuario al identificar y acceder a la cuenta deseada con mayor rapidez y eficiencia
+
+image::Recursos/mejora_De_Interfaz/optimizacion-de-busqueda-de-usuario.JPG[]
+
+=== Logo de la aplicación
+
+** El logo de aplicación se ha incorporado tanto en la pantalla de registro como en la de inicio de sección, aportando una imagen más profesional al diseño general.
+
+image::Recursos/mejora_De_Interfaz/logo-de-la-app.JPG[]
