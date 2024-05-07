@@ -234,20 +234,34 @@ Los pesos se clasifican en base a:
 | 1.7.2 | Ceremonias | Planificación de las ceremonias de Scrum. Sprint planning, dailys, Sprint review, Sprint retrospective | Planificación | Scrum Master | 3 
 | 1.7.3 | Indicadores | Control de inidcadores generales | Planificación, Gestión | Scrum Master | 3 
 | 1.7.4 | Riesgos | Control e identificación de riesgos | Planificación | Scrum master | 2 
+| 1.8 | Control de calidad | Control de calidad | Planificación | Todo el equipo | 3 
+| 1.9 | Presentación | presentación de la PPT | Planificación | Todo el equipo |  6
 | 2 | Desarrollo de Interfaz | Desarrollar la interfaz | Desarrollo | Equipo de desarrollo | 2 
 | 2.1 | Capacitación del Equipo de Desarrollo | Capacitar al equipo con las tecnologías a utilizar | Capacitación | Equipo de desarrollo | 2 
 | 2.2 | Registro | Crear interfaz registro | Desarrollo | Equipo de desarrollo | 2 
 | 2.2.1 | Formulario | Creación del formulario | Desarrollo | Equipo de desarrollo | 2 
-| 2.2.2 | Cámara | Implementar cámara en interfaz | Desarrollo | Equipo de desarrollo | 2 
-| 2.3 | Autentificación | Implementar interfaz de autentificación | Desarrollo | Equipo de desarrollo | 2 
+| 2.2.2 | Capturar imagenes con la cámara | Implementar cámara en interfaz | Desarrollo | Equipo de desarrollo | 2 
+| 2.3 | Login | Implementar interfaz de autentificación | Desarrollo | Equipo de desarrollo | 2 
 | 2.3.1 | Formulario | Creación de formulario de autentificación | Desarrollo | Equipo de desarrollo | 2 
+| 2.3.2 | Autentificación | Método de autentificación | Desarrollo | Equipo de desarrollo | 2 
+| 2.3.3 | Buscador de usuario | Creación de barra de busqueda de usuario | Desarrollo | Equipo de desarrollo | 2 
+| 2.4 | Mensaje del sistema | Mensajes del sistema para el usuario | Desarrollo | Equipo de desarrollo | 21
+| 2.4.1 | Mensaje de registro | Mensajes del sistema para el registro | Desarrollo | Equipo de desarrollo | 3
+| 2.4.2 | Mensaje de logueo | Mensajes del sistema para el logueo | Desarrollo | Equipo de desarrollo | 3
+| 2.4.3 | Mensaje de galeria | Mensajes del sistema para la galeria | Desarrollo | Equipo de desarrollo | 3
+| 2.4.4 | Mensaje de perfil de usuario | Mensajes del sistema para el perfil del usuario | Desarrollo | Equipo de desarrollo | 3
+| 2.4.5 | Creación de metodos y funciones | Creacipon de metodos y funciones para los mensajes del sistema  | Desarrollo | Equipo de desarrollo | 15 
+| 2.5 | Gestión de cuenta | Gestión para la cuenta del usuario | Desarrollo | Equipo de desarrollo | 8
 | 3 | Desarrollo backend | Desarrollar la lógica de la aplicación | Desarrollo | Equipo de desarrollo | 3 
 | 3.1 | Capacitación del equipo de desarrollo | Capacitar al equipo de desarrollo con las tecnologías a utilizar | Capacitación | Equipo de desarrollo | 2 
 | 3.2 | Almacenamiento de imágenes | Almacenar las imágenes en el dispositivo del usuario | Desarrollo | Equipo de desarrollo | 2 
+| 3.2.1 | Creación de Base de Datos | Crear base de datos | Desarrollo | Equipo de desarrollo | 2 
 | 3.2.2 | Guardar imágenes | Guadar imágenes en la base de datos | Desarrollo | Equipo de desarrollo | 3
 | 3.2.2.1 | Imagen registro | Guardar imagenes del registro facial | Desarrollo | Equipo de desarrollo | 3
-| 3.2.2.2 | Imagen vault | Guardar imagenes para la galeria | Desarrollo | Equipo de desarrollo | 3
-| 3.2.1 | Creación de Base de Datos | Crear base de datos | Desarrollo | Equipo de desarrollo | 2 
+| 3.2.2.2 | Imagen vault | Guardar imagenes para la galeria | Desarrollo | Equipo de desarrollo | 22
+| 3.2.2.2.1 | Ver imagenes | Ver imagenes en la galeria | Desarrollo | Equipo de desarrollo | 8
+| 3.2.2.2.2 | Agregar imagenes | Agregar imagenes para la galeria | Desarrollo | Equipo de desarrollo | 8
+| 3.2.2.2.3 | Encriptar imagenes | Encriptar imagenes de la galeria | Desarrollo | Equipo de desarrollo | 8
 | 3.3 | Crear algoritmo reconocimiento facial | Implementación de lógica de reconocimiento facial | Desarrollo | Equipo de desarrollo | 3 
 | 3.4 | Desarrollo parte Vault | Implementar aplicación de galería privada | Desarrollo | Equipo de desarrollo | 3 
 | 4 | Implementación | Puesta en servicio de la aplicación | Implementación | Capacitador y Prueba de Usuario, Equipo de desarrollo | 2 
@@ -265,7 +279,7 @@ Los pesos se clasifican en base a:
 | 1 | (19/4)| Presentación de Plan de Proyecto
 | 2 | (26/4) | Implementacion de interfaz inicial
 | 3 | (8/5) | Implementación de algoritmo de reconocimiento facial
-| 4 | (22/5) | A definir
+| 4 | (22/5) | Interfaz galeria, ver imagenes, implementar imagenes
 | 5 | (5/6) | A definir 
 | 6 | (14/6) | A definir 
 | 7 | (26/6) | A definir 
