@@ -373,6 +373,9 @@ image::imagenAdoc/riesgos_para_informe.PNG[]
 * R7 = Falicitar la tranferencia de conocimiento mediante la colaboracion de un miembro mas experimentado
 * R8 = Adaptar las tareas según el ritmo de trabajo y conocimiento de cada miembro del equipo
 
+Aca va la tabla de indice de mitigacion
+
+Aca va el grafico de indice de mitigacion
  
 === Entregables
 
@@ -392,6 +395,12 @@ En los hitos restantes se presentará al cliente los avances en el producto.
 * Investigación de reconocimiento facial
 * Mejoras en interfaz 
 * Implementación y desarrollo de algoritmo de reconocimiento facial (deseable)
+
+** Entregables para el proximo sprint del dia 22/05:
+* Armado interfaz de galeria
+* Ver imagenes de la tablet en la aplicación
+* Guardar datos de ingreso
+* Implementar mensajes de Registro y logueo
 
 
 === Administración en el Manejo de Bugs
