@@ -209,7 +209,7 @@ Una vez explicado las clasificación de requerimientos funcionales,  se hará a 
 
 === WBS
 
-image::Recursos/Diagramas rf2/WBS.jpg[700,700]
+image::Recursos/Sprint 2/WBS.jpg[]
 
 === Diccionario
 
@@ -279,7 +279,7 @@ Los pesos se clasifican en base a:
 | 1 | (19/4)| Presentación de Plan de Proyecto
 | 2 | (26/4) | Implementacion de interfaz inicial
 | 3 | (8/5) | Implementación de algoritmo de reconocimiento facial
-| 4 | (22/5) | Interfaz galeria, ver imagenes, implementar imagenes
+| 4 | (22/5) | Interfaz galeria, ver imagenes, cargar imagenes, guardar datos de ingreso, implementar mensajes de registro y logueo
 | 5 | (5/6) | A definir 
 | 6 | (14/6) | A definir 
 | 7 | (26/6) | A definir 
@@ -338,7 +338,7 @@ image::Recursos/HORAS.PNG[700,700]
 * *Desarrollo:* 120hs en total
 * *Testing:* 40hs por tester.
 
-Aca va la imagen de las horas del 2do sprint
+image::Recursos/Sprint 2/HORAS.PNG[700,700]
 
 === Riesgos
 
@@ -364,6 +364,7 @@ image::imagenAdoc/riesgos_para_informe.PNG[]
 * R8 = Elaborar un calendario que refleje los horarios disponibles de cada miembro del equipo
 
 ** Plan de contingencia
+
 * R1 = Definir y compartir los objetivos del proyecto de manera clara en todo el equipo
 * R2 = Ampliar conocimientos tanto mediante la teoria como consultando a profesores
 * R3 = Adaptarse a los nuevos cambios que surjan durante el proyecto.
@@ -373,9 +374,9 @@ image::imagenAdoc/riesgos_para_informe.PNG[]
 * R7 = Falicitar la tranferencia de conocimiento mediante la colaboracion de un miembro mas experimentado
 * R8 = Adaptar las tareas según el ritmo de trabajo y conocimiento de cada miembro del equipo
 
-Aca va la tabla de indice de mitigacion
+image::Recursos/Sprint 2/indice de mitigacion tabla.PNG[700,700]
 
-Aca va el grafico de indice de mitigacion
+image::Recursos/Sprint 2/indice de mit grafico.PNG[700,700]
  
 === Entregables
 
@@ -410,7 +411,7 @@ Ejecutar una gestión eficaz de errores y pruebas es un componente esencial en u
 WARNING: *Haremos un seguimiento de los errores en una planilla de excel en un drive compartido con todo el equipo en el cual se detalla fecha de descubrimiento, funcionalidad afectada, tester que lo identifico, desarrollador responsable, detalle del bug, estado y fecha de cierre.
 Los categorizaremos en tres niveles de acuerdo a su severidad: bajo, medio o alto. Esto nos permitirá determinar cuáles son las dificultades más urgentes y cuáles son de menor prioridad.*
 
-image::Recursos/Manejo de bugs - diagrama.png[700,700]
+image::Recursos/Sprint 2/Diagrama de bugs.drawio (2).png[700,700]
 
 === Administración de Cambios
 
@@ -456,13 +457,13 @@ Aca va la imagen de nivel de calidad y evolucion de la prueba
 
 * Burndown Chart Sprint 2
 
-Aca va la imagen de burndown chart sprint 2
+image::Recursos/Sprint 2/funcionalidad completa tabla.PNG[700,700]
 
 === Indicadores Acumulados
 
 * Evolución de la Prueba Acumulado
 
-Aca va la imagen de evolucion de la prueba acumulado
+image::Recursos/Sprint 2/bugs sprint 2 bien.PNG[700,700]
 
 * Burndown Chart Acumulado
 
