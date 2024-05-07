@@ -323,7 +323,7 @@ Se entregará un prototipo de la interfaz funcional para el registro, la autenti
 * *Desarrollador:* 145hs en total
 * *Tester:* 78hs en total
 
-=== Horas empleadas
+=== Horas empleadas Sprint 1
 
 * *Capacitación del equipo en las tecnologías:* 10hs por cada desarrollador y tester.
 * *Desarrollo:* 25hs por cada desarrollador.
@@ -331,6 +331,14 @@ Se entregará un prototipo de la interfaz funcional para el registro, la autenti
 * *Ceremonias y reuniones técnicas:* 15hs con todo el equipo presente
 
 image::Recursos/HORAS.PNG[700,700]
+
+=== Horas empleadas Sprint 2
+
+* *Srum Master:* 29hs
+* *Desarrollo:* 120hs en total
+* *Testing:* 40hs por tester.
+
+Aca va la imagen de las horas del 2do sprint
 
 === Riesgos
 
