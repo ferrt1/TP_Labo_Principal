@@ -448,26 +448,29 @@ image::Recursos/Burndown_chart.PNG[700,700]
 
 * Funcionalidad Completa Sprint 2
 
-Aca va la imagen de funcionalidad completa
+image::Recursos/Sprint 2/funcionalidad completa tabla.PNG[700,700]
 
 * Nivel de Calidad Sprint 2
+
+image::Recursos/Sprint 2/nivel de calidad grafico.PNG[700,700]
+
 * Evolución de la Prueba Sprint 2
 
-Aca va la imagen de nivel de calidad y evolucion de la prueba
+image::Recursos/Sprint 2/bugs sprint 2 bien.PNG[700,700]
 
 * Burndown Chart Sprint 2
 
-image::Recursos/Sprint 2/funcionalidad completa tabla.PNG[700,700]
+image::Recursos/Sprint 2/Burndown chart sprint 2.PNG[700,700]
 
 === Indicadores Acumulados
 
 * Evolución de la Prueba Acumulado
 
-image::Recursos/Sprint 2/bugs sprint 2 bien.PNG[700,700]
+image::Recursos/Sprint 2/bugs acumulados bien.PNG[700,700]
 
 * Burndown Chart Acumulado
 
-Aca va la imagen de burndown chart acumulado
+image::Recursos/Sprint 2/Burndown chart acumulado.PNG[700,700]
 
 === Problemas encontrados
 
