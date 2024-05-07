@@ -293,6 +293,36 @@ Se entregará un prototipo de la interfaz funcional para el registro, la autenti
 * *Desarrollo:* 20hs por cada desarrollador.
 * *Testing:* 10hs por tester.
 
+=== Estimaciones Sprint 1
+
+* *Scrum Master:* 4hs
+* *Desarrollador:* 18hs por cada uno
+* *Tester:* 8hs por cada uno
+
+=== Estimaciones Sprint 2
+
+* *Scrum Master:* 29hs
+* *Desarrollador:* 64hs en total
+* *Tester:* 37hs en total
+
+=== Estimaciones Sprint 3
+
+* *Scrum Master:* 40hs
+* *Desarrollador:* 145hs en total
+* *Tester:* 78hs en total
+
+=== Estimaciones Sprint 4
+
+* *Scrum Master:* 40hs
+* *Desarrollador:* 145hs en total
+* *Tester:* 78hs en total
+
+=== Estimaciones Sprint 5
+
+* *Scrum Master:* 40hs
+* *Desarrollador:* 145hs en total
+* *Tester:* 78hs en total
+
 === Horas empleadas
 
 * *Capacitación del equipo en las tecnologías:* 10hs por cada desarrollador y tester.
