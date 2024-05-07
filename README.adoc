@@ -413,6 +413,12 @@ Los categorizaremos en tres niveles de acuerdo a su severidad: bajo, medio o alt
 
 image::Recursos/Sprint 2/Diagrama de bugs.drawio (2).png[700,700]
 
+Los bugs, se identificaron a través de la ejecución de pruebas. Dichas pruebas se llevaron a cabo utilizando como referencia las tablas de equivalencia que se detallan a continuación.
+
+image::Recursos/Sprint 2/Tabla de equivalencia - registro.png[700,700]
+
+image::Recursos/Sprint 2/Tabla de equivalencia - inicio de sesion.png[700,700]
+
 === Administración de Cambios
 
 La adecuada administración de cambios es crucial para el éxito de cualquier proyecto. Los cambios pueden surgir por distintos motivos, como nuevos requerimientos del cliente, descubrimientos durante el desarrollo, o variaciones en las condiciones del mercado.
