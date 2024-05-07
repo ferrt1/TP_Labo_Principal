@@ -384,6 +384,22 @@ image::Recursos/Evolucion_de_la_prueba.PNG[700,700]
 
 image::Recursos/Burndown_chart.PNG[700,700]
 
+=== Problemas encontrados
+
+* Organización de las tareas:
+Uno de los desafíos que enfrentamos se relacionó con la organización de las tareas. Al inicio del ciclo de desarrollo, habíamos establecido un plan de ejecución detallado que especificaba el orden y la duración estimada de cada tarea. Sin embargo, durante el transcurso del sprint, no se mantuvo la secuencia originalmente planificada. Este desvío en el orden de ejecución conllevó a una fase final del sprint caracterizada por un ritmo acelerado y una relativa falta de estructura en la ejecución de las tareas.
+
+* Poca o nula experiencia en nuevas tecnologías:
+La falta de familiaridad con las tecnologías aplicadas en el proyecto planteó un desafío significativo para ambos equipos, tanto de desarrollo como de Testing, en la resolución de problemas emergentes. Este escenario resultó en una utilización menos eficiente del tiempo asignado a cada tarea, lo cual impactó en la productividad general del equipo.
+
+=== Lecciones aprendidas:
+
+* Planificación y gestión de proyecto:
+Utilizando los conceptos aprendidos en la teoría, pudimos llevar a cabo la planificación del proyecto de manera efectiva. Desde una etapa temprana, definimos los objetivos y alcance, así como los requerimientos, el gestionamiento anticipado de los riesgos y los posibles cambios, establecimos roles y responsabilidades del equipo para facilitar la coordinación y colaboración. Además, gestionar el proyecto nos permitió estructurar las tareas en sprints y optimizar los recursos para alcanzar los objetivos y plazos, garantizando la calidad del producto y la satisfacción del cliente.
+
+* Comunicación entre los miembros del equipo:
+Dentro del marco de la metodología Scrum, se promueve una comunicación abierta y transparente sobre el progreso del trabajo, los desafíos encontrados y las posibles adaptaciones para optimizar el proceso. La sincronización entre los miembros del equipo resulta crucial para el éxito del proyecto, permitiendo una colaboración efectiva y una respuesta ágil ante los cambios y desafíos que puedan surgir.
+
 === Tecnologías
 
 * *Android Studio:* Es un entorno de desarrollo integrado gratuito diseñado específicamente para el desarrollo de aplicaciones Android. 
