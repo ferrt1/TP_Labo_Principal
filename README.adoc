@@ -432,18 +432,41 @@ image::Recursos/diagrama de flujo cambios.png[700,700]
 
 === Indicadores
 
-* Funcionalidad Completa
+* Funcionalidad Completa Sprint 1
 
 image::Recursos/funcionalidad_completa_y_nivel.PNG[700,700]
 
-* Nivel de Calidad
-* Evolución de la Prueba
+* Nivel de Calidad Sprint 1
+* Evolución de la Prueba Sprint 1
 
 image::Recursos/Evolucion_de_la_prueba.PNG[700,700]
 
-* Burndown Chart
+* Burndown Chart Sprint 1
 
 image::Recursos/Burndown_chart.PNG[700,700]
+
+* Funcionalidad Completa Sprint 2
+
+Aca va la imagen de funcionalidad completa
+
+* Nivel de Calidad Sprint 2
+* Evolución de la Prueba Sprint 2
+
+Aca va la imagen de nivel de calidad y evolucion de la prueba
+
+* Burndown Chart Sprint 2
+
+Aca va la imagen de burndown chart sprint 2
+
+=== Indicadores Acumulados
+
+* Evolución de la Prueba Acumulado
+
+Aca va la imagen de evolucion de la prueba acumulado
+
+* Burndown Chart Acumulado
+
+Aca va la imagen de burndown chart acumulado
 
 === Problemas encontrados
 
