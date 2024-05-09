@@ -30,5 +30,5 @@ interface UserDao {
     fun insertAll(vararg users: User)
 
     @Query("SELECT * FROM user WHERE uid = :userId")
-    fun getUserById(userId: Int): User?
+    fun getUserById(userId: String): User?
 }

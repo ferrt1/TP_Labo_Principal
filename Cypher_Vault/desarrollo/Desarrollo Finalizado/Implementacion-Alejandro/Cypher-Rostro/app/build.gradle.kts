@@ -9,7 +9,6 @@ plugins {
 android {
     namespace = "com.example.cypher_vault"
     compileSdk = 34
-
     defaultConfig {
         applicationId = "com.example.cypher_vault"
         minSdk = 25
@@ -87,12 +86,47 @@ dependencies {
     implementation(libs.androidx.material3)
     implementation("androidx.compose.material:material-icons-extended:1.6.6")
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.7.0")
-    testImplementation(libs.junit)
-    androidTestImplementation(libs.androidx.junit)
-    androidTestImplementation(libs.androidx.espresso.core)
-    androidTestImplementation(platform(libs.androidx.compose.bom))
-    androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
+/*
+    //// TestJunit
+    val androidXTestVersion = "1.1.0"
+    androidTestImplementation("androidx.test:core:$androidXTestVersion")
+    androidTestImplementation("androidx.test:core-ktx:1.1.0")
+    androidTestImplementation("androidx.test.ext:junit-ktx:1.1.0")
+    androidTestImplementation("androidx.test.ext:truth:1.1.0")
+    androidTestImplementation("androidx.test:runner:1.1.1")
+    androidTestUtil("androidx.test:orchestrator:1.1.1")
+    // Espresso dependencies
+    val espressoVersion = "3.1.1"
+    androidTestImplementation( "androidx.test.espresso:espresso-core:$espressoVersion")
+    androidTestImplementation( "androidx.test.espresso:espresso-contrib:$espressoVersion")
+    androidTestImplementation( "androidx.test.espresso:espresso-intents:$espressoVersion")
+    androidTestImplementation( "androidx.test.espresso:espresso-accessibility:$espressoVersion")
+    androidTestImplementation( "androidx.test.espresso:espresso-web:$espressoVersion")
+    androidTestImplementation( "androidx.test.espresso.idling:idling-concurrent:$espressoVersion")
+    androidTestImplementation( "androidx.test.espresso:espresso-idling-resource:$espressoVersion")
+*/
 
+    // To use the androidx.test.core APIs
+    androidTestImplementation("androidx.test:core:1.5.0")
+    // Kotlin extensions for androidx.test.core
+    androidTestImplementation("androidx.test:core-ktx:1.5.0")
+
+    // To use the androidx.test.espresso
+    androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
+
+    // To use the JUnit Extension APIs
+    androidTestImplementation("androidx.test.ext:junit:1.1.5")
+    // Kotlin extensions for androidx.test.ext.junit
+    androidTestImplementation("androidx.test.ext:junit-ktx:1.1.5")
+
+    // To use the Truth Extension APIs
+    androidTestImplementation("androidx.test.ext:truth:1.5.0")
+
+    // To use the androidx.test.runner APIs
+    androidTestImplementation("androidx.test:runner:1.5.2")
+
+    // To use android test orchestrator
+    androidTestUtil("androidx.test:orchestrator:1.4.2")
 }

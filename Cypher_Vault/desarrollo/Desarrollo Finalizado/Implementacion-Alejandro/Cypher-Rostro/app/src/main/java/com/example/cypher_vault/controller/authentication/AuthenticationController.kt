@@ -154,7 +154,7 @@ class AuthenticationController(private val navController: NavController) {
         return name.all { it.isLetter() }
     }
 
-    private fun validateMail(email: String): Boolean {
+    fun validateMail(email: String): Boolean {
         return android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()
     }
 
