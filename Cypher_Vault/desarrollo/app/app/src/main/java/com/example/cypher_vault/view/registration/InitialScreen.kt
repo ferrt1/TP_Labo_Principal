@@ -81,6 +81,11 @@ fun InitialScreen(authenticationController: AuthenticationController) {
         ActivityCompat.requestPermissions(activity!!, arrayOf(Manifest.permission.CAMERA), 200)
     }
 
+    if (ContextCompat.checkSelfPermission(context, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+        ActivityCompat.requestPermissions(activity!!, arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE), 200)
+    }
+
+
     val emailState = remember { mutableStateOf(TextFieldValue()) }
     val nameState = remember { mutableStateOf(TextFieldValue()) }
     val showDialog = remember { mutableStateOf(false) }

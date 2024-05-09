@@ -107,6 +107,4 @@ fun ConfirmationScreen(authenticationController: AuthenticationController, userI
         }
     }
 
-
-
 }

@@ -50,10 +50,9 @@ import retrofit2.http.POST
 import retrofit2.http.Part
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody.Part.Companion.createFormData
+import okhttp3.OkHttpClient
 import okhttp3.RequestBody.Companion.asRequestBody
 import retrofit2.converter.gson.GsonConverterFactory
-
-
 
 data class RecognitionResult(val result: Boolean)
 interface FaceRecognitionAPI {
@@ -72,14 +71,11 @@ fun ConfirmationLoginScreen(authenticationController: AuthenticationController, 
     val imageLogin = remember { mutableStateOf<List<ImagesLogin>?>(null) }
     val imageRegister = remember { mutableStateOf<List<ImagesRegister>?>(null) }
     val recognitionResult = remember { mutableStateOf<RecognitionResult?>(null) }
-    val firstColor = Color(0xFF02a6c3)
-    val secondColor = Color(0xFF01243a)
     val thirdColor = Color(0xFF005767)
     val fontFamily = FontFamily(
         Font(R.font.expandedconsolabold, FontWeight.Normal)
     )
     val context = LocalContext.current
-
     val imagePrintRegister = remember { mutableStateOf<Bitmap?>(null) }
     val imagePrintLogin = remember { mutableStateOf<Bitmap?>(null) }
 
@@ -93,8 +89,6 @@ fun ConfirmationLoginScreen(authenticationController: AuthenticationController, 
     coroutineScope.launch {
         imageLogin.value = authenticationController.getImageLoginForUser(userId)
         imageRegister.value = authenticationController.getImageRegistersForUser(userId)
-
-        // Supongamos que las listas de imágenes están ordenadas de la misma manera
         for (i in imageLogin.value!!.indices) {
             val registerImage = imageRegister.value!![i]
             val loginImage = imageLogin.value!![i]
@@ -126,7 +120,8 @@ fun ConfirmationLoginScreen(authenticationController: AuthenticationController, 
                 withContext(Dispatchers.Main) {
                     if (response.isSuccessful) {
                         recognitionResult.value = response.body()
-                    } else if (response.code() == 400) {
+                    } else if (response.code() == 400 || response.code() == 500) {
+                        authenticationController.deleteImageLogin(userId)
                         recognitionResult.value = RecognitionResult(result = false)
                     }
                 }
@@ -145,13 +140,15 @@ fun ConfirmationLoginScreen(authenticationController: AuthenticationController, 
         ImageWithLandmarks(imagePrintLogin)
 
         when (recognitionResult.value) {
-            null -> Text(
-                "Esperando...",
-                fontSize = 20.sp,
-                fontFamily = fontFamily,
-                color = thirdColor,
-                fontWeight = FontWeight.Bold,
-            )
+            null -> {
+                Text(
+                    "Esperando...",
+                    fontSize = 20.sp,
+                    fontFamily = fontFamily,
+                    color = thirdColor,
+                    fontWeight = FontWeight.Bold,
+                    )
+            }
             else -> {
                 if (recognitionResult.value!!.result) {
                     Text(
@@ -162,6 +159,25 @@ fun ConfirmationLoginScreen(authenticationController: AuthenticationController, 
                         fontWeight = FontWeight.Bold,
                     )
                     authenticationController.deleteImageLogin(userId)
+                    OutlinedButton(
+                        onClick = { authenticationController.navigateToGallery(userId) },
+                        shape = RoundedCornerShape(15.dp),
+                        border = BorderStroke(3.dp, Color.Gray),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = Color.Transparent,
+                            contentColor = Color.Gray
+                        ),
+                        modifier = Modifier
+                            .width(200.dp)
+                            .padding(top = 30.dp)
+                    ) {
+                        Text(
+                            "Ver galeria",
+                            fontFamily = fontFamily,
+                            color = Color.Gray,
+                            fontWeight = FontWeight.Bold
+                        )
+                    }
                 } else {
                     Text(
                         "Error en el reconocimiento...",
@@ -176,11 +192,11 @@ fun ConfirmationLoginScreen(authenticationController: AuthenticationController, 
         }
         OutlinedButton(
             onClick = { authenticationController.navigateToListLogin() },
-            shape = RoundedCornerShape(15.dp), // Esto hará que los bordes sean completamente redondos
-            border = BorderStroke(3.dp, Color.Gray), // Establece el color del borde a gris
+            shape = RoundedCornerShape(15.dp),
+            border = BorderStroke(3.dp, Color.Gray),
             colors = ButtonDefaults.buttonColors(
                 containerColor = Color.Transparent,
-                contentColor = Color.Gray // Establece el color del contenido (texto) a gris
+                contentColor = Color.Gray
             ),
             modifier = Modifier
                 .width(200.dp)
@@ -189,7 +205,7 @@ fun ConfirmationLoginScreen(authenticationController: AuthenticationController, 
             Text(
                 "Iniciar sesión",
                 fontFamily = fontFamily,
-                color = Color.Gray, // Establece el color del texto a gris
+                color = Color.Gray,
                 fontWeight = FontWeight.Bold
             )
         }
@@ -208,16 +224,15 @@ fun ImageWithLandmarks(bitmapState: MutableState<Bitmap?>) {
     }
 }
 
-// Función para convertir Bitmap a File
 fun convertBitmapToFile(fileName: String, bitmap: Bitmap, context: Context): File {
-    // Crea un archivo en el directorio de caché
-    val file = File(context.cacheDir, fileName)
+    val width = bitmap.width * 0.5
+    val height = bitmap.height * 0.5
+    val scaledBitmap = Bitmap.createScaledBitmap(bitmap, width.toInt(), height.toInt(), false)
 
-    // Crea un FileOutputStream
+    val file = File(context.cacheDir, fileName)
     val fileOutputStream = FileOutputStream(file)
 
-    // Comprime el bitmap en el FileOutputStream
-    bitmap.compress(Bitmap.CompressFormat.JPEG, 100, fileOutputStream)
+    scaledBitmap.compress(Bitmap.CompressFormat.JPEG, 100, fileOutputStream)
 
     return file
 }

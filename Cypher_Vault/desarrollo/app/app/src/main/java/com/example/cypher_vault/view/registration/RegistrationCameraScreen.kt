@@ -1,16 +1,27 @@
 package com.example.cypher_vault.view.registration
 
+import android.content.Context
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.graphics.ImageFormat
 import android.graphics.Rect
 import android.graphics.YuvImage
 import android.media.Image
+import android.util.Log
+import android.util.Size
 
 import android.widget.Toast
 import androidx.annotation.OptIn
+import androidx.camera.core.CameraProvider
 import androidx.camera.core.CameraSelector
 import androidx.camera.core.ExperimentalGetImage
 import androidx.camera.core.ImageAnalysis
+import androidx.camera.core.ImageCapture
+import androidx.camera.core.ImageCaptureException
+import androidx.camera.core.ImageProxy
 import androidx.camera.core.Preview
+import androidx.camera.core.resolutionselector.ResolutionSelector
+import androidx.camera.core.resolutionselector.ResolutionStrategy
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.PreviewView
 import androidx.compose.foundation.layout.Box
@@ -27,7 +38,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Shadow
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.text.TextStyle
@@ -45,6 +59,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.io.ByteArrayOutputStream
+import java.io.File
 
 
 @OptIn(ExperimentalGetImage::class)
@@ -59,12 +74,31 @@ fun RegistrationCameraScreen(authenticationController: AuthenticationController,
         .build()
 
     val cameraProvider = cameraProviderFuture.get()
-    val preview = Preview.Builder().build()
+
+
+    val configuration = LocalConfiguration.current
+    // Obtener la rotación del dispositivo
+    val rotation = configuration.orientation
+    val screenSize = if (rotation == 0) Size(720, 1280) else Size(1280, 720)
+    val resolutionSelector = ResolutionSelector.Builder().setResolutionStrategy(
+        ResolutionStrategy(
+            screenSize,
+            ResolutionStrategy.FALLBACK_RULE_NONE
+        )
+    ).build()
+    val preview = Preview.Builder()
+        .setResolutionSelector(resolutionSelector)
+        .build()
+
     val imageAnalysis = ImageAnalysis.Builder()
         .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
         .build()
 
     val coroutineScope = rememberCoroutineScope()
+
+    val imageCapture = ImageCapture.Builder()
+        .setCaptureMode(ImageCapture.CAPTURE_MODE_MINIMIZE_LATENCY)
+        .build()
 
     val timer = remember { mutableIntStateOf(3) }
     val timerStarted = remember { mutableStateOf(false) }
@@ -81,7 +115,6 @@ fun RegistrationCameraScreen(authenticationController: AuthenticationController,
 
             val realTimeOpts = FaceDetectorOptions.Builder()
                 .setContourMode(FaceDetectorOptions.CONTOUR_MODE_ALL)
-                .setLandmarkMode(FaceDetectorOptions.LANDMARK_MODE_ALL)
                 .setPerformanceMode(FaceDetectorOptions.PERFORMANCE_MODE_FAST)
                 .enableTracking()
                 .build()
@@ -90,8 +123,7 @@ fun RegistrationCameraScreen(authenticationController: AuthenticationController,
             detector.process(image)
                 .addOnSuccessListener { faces ->
                     if (faces.isEmpty()) {
-                        // Si no hay rostros en la imagen, detén el temporizador y restablécelo a 3
-                        timer.value = 3
+                        timer.intValue = 3
                         timerStarted.value = false
                     } else {
                     for (face in faces) {
@@ -112,55 +144,22 @@ fun RegistrationCameraScreen(authenticationController: AuthenticationController,
                                     timerFinished,
                                     coroutineScope
                                 )
-
-//                                "left" -> if (face.headEulerAngleY > 30) startTimer(
-//                                    timer,
-//                                    timerStarted,
-//                                    timerFinished,
-//                                    coroutineScope
-//                                )
-//
-//                                "right" -> if (face.headEulerAngleY < -30) startTimer(
-//                                    timer,
-//                                    timerStarted,
-//                                    timerFinished,
-//                                    coroutineScope
-//                                )
-//
-//                                "below" -> if (face.headEulerAngleX < -20) startTimer(
-//                                    timer,
-//                                    timerStarted,
-//                                    timerFinished,
-//                                    coroutineScope
-//                                )
-//
-//                                "above" -> if (face.headEulerAngleX > 20) startTimer(
-//                                    timer,
-//                                    timerStarted,
-//                                    timerFinished,
-//                                    coroutineScope
-//                                )
                             }
-
-                            if (timer.value == 0 && !isImageCaptured.value) {
+                            if (timer.intValue == 0 && !isImageCaptured.value) {
                                 captureImage(
-                                    mediaImage,
+                                    context,
+                                    imageCapture,
+                                    cameraProvider,
                                     isImageCaptured,
                                     coroutineScope,
                                     authenticationController,
                                     userId
                                 )
-                                timer.value = 3 // Reinicia el temporizador
-                                timerStarted.value = false // Reinicia el estado del temporizador
-                                isImageCaptured.value =
-                                    false // Reinicia el estado de la captura de la imagen
-
-                                // Cambia a la siguiente orientación
+                                timer.intValue = 3
+                                timerStarted.value = false
+                                isImageCaptured.value = false
                                 currentOrientation.value = when (currentOrientation.value) {
                                     "front" -> "done"
-//                                    "left" -> "right"
-//                                    "right" -> "below"
-//                                    "below" -> "above"
                                     else -> "done"
                                 }
                             }
@@ -169,16 +168,8 @@ fun RegistrationCameraScreen(authenticationController: AuthenticationController,
                 }
         }
                 .addOnFailureListener { e ->
-                    // Manejar cualquier error aquí
                 }
                 .addOnCompleteListener {
-                    if (currentOrientation.value == "done") {
-                        cameraProvider.unbindAll()
-                        // Muestra un Toast con el mensaje "¡Listo!"
-                        Toast.makeText(context, "¡Listo!", Toast.LENGTH_SHORT).show()
-                        // Agrega un retraso antes de navegar a la pantalla de confirmación
-                            authenticationController.navigateToConfirmation(userId)
-                    }
                     imageProxy.close()
                 }
 
@@ -186,7 +177,7 @@ fun RegistrationCameraScreen(authenticationController: AuthenticationController,
     }
 
     LaunchedEffect(cameraProviderFuture) {
-        cameraProvider.bindToLifecycle(lifecycleOwner, cameraSelector, imageAnalysis, preview)
+        cameraProvider.bindToLifecycle(lifecycleOwner, cameraSelector,imageCapture, imageAnalysis, preview)
     }
 
     Box(
@@ -195,104 +186,81 @@ fun RegistrationCameraScreen(authenticationController: AuthenticationController,
     ) {
         if (isCameraOpen.value) {
             CameraPreview(preview)
-            val textColor = Color(0xFFFFFFFF)
+            val textColor = com.example.cypher_vault.view.login.thirdColor
             val textStyle =
-                TextStyle(fontWeight = FontWeight.Bold, color = thirdColor, fontFamily = fontFamily)
+                TextStyle(fontWeight = FontWeight.ExtraBold, color = com.example.cypher_vault.view.login.thirdColor, fontFamily = com.example.cypher_vault.view.login.fontFamily)
 
             when (currentOrientation.value) {
                 "front" -> if (timer.value > 0) {
-                    Column {
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
                         Text(
                             text = "${timer.intValue}",
-                            color = textColor,
-                            style = textStyle,
+                            color = Color.White,
                             fontSize = 36.sp,
+                            style = textStyle.copy(shadow = Shadow(color = com.example.cypher_vault.view.login.firstColor, offset = Offset(-3f,3f), blurRadius = 0f)),
                             textAlign = TextAlign.Center
                         )
                         Text(
-                            "Por favor, Mire hacia la cámara.",
-                            color = textColor,
-                            style = textStyle,
-                            textAlign = TextAlign.Center
+                            "Mire hacia la cámara.",
+                            color = Color.White,
+                            fontSize = 36.sp,
+                            style = textStyle.copy(shadow = Shadow(color = com.example.cypher_vault.view.login.firstColor, offset = Offset(-3f,3f), blurRadius = 0f)),
+                            textAlign = TextAlign.Center,
                         )
                     }
                 }
-
-//                "left" -> if (timer.value > 0) {
-//                    Column {
-//                        Text(
-//                            text = "${timer.intValue}",
-//                            color = textColor,
-//                            style = textStyle,
-//                            fontSize = 36.sp,
-//                            textAlign = TextAlign.Center
-//                        )
-//                        Text(
-//                            "Por favor, gire la cabeza hacia la izquierda.",
-//                            color = textColor,
-//                            style = textStyle,
-//                            textAlign = TextAlign.Center
-//                        )
-//                    }
-//                }
-//
-//                "right" -> if (timer.value > 0) {
-//                    Column {
-//                        Text(
-//                            text = "${timer.intValue}",
-//                            color = textColor,
-//                            style = textStyle,
-//                            fontSize = 36.sp,
-//                            textAlign = TextAlign.Center
-//                        )
-//                        Text(
-//                            "Por favor, gire la cabeza hacia la derecha.",
-//                            color = textColor,
-//                            style = textStyle,
-//                            textAlign = TextAlign.Center
-//                        )
-//                    }
-//                }
-//
-//                "below" -> if (timer.value > 0) {
-//                    Column {
-//                        Text(
-//                            text = "${timer.intValue}",
-//                            color = textColor,
-//                            style = textStyle,
-//                            fontSize = 36.sp,
-//                            textAlign = TextAlign.Center
-//                        )
-//                        Text(
-//                            "Por favor, gire la cabeza hacia abajo.",
-//                            color = textColor,
-//                            style = textStyle,
-//                            textAlign = TextAlign.Center
-//                        )
-//                    }
-//                }
-//
-//                "above" -> if (timer.value > 0) {
-//                    Column {
-//                        Text(
-//                            text = "${timer.intValue}",
-//                            color = textColor,
-//                            style = textStyle,
-//                            fontSize = 36.sp,
-//                            textAlign = TextAlign.Center
-//                        )
-//                        Text(
-//                            "Por favor, gire la cabeza hacia arriba.",
-//                            color = textColor,
-//                            style = textStyle,
-//                            textAlign = TextAlign.Center
-//                        )
-//                    }
-//                }
             }
         }
     }
 
+}
+
+fun captureImage(context: Context,
+                 imageCapture: ImageCapture,
+                 cameraProvider: ProcessCameraProvider,
+                 state: MutableState<Boolean>,
+                 coroutineScope: CoroutineScope,
+                 authenticationController: AuthenticationController,
+                 userId: String) {
+    Log.d("Imagen", "entra aca")
+    val tempFile = File.createTempFile("tempImage", ".jpg", context.cacheDir)
+    val outputFileOptions = ImageCapture.OutputFileOptions.Builder(tempFile).build()
+    imageCapture.takePicture(outputFileOptions, ContextCompat.getMainExecutor(context), object : ImageCapture.OnImageSavedCallback {
+        override fun onImageSaved(outputFileResults: ImageCapture.OutputFileResults) {
+            val imageBytes = tempFile.readBytes()
+
+            // Convierte los bytes de la imagen en un Bitmap
+            val imgBitmap = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.size)
+
+            val newWidth = imgBitmap.width / 4
+            val newHeight = imgBitmap.height / 4
+
+            // Crea un nuevo Bitmap con la mitad del tamaño original
+            val resizedBitmap = Bitmap.createScaledBitmap(imgBitmap, newWidth, newHeight, false)
+
+            // Convierte el Bitmap redimensionado de nuevo a un array de bytes
+            val stream = ByteArrayOutputStream()
+            resizedBitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream)
+            val resizedImageBytes = stream.toByteArray()
+
+            val saveImageDeferred = authenticationController.saveImage(resizedImageBytes, userId)
+            coroutineScope.launch {
+                saveImageDeferred.await()
+                state.value = true
+                state.value = false
+                tempFile.delete() // Borra el archivo temporal después de guardar la imagen en la base de datos
+                cameraProvider.unbindAll()
+                authenticationController.navigateToConfirmation(userId)
+            }
+        }
+
+
+        override fun onError(exception: ImageCaptureException) {
+            Log.d("Imagen", "entro aca y tiro error$exception")
+        }
+    })
 }
 
     @Composable
@@ -310,46 +278,14 @@ fun CameraPreview(preview: Preview) {
 fun startTimer(timer: MutableIntState, timerStarted: MutableState<Boolean>, timerFinished: MutableState<Boolean>, coroutineScope: CoroutineScope) {
     if (!timerStarted.value) {
         timerStarted.value = true
-        timer.value = 3
+        timer.intValue = 3
         coroutineScope.launch {
-            while (timer.value > 0) {
+            while (timer.intValue > 0) {
                 delay(1000)
-                timer.value--
+                timer.intValue--
             }
             timerFinished.value = true
         }
     }
 }
 
-fun captureImage(mediaImage: Image, state: MutableState<Boolean>, coroutineScope: CoroutineScope, authenticationController: AuthenticationController, userId: String) {
-    val jpegBytes = convertYUV420888ToJpeg(mediaImage)
-    val saveImageDeferred = authenticationController.saveImage(jpegBytes, userId)
-    coroutineScope.launch {
-        saveImageDeferred.await()
-        state.value = true
-        state.value = false
-    }
-}
-
-fun convertYUV420888ToJpeg(image: Image): ByteArray {
-    val yBuffer = image.planes[0].buffer
-    val uBuffer = image.planes[1].buffer
-    val vBuffer = image.planes[2].buffer
-
-    val ySize = yBuffer.remaining()
-    val uSize = uBuffer.remaining()
-    val vSize = vBuffer.remaining()
-
-    val nv21 = ByteArray(ySize + uSize + vSize)
-
-    //U and V are swapped
-    yBuffer.get(nv21, 0, ySize)
-    vBuffer.get(nv21, ySize, vSize)
-    uBuffer.get(nv21, ySize + vSize, uSize)
-
-    val yuvImage = YuvImage(nv21, ImageFormat.NV21, image.width, image.height, null)
-    val out = ByteArrayOutputStream()
-    yuvImage.compressToJpeg(Rect(0, 0, yuvImage.width, yuvImage.height), 100, out)
-
-    return out.toByteArray()
-}
