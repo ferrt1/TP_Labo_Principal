@@ -17,6 +17,9 @@ interface ImageRegisterDao {
     @Query("SELECT * FROM images_register WHERE user_id = :userId")
     fun getImagesForUser(userId: String): List<ImagesRegister>
 
+    @Query("SELECT imageData FROM images_register WHERE user_id = :userId")
+    fun getByteArrayForUser(userId: String): ByteArray
+
     @Update
     fun updateImage(imagesRegister: ImagesRegister)
 

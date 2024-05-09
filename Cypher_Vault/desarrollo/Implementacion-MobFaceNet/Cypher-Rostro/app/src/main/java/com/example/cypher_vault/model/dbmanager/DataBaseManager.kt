@@ -66,6 +66,10 @@ object DatabaseManager {
         return database.imageRegisterDao().getImagesForUser(userId)
     }
 
+    fun getByteArrayForUser(userId: String): ByteArray {
+        return database.imageRegisterDao().getByteArrayForUser(userId)
+    }
+
     fun updateImage(imagesRegister: ImagesRegister) {
         database.imageRegisterDao().updateImage(imagesRegister)
     }

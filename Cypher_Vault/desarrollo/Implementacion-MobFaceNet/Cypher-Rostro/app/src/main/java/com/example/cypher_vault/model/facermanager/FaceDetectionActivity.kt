@@ -13,7 +13,13 @@ import com.google.mlkit.vision.face.FaceContour
 import com.google.mlkit.vision.face.FaceDetection
 import com.google.mlkit.vision.face.FaceDetectorOptions
 import com.google.mlkit.vision.face.FaceLandmark
+import kotlinx.coroutines.async
+import kotlinx.coroutines.runBlocking
 import java.io.ByteArrayOutputStream
+import java.io.IOException
+
+
+
 
 /*
 Interfaz de llamado externo
@@ -25,6 +31,8 @@ faceDetectionActivity.detectFaces(yourBitmap)
 
 
 class FaceDetectionActivity {
+
+    private val mfn: MobileFaceNetManager? = null
 
     private val highAccuracyOpts = FaceDetectorOptions.Builder()
         .setContourMode(FaceDetectorOptions.CONTOUR_MODE_ALL)
@@ -113,41 +121,59 @@ class FaceDetectionActivity {
         authenticationController: AuthenticationController,
         image: Bitmap,
         userId: String
-    ) {
+    ): MobileFaceNetCore = runBlocking {
+        val floatRet = 0f
         Log.d("faceDetection", "Comienza el proceso de deteccion de imagen")
-        val inputImage = InputImage.fromBitmap(image, 270)
-        detector.process(inputImage)
-            .addOnSuccessListener(OnSuccessListener { faces ->
-                for (face in faces) {
-                    val faceContours: List<FaceContour> = face.allContours
-                    val faceLandMarks: List<FaceLandmark> = face.allLandmarks
-
-                    // Imprimir los datos en LogCat
-//                    imprimirDatosFaceDetection(face)
-
-                    // Procesar datos
-                    Log.d("faceDetection", "Antes de procesarDatosDeteccion")
-                    procesarDatosDeteccionLogin(
-                        authenticationController,
-                        userId,
-                        image,
-                        faceContours,
-                        faceLandMarks,
-                        true
-                    )
-
-                    /// TEST HARD CODEADO EN FACETOOLS
-//                    Log.e("faceDetection", "Test HardCodeado")
-//                    val faceTools = FaceDetectionTools<Any>()
-//                    faceTools.testDeContornosHardCodeados()
-//                    Log.e("faceDetection", "fin de faceDetectionActivity")
-                }
-            })
-            .addOnFailureListener(OnFailureListener { e ->
-                Log.e("errorFaceDetection", "Error detecting faces: $e")
-                //caso de fallo
-            })
+        val byteArrayyteArray = async { authenticationController.getByteArrayForUser(userId) }
+        val ByteArrayUser = byteArrayyteArray.await()
+        var mfn = MobileFaceNetCore()
+        try {
+            mfn = MobileFaceNetCore()
+        } catch (e: IOException) {
+            e.printStackTrace()
+        }
+        return@runBlocking mfn
     }
+
+
+//    fun detectFacesForLogin(
+//        authenticationController: AuthenticationController,
+//        image: Bitmap,
+//        userId: String
+//    ) {
+//        val inputImage = InputImage.fromBitmap(image, 270)
+//        detector.process(inputImage)
+//            .addOnSuccessListener(OnSuccessListener { faces ->
+//                for (face in faces) {
+//                    val faceContours: List<FaceContour> = face.allContours
+//                    val faceLandMarks: List<FaceLandmark> = face.allLandmarks
+//
+//                    // Imprimir los datos en LogCat
+////                    imprimirDatosFaceDetection(face)
+//
+//                    // Procesar datos
+//                    Log.d("faceDetection", "Antes de procesarDatosDeteccion")
+//                    procesarDatosDeteccionLogin(
+//                        authenticationController,
+//                        userId,
+//                        image,
+//                        faceContours,
+//                        faceLandMarks,
+//                        true
+//                    )
+//
+//                    /// TEST HARD CODEADO EN FACETOOLS
+////                    Log.e("faceDetection", "Test HardCodeado")
+////                    val faceTools = FaceDetectionTools<Any>()
+////                    faceTools.testDeContornosHardCodeados()
+////                    Log.e("faceDetection", "fin de faceDetectionActivity")
+//                }
+//            })
+//            .addOnFailureListener(OnFailureListener { e ->
+//                Log.e("errorFaceDetection", "Error detecting faces: $e")
+//                //caso de fallo
+//            })
+//    }
 
     private fun procesarDatosDeteccionLogin(
         authenticationController: AuthenticationController,

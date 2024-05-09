@@ -82,7 +82,6 @@ class FaceDetectionTools<ImagesRegister> {
         // Calcular la cantidad de elementos necesarios para cumplir el 50% del total
         val requiredSimilarityCount = (imagesRegisterContour.size * 0.5).toInt()
 
-
         val tamanioListaContour = imagesRegisterContour.size
         val tamanioListaLandmark = imagesRegisterLandmark.size
         Log.d("faceDetection", "sizeContour: $tamanioListaContour  sizeLandmark: $tamanioListaLandmark")

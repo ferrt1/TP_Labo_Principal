@@ -122,6 +122,15 @@ class AuthenticationController(private val navController: NavController) {
         }
     }
 
+    fun getByteArrayForUser(userId: String, onComplete: (ByteArray?) -> Unit){
+        CoroutineScope(Dispatchers.IO).launch {
+            val images = DatabaseManager.getByteArrayForUser(userId)
+            withContext(Dispatchers.Main) {
+                onComplete(images)
+            }
+        }
+    }
+
     suspend fun obtenerContour(userId: String): List<FaceContour> {
         return suspendCancellableCoroutine { continuation ->
             CoroutineScope(Dispatchers.IO).launch {
