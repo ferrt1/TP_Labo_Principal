@@ -169,11 +169,6 @@ fun LoginCamera(authenticationController: AuthenticationController, userId: Stri
                     // Manejar cualquier error aquí
                 }
                 .addOnCompleteListener {
-                    if (currentOrientation.value == "done") {
-                        // Muestra un Toast con el mensaje "¡Listo!"
-                        Toast.makeText(context, "¡Listo!", Toast.LENGTH_SHORT).show()
-                        // Agrega un retraso antes de navegar a la pantalla de confirmación
-                    }
                     imageProxy.close()
                 }
 
