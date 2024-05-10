@@ -1,0 +1,10 @@
+/////MEDIUM Testing jetpack compose tutorial
+
+Prueba de impresiones en pantalla.
+https://medium.com/@gsaillen95/introducci%C3%B3n-al-testing-con-jetpack-compose-e2351d1f89b3
+
+////
+Mockito
+Para testear la base de datos, o simular la interaccion, caja negra.
+
+https://www.paradigmadigital.com/dev/testing-android-tests-unitarios/
