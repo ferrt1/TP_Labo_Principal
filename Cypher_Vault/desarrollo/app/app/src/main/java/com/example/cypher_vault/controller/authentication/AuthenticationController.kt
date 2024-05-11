@@ -117,7 +117,7 @@ class AuthenticationController(private val navController: NavController) {
         name: String,
         showDialog: MutableState<Boolean>,
         errorMessage: MutableState<String>,
-        pin: Int
+        pin: String
     ): UUID? {
         val uid = UUID.randomUUID()
         if (validateFields(name, email)){
@@ -146,9 +146,17 @@ class AuthenticationController(private val navController: NavController) {
             showDialog.value = true
             errorMessage.value = "El nombre debe tener más de 3 carácteres y menos de 50"
         }
+        else if (!validatePinNumbers(pin)){
+            showDialog.value = true
+            errorMessage.value = "El PIN debe contener números unicamente"
+        }
+        else if (!validatePIN(pin)){
+            showDialog.value = true
+            errorMessage.value = "El PIN debe tener 4 dígitos"
+        }
         else {
             CoroutineScope(Dispatchers.IO).launch {
-                val user = User(uid = uid.toString(), firstName = name, email = email, entryDate = System.currentTimeMillis(), pin = pin)
+                val user = User(uid = uid.toString(), firstName = name, email = email, entryDate = System.currentTimeMillis(), pin = pin.toInt())
                 DatabaseManager.insertUser(user)
             }
             navigateToCamera(uid.toString())
@@ -185,6 +193,14 @@ class AuthenticationController(private val navController: NavController) {
 
     private fun validateFields(email: String, name: String): Boolean{
         return name.isEmpty() || email.isEmpty()
+    }
+
+    private fun validatePIN(pin: String): Boolean{
+        return pin.length == 4
+    }
+
+    private fun validatePinNumbers(pin: String): Boolean {
+        return pin.all { it.isDigit() }
     }
 
 }

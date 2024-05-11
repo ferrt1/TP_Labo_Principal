@@ -168,13 +168,13 @@ fun InitialScreen(authenticationController: AuthenticationController) {
                     unfocusedContainerColor = Color.Transparent,
                     disabledContainerColor = Color.Transparent,
                     cursorColor = thirdColor,
-                    focusedIndicatorColor = com.example.cypher_vault.view.login.firstColor,
-                    unfocusedIndicatorColor = com.example.cypher_vault.view.login.firstColor,
+                    focusedIndicatorColor = firstColor,
+                    unfocusedIndicatorColor = firstColor,
                 ),
                 modifier = Modifier
                     .width(290.dp) // Establece un ancho fijo para el TextField
                     .padding(top = 15.dp)
-                    .border(BorderStroke(3.dp, com.example.cypher_vault.view.login.firstColor), shape =  RoundedCornerShape(4.dp),)
+                    .border(BorderStroke(3.dp, firstColor), shape =  RoundedCornerShape(4.dp),)
             )
 
             TextField(
@@ -200,7 +200,7 @@ fun InitialScreen(authenticationController: AuthenticationController) {
                     )
                 },
                 singleLine = true,
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number), // Esto hace que el teclado solo muestre números
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                 colors = TextFieldDefaults.colors(
                     focusedContainerColor = Color.Transparent,
                     unfocusedContainerColor = Color.Transparent,
@@ -222,7 +222,7 @@ fun InitialScreen(authenticationController: AuthenticationController) {
 
             Button(
                 onClick = {
-                    authenticationController.registerUser(emailState.value.text, nameState.value.text, showDialog, errorMessage, pinState.value.text.toInt())
+                    authenticationController.registerUser(emailState.value.text, nameState.value.text, showDialog, errorMessage, pinState.value.text)
                 },
                 shape = RoundedCornerShape(4.dp),
                 border = BorderStroke(3.dp, com.example.cypher_vault.view.login.firstColor),
@@ -233,8 +233,8 @@ fun InitialScreen(authenticationController: AuthenticationController) {
                 modifier = Modifier.width(250.dp).padding(top = 5.dp ,bottom = 10.dp)
             ) {
                 Text("Registrarse",
-                    fontFamily = com.example.cypher_vault.view.login.fontFamily,
-                    color = com.example.cypher_vault.view.login.thirdColor,
+                    fontFamily = fontFamily,
+                    color = thirdColor,
                     fontWeight = FontWeight.Bold
                 )
             }
@@ -242,11 +242,11 @@ fun InitialScreen(authenticationController: AuthenticationController) {
 
             OutlinedButton(
                 onClick = { authenticationController.navigateToListLogin() },
-                shape = RoundedCornerShape(15.dp), // Esto hará que los bordes sean completamente redondos
-                border = BorderStroke(3.dp, Color.Gray), // Establece el color del borde a gris
+                shape = RoundedCornerShape(15.dp),
+                border = BorderStroke(3.dp, Color.Gray),
                 colors = ButtonDefaults.buttonColors(
                     containerColor = Color.Transparent,
-                    contentColor = Color.Gray // Establece el color del contenido (texto) a gris
+                    contentColor = Color.Gray
                 ),
                 modifier = Modifier
                     .width(200.dp)

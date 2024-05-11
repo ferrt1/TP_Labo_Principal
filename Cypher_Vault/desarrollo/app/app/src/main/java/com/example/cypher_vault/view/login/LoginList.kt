@@ -1,11 +1,13 @@
 package com.example.cypher_vault.view.login
 
-import android.text.TextPaint
-import androidx.camera.core.CameraSelector
-import androidx.camera.core.Preview
-import androidx.camera.lifecycle.ProcessCameraProvider
+
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.animateDp
+import androidx.compose.animation.core.spring
+import androidx.compose.animation.core.updateTransition
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -20,13 +22,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.unit.dp
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
@@ -36,10 +35,8 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Send
-import androidx.compose.material.icons.filled.Send
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
@@ -48,10 +45,8 @@ import androidx.compose.material3.Snackbar
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
@@ -60,7 +55,6 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.sp
 import com.example.cypher_vault.R
 import com.example.cypher_vault.controller.authentication.AuthenticationController
-import com.example.cypher_vault.view.registration.CameraPreview
 import com.example.cypher_vault.view.resources.CustomTitle
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -75,11 +69,11 @@ val mainBackgroundColor = Color(0xFFdcdcdc)
 val fontFamily = FontFamily(
     Font(R.font.expandedconsolabold, FontWeight.Normal)
 )
+val textStyle = TextStyle(fontSize = 25.sp, color = thirdColor, fontFamily = fontFamily)
 
 @androidx.compose.ui.tooling.preview.Preview
 @Composable
 fun LoginText(){
-    val textStyle = TextStyle(fontSize = 25.sp, color = thirdColor, fontFamily = fontFamily)
     Text(
         "Inicio de sesión",
         style = textStyle,
@@ -102,6 +96,13 @@ fun NavigationLogin(authenticationController: AuthenticationController) {
     var showPinDialog by remember { mutableStateOf(false) }
     var enteredPin by remember { mutableStateOf("") }
     var errorMessage by remember { mutableStateOf("") }
+
+
+    val transition = updateTransition(showConnectionOption, label = "")
+    val offsetY by transition.animateDp(
+        transitionSpec = { spring(stiffness = Spring.StiffnessLow) },
+        label = ""
+    ) { if (it) 0.dp else 300.dp }
 
     Box(
         modifier = Modifier
@@ -195,38 +196,62 @@ fun NavigationLogin(authenticationController: AuthenticationController) {
     if (showConnectionOption) {
         Box(
             modifier = Modifier
+                .offset(y = offsetY)
                 .fillMaxSize()
-                .clickable { showConnectionOption = false }, // cierra los botones al tocar fuera
-            contentAlignment = Alignment.BottomCenter // alineación en la parte inferior
+                .clickable { showConnectionOption = false },
+            contentAlignment = Alignment.BottomCenter
         ) {
             Box(
                 modifier = Modifier
+                    .border(width = 2.dp, color = thirdColor, shape = RoundedCornerShape(topStart = 4.dp, topEnd = 4.dp))
                     .background(Color.White)
-                    .clickable { }, // evita que el clic fuera de los botones cierre la opción de conexión
+                    .padding(0.dp, 32.dp, 0.dp, 32.dp),
             ) {
                 Column(
                     horizontalAlignment = Alignment.CenterHorizontally,
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(IntrinsicSize.Min)
-                        .clickable { showConnectionOption = false },
                 ) {
-                    Button(
-                        onClick = {
-                            showConnectionOption = false
-                            authenticationController.navigateToCameraLogin(userSelected)
-                        },
+                    OutlinedButton(
+                        onClick = { authenticationController.navigateToCameraLogin(userSelected) },
+                        shape = RoundedCornerShape(15.dp),
+                        border = BorderStroke(3.dp, firstColor),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = Color.Transparent,
+                            contentColor = thirdColor
+                        ),
+                        modifier = Modifier
+                            .width(250.dp)
                     ) {
-                        Text("Continuar con conexión")
+                        Text(
+                            "Continuar con conexión",
+                            fontFamily = fontFamily,
+                            color = thirdColor,
+                            fontWeight = FontWeight.Bold
+                        )
                     }
-                    Button(
+                    OutlinedButton(
                         onClick = {
                             showConnectionOption = false
                             showPinDialog = true
-                            enteredPin = ""
-                        },
+                            enteredPin = "" },
+                        shape = RoundedCornerShape(15.dp),
+                        border = BorderStroke(3.dp, firstColor),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = Color.Transparent,
+                            contentColor = thirdColor
+                        ),
+                        modifier = Modifier
+                            .width(250.dp)
+                            .padding(top = 30.dp)
                     ) {
-                        Text("Continuar sin conexión")
+                        Text(
+                            "Continuar sin conexión",
+                            fontFamily = fontFamily,
+                            color = thirdColor,
+                            fontWeight = FontWeight.Bold
+                        )
                     }
                 }
             }
@@ -234,51 +259,119 @@ fun NavigationLogin(authenticationController: AuthenticationController) {
     }
     else if (showPinDialog) {
         AlertDialog(
+            containerColor = Color.White,
+            shape = RoundedCornerShape(15.dp),
             onDismissRequest = { showPinDialog = false },
-            title = { Text("Introduce tu PIN") },
+            title = {     Text(
+                "Inicio de sesión",
+                style = textStyle,
+                modifier = Modifier
+                    .background(Color.White),
+            ) },
             text = {
                 TextField(
                     value = enteredPin,
-                    onValueChange = { enteredPin = it },
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
+                    onValueChange = {
+                        if (it.length <= 4) {
+                            enteredPin = it
+                        }
+                    },
+                    textStyle = TextStyle(
+                        color = firstColor,
+                        fontSize = 16.sp,
+                        fontFamily = fontFamily,
+                        fontWeight = FontWeight.Bold
+                    ),
+                    label = {
+                        Text(
+                            "PIN",
+                            fontSize = 20.sp,
+                            fontFamily = fontFamily,
+                            color =thirdColor,
+                            fontWeight = FontWeight.Bold
+                        )
+                    },
+                    singleLine = true,
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                    colors = TextFieldDefaults.colors(
+                        focusedContainerColor = Color.Transparent,
+                        unfocusedContainerColor = Color.Transparent,
+                        disabledContainerColor = Color.Transparent,
+                        cursorColor = thirdColor,
+                        focusedIndicatorColor = firstColor,
+                        unfocusedIndicatorColor = firstColor,
+                    ),
+                    modifier = Modifier
+                        .width(290.dp)
+                        .padding(top = 15.dp)
+                        .border(BorderStroke(3.dp, firstColor), shape =  RoundedCornerShape(4.dp))
                 )
             },
             confirmButton = {
-                Button(onClick = {
-                    val pin = enteredPin.toIntOrNull()
-                    if (pin != null) {
-                        CoroutineScope(Dispatchers.IO).launch {
-                            val isPinCorrect = authenticationController.comparePins(userSelected, pin)
-                            if (isPinCorrect) {
-                                withContext(Dispatchers.Main){
-                                    authenticationController.navigateToGallery(userSelected)
+                OutlinedButton(
+                    onClick = {
+                        val pin = enteredPin.toIntOrNull()
+                        if (pin != null) {
+                            CoroutineScope(Dispatchers.IO).launch {
+                                val isPinCorrect = authenticationController.comparePins(userSelected, pin)
+                                if (isPinCorrect) {
+                                    withContext(Dispatchers.Main){
+                                        authenticationController.navigateToGallery(userSelected)
+                                    }
+                                }
+                                else{
+                                    errorMessage = "El PIN ingresado es incorrecto."
                                 }
                             }
-                            else{
-                                errorMessage = "El PIN ingresado es incorrecto."
-                            }
                         }
-                    }
-                    showPinDialog = false
-                }) {
-                    Text("Aceptar")
+                        showPinDialog = false
+                    },
+                    shape = RoundedCornerShape(15.dp),
+                    border = BorderStroke(3.dp, Color.Gray),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = Color.Transparent,
+                        contentColor = Color.Gray
+                    ),
+                    modifier = Modifier
+                        .width(200.dp)
+                        .padding(top = 30.dp)
+                ) {
+                    Text(
+                        "Aceptar",
+                        fontFamily = fontFamily,
+                        color = Color.Gray,
+                        fontWeight = FontWeight.Bold
+                    )
                 }
             }
         )
     }
 
     // Muestra un Snackbar con el mensaje de error si hay uno
-    if (errorMessage.isNotEmpty()) {
-        Snackbar(
-            action = {
-                TextButton(onClick = { errorMessage = "" }) {
-                    Text("OK")
-                }
+    Box(
+        modifier = Modifier.fillMaxSize(),
+        contentAlignment = Alignment.BottomCenter // Alinea el Snackbar en la parte inferior
+    ) {
+        if (errorMessage.isNotEmpty()) {
+            Snackbar(
+                action = {
+                    TextButton(
+                        onClick = { errorMessage = "" },
+                        colors = ButtonDefaults.textButtonColors(contentColor = Color.White)
+                    ) {
+                        Text("OK")
+                    }
+                },
+                shape = RoundedCornerShape(8.dp),
+                containerColor = Color.Red,
+                contentColor = Color.White,
+                modifier = Modifier.padding(8.dp)
+            ) {
+                Text(errorMessage)
             }
-        ) {
-            Text(errorMessage)
         }
     }
+
 }
 
 
