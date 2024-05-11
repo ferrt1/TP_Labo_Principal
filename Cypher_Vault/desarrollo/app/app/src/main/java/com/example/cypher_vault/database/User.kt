@@ -10,5 +10,5 @@ data class User(
     @ColumnInfo(name = "first_name") val firstName: String?,
     @ColumnInfo(name = "email") val email: String?,
     @ColumnInfo(name = "entry_date") val entryDate: Long, // Fecha de ingreso
-    @ColumnInfo(name = "pin") val pin: String? // PIN del usuario
+    @ColumnInfo(name = "pin") val pin: Int? // PIN del usuario
 )

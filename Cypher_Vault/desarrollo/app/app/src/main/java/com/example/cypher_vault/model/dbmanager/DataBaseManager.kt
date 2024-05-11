@@ -25,7 +25,7 @@ object DatabaseManager {
         return database.userDao().getAll()
     }
 
-    fun getUserById(userId: Int): User? {
+    fun getUserById(userId: String): User? {
         return database.userDao().getUserById(userId)
     }
 

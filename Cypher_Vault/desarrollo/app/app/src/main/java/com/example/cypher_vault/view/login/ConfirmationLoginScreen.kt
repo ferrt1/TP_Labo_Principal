@@ -80,7 +80,7 @@ fun ConfirmationLoginScreen(authenticationController: AuthenticationController, 
     val imagePrintLogin = remember { mutableStateOf<Bitmap?>(null) }
 
     val retrofit = Retrofit.Builder()
-        .baseUrl("https://constantly-able-crawdad.ngrok-free.app")
+        .baseUrl("https://cypherapi-0zaf.onrender.com/")
         .addConverterFactory(GsonConverterFactory.create())
         .build()
 

@@ -19,6 +19,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -39,6 +40,7 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
@@ -90,6 +92,7 @@ fun InitialScreen(authenticationController: AuthenticationController) {
     val nameState = remember { mutableStateOf(TextFieldValue()) }
     val showDialog = remember { mutableStateOf(false) }
     val errorMessage = remember { mutableStateOf("") }
+    val pinState = remember { mutableStateOf(TextFieldValue()) }
 
 
 
@@ -174,12 +177,52 @@ fun InitialScreen(authenticationController: AuthenticationController) {
                     .border(BorderStroke(3.dp, com.example.cypher_vault.view.login.firstColor), shape =  RoundedCornerShape(4.dp),)
             )
 
+            TextField(
+                value = pinState.value,
+                onValueChange = {
+                    if (it.text.length <= 4) {
+                        pinState.value = it
+                    }
+                },
+                textStyle = TextStyle(
+                    color = firstColor,
+                    fontSize = 16.sp,
+                    fontFamily = fontFamily,
+                    fontWeight = FontWeight.Bold
+                ),
+                label = {
+                    Text(
+                        "PIN",
+                        fontSize = 20.sp,
+                        fontFamily = fontFamily,
+                        color = thirdColor,
+                        fontWeight = FontWeight.Bold
+                    )
+                },
+                singleLine = true,
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number), // Esto hace que el teclado solo muestre números
+                colors = TextFieldDefaults.colors(
+                    focusedContainerColor = Color.Transparent,
+                    unfocusedContainerColor = Color.Transparent,
+                    disabledContainerColor = Color.Transparent,
+                    cursorColor = thirdColor,
+                    focusedIndicatorColor = com.example.cypher_vault.view.login.firstColor,
+                    unfocusedIndicatorColor = com.example.cypher_vault.view.login.firstColor,
+                ),
+                modifier = Modifier
+                    .width(290.dp) // Establece un ancho fijo para el TextField
+                    .padding(top = 15.dp)
+                    .border(BorderStroke(3.dp, com.example.cypher_vault.view.login.firstColor), shape =  RoundedCornerShape(4.dp),)
+            )
+
+
+
 
             Spacer(modifier = Modifier.height(10.dp))
 
             Button(
                 onClick = {
-                    authenticationController.registerUser(emailState.value.text, nameState.value.text, showDialog, errorMessage)
+                    authenticationController.registerUser(emailState.value.text, nameState.value.text, showDialog, errorMessage, pinState.value.text.toInt())
                 },
                 shape = RoundedCornerShape(4.dp),
                 border = BorderStroke(3.dp, com.example.cypher_vault.view.login.firstColor),

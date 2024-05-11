@@ -25,6 +25,18 @@ class AuthenticationController(private val navController: NavController) {
     private val _users = MutableStateFlow<List<User>>(emptyList())
     val users: StateFlow<List<User>> get() = _users
 
+    private suspend fun getUserById(userId: String): User? {
+        return withContext(Dispatchers.IO) {
+            DatabaseManager.getUserById(userId)
+        }
+    }
+
+    suspend fun comparePins(userId: String, inputPin: Int): Boolean {
+        val user = getUserById(userId)
+        return user?.pin == inputPin
+    }
+
+
     fun saveImage(imageData: ByteArray, userId: String): Deferred<Unit> {
         return CoroutineScope(Dispatchers.IO).async {
             val imageRegister = ImagesRegister(imageData = imageData, user_id = userId)
@@ -85,6 +97,11 @@ class AuthenticationController(private val navController: NavController) {
         navController.navigate("authenticate/$uid")
     }
 
+    fun navigateToCameraLogin(uid: String) {
+        navController.navigate("cameralogin/$uid")
+    }
+
+
     fun navigateToRegister(){
         navController.navigate("register")
     }
@@ -99,7 +116,8 @@ class AuthenticationController(private val navController: NavController) {
         email: String,
         name: String,
         showDialog: MutableState<Boolean>,
-        errorMessage: MutableState<String>
+        errorMessage: MutableState<String>,
+        pin: Int
     ): UUID? {
         val uid = UUID.randomUUID()
         if (validateFields(name, email)){
@@ -130,7 +148,7 @@ class AuthenticationController(private val navController: NavController) {
         }
         else {
             CoroutineScope(Dispatchers.IO).launch {
-                val user = User(uid = uid.toString(), firstName = name, email = email, entryDate = System.currentTimeMillis(), pin = null)
+                val user = User(uid = uid.toString(), firstName = name, email = email, entryDate = System.currentTimeMillis(), pin = pin)
                 DatabaseManager.insertUser(user)
             }
             navigateToCamera(uid.toString())
@@ -138,16 +156,6 @@ class AuthenticationController(private val navController: NavController) {
         }
 
         return null
-    }
-
-    fun getLastImageRegister(userId: String): ImagesRegister? {
-        var imageRegister: ImagesRegister? = null
-        CoroutineScope(Dispatchers.IO).launch {
-            imageRegister = withContext(Dispatchers.IO) {
-                DatabaseManager.getLastImageRegisterForUser(userId)
-            }
-        }
-        return imageRegister
     }
 
     private fun getAllUsers() {
