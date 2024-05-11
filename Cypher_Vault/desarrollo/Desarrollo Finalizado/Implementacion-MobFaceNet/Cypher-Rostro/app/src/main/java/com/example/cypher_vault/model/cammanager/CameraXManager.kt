@@ -36,8 +36,6 @@ import android.util.Size
 import androidx.camera.core.resolutionselector.ResolutionSelector
 import androidx.camera.core.resolutionselector.ResolutionStrategy
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.painterResource
 import com.example.cypher_vault.R
@@ -203,7 +201,7 @@ fun captureImageForLogin(imageCapture: ImageCapture, context: Context, authentic
                 // Ejecutar la detección de rostros
                 val faceDetector = FaceDetectionActivity()
                 Log.d("faceDetection", "imageCapture 3")
-                faceDetector.detectFacesForLogin(authenticationController, bitmap, userId)
+                faceDetector.detectFacesForLogin(authenticationController, bitmap, userId, context)
                 Log.e("faceDetection", "salio del DetectFaces")
                 image.close()
             }

@@ -1,7 +1,13 @@
 package com.example.cypher_vault.model.facermanager;
 
+import android.content.Context;
+import android.content.ContextWrapper;
 import android.content.res.AssetManager;
 import android.graphics.Bitmap;
+
+import androidx.activity.ComponentActivity;
+import androidx.compose.runtime.Composable;
+
 import org.tensorflow.lite.Interpreter;
 import java.io.IOException;
 
@@ -11,13 +17,15 @@ public class MobileFaceNetManager {
     public static final int INPUT_IMAGE_SIZE = 112; // 需要feed数据的placeholder的图片宽高
     public static final float THRESHOLD = 0.8f; // 设置一个阙值，大于这个值认为是同一个人
 
-    private final Interpreter interpreter;
+//    private final Interpreter interpreter;
 
     public MobileFaceNetManager() throws IOException {
         Interpreter.Options options = new Interpreter.Options();
         options.setNumThreads(4);
-        interpreter = new Interpreter(MyUtil.loadModelFile(MODEL_FILE), options);
+//        interpreter = new Interpreter(MyUtil.loadModelFile(MODEL_FILE), options);
     }
+
+
 
     public float compare(Bitmap bitmap1, Bitmap bitmap2) {
         // 将人脸resize为112X112大小的，因为下面需要feed数据的placeholder的形状是(2, 112, 112, 3)
@@ -26,9 +34,10 @@ public class MobileFaceNetManager {
 
         float[][][][] datasets = getTwoImageDatasets(bitmapScale1, bitmapScale2);
         float[][] embeddings = new float[2][192];
-        interpreter.run(datasets, embeddings);
-        MyUtil.l2Normalize(embeddings, 1e-10);
-        return evaluate(embeddings);
+//        interpreter.run(datasets, embeddings);
+//        MyUtil.l2Normalize(embeddings, 1e-10);
+//        return evaluate(embeddings);
+        return 0;
     }
 
     /**

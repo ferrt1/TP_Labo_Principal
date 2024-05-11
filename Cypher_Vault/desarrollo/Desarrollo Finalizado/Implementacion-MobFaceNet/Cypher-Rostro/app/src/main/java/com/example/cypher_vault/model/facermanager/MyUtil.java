@@ -1,5 +1,6 @@
 package com.example.cypher_vault.model.facermanager;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.res.AssetFileDescriptor;
 import android.content.res.AssetManager;
@@ -15,6 +16,9 @@ import java.nio.channels.FileChannel;
 
 import static java.lang.Math.max;
 import static java.lang.Math.min;
+
+import androidx.activity.ComponentActivity;
+import androidx.compose.runtime.Composable;
 
 public class MyUtil {
 
@@ -65,22 +69,15 @@ public class MyUtil {
         rect.left = max(0, rect.left - margin);
         rect.right = min(bitmap.getWidth() - 1, rect.right + margin);
     }
-
-    /**
-     * 加载模型文件
-     * @param assetManager
-     * @param modelPath
-     * @return
-     * @throws IOException
-     */
-    public static MappedByteBuffer loadModelFile(String modelPath) throws IOException {
-        AssetFileDescriptor fileDescriptor = assetManager.openFd(modelPath);
-        FileInputStream inputStream = new FileInputStream(fileDescriptor.getFileDescriptor());
-        FileChannel fileChannel = inputStream.getChannel();
-        long startOffset = fileDescriptor.getStartOffset();
-        long declaredLength = fileDescriptor.getDeclaredLength();
-        return fileChannel.map(FileChannel.MapMode.READ_ONLY, startOffset, declaredLength);
-    }
+//    public static MappedByteBuffer loadModelFile(String modelPath) throws IOException {
+//        AssetManager assetManager = context.getAssets();
+//        AssetFileDescriptor fileDescriptor = assetManager.openFd(modelPath);
+//        FileInputStream inputStream = new FileInputStream(fileDescriptor.getFileDescriptor());
+//        FileChannel fileChannel = inputStream.getChannel();
+//        long startOffset = fileDescriptor.getStartOffset();
+//        long declaredLength = fileDescriptor.getDeclaredLength();
+//        return fileChannel.map(FileChannel.MapMode.READ_ONLY, startOffset, declaredLength);
+//    }
 
     /**
      * 归一化图片到[-1, 1]

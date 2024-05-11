@@ -1,9 +1,14 @@
 package com.example.cypher_vault.model.facermanager
 
+import android.content.Context
 import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import android.os.Build
 import android.os.Handler
 import android.os.Looper
 import android.util.Log
+import androidx.annotation.RequiresApi
+import androidx.camera.core.ImageProxy
 import com.example.cypher_vault.controller.authentication.AuthenticationController
 import com.google.android.gms.tasks.OnFailureListener
 import com.google.android.gms.tasks.OnSuccessListener
@@ -16,9 +21,6 @@ import com.google.mlkit.vision.face.FaceLandmark
 import kotlinx.coroutines.async
 import kotlinx.coroutines.runBlocking
 import java.io.ByteArrayOutputStream
-import java.io.IOException
-
-
 
 
 /*
@@ -116,23 +118,34 @@ class FaceDetectionActivity {
         }
     }
 
-
+    @RequiresApi(Build.VERSION_CODES.O)
     fun detectFacesForLogin(
         authenticationController: AuthenticationController,
-        image: Bitmap,
-        userId: String
-    ): MobileFaceNetCore = runBlocking {
+        image1: Bitmap,
+        userId: String,
+        context: Context
+    ): Boolean = runBlocking {
         val floatRet = 0f
-        Log.d("faceDetection", "Comienza el proceso de deteccion de imagen")
+        Log.d("faceDetection", "antes de recuperar la imagen de la base de datos")
         val byteArrayyteArray = async { authenticationController.getByteArrayForUser(userId) }
-        val ByteArrayUser = byteArrayyteArray.await()
+        val byteArrayUser = byteArrayyteArray.await()
+        Log.d("faceDetection", "Comienza MobileFaceNetCore")
         var mfn = MobileFaceNetCore()
-        try {
-            mfn = MobileFaceNetCore()
-        } catch (e: IOException) {
-            e.printStackTrace()
-        }
-        return@runBlocking mfn
+        val image2 = byteArrayToBitmap(byteArrayUser)
+        Log.d("faceDetection", "Comienza mfn.inferencia(image1, image2, context)")
+        val ret = mfn.inferencia(image1, image2, context)
+        return@runBlocking ret
+    }
+
+    fun byteArrayToBitmap(byteArray: ByteArray): Bitmap {
+        return BitmapFactory.decodeByteArray(byteArray, 0, byteArray.size)
+    }
+
+    private fun imageProxyToBitmapWOBF(image: ImageProxy): Bitmap {
+        val buffer = image.planes[0].buffer
+        val bytes = ByteArray(buffer.remaining())
+        buffer.get(bytes)
+        return BitmapFactory.decodeByteArray(bytes, 0, bytes.size)
     }
 
 

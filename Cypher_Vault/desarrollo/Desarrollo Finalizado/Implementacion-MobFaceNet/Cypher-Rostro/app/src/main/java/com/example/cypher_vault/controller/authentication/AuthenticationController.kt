@@ -122,12 +122,14 @@ class AuthenticationController(private val navController: NavController) {
         }
     }
 
-    fun getByteArrayForUser(userId: String, onComplete: (ByteArray?) -> Unit){
+    suspend fun getByteArrayForUser(userId: String): ByteArray {
+        return suspendCancellableCoroutine { continuation ->
         CoroutineScope(Dispatchers.IO).launch {
+            Log.d("faceDetection", "obtenerContour antes de getByteArrayForUser")
             val images = DatabaseManager.getByteArrayForUser(userId)
-            withContext(Dispatchers.Main) {
-                onComplete(images)
-            }
+            Log.d("faceDetection", "obtenerContour despues de getByteArrayForUser")
+            continuation.resume(images) // Reanuda la ejecución con los resultados obtenidos
+        }
         }
     }
 
