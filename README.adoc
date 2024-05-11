@@ -231,7 +231,16 @@ Los pesos se clasifican en base a:
 | 1.6 | Administración de cambio | Planificar el flujo de los cambios | Planificación | Scrum Master | 2 
 | 1.7 | Gestión | Gestión general de indicadores y comunicación del equipo | Planificación, Gestión | Scrum Master | 3 
 | 1.7.1 | Capacitación Scrum Master | Capacitación en herramientas de gestión e indicadores | Capacitación | Scrum master | 3 
-| 1.7.2 | Ceremonias | Planificación de las ceremonias de Scrum. Sprint planning, dailys, Sprint review, Sprint retrospective | Planificación | Scrum Master | 3 
+| 1.7.2 | Ceremonias | Planificación de las ceremonias de Scrum. | Planificación | Scrum Master | 3 
+| 1.7.2.1 | Ceremonias | Sprint planning | Planificación | Todo el equipo | 3 
+| 1.7.2.2 | Ceremonias | Sprint review | Planificación | Todo el equipo | 3 
+| 1.7.2.3 | Ceremonias | Sprint retrospective | Planificación | Todo el equipo | 3 
+| 1.7.2.4 | Ceremonias | Daily | Planificación | Todo el equipo | 3 
+| 1.7.2.5 | Ceremonias | Reuniones PO | Planificación | Todo el equipo | 3 
+| 1.7.2.6 | Ceremonias | Charlas técnicas | Planificación | Todo el equipo | 3 
+| 1.7.2.7 | Ceremonias | Armado PPT | Planificación | Todo el equipo | 3 
+| 1.7.2.8 | Ceremonias | Armado informe | Planificación | Todo el equipo | 3 
+| 1.7.2.9 | Ceremonias | Minutas | Planificación | Todo el equipo | 3 
 | 1.7.3 | Indicadores | Control de inidcadores generales | Planificación, Gestión | Scrum Master | 3 
 | 1.7.4 | Riesgos | Control e identificación de riesgos | Planificación | Scrum master | 2 
 | 1.8 | Control de calidad | Control de calidad | Planificación | Todo el equipo | 3 
@@ -240,11 +249,13 @@ Los pesos se clasifican en base a:
 | 2.1 | Capacitación del Equipo de Desarrollo | Capacitar al equipo con las tecnologías a utilizar | Capacitación | Equipo de desarrollo | 2 
 | 2.2 | Registro | Crear interfaz registro | Desarrollo | Equipo de desarrollo | 2 
 | 2.2.1 | Formulario | Creación del formulario | Desarrollo | Equipo de desarrollo | 2 
+| 2.2.1.1 | Registro alternativo | Creación del registro alternativo | Desarrollo | Equipo de desarrollo | 2 
 | 2.2.2 | Capturar imagenes con la cámara | Implementar cámara en interfaz | Desarrollo | Equipo de desarrollo | 2 
 | 2.3 | Login | Implementar interfaz de autentificación | Desarrollo | Equipo de desarrollo | 2 
 | 2.3.1 | Formulario | Creación de formulario de autentificación | Desarrollo | Equipo de desarrollo | 2 
 | 2.3.2 | Autentificación | Método de autentificación | Desarrollo | Equipo de desarrollo | 2 
 | 2.3.3 | Buscador de usuario | Creación de barra de busqueda de usuario | Desarrollo | Equipo de desarrollo | 2 
+| 2.3.4 | Login alternativo | Creación del login alternativo | Desarrollo | Equipo de desarrollo | 2
 | 2.4 | Mensaje del sistema | Mensajes del sistema para el usuario | Desarrollo | Equipo de desarrollo | 3
 | 2.4.1 | Mensaje de registro | Mensajes del sistema para el registro | Desarrollo | Equipo de desarrollo | 3
 | 2.4.2 | Mensaje de logueo | Mensajes del sistema para el logueo | Desarrollo | Equipo de desarrollo | 3
@@ -264,6 +275,7 @@ Los pesos se clasifican en base a:
 | 3.2.2.2.3 | Encriptar imagenes | Encriptar imagenes de la galeria | Desarrollo | Equipo de desarrollo | 3
 | 3.3 | Crear algoritmo reconocimiento facial | Implementación de lógica de reconocimiento facial | Desarrollo | Equipo de desarrollo | 3 
 | 3.4 | Desarrollo parte Vault | Implementar aplicación de galería privada | Desarrollo | Equipo de desarrollo | 3 
+| 3.5 | Test Unitarios | Desarrollar test unitarios | Desarrollo | Equipo de testing | 3 
 | 4 | Implementación | Puesta en servicio de la aplicación | Implementación | Capacitador y Prueba de Usuario, Equipo de desarrollo | 2 
 | 4.1 | Exportar apk | Compilación del proyecto a formato de dispositivo android | Implementación | Equipo de desarrollo | 2 
 | 4.2 | Capacitar usuario | Capacitar a usuario final | Capacitación | Capacitador y Prueba de Usuario | 2 
