@@ -73,23 +73,9 @@ fun RegistrationCameraScreen(authenticationController: AuthenticationController,
         .requireLensFacing(CameraSelector.LENS_FACING_FRONT)
         .build()
 
+
     val cameraProvider = cameraProviderFuture.get()
-
-
-    val configuration = LocalConfiguration.current
-    // Obtener la rotación del dispositivo
-    val rotation = configuration.orientation
-    val screenSize = if (rotation == 0) Size(720, 1280) else Size(1280, 720)
-    val resolutionSelector = ResolutionSelector.Builder().setResolutionStrategy(
-        ResolutionStrategy(
-            screenSize,
-            ResolutionStrategy.FALLBACK_RULE_NONE
-        )
-    ).build()
-    val preview = Preview.Builder()
-        .setResolutionSelector(resolutionSelector)
-        .build()
-
+    val preview = Preview.Builder().build()
     val imageAnalysis = ImageAnalysis.Builder()
         .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
         .build()
