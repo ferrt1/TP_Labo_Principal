@@ -73,7 +73,6 @@ fun RegistrationCameraScreen(authenticationController: AuthenticationController,
         .requireLensFacing(CameraSelector.LENS_FACING_FRONT)
         .build()
 
-
     val cameraProvider = cameraProviderFuture.get()
     val preview = Preview.Builder().build()
     val imageAnalysis = ImageAnalysis.Builder()

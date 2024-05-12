@@ -53,12 +53,17 @@ import com.example.cypher_vault.controller.authentication.AuthenticationControll
 import com.example.cypher_vault.view.resources.CustomTitle
 
 
+import com.example.cypher_vault.model.msgmanager.*
+
+
 val firstColor = Color(0xFF02a6c3)
 val secondColor = Color(0xFF01243a)
 val thirdColor = Color(0xFF005767)
 val fontFamily = FontFamily(
     Font(R.font.expandedconsolabold, FontWeight.Normal)
 )
+
+var mensaje=""
 
 @Composable
 fun RegisterText(){
@@ -112,7 +117,10 @@ fun InitialScreen(authenticationController: AuthenticationController) {
 
             TextField(
                 value = emailState.value,
-                onValueChange = { emailState.value = it },
+                onValueChange = {
+                    emailState.value = it
+                    estado("email")
+                                },
                 textStyle = TextStyle(
                     color = firstColor,
                     fontSize = 16.sp,
@@ -148,7 +156,10 @@ fun InitialScreen(authenticationController: AuthenticationController) {
 
             TextField(
                 value = nameState.value,
-                onValueChange = { nameState.value = it },
+                onValueChange = {
+                    nameState.value = it
+                    estado("name")
+                                },
                 textStyle = TextStyle(
                     color = firstColor,
                     fontSize = 16.sp,
@@ -224,7 +235,7 @@ fun InitialScreen(authenticationController: AuthenticationController) {
 
             Button(
                 onClick = {
-                    authenticationController.registerUser(emailState.value.text, nameState.value.text, showDialog, errorMessage, pinState.value.text)
+                    authenticationController.registerUser(emailState.value.text, nameState.value.text, pinState.value.text)
                 },
                 shape = RoundedCornerShape(4.dp),
                 border = BorderStroke(3.dp, com.example.cypher_vault.view.login.firstColor),
@@ -261,8 +272,15 @@ fun InitialScreen(authenticationController: AuthenticationController) {
                     fontWeight = FontWeight.Bold
                 )
             }
+            // en esta parte va el socalo de mensaje
+            Text(mensaje,
+                fontFamily = fontFamily,
+                color = thirdColor,
+                fontWeight = FontWeight.Bold
+            )
 
         }
+
     }
 
     if (showDialog.value) {
@@ -277,6 +295,11 @@ fun InitialScreen(authenticationController: AuthenticationController) {
             }
         )
     }
+}
+
+
+fun estado(valor: String){
+     mensaje=getMessage(valor)
 }
 
 fun Context.findAncestorActivity(): Activity? {

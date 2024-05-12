@@ -1,5 +1,6 @@
 package com.example.cypher_vault.controller.authentication
 import android.graphics.Bitmap
+import android.util.Log
 import androidx.compose.runtime.MutableState
 import androidx.navigation.NavController
 import com.example.cypher_vault.database.ImagesLogin
@@ -15,6 +16,8 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.util.UUID
+
+import com.example.cypher_vault.model.msgmanager.*
 
 class AuthenticationController(private val navController: NavController) {
 
@@ -115,62 +118,37 @@ class AuthenticationController(private val navController: NavController) {
     fun registerUser(
         email: String,
         name: String,
-        showDialog: MutableState<Boolean>,
-        errorMessage: MutableState<String>,
         pin: String
     ): UUID? {
+        Log.d("MiTag", "mis valores  $email,$name,$pin ")
         val uid = UUID.randomUUID()
-        if (validateFields(name, email)){
-            showDialog.value = true
-            errorMessage.value = "Por favor, rellena todos los campos correctamente."
-        }
-
-        else if (!validateNameLettersOnly(name)) {
-            showDialog.value = true
-            errorMessage.value = "El nombre debe contener caracteres alfabéticos únicamente"
-        }
-
-        else if (!validateMail(email)) {
-            showDialog.value = true
-            errorMessage.value = "El email debe ser válido"
-        }
-        else if (validateNameSpacesAndLineBreaks(name)){
-            showDialog.value = true
-            errorMessage.value = "El nombre no puede contener espacios en blanco"
-        }
-        else if (validateNameNumbers(name)){
-            showDialog.value = true
-            errorMessage.value = "El nombre no puede tener números"
-        }
-        else if (!validateName(name)){
-            showDialog.value = true
-            errorMessage.value = "El nombre debe tener más de 3 carácteres y menos de 50"
-        }
-        else if (!validatePinNumbers(pin)){
-            showDialog.value = true
-            errorMessage.value = "El PIN debe contener números unicamente"
-        }
-        else if (!validatePIN(pin)){
-            showDialog.value = true
-            errorMessage.value = "El PIN debe tener 4 dígitos"
-        }
-        else {
+        if (getTotal(email, name, pin)) {
+            Log.d("MiTag", "Si cumplio con la condicional")
             CoroutineScope(Dispatchers.IO).launch {
-                val user = User(uid = uid.toString(), firstName = name, email = email, entryDate = System.currentTimeMillis(), pin = pin.toInt())
+                val user = User(
+                    uid = uid.toString(),
+                    firstName = name,
+                    email = email,
+                    entryDate = System.currentTimeMillis(),
+                    pin = pin.toInt()
+                )
                 DatabaseManager.insertUser(user)
             }
             navigateToCamera(uid.toString())
             return uid
+        } else {
+            Log.d("MiTag", "NOOO cumplio con la condicional")
+            return null
         }
-
-        return null
     }
+
 
     private fun getAllUsers() {
         CoroutineScope(Dispatchers.IO).launch {
             _users.value = DatabaseManager.getAllUsers()
         }
     }
+    //-------------------------------------------------------------------------------------------
     private fun validateNameLettersOnly(name: String): Boolean {
         return name.all { it.isLetter() }
     }
