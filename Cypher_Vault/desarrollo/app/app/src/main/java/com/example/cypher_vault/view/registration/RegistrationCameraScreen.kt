@@ -3,12 +3,15 @@ package com.example.cypher_vault.view.registration
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.graphics.Canvas
 import android.graphics.ImageFormat
+import android.graphics.Paint
 import android.graphics.Rect
 import android.graphics.YuvImage
 import android.media.Image
 import android.util.Log
 import android.util.Size
+import android.widget.FrameLayout
 
 import android.widget.Toast
 import androidx.annotation.OptIn
@@ -93,10 +96,21 @@ fun RegistrationCameraScreen(authenticationController: AuthenticationController,
 
     val currentOrientation = remember { mutableStateOf("front") }
 
+    val faceOverlayView = remember { FaceOverlayView(context) }
+
+
+
     imageAnalysis.setAnalyzer(ContextCompat.getMainExecutor(context)) { imageProxy ->
         val mediaImage = imageProxy.image
         if (mediaImage != null) {
-            val image = InputImage.fromMediaImage(mediaImage, imageProxy.imageInfo.rotationDegrees)
+            val rotationDegrees = imageProxy.imageInfo.rotationDegrees
+            val image = InputImage.fromMediaImage(mediaImage, rotationDegrees)
+
+            val imageView = InputImage.fromMediaImage(mediaImage, imageProxy.imageInfo.rotationDegrees)
+
+            // Actualiza imageWidth e imageHeight.
+            faceOverlayView.imageWidth = imageView.width
+            faceOverlayView.imageHeight = imageView.height
 
             val realTimeOpts = FaceDetectorOptions.Builder()
                 .setContourMode(FaceDetectorOptions.CONTOUR_MODE_ALL)
@@ -121,7 +135,12 @@ fun RegistrationCameraScreen(authenticationController: AuthenticationController,
                                 FaceContour.LOWER_LIP_BOTTOM
                             )?.points?.isNotEmpty()!!
 
-                        if (hasLeftEye == true && hasRightEye == true && hasNose == true && hasMouth) {
+
+                        faceOverlayView.boundingBox = face.boundingBox
+                        faceOverlayView.invalidate()
+
+
+                        if (hasLeftEye == true && hasRightEye == true && hasNose == true && hasMouth && faceOverlayView.isBoundingBoxInsideTarget()) {
                             when (currentOrientation.value) {
                                 "front" -> if (face.headEulerAngleY in -10.0..10.0) startTimer(
                                     timer,
@@ -138,7 +157,8 @@ fun RegistrationCameraScreen(authenticationController: AuthenticationController,
                                     isImageCaptured,
                                     coroutineScope,
                                     authenticationController,
-                                    userId
+                                    userId,
+                                    faceOverlayView
                                 )
                                 timer.intValue = 3
                                 timerStarted.value = false
@@ -162,7 +182,7 @@ fun RegistrationCameraScreen(authenticationController: AuthenticationController,
     }
 
     LaunchedEffect(cameraProviderFuture) {
-        cameraProvider.bindToLifecycle(lifecycleOwner, cameraSelector,imageCapture, imageAnalysis, preview)
+        cameraProvider.bindToLifecycle(lifecycleOwner, cameraSelector, imageCapture , imageAnalysis, preview)
     }
 
     Box(
@@ -171,6 +191,7 @@ fun RegistrationCameraScreen(authenticationController: AuthenticationController,
     ) {
         if (isCameraOpen.value) {
             CameraPreview(preview)
+            AndroidView( {faceOverlayView} )
             val textColor = com.example.cypher_vault.view.login.thirdColor
             val textStyle =
                 TextStyle(fontWeight = FontWeight.ExtraBold, color = com.example.cypher_vault.view.login.thirdColor, fontFamily = com.example.cypher_vault.view.login.fontFamily)
@@ -182,14 +203,14 @@ fun RegistrationCameraScreen(authenticationController: AuthenticationController,
                     ) {
                         Text(
                             text = "${timer.intValue}",
-                            color = Color.White,
+                            color = Color.Black,
                             fontSize = 36.sp,
                             style = textStyle.copy(shadow = Shadow(color = com.example.cypher_vault.view.login.firstColor, offset = Offset(-3f,3f), blurRadius = 0f)),
                             textAlign = TextAlign.Center
                         )
                         Text(
                             "Mire hacia la cámara.",
-                            color = Color.White,
+                            color = Color.Black,
                             fontSize = 36.sp,
                             style = textStyle.copy(shadow = Shadow(color = com.example.cypher_vault.view.login.firstColor, offset = Offset(-3f,3f), blurRadius = 0f)),
                             textAlign = TextAlign.Center,
@@ -208,7 +229,8 @@ fun captureImage(context: Context,
                  state: MutableState<Boolean>,
                  coroutineScope: CoroutineScope,
                  authenticationController: AuthenticationController,
-                 userId: String) {
+                 userId: String,
+                 faceOverlayView: FaceOverlayView) {
     Log.d("Imagen", "entra aca")
     val tempFile = File.createTempFile("tempImage", ".jpg", context.cacheDir)
     val outputFileOptions = ImageCapture.OutputFileOptions.Builder(tempFile).build()
@@ -219,13 +241,26 @@ fun captureImage(context: Context,
             // Convierte los bytes de la imagen en un Bitmap
             val imgBitmap = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.size)
 
-            val newWidth = imgBitmap.width / 4
-            val newHeight = imgBitmap.height / 4
+            // Calcula las coordenadas del targetBox en las coordenadas de la imagen
+            val targetBoxInImageCoordinates = Rect(
+                faceOverlayView.targetBox!!.left * imgBitmap.width / faceOverlayView.width,
+                faceOverlayView.targetBox!!.top * imgBitmap.height / faceOverlayView.height,
+                faceOverlayView.targetBox!!.right * imgBitmap.width / faceOverlayView.width,
+                faceOverlayView.targetBox!!.bottom * imgBitmap.height / faceOverlayView.height
+            )
+
+            // Recorta el Bitmap para que tenga el mismo tamaño que el targetBox
+            val croppedBitmap = Bitmap.createBitmap(imgBitmap, targetBoxInImageCoordinates.left,
+                targetBoxInImageCoordinates.top, targetBoxInImageCoordinates.width(), targetBoxInImageCoordinates.height())
+
+            val newWidth = croppedBitmap.width / 3
+            val newHeight = croppedBitmap.height / 3
 
             // Crea un nuevo Bitmap con la mitad del tamaño original
-            val resizedBitmap = Bitmap.createScaledBitmap(imgBitmap, newWidth, newHeight, false)
+            val resizedBitmap = Bitmap.createScaledBitmap(croppedBitmap, newWidth, newHeight, false)
 
-            // Convierte el Bitmap redimensionado de nuevo a un array de bytes
+
+            // Convierte el Bitmap recortado de nuevo a un array de bytes
             val stream = ByteArrayOutputStream()
             resizedBitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream)
             val resizedImageBytes = stream.toByteArray()
@@ -248,7 +283,7 @@ fun captureImage(context: Context,
     })
 }
 
-    @Composable
+@Composable
 fun CameraPreview(preview: Preview) {
     AndroidView(
         factory = {
