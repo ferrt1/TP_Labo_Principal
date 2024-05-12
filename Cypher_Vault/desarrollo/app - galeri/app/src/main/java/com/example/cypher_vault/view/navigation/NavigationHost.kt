@@ -10,7 +10,7 @@ import com.example.cypher_vault.view.login.ConfirmationLoginScreen
 import com.example.cypher_vault.view.login.LoginCamera
 import com.example.cypher_vault.view.login.NavigationLogin
 import com.example.cypher_vault.view.registration.ConfirmationScreen
-import com.example.cypher_vault.view.registration.Gallery
+import com.example.cypher_vault.view.gallery.Gallery
 import com.example.cypher_vault.view.registration.InitialScreen
 import com.example.cypher_vault.view.registration.RegistrationCameraScreen
 
