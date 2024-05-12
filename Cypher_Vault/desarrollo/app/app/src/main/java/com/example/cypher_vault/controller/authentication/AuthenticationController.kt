@@ -31,9 +31,9 @@ class AuthenticationController(private val navController: NavController) {
         }
     }
 
-    suspend fun comparePins(userId: String, inputPin: Int): Boolean {
+    suspend fun comparePasswords(userId: String, password: String): Boolean {
         val user = getUserById(userId)
-        return user?.pin == inputPin
+        return user?.password == password
     }
 
 
@@ -117,7 +117,7 @@ class AuthenticationController(private val navController: NavController) {
         name: String,
         showDialog: MutableState<Boolean>,
         errorMessage: MutableState<String>,
-        pin: String
+        password: String
     ): UUID? {
         val uid = UUID.randomUUID()
         if (validateFields(name, email)){
@@ -146,17 +146,17 @@ class AuthenticationController(private val navController: NavController) {
             showDialog.value = true
             errorMessage.value = "El nombre debe tener más de 3 carácteres y menos de 50"
         }
-        else if (!validatePinNumbers(pin)){
+        else if (!validatePasswordLength(password)){
             showDialog.value = true
-            errorMessage.value = "El PIN debe contener números unicamente"
+            errorMessage.value = "El PIN debe contener 16 carácteres"
         }
-        else if (!validatePIN(pin)){
+        else if (!validatePasswordCharacters(password)){
             showDialog.value = true
-            errorMessage.value = "El PIN debe tener 4 dígitos"
+            errorMessage.value = "El PIN debe tener un carácter especial"
         }
         else {
             CoroutineScope(Dispatchers.IO).launch {
-                val user = User(uid = uid.toString(), firstName = name, email = email, entryDate = System.currentTimeMillis(), pin = pin.toInt())
+                val user = User(uid = uid.toString(), firstName = name, email = email, entryDate = System.currentTimeMillis(), password = password)
                 DatabaseManager.insertUser(user)
             }
             navigateToCamera(uid.toString())
@@ -195,12 +195,12 @@ class AuthenticationController(private val navController: NavController) {
         return name.isEmpty() || email.isEmpty()
     }
 
-    private fun validatePIN(pin: String): Boolean{
-        return pin.length == 4
+    fun validatePasswordLength(password: String): Boolean {
+        return password.length == 16
     }
 
-    private fun validatePinNumbers(pin: String): Boolean {
-        return pin.all { it.isDigit() }
+    fun validatePasswordCharacters(password: String): Boolean {
+        return password.any { it.isLetterOrDigit() } && password.any { !it.isLetterOrDigit() }
     }
 
 }

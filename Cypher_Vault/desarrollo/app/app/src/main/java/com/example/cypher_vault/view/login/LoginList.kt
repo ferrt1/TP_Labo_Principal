@@ -35,9 +35,12 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Send
+import androidx.compose.material.icons.filled.Visibility
+import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
@@ -51,7 +54,10 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.sp
 import com.example.cypher_vault.R
 import com.example.cypher_vault.controller.authentication.AuthenticationController
@@ -93,9 +99,11 @@ fun NavigationLogin(authenticationController: AuthenticationController) {
     var userSelected by remember { mutableStateOf("") }
 
     var showConnectionOption by remember { mutableStateOf(false) }
-    var showPinDialog by remember { mutableStateOf(false) }
-    var enteredPin by remember { mutableStateOf("") }
+    var showPasswordDialog by remember { mutableStateOf(false) }
+    var enteredPassword by remember { mutableStateOf("") }
     var errorMessage by remember { mutableStateOf("") }
+
+    val passwordVisible = remember { mutableStateOf(false) }
 
 
     val transition = updateTransition(showConnectionOption, label = "")
@@ -234,8 +242,8 @@ fun NavigationLogin(authenticationController: AuthenticationController) {
                     OutlinedButton(
                         onClick = {
                             showConnectionOption = false
-                            showPinDialog = true
-                            enteredPin = "" },
+                            showPasswordDialog = true
+                            enteredPassword = "" },
                         shape = RoundedCornerShape(15.dp),
                         border = BorderStroke(3.dp, firstColor),
                         colors = ButtonDefaults.buttonColors(
@@ -257,23 +265,25 @@ fun NavigationLogin(authenticationController: AuthenticationController) {
             }
         }
     }
-    else if (showPinDialog) {
+    else if (showPasswordDialog) {
         AlertDialog(
             containerColor = Color.White,
             shape = RoundedCornerShape(15.dp),
-            onDismissRequest = { showPinDialog = false },
-            title = {     Text(
-                "Inicio de sesión",
-                style = textStyle,
-                modifier = Modifier
-                    .background(Color.White),
-            ) },
+            onDismissRequest = { showPasswordDialog = false },
+            title = {
+                Text(
+                    "Inicio de sesión",
+                    style = textStyle,
+                    modifier = Modifier
+                        .background(Color.White),
+                )
+            },
             text = {
                 TextField(
-                    value = enteredPin,
+                    value = enteredPassword,
                     onValueChange = {
-                        if (it.length <= 4) {
-                            enteredPin = it
+                        if (it.length <= 16) {
+                            enteredPassword = it
                         }
                     },
                     textStyle = TextStyle(
@@ -284,15 +294,27 @@ fun NavigationLogin(authenticationController: AuthenticationController) {
                     ),
                     label = {
                         Text(
-                            "PIN",
+                            "Contraseña",
                             fontSize = 20.sp,
                             fontFamily = fontFamily,
-                            color =thirdColor,
+                            color = thirdColor,
                             fontWeight = FontWeight.Bold
                         )
                     },
                     singleLine = true,
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text, imeAction = ImeAction.Done),
+                    visualTransformation = if (passwordVisible.value) VisualTransformation.None else PasswordVisualTransformation(),
+                    trailingIcon = {
+                        IconButton(
+                            onClick = { passwordVisible.value = !passwordVisible.value },
+                            modifier = Modifier.offset(y = 10.dp) // Ajusta este valor a tu preferencia
+                        ) {
+                            Icon(
+                                imageVector = if (passwordVisible.value) Icons.Filled.VisibilityOff else Icons.Filled.Visibility,
+                                contentDescription = if (passwordVisible.value) "Ocultar contraseña" else "Mostrar contraseña"
+                            )
+                        }
+                    },
                     colors = TextFieldDefaults.colors(
                         focusedContainerColor = Color.Transparent,
                         unfocusedContainerColor = Color.Transparent,
@@ -310,21 +332,21 @@ fun NavigationLogin(authenticationController: AuthenticationController) {
             confirmButton = {
                 OutlinedButton(
                     onClick = {
-                        val pin = enteredPin.toIntOrNull()
-                        if (pin != null) {
+                        val password = enteredPassword
+                        if (enteredPassword != null) {
                             CoroutineScope(Dispatchers.IO).launch {
-                                val isPinCorrect = authenticationController.comparePins(userSelected, pin)
-                                if (isPinCorrect) {
+                                val isPasswordCorrect = authenticationController.comparePasswords(userSelected, enteredPassword)
+                                if (isPasswordCorrect) {
                                     withContext(Dispatchers.Main){
                                         authenticationController.navigateToGallery(userSelected)
                                     }
                                 }
                                 else{
-                                    errorMessage = "El PIN ingresado es incorrecto."
+                                    errorMessage = "La contraseña ingresada es incorrecta."
                                 }
                             }
                         }
-                        showPinDialog = false
+                        showPasswordDialog = false
                     },
                     shape = RoundedCornerShape(15.dp),
                     border = BorderStroke(3.dp, Color.Gray),
@@ -346,6 +368,7 @@ fun NavigationLogin(authenticationController: AuthenticationController) {
             }
         )
     }
+
 
     // Muestra un Snackbar con el mensaje de error si hay uno
     Box(
