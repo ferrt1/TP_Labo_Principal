@@ -1,6 +1,4 @@
 package com.example.cypher_vault.controller.authentication
-import android.graphics.Bitmap
-import android.util.Log
 import androidx.compose.runtime.MutableState
 import androidx.navigation.NavController
 import com.example.cypher_vault.database.ImagesLogin
@@ -17,7 +15,8 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.util.UUID
 
-import com.example.cypher_vault.model.msgmanager.*
+import com.example.cypher_vault.controller.MessageController.*
+
 
 class AuthenticationController(private val navController: NavController) {
 
@@ -118,12 +117,12 @@ class AuthenticationController(private val navController: NavController) {
     fun registerUser(
         email: String,
         name: String,
-        pin: String
-    ): UUID? {
-        Log.d("MiTag", "mis valores  $email,$name,$pin ")
+        pin: String,
+        errorMessage: MutableState<String>,
+    ): UUID?
+    {
         val uid = UUID.randomUUID()
-        if (getTotal(email, name, pin)) {
-            Log.d("MiTag", "Si cumplio con la condicional")
+        if (registrationValidation(email, name, pin)) {
             CoroutineScope(Dispatchers.IO).launch {
                 val user = User(
                     uid = uid.toString(),
@@ -134,10 +133,11 @@ class AuthenticationController(private val navController: NavController) {
                 )
                 DatabaseManager.insertUser(user)
             }
+
             navigateToCamera(uid.toString())
             return uid
         } else {
-            Log.d("MiTag", "NOOO cumplio con la condicional")
+            errorMessage.value = getMessageError(email, name, pin).toString()
             return null
         }
     }
@@ -149,36 +149,5 @@ class AuthenticationController(private val navController: NavController) {
         }
     }
     //-------------------------------------------------------------------------------------------
-    private fun validateNameLettersOnly(name: String): Boolean {
-        return name.all { it.isLetter() }
-    }
-
-    private fun validateMail(email: String): Boolean {
-        return android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()
-    }
-
-    private fun validateNameNumbers(name: String): Boolean {
-        return name.any { it.isDigit() }
-    }
-
-    private fun validateNameSpacesAndLineBreaks(name: String): Boolean {
-        return name.contains(" ") || name.contains("\n") || name.contains("\r\n")
-    }
-
-    private fun validateName(name: String): Boolean{
-        return name.length in 3..50
-    }
-
-    private fun validateFields(email: String, name: String): Boolean{
-        return name.isEmpty() || email.isEmpty()
-    }
-
-    private fun validatePIN(pin: String): Boolean{
-        return pin.length == 4
-    }
-
-    private fun validatePinNumbers(pin: String): Boolean {
-        return pin.all { it.isDigit() }
-    }
 
 }

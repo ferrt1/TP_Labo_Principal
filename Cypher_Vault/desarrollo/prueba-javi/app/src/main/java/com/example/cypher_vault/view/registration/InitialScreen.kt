@@ -5,10 +5,9 @@ import android.app.Activity
 import android.content.Context
 import android.content.ContextWrapper
 import android.content.pm.PackageManager
+import android.util.Log
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -30,11 +29,11 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
@@ -42,7 +41,6 @@ import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -53,7 +51,7 @@ import com.example.cypher_vault.controller.authentication.AuthenticationControll
 import com.example.cypher_vault.view.resources.CustomTitle
 
 
-import com.example.cypher_vault.model.msgmanager.*
+import com.example.cypher_vault.controller.MessageController.*
 
 
 val firstColor = Color(0xFF02a6c3)
@@ -63,7 +61,8 @@ val fontFamily = FontFamily(
     Font(R.font.expandedconsolabold, FontWeight.Normal)
 )
 
-var mensaje=""
+var message=""
+
 
 @Composable
 fun RegisterText(){
@@ -102,6 +101,7 @@ fun InitialScreen(authenticationController: AuthenticationController) {
 
 
 
+
     Box(
         modifier = Modifier.fillMaxSize().verticalScroll(rememberScrollState())
     ) {
@@ -119,7 +119,7 @@ fun InitialScreen(authenticationController: AuthenticationController) {
                 value = emailState.value,
                 onValueChange = {
                     emailState.value = it
-                    estado("email")
+                    estado("email",errorMessage)
                                 },
                 textStyle = TextStyle(
                     color = firstColor,
@@ -158,7 +158,7 @@ fun InitialScreen(authenticationController: AuthenticationController) {
                 value = nameState.value,
                 onValueChange = {
                     nameState.value = it
-                    estado("name")
+                    estado("name", errorMessage)
                                 },
                 textStyle = TextStyle(
                     color = firstColor,
@@ -235,7 +235,7 @@ fun InitialScreen(authenticationController: AuthenticationController) {
 
             Button(
                 onClick = {
-                    authenticationController.registerUser(emailState.value.text, nameState.value.text, pinState.value.text)
+                    authenticationController.registerUser(emailState.value.text, nameState.value.text, pinState.value.text, errorMessage)
                 },
                 shape = RoundedCornerShape(4.dp),
                 border = BorderStroke(3.dp, com.example.cypher_vault.view.login.firstColor),
@@ -272,11 +272,28 @@ fun InitialScreen(authenticationController: AuthenticationController) {
                     fontWeight = FontWeight.Bold
                 )
             }
-            // en esta parte va el socalo de mensaje
-            Text(mensaje,
+
+            //------------------------- espacio para el socalo de mensaje-----------------------//
+            Spacer(modifier = Modifier.height(20.dp))
+
+
+            // Determinar el color del texto basado en el mensaje
+            val textColor = if (errorMessage.value.isEmpty()) {
+                Color.Gray // Asignar color azul si no hay error
+            } else {
+                Color.Red // Asignar color rojo si hay un mensaje de error
+            }
+
+            //  Mostrar el texto con el color determinado
+            Text(
+                text = if (errorMessage.value.isEmpty()) {
+                    message // Mostrar mensaje si no hay error
+                } else {
+                    errorMessage.value // Mostrar mensaje de error si lo hay
+                },
                 fontFamily = fontFamily,
-                color = thirdColor,
-                fontWeight = FontWeight.Bold
+                fontWeight = FontWeight.Bold,
+                color = textColor // Asignar el color determinado al texto
             )
 
         }
@@ -297,11 +314,11 @@ fun InitialScreen(authenticationController: AuthenticationController) {
     }
 }
 
-
-fun estado(valor: String){
-     mensaje=getMessage(valor)
+fun estado(valor: String, errorMessage: MutableState<String>) {
+    message = getMessageClarification(valor)
+    errorMessage.value = ""
+    Log.d("Vista", "entro y el valor de mi mensaje es $message")
 }
-
 fun Context.findAncestorActivity(): Activity? {
     var context = this
     while (context is ContextWrapper) {
