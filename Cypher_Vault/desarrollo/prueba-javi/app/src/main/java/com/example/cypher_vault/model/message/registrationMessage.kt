@@ -34,12 +34,13 @@ private fun validateFields(email: String, name: String): Boolean{
     return name.isEmpty() || email.isEmpty()
 }
 
-private fun validatePIN(pin: String): Boolean{
-    return  pin.length == 4
+fun validatePasswordCharacters(password: String): Boolean {
+    return password.any { it.isLetterOrDigit() } && password.any { !it.isLetterOrDigit() }
 }
 
-private fun validatePinNumbers(pin: String): Boolean {
-    return pin.all { it.isDigit() }
+
+fun validatePasswordLength(password: String): Boolean {
+    return password.length >= 16
 }
 //---------------------------------------------------------------------------------------------------
 
@@ -64,12 +65,14 @@ private fun NameMesseger(): String{
 private fun FieldsMesseger(): String{
     return "Por favor, rellena todos los campos correctamente."
 }
-private fun PINMesseger(): String{
-    return "El PIN debe contener 4 carácteres"
+private fun PasswordLengthMessger(): String{
+    return "El PIN debe contener 16 carácteres"
 }
-private fun PinNumbersMesseger(): String{
-    return  "El PIN debe contener 4 carácteres numericos"
+private fun PasswordCharactersMesseger(): String{
+    return  "El PIN debe tener un carácter especial"
 }
+
+
 
 private fun email(): String{
     return "tiene que ingresar un correo electronico valido"
@@ -85,7 +88,7 @@ private fun name(): String{
  fun validate(email: String, name: String, pin: String): Boolean {
     Log.d("MiTag", "estoy en la parte logica y mi valoes que me dieron fueron:  $email,$name,$pin ")
     return (validateNameLettersOnly(name) && !validateNameSpacesAndLineBreaks(name) && validateMail(email) && !validateNameNumbers(name) && validateName(name)
-            && validatePinNumbers(pin) && validatePIN(pin) && !validateFields(email, name))
+            && validatePasswordCharacters(pin) && validatePasswordLength(pin) && !validateFields(email, name))
 }
 
 //Esta funciom se encargar de asignar el mensaje correspondiente al error (TIPO ERROR)
@@ -102,10 +105,10 @@ fun ErrorMessage(email: String, name: String, pin: String): String? {
         return NameNumbersMesseger()
     else if(!validateName(name))
         return NameMesseger()
-    else if(!validatePinNumbers(pin))
-        return PinNumbersMesseger()
-    else if(!validatePIN(pin))
-        return PINMesseger()
+    else if(!validatePasswordCharacters(pin))
+        return PasswordCharactersMesseger()
+    else if(!validatePasswordLength(pin))
+        return PasswordLengthMessger()
     return null
 }
 

@@ -14,3 +14,10 @@ fun getMessageError(email: String, name: String, pin: String): String? {
     return ErrorMessage(email, name, pin)
 }
 
+fun getvalidatePasswordCharacters(password: String): Boolean{
+    return validatePasswordCharacters(password)
+}
+
+fun getvalidatePasswordLength(password: String): Boolean{
+    return validatePasswordLength(password)
+}
