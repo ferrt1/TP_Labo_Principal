@@ -46,13 +46,13 @@ class CameraController(
         }
     }
 
-    fun captureImage(context: Context,
-                     imageCapture: ImageCapture,
-                     cameraProvider: ProcessCameraProvider,
-                     state: MutableState<Boolean>,
-                     coroutineScope: CoroutineScope,
-                     authenticationController: AuthenticationController,
-                     faceOverlayView: FaceOverlayView
+    fun captureImageRegister(context: Context,
+                             imageCapture: ImageCapture,
+                             cameraProvider: ProcessCameraProvider,
+                             state: MutableState<Boolean>,
+                             coroutineScope: CoroutineScope,
+                             authenticationController: AuthenticationController,
+                             faceOverlayView: FaceOverlayView
     ) {
         Log.d("Imagen", "entra aca")
         val tempFile = File.createTempFile("tempImage", ".jpg", context.cacheDir)
@@ -106,7 +106,67 @@ class CameraController(
         })
     }
 
-    fun captureImage() {
+    fun captureImageLogin(context: Context,
+                             imageCapture: ImageCapture,
+                             cameraProvider: ProcessCameraProvider,
+                             state: MutableState<Boolean>,
+                             coroutineScope: CoroutineScope,
+                             authenticationController: AuthenticationController,
+                             faceOverlayView: FaceOverlayView
+    ) {
+        Log.d("Imagen", "entra aca")
+        val tempFile = File.createTempFile("tempImage", ".jpg", context.cacheDir)
+        val outputFileOptions = ImageCapture.OutputFileOptions.Builder(tempFile).build()
+        imageCapture.takePicture(outputFileOptions, ContextCompat.getMainExecutor(context), object : ImageCapture.OnImageSavedCallback {
+            override fun onImageSaved(outputFileResults: ImageCapture.OutputFileResults) {
+                val imageBytes = tempFile.readBytes()
+
+                // Convierte los bytes de la imagen en un Bitmap
+                val imgBitmap = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.size)
+
+                // Calcula las coordenadas del targetBox en las coordenadas de la imagen
+                val targetBoxInImageCoordinates = Rect(
+                    faceOverlayView.targetBox!!.left * imgBitmap.width / faceOverlayView.width,
+                    faceOverlayView.targetBox!!.top * imgBitmap.height / faceOverlayView.height,
+                    faceOverlayView.targetBox!!.right * imgBitmap.width / faceOverlayView.width,
+                    faceOverlayView.targetBox!!.bottom * imgBitmap.height / faceOverlayView.height
+                )
+
+                // Recorta el Bitmap para que tenga el mismo tamaño que el targetBox
+                val croppedBitmap = Bitmap.createBitmap(imgBitmap, targetBoxInImageCoordinates.left,
+                    targetBoxInImageCoordinates.top, targetBoxInImageCoordinates.width(), targetBoxInImageCoordinates.height())
+
+                val newWidth = croppedBitmap.width / 3
+                val newHeight = croppedBitmap.height / 3
+
+                // Crea un nuevo Bitmap con la mitad del tamaño original
+                val resizedBitmap = Bitmap.createScaledBitmap(croppedBitmap, newWidth, newHeight, false)
+
+
+                // Convierte el Bitmap recortado de nuevo a un array de bytes
+                val stream = ByteArrayOutputStream()
+                resizedBitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream)
+                val resizedImageBytes = stream.toByteArray()
+
+                val saveImageDeferred = databaseController.saveImageLogin(resizedImageBytes, userId)
+                coroutineScope.launch {
+                    saveImageDeferred.await()
+                    state.value = true
+                    state.value = false
+                    tempFile.delete() // Borra el archivo temporal después de guardar la imagen en la base de datos
+                    cameraProvider.unbindAll()
+                    authenticationController.navigateToConfirmationLogin(userId)
+                }
+            }
+
+
+            override fun onError(exception: ImageCaptureException) {
+                Log.d("Imagen", "entro aca y tiro error$exception")
+            }
+        })
+    }
+
+    fun captureImageRegister() {
         // ... implementación ...
     }
 

@@ -60,9 +60,10 @@ import kotlinx.coroutines.launch
 import java.io.ByteArrayOutputStream
 import java.io.File
 import com.example.cypher_vault.view.resources.*
-
+import com.example.cypher_vault.controller.camera.CameraController
 
 private val databaseController = DatabaseController()
+
 
 @androidx.annotation.OptIn(ExperimentalGetImage::class)
 @Composable
@@ -75,22 +76,10 @@ fun LoginCamera(authenticationController: AuthenticationController, userId: Stri
         .requireLensFacing(CameraSelector.LENS_FACING_FRONT)
         .build()
 
+    val cameraController = CameraController(context, authenticationController, userId, databaseController)
+
     val cameraProvider = cameraProviderFuture.get()
-
-    val configuration = LocalConfiguration.current
-    // Obtener la rotación del dispositivo
-    val rotation = configuration.orientation
-    val screenSize = if (rotation == 0) Size(720, 1280) else Size(1280, 720)
-    val resolutionSelector = ResolutionSelector.Builder().setResolutionStrategy(
-        ResolutionStrategy(
-            screenSize,
-            ResolutionStrategy.FALLBACK_RULE_NONE
-        )
-    ).build()
-    val preview = Preview.Builder()
-        .setResolutionSelector(resolutionSelector)
-        .build()
-
+    val preview = Preview.Builder().build()
     val imageAnalysis = ImageAnalysis.Builder()
         .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
         .build()
@@ -109,10 +98,21 @@ fun LoginCamera(authenticationController: AuthenticationController, userId: Stri
 
     val currentOrientation = remember { mutableStateOf("front") }
 
+    val faceOverlayView = remember { FaceOverlayView(context) }
+
+
+
     imageAnalysis.setAnalyzer(ContextCompat.getMainExecutor(context)) { imageProxy ->
         val mediaImage = imageProxy.image
         if (mediaImage != null) {
-            val image = InputImage.fromMediaImage(mediaImage, imageProxy.imageInfo.rotationDegrees)
+            val rotationDegrees = imageProxy.imageInfo.rotationDegrees
+            val image = InputImage.fromMediaImage(mediaImage, rotationDegrees)
+
+            val imageView = InputImage.fromMediaImage(mediaImage, imageProxy.imageInfo.rotationDegrees)
+
+            // Actualiza imageWidth e imageHeight.
+            faceOverlayView.imageWidth = imageView.width
+            faceOverlayView.imageHeight = imageView.height
 
             val realTimeOpts = FaceDetectorOptions.Builder()
                 .setContourMode(FaceDetectorOptions.CONTOUR_MODE_ALL)
@@ -124,7 +124,6 @@ fun LoginCamera(authenticationController: AuthenticationController, userId: Stri
             detector.process(image)
                 .addOnSuccessListener { faces ->
                     if (faces.isEmpty()) {
-                        // Si no hay rostros en la imagen, detén el temporizador y restablécelo a 3
                         timer.intValue = 3
                         timerStarted.value = false
                     } else {
@@ -138,28 +137,32 @@ fun LoginCamera(authenticationController: AuthenticationController, userId: Stri
                                     FaceContour.LOWER_LIP_BOTTOM
                                 )?.points?.isNotEmpty()!!
 
-                            if (hasLeftEye == true && hasRightEye == true && hasNose == true && hasMouth) {
+
+                            faceOverlayView.boundingBox = face.boundingBox
+                            faceOverlayView.invalidate()
+
+
+                            if (hasLeftEye == true && hasRightEye == true && hasNose == true && hasMouth && faceOverlayView.isBoundingBoxInsideTarget()) {
                                 when (currentOrientation.value) {
-                                    "front" -> if (face.headEulerAngleY in -10.0..10.0) startTimer(
+                                    "front" -> if (face.headEulerAngleY in -10.0..10.0) cameraController.startTimer(
                                         timer,
                                         timerStarted,
                                         timerFinished,
                                         coroutineScope
                                     )
                                 }
-
                                 if (timer.intValue == 0 && !isImageCaptured.value) {
-                                    captureImage(
+                                    cameraController.captureImageLogin(
                                         context,
                                         imageCapture,
                                         cameraProvider,
                                         isImageCaptured,
                                         coroutineScope,
                                         authenticationController,
-                                        userId
+                                        faceOverlayView
                                     )
-                                    timer.intValue = 3 // Reinicia el temporizador
-                                    timerStarted.value = false // Reinicia el estado del temporizador
+                                    timer.intValue = 3
+                                    timerStarted.value = false
                                     isImageCaptured.value = false
                                     currentOrientation.value = when (currentOrientation.value) {
                                         "front" -> "done"
@@ -171,7 +174,6 @@ fun LoginCamera(authenticationController: AuthenticationController, userId: Stri
                     }
                 }
                 .addOnFailureListener { e ->
-                    // Manejar cualquier error aquí
                 }
                 .addOnCompleteListener {
                     imageProxy.close()
@@ -181,7 +183,7 @@ fun LoginCamera(authenticationController: AuthenticationController, userId: Stri
     }
 
     LaunchedEffect(cameraProviderFuture) {
-        cameraProvider.bindToLifecycle(lifecycleOwner, cameraSelector,imageCapture, imageAnalysis, preview)
+        cameraProvider.bindToLifecycle(lifecycleOwner, cameraSelector, imageCapture , imageAnalysis, preview)
     }
 
     Box(
@@ -189,26 +191,24 @@ fun LoginCamera(authenticationController: AuthenticationController, userId: Stri
         contentAlignment = Alignment.BottomCenter
     ) {
         if (isCameraOpen.value) {
-            CameraPreview(preview)
-
-            val textStyle =
-                TextStyle(fontWeight = FontWeight.ExtraBold, color = thirdColor, fontFamily = fontFamily)
+            com.example.cypher_vault.view.registration.CameraPreview(preview)
+            AndroidView( {faceOverlayView} )
 
             when (currentOrientation.value) {
-                "front" -> if (timer.intValue > 0) {
+                "front" -> if (timer.value > 0) {
                     Column(
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
                         Text(
                             text = "${timer.intValue}",
-                            color = Color.White,
+                            color = Color.Black,
                             fontSize = 36.sp,
                             style = textStyle.copy(shadow = Shadow(color = firstColor, offset = Offset(-3f,3f), blurRadius = 0f)),
                             textAlign = TextAlign.Center
                         )
                         Text(
                             "Mire hacia la cámara.",
-                            color = Color.White,
+                            color = Color.Black,
                             fontSize = 36.sp,
                             style = textStyle.copy(shadow = Shadow(color = firstColor, offset = Offset(-3f,3f), blurRadius = 0f)),
                             textAlign = TextAlign.Center,
@@ -221,51 +221,7 @@ fun LoginCamera(authenticationController: AuthenticationController, userId: Stri
 
 }
 
-fun captureImage(context: Context,
-                 imageCapture: ImageCapture,
-                 cameraProvider: ProcessCameraProvider,
-                 state: MutableState<Boolean>,
-                 coroutineScope: CoroutineScope,
-                 authenticationController: AuthenticationController,
-                 userId: String) {
-    Log.d("Imagen", "entra aca")
-    val tempFile = File.createTempFile("tempImage", ".jpg", context.cacheDir)
-    val outputFileOptions = ImageCapture.OutputFileOptions.Builder(tempFile).build()
-    imageCapture.takePicture(outputFileOptions, ContextCompat.getMainExecutor(context), object : ImageCapture.OnImageSavedCallback {
-        override fun onImageSaved(outputFileResults: ImageCapture.OutputFileResults) {
-            val imageBytes = tempFile.readBytes()
 
-            // Convierte los bytes de la imagen en un Bitmap
-            val imgBitmap = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.size)
-
-            val newWidth = imgBitmap.width / 4
-            val newHeight = imgBitmap.height / 4
-
-            // Crea un nuevo Bitmap con la mitad del tamaño original
-            val resizedBitmap = Bitmap.createScaledBitmap(imgBitmap, newWidth, newHeight, false)
-
-            // Convierte el Bitmap redimensionado de nuevo a un array de bytes
-            val stream = ByteArrayOutputStream()
-            resizedBitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream)
-            val resizedImageBytes = stream.toByteArray()
-
-            val saveImageDeferred = databaseController.saveImageLogin(resizedImageBytes, userId)
-            coroutineScope.launch {
-                saveImageDeferred.await()
-                state.value = true
-                state.value = false
-                tempFile.delete() // Borra el archivo temporal después de guardar la imagen en la base de datos
-                cameraProvider.unbindAll()
-                authenticationController.navigateToConfirmationLogin(userId)
-            }
-        }
-
-
-        override fun onError(exception: ImageCaptureException) {
-            Log.d("Imagen", "entro aca y tiro error$exception")
-        }
-    })
-}
 
 @Composable
 fun CameraPreview(preview: Preview) {
@@ -277,18 +233,4 @@ fun CameraPreview(preview: Preview) {
         },
         modifier = Modifier.fillMaxSize()
     )
-}
-
-fun startTimer(timer: MutableIntState, timerStarted: MutableState<Boolean>, timerFinished: MutableState<Boolean>, coroutineScope: CoroutineScope) {
-    if (!timerStarted.value) {
-        timerStarted.value = true
-        timer.intValue = 3
-        coroutineScope.launch {
-            while (timer.intValue > 0) {
-                delay(1000)
-                timer.intValue--
-            }
-            timerFinished.value = true
-        }
-    }
 }
