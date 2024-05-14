@@ -1,4 +1,5 @@
 package com.example.cypher_vault.controller.authentication
+import android.util.Log
 import androidx.compose.runtime.MutableState
 import androidx.navigation.NavController
 import com.example.cypher_vault.database.ImagesLogin
@@ -33,7 +34,7 @@ class AuthenticationController(private val navController: NavController) {
         }
     }
 
-    suspend fun comparePins(userId: String, inputPin: Int): Boolean {
+    suspend fun comparePins(userId: String, inputPin: String): Boolean {
         val user = getUserById(userId)
         return user?.pin == inputPin
     }
@@ -118,26 +119,26 @@ class AuthenticationController(private val navController: NavController) {
         email: String,
         name: String,
         pin: String,
-        errorMessage: MutableState<String>,
     ): UUID?
     {
         val uid = UUID.randomUUID()
         if (registrationValidation(email, name, pin)) {
+            Log.d("MiTag", "entro en la parte de datos $email,$name,$pin ")
             CoroutineScope(Dispatchers.IO).launch {
                 val user = User(
                     uid = uid.toString(),
                     firstName = name,
                     email = email,
                     entryDate = System.currentTimeMillis(),
-                    pin = pin.toInt()
+                    pin = pin
                 )
+                Log.d("MiTag", "entro en la parte de datos $email,$name,$pin ")
                 DatabaseManager.insertUser(user)
             }
-
             navigateToCamera(uid.toString())
             return uid
         } else {
-            errorMessage.value = getMessageError(email, name, pin).toString()
+           // errorMessage.value = getMessageError(email, name, pin).toString()
             return null
         }
     }

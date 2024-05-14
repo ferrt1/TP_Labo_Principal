@@ -310,7 +310,7 @@ fun NavigationLogin(authenticationController: AuthenticationController) {
             confirmButton = {
                 OutlinedButton(
                     onClick = {
-                        val pin = enteredPin.toIntOrNull()
+                        val pin = enteredPin
                         if (pin != null) {
                             CoroutineScope(Dispatchers.IO).launch {
                                 val isPinCorrect = authenticationController.comparePins(userSelected, pin)

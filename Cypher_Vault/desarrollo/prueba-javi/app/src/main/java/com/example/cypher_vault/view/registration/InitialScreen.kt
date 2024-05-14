@@ -9,6 +9,7 @@ import android.util.Log
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -37,11 +38,13 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -74,8 +77,12 @@ val fontFamily = FontFamily(
     Font(R.font.expandedconsolabold, FontWeight.Normal)
 )
 val greenColor =  Color(0xFF00B42D)
+val redColor = Color(0xFFff0000)
 
-var message="Se requiere que complete todos los campos para registrase,Un correo valido, Un nombre para el usuario y un PIN"
+
+
+
+var message=""
 
 
 @Composable
@@ -90,7 +97,6 @@ fun RegisterText(){
     )
 
 }
-
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -113,10 +119,13 @@ fun InitialScreen(authenticationController: AuthenticationController) {
     val errorMessage = remember { mutableStateOf("") }
     val passwordState = remember { mutableStateOf(TextFieldValue()) }
     val passwordVisible = remember { mutableStateOf(false) }
-
-
+    var isContentVisiblename by remember { mutableStateOf(false) }
+    var isContentVisiblemail by remember { mutableStateOf(false) }
+    var isContentVisiblpasswordState by remember { mutableStateOf(false) }
     Box(
-        modifier = Modifier.fillMaxSize().verticalScroll(rememberScrollState())
+        modifier = Modifier
+            .fillMaxSize()
+            .verticalScroll(rememberScrollState())
     ) {
 
 
@@ -132,14 +141,25 @@ fun InitialScreen(authenticationController: AuthenticationController) {
                 value = emailState.value,
                 onValueChange = {
                     emailState.value = it
-                    estado("email",errorMessage)
-                                },
+                },
+
                 textStyle = TextStyle(
-                    color = firstColor,
+                    color = if (getvalidateNameSpacesAndLineBreaks(emailState.value.text)) redColor else firstColor,
                     fontSize = 16.sp,
                     fontFamily = fontFamily,
                     fontWeight = FontWeight.Bold
                 ),
+                placeholder = {
+                    Text(
+                        "ingrese un correo valido",
+                        style = TextStyle(
+                            color = Color.Gray,
+                            fontSize = 16.sp,
+                            fontFamily = fontFamily
+                        )
+                    )
+                },
+
                 label = {
                     Text(
                         "Correo electrónico",
@@ -162,8 +182,62 @@ fun InitialScreen(authenticationController: AuthenticationController) {
                 modifier = Modifier
                     .width(290.dp) // Establece un ancho fijo para el TextField
                     .padding(top = 15.dp)
-                    .border(BorderStroke(3.dp, com.example.cypher_vault.view.login.firstColor), shape =  RoundedCornerShape(4.dp))
+                    .border(
+                        BorderStroke(3.dp, com.example.cypher_vault.view.login.firstColor),
+                        shape = RoundedCornerShape(4.dp),
+                    )
+                    .onFocusChanged { focusState ->
+                        if (focusState.isFocused) {
+                            // El campo de entrada de texto tiene el foco
+                            isContentVisiblemail = true
+                        } else {
+                            // El campo de entrada de texto perdió el foco
+                            isContentVisiblemail = false
+                        }
+                    }
+
             )
+
+            if (isContentVisiblemail) {
+                if (getfullemailfield(emailState.value.text) != "") {
+                    Column(
+                        verticalArrangement = Arrangement.Center,
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            (if (getvalidateNameSpacesAndLineBreaks(emailState.value.text)) {
+                                R.drawable.icoerror
+                            } else if (!getvalidateMail(emailState.value.text)) {
+
+                                R.drawable.iconwarning
+                            } else {
+                                null
+                            })?.let {
+                                painterResource(
+                                    id = it
+                                )
+                            }?.let {
+                                Image(
+                                    painter = it,
+                                    contentDescription = "",
+                                    modifier = Modifier.size(24.dp)
+                                )
+                            }
+
+                            Spacer(modifier = Modifier.width(8.dp)) // Espacio entre la imagen y el texto
+                            if (getfullemailfield(emailState.value.text) != "null") {
+                                Text(
+                                    getfullemailfield(emailState.value.text),
+                                    fontSize = 13.sp,
+                                    fontFamily = fontFamily,
+                                    color = thirdColor,
+                                    fontWeight = FontWeight.Bold
+                                )
+                            }
+                        }
+                    }
+                }
+            }
 
             Spacer(modifier = Modifier.height(10.dp))
 
@@ -171,14 +245,23 @@ fun InitialScreen(authenticationController: AuthenticationController) {
                 value = nameState.value,
                 onValueChange = {
                     nameState.value = it
-                    estado("name", errorMessage)
-                                },
+                },
                 textStyle = TextStyle(
-                    color = firstColor,
+                    color = if (getvalidateNameNumbers(nameState.value.text) || getvalidateNameSpacesAndLineBreaks(nameState.value.text)) redColor else firstColor,
                     fontSize = 16.sp,
                     fontFamily = fontFamily,
                     fontWeight = FontWeight.Bold
                 ),
+                placeholder = {
+                    Text(
+                        "Minimo 3 caracteres",
+                        style = TextStyle(
+                            color = Color.Gray,
+                            fontSize = 16.sp,
+                            fontFamily = fontFamily
+                        )
+                    )
+                },
                 label = {
                     Text(
                         "Nombre",
@@ -200,19 +283,74 @@ fun InitialScreen(authenticationController: AuthenticationController) {
                 modifier = Modifier
                     .width(290.dp) // Establece un ancho fijo para el TextField
                     .padding(top = 15.dp)
-                    .border(BorderStroke(3.dp, firstColor), shape =  RoundedCornerShape(4.dp),)
+                    .border(BorderStroke(3.dp, firstColor), shape = RoundedCornerShape(4.dp),)
+                    .onFocusChanged { focusState ->
+                        if (focusState.isFocused) {
+                            // El campo de entrada de texto tiene el foco
+                            isContentVisiblename = true
+                        } else {
+                            // El campo de entrada de texto perdió el foco
+                            isContentVisiblename = false
+                        }
+                    }
             )
+            Log.d("MiTag", "el contenido es: $isContentVisiblename")
+            // Esto se va a poner feo
+            if (isContentVisiblename) {
+                if (getfullnamefield(nameState.value.text) != "") {
+                    Column(
+                        verticalArrangement = Arrangement.Center,
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            (if (getvalidateNameNumbers(nameState.value.text) || getvalidateNameSpacesAndLineBreaks(nameState.value.text)) {
+                                R.drawable.icoerror
+                            } else if (!getvalidateName(nameState.value.text)) {
+
+                                R.drawable.iconwarning
+                            } else {
+                                null
+                            })?.let {
+                                painterResource(
+                                    id = it
+                                )
+                            }?.let {
+                                Image(
+                                    painter = it,
+                                    contentDescription = "",
+                                    modifier = Modifier.size(24.dp)
+                                )
+                            }
+
+                            Spacer(modifier = Modifier.width(8.dp)) // Espacio entre la imagen y el texto
+                            if (getfullnamefield(nameState.value.text) != "null") {
+                                Text(
+                                    getfullnamefield(nameState.value.text),
+                                    fontSize = 13.sp,
+                                    fontFamily = fontFamily,
+                                    color = thirdColor,
+                                    fontWeight = FontWeight.Bold
+                                )
+                            }
+                        }
+                    }
+                }
+            }
 
             Row(
-                modifier = Modifier.width(290.dp) // Establece un ancho fijo para el TextField
+                modifier = Modifier
+                    .width(290.dp) // Establece un ancho fijo para el TextField
                     .padding(top = 15.dp)
-                    .border(BorderStroke(3.dp, com.example.cypher_vault.view.login.firstColor), shape =  RoundedCornerShape(4.dp))
+                    .border(
+                        BorderStroke(3.dp, com.example.cypher_vault.view.login.firstColor),
+                        shape = RoundedCornerShape(4.dp)
+                    )
             ) {
                 TextField(
                     value = passwordState.value,
                     onValueChange = {
 
-                            passwordState.value = it
+                        passwordState.value = it
 
                     },
                     textStyle = TextStyle(
@@ -228,6 +366,16 @@ fun InitialScreen(authenticationController: AuthenticationController) {
                             fontFamily = fontFamily,
                             color = thirdColor,
                             fontWeight = FontWeight.Bold
+                        )
+                    },
+                    placeholder = {
+                        Text(
+                            "16 caracteres y 1 espacial",
+                            style = TextStyle(
+                                color = Color.Gray,
+                                fontSize = 16.sp,
+                                fontFamily = fontFamily
+                            )
                         )
                     },
                     singleLine = true,
@@ -253,44 +401,66 @@ fun InitialScreen(authenticationController: AuthenticationController) {
                         unfocusedIndicatorColor = com.example.cypher_vault.view.login.firstColor,
                     ),
                     modifier = Modifier.weight(1f)
+                        .onFocusChanged { focusState ->
+                            if (focusState.isFocused) {
+                                // El campo de entrada de texto tiene el foco
+                                isContentVisiblpasswordState = true
+                            } else {
+                                // El campo de entrada de texto perdió el foco
+                                isContentVisiblpasswordState = false
+                            }
+                        }
                 )
+
             }
 
+            if (isContentVisiblpasswordState) {
+                if (getfullnamefield(nameState.value.text) != "") {
+                    Column(
+                        verticalArrangement = Arrangement.Center,
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            (if (getvalidateNameNumbers(nameState.value.text) || getvalidateNameSpacesAndLineBreaks(nameState.value.text)) {
+                                R.drawable.icoerror
+                            } else if (!getvalidateName(nameState.value.text)) {
 
-            Row(
-                modifier = Modifier.width(290.dp)
-                    .padding(top = 5.dp)
-            ) {
-                Text(
-                    text = "16 Como minimo caracteres alfanuméricos",
-                    fontFamily = fontFamily,
-                    fontSize = 14.sp,
-                    color = if (getvalidatePasswordLength(passwordState.value.text)) greenColor else Color.Gray,
-                    textAlign = TextAlign.Left
-                )
+                                R.drawable.iconwarning
+                            } else {
+                                null
+                            })?.let {
+                                painterResource(
+                                    id = it
+                                )
+                            }?.let {
+                                Image(
+                                    painter = it,
+                                    contentDescription = "",
+                                    modifier = Modifier.size(24.dp)
+                                )
+                            }
+
+                            Spacer(modifier = Modifier.width(8.dp)) // Espacio entre la imagen y el texto
+                            if (getfullnamefield(nameState.value.text) != "null") {
+                                Text(
+                                    getfullnamefield(nameState.value.text),
+                                    fontSize = 13.sp,
+                                    fontFamily = fontFamily,
+                                    color = thirdColor,
+                                    fontWeight = FontWeight.Bold
+                                )
+                            }
+                        }
+                    }
+                }
             }
-
-            Row(
-                modifier = Modifier.width(290.dp) // Establece un ancho fijo para el TextField
-                    .padding(top = 5.dp)
-            ) {
-                Text(
-                    text = "1 carácter especial",
-                    fontFamily = fontFamily,
-                    fontSize = 14.sp,
-                    color = if (getvalidatePasswordCharacters(passwordState.value.text)) greenColor else Color.Gray,
-                    textAlign = TextAlign.Left
-                )
-            }
-
-
 
 
             Spacer(modifier = Modifier.height(10.dp))
 
             Button(
                 onClick = {
-                    authenticationController.registerUser(emailState.value.text, nameState.value.text, passwordState.value.text, errorMessage)
+                    authenticationController.registerUser(emailState.value.text, nameState.value.text, passwordState.value.text)
                 },
                 shape = RoundedCornerShape(4.dp),
                 border = BorderStroke(3.dp, com.example.cypher_vault.view.login.firstColor),
@@ -298,7 +468,9 @@ fun InitialScreen(authenticationController: AuthenticationController) {
                     containerColor = Color.Transparent,
                     contentColor = com.example.cypher_vault.view.login.firstColor
                 ),
-                modifier = Modifier.width(250.dp).padding(top = 5.dp ,bottom = 10.dp)
+                modifier = Modifier
+                    .width(250.dp)
+                    .padding(top = 5.dp, bottom = 10.dp)
             ) {
                 Text("Registrarse",
                     fontFamily = fontFamily,
@@ -306,8 +478,6 @@ fun InitialScreen(authenticationController: AuthenticationController) {
                     fontWeight = FontWeight.Bold
                 )
             }
-
-
             OutlinedButton(
                 onClick = { authenticationController.navigateToListLogin() },
                 shape = RoundedCornerShape(15.dp),
@@ -329,39 +499,36 @@ fun InitialScreen(authenticationController: AuthenticationController) {
             }
 
             //------------------------- espacio para el socalo de mensaje-----------------------//
-            Spacer(modifier = Modifier.height(20.dp))
 
-           Image(
-               painter = painterResource(
-                   id = if (errorMessage.value.isEmpty()) {
-                       R.drawable.iconclarificatio // Reemplaza "imagen_sin_error" con el nombre de tu imagen sin error
-                   } else {
-                       R.drawable.icoerror // Reemplaza "imagen_con_error" con el nombre de tu imagen con error
-                   }
-               ),
-               contentDescription = "",
-           )
+            if(!passwordState.value.text.isEmpty()) {
+                Row(
+                    modifier = Modifier
+                        .width(290.dp)
+                        .padding(top = 5.dp)
+                ) {
+                    Text(
+                        text = "16 Como minimo caracteres alfanuméricos",
+                        fontFamily = fontFamily,
+                        fontSize = 14.sp,
+                        color = if (getvalidatePasswordLength(passwordState.value.text)) greenColor else Color.Gray,
+                        textAlign = TextAlign.Left
+                    )
+                }
 
-            // Determinar el color del texto basado en el mensaje
-            val textColor = if (errorMessage.value.isEmpty()) {
-                Color.Gray // Asignar color azul si no hay error
-            } else {
-                Color.Red // Asignar color rojo si hay un mensaje de error
+                Row(
+                    modifier = Modifier
+                        .width(290.dp) // Establece un ancho fijo para el TextField
+                        .padding(top = 5.dp)
+                ) {
+                    Text(
+                        text = "1 carácter especial",
+                        fontFamily = fontFamily,
+                        fontSize = 14.sp,
+                        color = if (getvalidatePasswordCharacters(passwordState.value.text)) greenColor else Color.Gray,
+                        textAlign = TextAlign.Left
+                    )
+                }
             }
-
-            //  Mostrar el texto con el color determinado
-            Text(
-                text = if (errorMessage.value.isEmpty()) {
-                    message // Mostrar mensaje si no hay error
-                } else {
-                    errorMessage.value // Mostrar mensaje de error si lo hay
-                },
-                fontFamily = fontFamily,
-                fontWeight = FontWeight.Bold,
-                color = textColor, // Asignar el color determinado al texto
-                 textAlign = TextAlign.Center
-            )
-
         }
 
     }
@@ -380,11 +547,7 @@ fun InitialScreen(authenticationController: AuthenticationController) {
     }
 }
 
-fun estado(valor: String, errorMessage: MutableState<String>) {
-    message = getMessageClarification(valor)
-    errorMessage.value = ""
-    Log.d("Vista", "El contenido del mesaje es $message")
-}
+
 fun Context.findAncestorActivity(): Activity? {
     var context = this
     while (context is ContextWrapper) {
