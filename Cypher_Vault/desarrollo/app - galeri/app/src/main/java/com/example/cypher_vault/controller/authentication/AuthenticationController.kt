@@ -25,7 +25,7 @@ class AuthenticationController(private val navController: NavController) {
     private val _users = MutableStateFlow<List<User>>(emptyList())
     val users: StateFlow<List<User>> get() = _users
 
-    private suspend fun getUserById(userId: String): User? {
+    suspend fun getUserById(userId: String): User? {
         return withContext(Dispatchers.IO) {
             DatabaseManager.getUserById(userId)
         }
