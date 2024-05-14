@@ -25,17 +25,15 @@ import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.cypher_vault.R
-import com.example.cypher_vault.view.login.firstColor
-import com.example.cypher_vault.view.login.secondColor
 
-val fontFamily = FontFamily(
+val fontFamilyTitle = FontFamily(
     Font(R.font.expandedblack, FontWeight.ExtraBold)
 )
 
 @Preview
 @Composable
 fun CustomTitle() {
-    val textStyle = TextStyle(fontWeight = FontWeight.ExtraBold, fontSize = 54.sp, fontFamily = fontFamily, letterSpacing = 2.sp)
+    val textStyle = TextStyle(fontWeight = FontWeight.ExtraBold, fontSize = 54.sp, fontFamily = fontFamilyTitle, letterSpacing = 2.sp)
 
     Row(modifier = Modifier.wrapContentSize().offset(16.dp).padding( top = 40.dp), )
     {

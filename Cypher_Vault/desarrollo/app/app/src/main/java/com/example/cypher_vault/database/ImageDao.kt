@@ -9,7 +9,7 @@ interface ImageDao {
     fun insertImage(images: Images)
 
     @Query("SELECT * FROM images WHERE user_id = :userId")
-    fun getImagesForUser(userId: Int): List<Images>
+    fun getImagesForUser(userId: String): List<Images>
 
     // Otros métodos según sea necesario
 }

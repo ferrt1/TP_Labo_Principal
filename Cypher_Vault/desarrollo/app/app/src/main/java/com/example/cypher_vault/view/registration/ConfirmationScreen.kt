@@ -4,25 +4,20 @@ import android.annotation.SuppressLint
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Matrix
-import android.media.Image
 import android.util.Log
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -35,10 +30,12 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.cypher_vault.controller.authentication.AuthenticationController
+import com.example.cypher_vault.controller.data.DatabaseController
 import com.example.cypher_vault.database.ImagesRegister
-import com.example.cypher_vault.model.dbmanager.DatabaseManager
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import com.example.cypher_vault.view.resources.*
+
+private val databaseController = DatabaseController()
 
 @SuppressLint("CoroutineCreationDuringComposition")
 @Composable
@@ -46,7 +43,7 @@ fun ConfirmationScreen(authenticationController: AuthenticationController, userI
     val coroutineScope = rememberCoroutineScope()
     val imageRegisters = remember { mutableStateOf<List<ImagesRegister>?>(null) }
     coroutineScope.launch {
-        imageRegisters.value = authenticationController.getImageRegistersForUser(userId)
+        imageRegisters.value = databaseController.getImageRegistersForUser(userId)
         Log.d("Imagen", imageRegisters.toString() + "user:" + userId);
     }
     Column(

@@ -51,31 +51,24 @@ import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.Font
-import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.sp
-import com.example.cypher_vault.R
 import com.example.cypher_vault.controller.authentication.AuthenticationController
+import com.example.cypher_vault.controller.data.DatabaseController
 import com.example.cypher_vault.view.resources.CustomTitle
+import com.example.cypher_vault.view.resources.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 
-val firstColor = Color(0xFF02a6c3)
-val secondColor = Color(0xFF01243a)
-val thirdColor = Color(0xFF005767)
-val mainBackgroundColor = Color(0xFFdcdcdc)
-val fontFamily = FontFamily(
-    Font(R.font.expandedconsolabold, FontWeight.Normal)
-)
-val textStyle = TextStyle(fontSize = 25.sp, color = thirdColor, fontFamily = fontFamily)
+
+private val databaseController = DatabaseController()
 
 @androidx.compose.ui.tooling.preview.Preview
 @Composable
@@ -92,7 +85,7 @@ fun LoginText(){
 
 @Composable
 fun NavigationLogin(authenticationController: AuthenticationController) {
-    val users by authenticationController.users.collectAsState()
+    val users by databaseController.users.collectAsState()
     val buttonTextStyle = TextStyle(fontWeight = FontWeight.Bold, fontSize = 16.sp, color = thirdColor, fontFamily = fontFamily)
     var selectedPersona by remember { mutableStateOf<String?>(null) }
     var searchQuery by remember { mutableStateOf("") }
@@ -335,7 +328,7 @@ fun NavigationLogin(authenticationController: AuthenticationController) {
                         val password = enteredPassword
                         if (enteredPassword != null) {
                             CoroutineScope(Dispatchers.IO).launch {
-                                val isPasswordCorrect = authenticationController.comparePasswords(userSelected, enteredPassword)
+                                val isPasswordCorrect = databaseController.comparePasswords(userSelected, enteredPassword)
                                 if (isPasswordCorrect) {
                                     withContext(Dispatchers.Main){
                                         authenticationController.navigateToGallery(userSelected)

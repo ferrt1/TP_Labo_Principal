@@ -34,6 +34,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.cypher_vault.R
 import com.example.cypher_vault.controller.authentication.AuthenticationController
+import com.example.cypher_vault.controller.data.DatabaseController
 import com.example.cypher_vault.database.ImagesLogin
 import com.example.cypher_vault.database.ImagesRegister
 import kotlinx.coroutines.Dispatchers
@@ -53,6 +54,7 @@ import okhttp3.MultipartBody.Part.Companion.createFormData
 import okhttp3.OkHttpClient
 import okhttp3.RequestBody.Companion.asRequestBody
 import retrofit2.converter.gson.GsonConverterFactory
+import com.example.cypher_vault.view.resources.*
 
 data class RecognitionResult(val result: Boolean)
 interface FaceRecognitionAPI {
@@ -67,14 +69,11 @@ interface FaceRecognitionAPI {
 @SuppressLint("CoroutineCreationDuringComposition")
 @Composable
 fun ConfirmationLoginScreen(authenticationController: AuthenticationController, userId: String) {
+    val databaseController = DatabaseController()
     val coroutineScope = rememberCoroutineScope()
     val imageLogin = remember { mutableStateOf<List<ImagesLogin>?>(null) }
     val imageRegister = remember { mutableStateOf<List<ImagesRegister>?>(null) }
     val recognitionResult = remember { mutableStateOf<RecognitionResult?>(null) }
-    val thirdColor = Color(0xFF005767)
-    val fontFamily = FontFamily(
-        Font(R.font.expandedconsolabold, FontWeight.Normal)
-    )
     val context = LocalContext.current
     val imagePrintRegister = remember { mutableStateOf<Bitmap?>(null) }
     val imagePrintLogin = remember { mutableStateOf<Bitmap?>(null) }
@@ -87,8 +86,8 @@ fun ConfirmationLoginScreen(authenticationController: AuthenticationController, 
     val api = retrofit.create(FaceRecognitionAPI::class.java)
 
     coroutineScope.launch {
-        imageLogin.value = authenticationController.getImageLoginForUser(userId)
-        imageRegister.value = authenticationController.getImageRegistersForUser(userId)
+        imageLogin.value = databaseController.getImageLoginForUser(userId)
+        imageRegister.value = databaseController.getImageRegistersForUser(userId)
         for (i in imageLogin.value!!.indices) {
             val registerImage = imageRegister.value!![i]
             val loginImage = imageLogin.value!![i]
@@ -121,7 +120,7 @@ fun ConfirmationLoginScreen(authenticationController: AuthenticationController, 
                     if (response.isSuccessful) {
                         recognitionResult.value = response.body()
                     } else if (response.code() == 400 || response.code() == 500) {
-                        authenticationController.deleteImageLogin(userId)
+                        databaseController.deleteImageLogin(userId)
                         recognitionResult.value = RecognitionResult(result = false)
                     }
                 }
@@ -158,7 +157,7 @@ fun ConfirmationLoginScreen(authenticationController: AuthenticationController, 
                         color = thirdColor,
                         fontWeight = FontWeight.Bold,
                     )
-                    authenticationController.deleteImageLogin(userId)
+                    databaseController.deleteImageLogin(userId)
                     OutlinedButton(
                         onClick = { authenticationController.navigateToGallery(userId) },
                         shape = RoundedCornerShape(15.dp),
@@ -186,7 +185,7 @@ fun ConfirmationLoginScreen(authenticationController: AuthenticationController, 
                         color = thirdColor,
                         fontWeight = FontWeight.Bold,
                     )
-                    authenticationController.deleteImageLogin(userId)
+                    databaseController.deleteImageLogin(userId)
                 }
             }
         }

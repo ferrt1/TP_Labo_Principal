@@ -6,16 +6,12 @@ import android.content.Context
 import android.content.ContextWrapper
 import android.content.pm.PackageManager
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.horizontalScroll
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
@@ -30,7 +26,6 @@ import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedButton
@@ -42,12 +37,9 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.Font
-import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
@@ -59,18 +51,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import com.example.cypher_vault.R
 import com.example.cypher_vault.controller.authentication.AuthenticationController
 import com.example.cypher_vault.view.resources.CustomTitle
-
-
-val firstColor = Color(0xFF02a6c3)
-val secondColor = Color(0xFF01243a)
-val thirdColor = Color(0xFF005767)
-val fontFamily = FontFamily(
-    Font(R.font.expandedconsolabold, FontWeight.Normal)
-)
-val greenColor =  Color(0xFF00B42D)
+import com.example.cypher_vault.view.resources.*
 
 
 @Composable
@@ -86,8 +69,6 @@ fun RegisterText(){
 
 }
 
-
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun InitialScreen(authenticationController: AuthenticationController) {
     val context = LocalContext.current
@@ -148,13 +129,13 @@ fun InitialScreen(authenticationController: AuthenticationController) {
                     unfocusedContainerColor = Color.Transparent,
                     disabledContainerColor = Color.Transparent,
                     cursorColor = thirdColor,
-                    focusedIndicatorColor = com.example.cypher_vault.view.login.firstColor,
-                    unfocusedIndicatorColor = com.example.cypher_vault.view.login.firstColor,
+                    focusedIndicatorColor = firstColor,
+                    unfocusedIndicatorColor = firstColor,
                 ),
                 modifier = Modifier
                     .width(290.dp) // Establece un ancho fijo para el TextField
                     .padding(top = 15.dp)
-                    .border(BorderStroke(3.dp, com.example.cypher_vault.view.login.firstColor), shape =  RoundedCornerShape(4.dp))
+                    .border(BorderStroke(3.dp, firstColor), shape =  RoundedCornerShape(4.dp))
             )
 
             Spacer(modifier = Modifier.height(10.dp))
@@ -195,7 +176,7 @@ fun InitialScreen(authenticationController: AuthenticationController) {
             Row(
                     modifier = Modifier.width(290.dp) // Establece un ancho fijo para el TextField
                         .padding(top = 15.dp)
-                        .border(BorderStroke(3.dp, com.example.cypher_vault.view.login.firstColor), shape =  RoundedCornerShape(4.dp))
+                        .border(BorderStroke(3.dp, firstColor), shape =  RoundedCornerShape(4.dp))
                     ) {
                 TextField(
                     value = passwordState.value,
@@ -238,8 +219,8 @@ fun InitialScreen(authenticationController: AuthenticationController) {
                         unfocusedContainerColor = Color.Transparent,
                         disabledContainerColor = Color.Transparent,
                         cursorColor = thirdColor,
-                        focusedIndicatorColor = com.example.cypher_vault.view.login.firstColor,
-                        unfocusedIndicatorColor = com.example.cypher_vault.view.login.firstColor,
+                        focusedIndicatorColor = firstColor,
+                        unfocusedIndicatorColor = firstColor,
                     ),
                     modifier = Modifier.weight(1f)
                 )
@@ -280,10 +261,10 @@ fun InitialScreen(authenticationController: AuthenticationController) {
                     authenticationController.registerUser(emailState.value.text, nameState.value.text, showDialog, errorMessage, passwordState.value.text)
                 },
                 shape = RoundedCornerShape(4.dp),
-                border = BorderStroke(3.dp, com.example.cypher_vault.view.login.firstColor),
+                border = BorderStroke(3.dp, firstColor),
                 colors = ButtonDefaults.buttonColors(
                     containerColor = Color.Transparent,
-                    contentColor = com.example.cypher_vault.view.login.firstColor
+                    contentColor = firstColor
                 ),
                 modifier = Modifier.width(250.dp).padding(top = 5.dp ,bottom = 10.dp)
             ) {
@@ -309,7 +290,7 @@ fun InitialScreen(authenticationController: AuthenticationController) {
             ) {
                 Text(
                     "Iniciar sesión",
-                    fontFamily = com.example.cypher_vault.view.login.fontFamily,
+                    fontFamily = fontFamily,
                     color = Color.Gray, // Establece el color del texto a gris
                     fontWeight = FontWeight.Bold
                 )

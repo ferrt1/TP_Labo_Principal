@@ -10,14 +10,18 @@ import com.example.cypher_vault.view.login.ConfirmationLoginScreen
 import com.example.cypher_vault.view.login.LoginCamera
 import com.example.cypher_vault.view.login.NavigationLogin
 import com.example.cypher_vault.view.registration.ConfirmationScreen
-import com.example.cypher_vault.view.registration.Gallery
+import com.example.cypher_vault.view.gallery.Gallery
 import com.example.cypher_vault.view.registration.InitialScreen
 import com.example.cypher_vault.view.registration.RegistrationCameraScreen
+import com.example.cypher_vault.controller.gallery.GalleryController
+import com.example.cypher_vault.view.gallery.UserProfile
 
 @Composable
 fun NavigationHost() {
     val navController = rememberNavController()
     val authenticationController = AuthenticationController(navController)
+    val galleryController = GalleryController()
+
     NavHost(navController, startDestination = "register") {
         composable("register") {
             InitialScreen(authenticationController)
@@ -27,7 +31,6 @@ fun NavigationHost() {
             if (userId != null) {
                 RegistrationCameraScreen(authenticationController, userId)
             } else {
-                // Manejar el caso en que el userId no se pudo recuperar
             }
         }
         composable("cameralogin/{userId}") { backStackEntry ->
@@ -35,7 +38,7 @@ fun NavigationHost() {
             if (userId != null) {
                 LoginCamera(authenticationController, userId)
             } else {
-                // Manejar el caso en que el userId no se pudo recuperar
+
             }
         }
 
@@ -44,13 +47,8 @@ fun NavigationHost() {
             if (userId != null) {
                 ConfirmationScreen(authenticationController, userId)
             } else {
-                // Manejar el caso en que el userId no se pudo recuperar
             }
         }
-        composable("login") {
-            // Aquí puedes agregar la vista de inicio de sesión
-        }
-
         composable("authenticate/{userId}") {backStackEntry ->
             val userId = backStackEntry.arguments?.getString("userId")
             if (userId != null) {
@@ -62,14 +60,24 @@ fun NavigationHost() {
         composable("gallery/{userId}") {backStackEntry ->
             val userId = backStackEntry.arguments?.getString("userId")
             if (userId != null) {
-                Gallery(authenticationController, userId)
+                Gallery(authenticationController, userId, galleryController)
             } else {
                 // Manejar el caso en que el userId no se pudo recuperar
             }
         }
+        composable("profile/{userId}") {backStackEntry ->
+            val userId = backStackEntry.arguments?.getString("userId")
+            if (userId != null) {
+                UserProfile(authenticationController, userId)
+            } else {
+                // Manejar el caso en que el userId no se pudo recuperar
+            }
+        }
+
         composable("list") {
             NavigationLogin(authenticationController)
         }
+
 
     }
 }

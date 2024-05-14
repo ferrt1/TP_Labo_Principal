@@ -42,7 +42,7 @@ object DatabaseManager {
         database.imageDao().insertImage(image)
     }
 
-    fun getImagesForUser(userId: Int): List<Images> {
+    fun getImagesForUser(userId: String): List<Images> {
         return database.imageDao().getImagesForUser(userId)
     }
 
