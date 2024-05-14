@@ -66,7 +66,6 @@ import com.example.cypher_vault.view.registration.findAncestorActivity
 import java.io.ByteArrayOutputStream
 import java.util.Locale
 
-
 val firstColor = Color(0xFF02a6c3)
 val secondColor = Color(0xFF01243a)
 val thirdColor = Color(0xFF005767)
