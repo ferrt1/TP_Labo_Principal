@@ -1,32 +1,39 @@
 package com.example.cypher_vault.model.message
-
 import android.util.Log
 
 //Funciones en donde se valida los campos de registro, son funciones booleanas-----------------------
 
-private fun validateNameLettersOnly(name: String): Boolean {
+
+
+
+
+
+
+//Funciones en donde se valida los campos de registro, son funciones booleanas-----------------------
+
+fun validateNameLettersOnly(name: String): Boolean {
     val isValid = name.all { it.isLetter() }
     Log.d("MiTag", "validateNameLettersOnly: $isValid")
     return isValid
 }
 
-private fun validateMail(email: String): Boolean {
+fun validateMail(email: String): Boolean {
     return android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()
 }
 
-private fun validateNameNumbers(name: String): Boolean {
+fun validateNameNumbers(name: String): Boolean {
     return name.any { it.isDigit() }
 }
 
-private fun validateNameSpacesAndLineBreaks(name: String): Boolean {
+fun validateNameSpacesAndLineBreaks(name: String): Boolean {
     return name.contains(" ") || name.contains("\n") || name.contains("\r\n")
 }
 
-private fun validateName(name: String): Boolean{
+fun validateName(name: String): Boolean{
     return name.length in 3..50
 }
 
-private fun validateFields(email: String, name: String): Boolean{
+fun validateFields(email: String, name: String): Boolean{
     return name.isEmpty() || email.isEmpty()
 }
 
@@ -37,6 +44,10 @@ fun validatePasswordCharacters(password: String): Boolean {
 
 fun validatePasswordLength(password: String): Boolean {
     return password.length >= 16
+}
+
+fun validatePasswordLengthMax(password: String): Boolean {
+    return password.length <= 32
 }
 //---------------------------------------------------------------------------------------------------
 
@@ -70,8 +81,8 @@ private fun passwordCharactersMesseger(): String{
 
 
 
-private fun email(): String{
-    return "tiene que ingresar un correo electronico valido"
+private fun emailLettersOnlyMessege(): String{
+    return "no puede exitir espacios en un correo "
 }
 
 private fun name(): String{
@@ -84,7 +95,28 @@ private fun name(): String{
 fun validate(email: String, name: String, pin: String): Boolean {
     Log.d("MiTag", "estoy en la parte logica y mi valoes que me dieron fueron:  $email,$name,$pin ")
     return (validateNameLettersOnly(name) && !validateNameSpacesAndLineBreaks(name) && validateMail(email) && !validateNameNumbers(name) && validateName(name)
-            && validatePasswordCharacters(pin) && validatePasswordLength(pin) && !validateFields(email, name))
+            && validatePasswordCharacters(pin) && validatePasswordLength(pin) && validatePasswordLengthMax(pin) && !validateFields(email, name))
+}
+
+//todas las condicones del campo de nombre (si hay numero, espacio, o menor que 3 caracteres)
+fun fullnamefield (name : String): String{
+    if(!validateName(name))
+        return nameMesseger()
+    else if (validateNameNumbers(name))
+        return nameNumbersMesseger()
+    else if (validateNameSpacesAndLineBreaks(name))
+        return  nameSpacesAndLineBreaksMesseger()
+    return null.toString()
+}
+
+//toda las condiciones del campo de correo (si hay espacio o no es unc correo valido)
+
+fun fullemailfield (email : String): String{
+    if(validateNameSpacesAndLineBreaks(email))
+        return emailLettersOnlyMessege()
+    else if (!validateMail(email))
+        return mailMesserger()
+    return null.toString()
 }
 
 //Esta funciom se encargar de asignar el mensaje correspondiente al error (TIPO ERROR)
@@ -110,8 +142,11 @@ fun errorMessage(email: String, name: String, pin: String): String? {
 
 
 
+
+
 //Esta funciom se encargar de asignar el mensaje correspondiente al campo que esta pocisionado el
 //usuario, se en via informacion de lo que tiene que completar (TIPO ACLARACION)
+/*
 fun clarificationMessage(estado: String ): String {
     if(estado=="email")
         return email()
@@ -121,6 +156,5 @@ fun clarificationMessage(estado: String ): String {
         return "null"
 }
 
-//fun warningMessage (Completo el campo pero una parte es incorrecta y la otra correcta) (TIPO ADVERTENCIA)
 
-
+*/

@@ -31,6 +31,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
@@ -85,7 +86,7 @@ fun LoginText(){
 
 @Composable
 fun NavigationLogin(authenticationController: AuthenticationController) {
-    val users by databaseController.users.collectAsState()
+    val users by authenticationController.users.collectAsState()
     val buttonTextStyle = TextStyle(fontWeight = FontWeight.Bold, fontSize = 16.sp, color = thirdColor, fontFamily = fontFamily)
     var selectedPersona by remember { mutableStateOf<String?>(null) }
     var searchQuery by remember { mutableStateOf("") }
@@ -348,6 +349,8 @@ fun NavigationLogin(authenticationController: AuthenticationController) {
                         contentColor = Color.Gray
                     ),
                     modifier = Modifier
+                        .fillMaxWidth()
+                        .wrapContentSize(Alignment.Center)
                         .width(200.dp)
                         .padding(top = 30.dp)
                 ) {

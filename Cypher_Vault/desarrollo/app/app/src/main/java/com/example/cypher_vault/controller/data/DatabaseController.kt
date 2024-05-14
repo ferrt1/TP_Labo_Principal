@@ -14,18 +14,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 class DatabaseController(){
-    init{
-        getAllUsers()
-    }
 
-    private fun getAllUsers() {
-        CoroutineScope(Dispatchers.IO).launch {
-            _users.value = DatabaseManager.getAllUsers()
-        }
-    }
-
-    private val _users = MutableStateFlow<List<User>>(emptyList())
-    val users: StateFlow<List<User>> get() = _users
 
     private suspend fun getUserById(userId: String): User? {
         return withContext(Dispatchers.IO) {

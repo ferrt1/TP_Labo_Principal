@@ -16,6 +16,7 @@ val thirdColor = Color(0xFF005767)
 val mainBackgroundColor = Color(0xFFdcdcdc)
 val greenColor =  Color(0xFF00B42D)
 val firstLetter = Color(0xFF2DDEFD)
+val redColor = Color(0xFFff0000)
 
 //FONTS AND TEXT
 val fontFamily = FontFamily(

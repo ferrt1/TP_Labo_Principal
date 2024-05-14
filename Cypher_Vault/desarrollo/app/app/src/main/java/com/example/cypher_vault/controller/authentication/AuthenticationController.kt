@@ -1,7 +1,9 @@
 package com.example.cypher_vault.controller.authentication
 import android.graphics.Bitmap
+import android.util.Log
 import androidx.compose.runtime.MutableState
 import androidx.navigation.NavController
+import com.example.cypher_vault.controller.messages.registrationValidation
 import com.example.cypher_vault.database.ImagesLogin
 import com.example.cypher_vault.database.ImagesRegister
 import com.example.cypher_vault.database.User
@@ -18,6 +20,19 @@ import kotlinx.coroutines.withContext
 import java.util.UUID
 
 class AuthenticationController(private val navController: NavController) {
+
+    init{
+        getAllUsers()
+    }
+
+    private fun getAllUsers() {
+        CoroutineScope(Dispatchers.IO).launch {
+            _users.value = DatabaseManager.getAllUsers()
+        }
+    }
+
+    private val _users = MutableStateFlow<List<User>>(emptyList())
+    val users: StateFlow<List<User>> get() = _users
 
     private fun navigateToCamera(uid: String) {
         navController.navigate("camera/$uid")
@@ -56,87 +71,26 @@ class AuthenticationController(private val navController: NavController) {
     fun registerUser(
         email: String,
         name: String,
-        showDialog: MutableState<Boolean>,
-        errorMessage: MutableState<String>,
-        password: String
-    ): UUID? {
+        password: String,
+    ): UUID?
+    {
         val uid = UUID.randomUUID()
-        if (validateFields(name, email)){
-            showDialog.value = true
-            errorMessage.value = "Por favor, rellena todos los campos correctamente."
-        }
-
-        else if (!validateNameLettersOnly(name)) {
-            showDialog.value = true
-            errorMessage.value = "El nombre debe contener caracteres alfabéticos únicamente"
-        }
-
-        else if (!validateMail(email)) {
-            showDialog.value = true
-            errorMessage.value = "El email debe ser válido"
-        }
-        else if (validateNameSpacesAndLineBreaks(name)){
-            showDialog.value = true
-            errorMessage.value = "El nombre no puede contener espacios en blanco"
-        }
-        else if (validateNameNumbers(name)){
-            showDialog.value = true
-            errorMessage.value = "El nombre no puede tener números"
-        }
-        else if (!validateName(name)){
-            showDialog.value = true
-            errorMessage.value = "El nombre debe tener más de 3 carácteres y menos de 50"
-        }
-        else if (!validatePasswordLength(password)){
-            showDialog.value = true
-            errorMessage.value = "El PIN debe contener 16 carácteres"
-        }
-        else if (!validatePasswordCharacters(password)){
-            showDialog.value = true
-            errorMessage.value = "El PIN debe tener un carácter especial"
-        }
-        else {
+        if (registrationValidation(email, name, password)) {
             CoroutineScope(Dispatchers.IO).launch {
-                val user = User(uid = uid.toString(), firstName = name, email = email, entryDate = System.currentTimeMillis(), password = password)
+                val user = User(
+                    uid = uid.toString(),
+                    firstName = name,
+                    email = email,
+                    entryDate = System.currentTimeMillis(),
+                    password = password
+                )
                 DatabaseManager.insertUser(user)
             }
             navigateToCamera(uid.toString())
             return uid
+        } else {
+            // errorMessage.value = getMessageError(email, name, pin).toString()
+            return null
         }
-
-        return null
     }
-
-    private fun validateNameLettersOnly(name: String): Boolean {
-        return name.all { it.isLetter() }
-    }
-
-    private fun validateMail(email: String): Boolean {
-        return android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()
-    }
-
-    private fun validateNameNumbers(name: String): Boolean {
-        return name.any { it.isDigit() }
-    }
-
-    private fun validateNameSpacesAndLineBreaks(name: String): Boolean {
-        return name.contains(" ") || name.contains("\n") || name.contains("\r\n")
-    }
-
-    private fun validateName(name: String): Boolean{
-        return name.length in 3..50
-    }
-
-    private fun validateFields(email: String, name: String): Boolean{
-        return name.isEmpty() || email.isEmpty()
-    }
-
-    fun validatePasswordLength(password: String): Boolean {
-        return password.length == 16
-    }
-
-    fun validatePasswordCharacters(password: String): Boolean {
-        return password.any { it.isLetterOrDigit() } && password.any { !it.isLetterOrDigit() }
-    }
-
 }
