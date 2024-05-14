@@ -91,12 +91,11 @@ val textStyleTittle2 = TextStyle(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun Gallery(authenticationController: AuthenticationController, userId: String) {
+fun Gallery(authenticationController: AuthenticationController, userId: String, galleryController: GalleryController) {
 
     var usuario by remember { mutableStateOf<User?>(null) }
     var nombre by remember { mutableStateOf("") }
     var dbc = DatabaseController()
-    var gc = GalleryController()
     LaunchedEffect(key1 = Unit) { // Key can be anything to trigger on recomposition
         val usuarioTemp = dbc.getUserById(userId)
         usuario = usuarioTemp
@@ -120,17 +119,17 @@ fun Gallery(authenticationController: AuthenticationController, userId: String) 
     }
 
     LaunchedEffect(key1 = userId) {
-        gc.loadImagesForUser(userId)
+        galleryController.loadImagesForUser(userId)
     }
 
 
-    val images = gc.images.value
+    val images = galleryController.images.value
 
 
     val imageUris = remember { mutableStateOf<List<Uri>>(listOf()) }
 
     LaunchedEffect(key1 = imageUris.value) {
-        gc.loadImagesForUser(userId)
+        galleryController.loadImagesForUser(userId)
     }
 
     val selectedImage = remember { mutableStateOf<Uri?>(null) }
@@ -142,7 +141,7 @@ fun Gallery(authenticationController: AuthenticationController, userId: String) 
                 val byteArrayOutputStream = ByteArrayOutputStream()
                 bitmap.compress(Bitmap.CompressFormat.PNG, 100, byteArrayOutputStream)
                 val imageData = byteArrayOutputStream.toByteArray()
-                gc.saveImage(imageData, userId)
+                galleryController.saveImage(imageData, userId)
                 imageUris.value += it
             }
         }
@@ -273,7 +272,7 @@ fun Gallery(authenticationController: AuthenticationController, userId: String) 
                 LazyVerticalGrid(
                     columns = GridCells.Fixed(3),
                     contentPadding = PaddingValues(8.dp),
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier.weight(1f)
                 ) {
                     items(images.size) { index ->
                         val image = images[index]
@@ -281,7 +280,7 @@ fun Gallery(authenticationController: AuthenticationController, userId: String) 
                             BitmapFactory.decodeByteArray(image.imageData, 0, image.imageData.size)
                         bitmap?.let {
                             Image(
-                                bitmap = bitmap.asImageBitmap(),
+                                bitmap = it.asImageBitmap(),
                                 contentDescription = null,
                                 modifier = Modifier
                                     .size(100.dp)
@@ -299,13 +298,10 @@ fun Gallery(authenticationController: AuthenticationController, userId: String) 
                     }
                 }
             }
-            if (selectedImage.value != null) {
-                Dialog(onDismissRequest = { selectedImage.value = null }) {
-                    val uri = selectedImage.value!!
-                    val inputStream = context.contentResolver.openInputStream(uri)
-                    val bitmap = BitmapFactory.decodeStream(inputStream)
+            if (selectedImageBitmap.value != null) {
+                Dialog(onDismissRequest = { selectedImageBitmap.value = null }) {
                     Image(
-                        bitmap = bitmap.asImageBitmap(),
+                        bitmap = selectedImageBitmap.value!!.asImageBitmap(),
                         contentDescription = null,
                         modifier = Modifier.fillMaxWidth()
                     )
