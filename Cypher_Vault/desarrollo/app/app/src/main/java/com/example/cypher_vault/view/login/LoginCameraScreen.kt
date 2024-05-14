@@ -49,6 +49,7 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.ContextCompat
 import com.example.cypher_vault.controller.authentication.AuthenticationController
+import com.example.cypher_vault.controller.data.DatabaseController
 import com.google.mlkit.vision.common.InputImage
 import com.google.mlkit.vision.face.FaceContour
 import com.google.mlkit.vision.face.FaceDetection
@@ -58,6 +59,10 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.io.ByteArrayOutputStream
 import java.io.File
+import com.example.cypher_vault.view.resources.*
+
+
+private val databaseController = DatabaseController()
 
 @androidx.annotation.OptIn(ExperimentalGetImage::class)
 @Composable
@@ -244,7 +249,7 @@ fun captureImage(context: Context,
             resizedBitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream)
             val resizedImageBytes = stream.toByteArray()
 
-            val saveImageDeferred = authenticationController.saveImageLogin(resizedImageBytes, userId)
+            val saveImageDeferred = databaseController.saveImageLogin(resizedImageBytes, userId)
             coroutineScope.launch {
                 saveImageDeferred.await()
                 state.value = true

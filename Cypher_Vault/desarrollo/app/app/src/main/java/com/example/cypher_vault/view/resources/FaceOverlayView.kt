@@ -1,4 +1,4 @@
-package com.example.cypher_vault.view.registration
+package com.example.cypher_vault.view.resources
 
 import android.content.Context
 import android.graphics.Canvas
