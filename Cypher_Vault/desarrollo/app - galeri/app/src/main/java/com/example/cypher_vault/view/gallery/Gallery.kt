@@ -4,6 +4,7 @@ import android.Manifest
 import android.content.pm.PackageManager
 import android.graphics.BitmapFactory
 import android.net.Uri
+import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.BorderStroke
@@ -26,13 +27,16 @@ import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowBackIosNew
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Person
+import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -45,12 +49,14 @@ import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
@@ -58,6 +64,7 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -73,6 +80,7 @@ import com.example.cypher_vault.view.registration.thirdColor
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.util.Locale
 
 
@@ -113,6 +121,24 @@ fun Gallery(authenticationController: AuthenticationController, userId: String) 
     val launcher = rememberLauncherForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
         uri?.let {
             imageUris.value = imageUris.value + it
+            Log.d("Gallery", "URI seleccionada: $it")
+        }
+    }
+
+    ///////
+
+    val loadedBitmaps = remember { mutableStateMapOf<Uri, ImageBitmap>() }
+
+    // Cargar imágenes fuera del ciclo de composición
+    for (uri in imageUris.value) {
+        LaunchedEffect(uri) {
+            val inputStream = withContext(Dispatchers.IO) {
+                context.contentResolver.openInputStream(uri)
+            }
+            val bitmap = withContext(Dispatchers.Default) {
+                BitmapFactory.decodeStream(inputStream)
+            }
+            loadedBitmaps[uri] = bitmap.asImageBitmap()
         }
     }
     val textStyle = TextStyle(fontWeight = FontWeight.ExtraBold, fontSize = 42.sp, fontFamily = com.example.cypher_vault.view.resources.fontFamily, letterSpacing = 2.sp)
@@ -202,6 +228,28 @@ fun Gallery(authenticationController: AuthenticationController, userId: String) 
                 scrollBehavior = scrollBehavior,
             )
         },
+        bottomBar = {
+            BottomAppBar(
+                containerColor = thirdColor,
+                contentColor = firstColor,
+            ) {
+                Text(
+                    modifier = Modifier
+                        .fillMaxWidth(),
+                    textAlign = TextAlign.Center,
+                    text = "Area de mensaje sys?",
+                )
+            }
+        },
+        floatingActionButton = {
+            FloatingActionButton(onClick = { launcher.launch("image/*") }) {
+                Icon(modifier = Modifier.width(30.dp),
+                    tint = firstColor,
+                    imageVector = Icons.Default.Add,
+                    contentDescription = "Add"
+                )
+            }
+        },
         content = { innerPadding ->
             Column(
                 modifier = Modifier
@@ -211,64 +259,22 @@ fun Gallery(authenticationController: AuthenticationController, userId: String) 
                 LazyVerticalGrid(
                     columns = GridCells.Fixed(3),
                     contentPadding = PaddingValues(8.dp),
-                    modifier = Modifier.width(30.dp)
+                    modifier = Modifier.fillMaxWidth()
                 ) {
                     items(imageUris.value.size) { index ->
                         val uri = imageUris.value[index]
-                        val inputStream = context.contentResolver.openInputStream(uri)
-                        val bitmap = BitmapFactory.decodeStream(inputStream)
-                        Image(
-                            bitmap = bitmap.asImageBitmap(),
-                            contentDescription = null,
-                            modifier = Modifier
-                                .size(100.dp)
-                                .padding(4.dp)
-                                .border(2.dp, Color.Black)
-                                .clickable { selectedImage.value = uri }
-                        )
-                    }
-                }
-
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 16.dp, vertical = 8.dp),
-                    horizontalArrangement = Arrangement.SpaceBetween
-                ) {
-                    OutlinedButton(
-                        onClick = { authenticationController.navigateToListLogin() },
-                        shape = RoundedCornerShape(15.dp),
-                        border = BorderStroke(3.dp, Color.Gray),
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = Color.Transparent,
-                            contentColor = Color.Gray
-                        ),
-                        modifier = Modifier.width(100.dp)
-                    ) {
-                        Text(
-                            "Inicio",
-                            fontFamily = fontFamily,
-                            color = Color.Gray,
-                            fontWeight = FontWeight.Bold
-                        )
-                    }
-
-                    OutlinedButton(
-                        onClick = { launcher.launch("image/*") },
-                        shape = RoundedCornerShape(15.dp),
-                        border = BorderStroke(3.dp, thirdColor),
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = Color.Transparent,
-                            contentColor = thirdColor
-                        ),
-                        modifier = Modifier.width(100.dp)
-                    ) {
-                        Text(
-                            "+",
-                            fontFamily = fontFamily,
-                            color = thirdColor,
-                            fontWeight = FontWeight.Bold
-                        )
+                        val bitmap = loadedBitmaps[uri]
+                        bitmap?.let {
+                            Image(
+                                bitmap = it,
+                                contentDescription = null,
+                                modifier = Modifier
+                                    .size(100.dp)
+                                    .padding(4.dp)
+                                    .border(2.dp, Color.Black)
+                                    .clickable { selectedImage.value = uri }
+                            )
+                        }
                     }
                 }
             }
@@ -286,8 +292,8 @@ fun Gallery(authenticationController: AuthenticationController, userId: String) 
             }
         }
     )
-
 }
+
 
 
 fun capitalizarPrimeraLetra(palabra: String): String {
