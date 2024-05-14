@@ -371,7 +371,6 @@ fun NavigationLogin(authenticationController: AuthenticationController) {
             }
         }
     }
-
 }
 
 
