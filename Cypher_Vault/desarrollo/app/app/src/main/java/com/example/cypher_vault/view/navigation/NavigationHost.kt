@@ -60,7 +60,7 @@ fun NavigationHost() {
         composable("gallery/{userId}") {backStackEntry ->
             val userId = backStackEntry.arguments?.getString("userId")
             if (userId != null) {
-                Gallery(authenticationController, userId, galleryController)
+                Gallery(authenticationController, userId)
             } else {
                 // Manejar el caso en que el userId no se pudo recuperar
             }

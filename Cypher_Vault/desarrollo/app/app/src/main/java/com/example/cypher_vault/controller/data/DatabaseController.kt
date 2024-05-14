@@ -16,7 +16,7 @@ import kotlinx.coroutines.withContext
 class DatabaseController(){
 
 
-    private suspend fun getUserById(userId: String): User? {
+    suspend fun getUserById(userId: String): User? {
         return withContext(Dispatchers.IO) {
             DatabaseManager.getUserById(userId)
         }
