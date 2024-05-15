@@ -38,6 +38,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -112,6 +113,8 @@ fun InitialScreen(authenticationController: AuthenticationController) {
     var isContentVisiblename by remember { mutableStateOf(false) }
     var isContentVisiblemail by remember { mutableStateOf(false) }
     var isContentVisiblpasswordState by remember { mutableStateOf(false) }
+
+
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -237,14 +240,14 @@ fun InitialScreen(authenticationController: AuthenticationController) {
                     nameState.value = it
                 },
                 textStyle = TextStyle(
-                    color = if (getvalidateNameNumbers(nameState.value.text) || getvalidateNameSpacesAndLineBreaks(nameState.value.text)) redColor else firstColor,
+                    color = if (getvalidateNameNumbers(nameState.value.text) || getvalidateNameMax(nameState.value.text) || getvalidateNameSpacesAndLineBreaks(nameState.value.text)) redColor else firstColor,
                     fontSize = 16.sp,
                     fontFamily = fontFamily,
                     fontWeight = FontWeight.Bold
                 ),
                 placeholder = {
                     Text(
-                        "Minimo 3 caracteres",
+                        "Minimo 3 Letras",
                         style = TextStyle(
                             color = Color.Gray,
                             fontSize = 16.sp,
@@ -344,7 +347,7 @@ fun InitialScreen(authenticationController: AuthenticationController) {
 
                     },
                     textStyle = TextStyle(
-                        color = firstColor,
+                        color = if(!getvalidatePasswordLengthMax(passwordState.value.text)) redColor else firstColor,
                         fontSize = 16.sp,
                         fontFamily = fontFamily,
                         fontWeight = FontWeight.Bold
@@ -405,38 +408,26 @@ fun InitialScreen(authenticationController: AuthenticationController) {
             }
 
             if (isContentVisiblpasswordState) {
-                if (getfullnamefield(nameState.value.text) != "") {
+                if (getfullpasswordfield(passwordState.value.text) != "") {
                     Column(
                         verticalArrangement = Arrangement.Center,
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
                         Row(verticalAlignment = Alignment.CenterVertically) {
-                            (if (getvalidateNameNumbers(nameState.value.text) || getvalidateNameSpacesAndLineBreaks(nameState.value.text)) {
-                                R.drawable.icoerror
-                            } else if (!getvalidateName(nameState.value.text)) {
-
-                                R.drawable.iconwarning
-                            } else {
-                                null
-                            })?.let {
-                                painterResource(
-                                    id = it
-                                )
-                            }?.let {
+                            if (!getvalidatePasswordLength(passwordState.value.text) || !getvalidatePasswordLengthMax(passwordState.value.text)) {
                                 Image(
-                                    painter = it,
+                                    painter = painterResource(id = R.drawable.iconwarning),
                                     contentDescription = "",
                                     modifier = Modifier.size(24.dp)
                                 )
                             }
-
                             Spacer(modifier = Modifier.width(8.dp)) // Espacio entre la imagen y el texto
-                            if (getfullnamefield(nameState.value.text) != "null") {
+                            if (getfullpasswordfield(passwordState.value.text) != "null") {
                                 Text(
-                                    getfullnamefield(nameState.value.text),
+                                    getfullpasswordfield(passwordState.value.text),
                                     fontSize = 13.sp,
                                     fontFamily = fontFamily,
-                                    color = thirdColor,
+                                    color =firstColor,
                                     fontWeight = FontWeight.Bold
                                 )
                             }
@@ -450,8 +441,8 @@ fun InitialScreen(authenticationController: AuthenticationController) {
 
             Button(
                 onClick = {
-                    authenticationController.registerUser(emailState.value.text, nameState.value.text, passwordState.value.text)
-                },
+                    authenticationController.registerUser(emailState.value.text, nameState.value.text, passwordState.value.text,errorMessage)
+                          },
                 shape = RoundedCornerShape(4.dp),
                 border = BorderStroke(3.dp, firstColor),
                 colors = ButtonDefaults.buttonColors(
@@ -468,14 +459,42 @@ fun InitialScreen(authenticationController: AuthenticationController) {
                     fontWeight = FontWeight.Bold
                 )
             }
+
+            Column(
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    if(errorMessage.value!="") {
+                        Image(
+                            painter = painterResource(id = R.drawable.icoerror),
+                            contentDescription = "",
+                            modifier = Modifier.size(24.dp)
+                        )
+                    }
+
+                    Text(
+                        text = errorMessage.value,
+                        fontFamily = fontFamily,
+                        fontWeight = FontWeight.Bold,
+                        color = redColor, // Asignar el color determinado al texto
+                        modifier = Modifier.padding(start = 8.dp) // Añadir un espacio entre la imagen y el texto
+                    )
+                }
+            }
+
             OutlinedButton(
-                onClick = { authenticationController.navigateToListLogin() },
+                onClick = { authenticationController.navigateToListLogin()
+                 },
                 shape = RoundedCornerShape(15.dp),
                 border = BorderStroke(3.dp, Color.Gray),
                 colors = ButtonDefaults.buttonColors(
                     containerColor = Color.Transparent,
                     contentColor = Color.Gray
                 ),
+
                 modifier = Modifier
                     .width(200.dp)
                     .padding(top = 30.dp)
@@ -488,55 +507,11 @@ fun InitialScreen(authenticationController: AuthenticationController) {
                 )
             }
 
-            //------------------------- espacio para el socalo de mensaje-----------------------//
 
-            if(!passwordState.value.text.isEmpty()) {
-                Row(
-                    modifier = Modifier
-                        .width(290.dp)
-                        .padding(top = 5.dp)
-                ) {
-                    Text(
-                        text = "16 Como minimo caracteres alfanuméricos",
-                        fontFamily = fontFamily,
-                        fontSize = 14.sp,
-                        color = if (getvalidatePasswordLength(passwordState.value.text)) greenColor else Color.Gray,
-                        textAlign = TextAlign.Left
-                    )
-                }
-
-                Row(
-                    modifier = Modifier
-                        .width(290.dp) // Establece un ancho fijo para el TextField
-                        .padding(top = 5.dp)
-                ) {
-                    Text(
-                        text = "1 carácter especial",
-                        fontFamily = fontFamily,
-                        fontSize = 14.sp,
-                        color = if (getvalidatePasswordCharacters(passwordState.value.text)) greenColor else Color.Gray,
-                        textAlign = TextAlign.Left
-                    )
-                }
-            }
         }
-
     }
 
-    if (showDialog.value) {
-        AlertDialog(
-            onDismissRequest = { showDialog.value = false },
-            title = { Text("Error") },
-            text = { Text(errorMessage.value) },
-            confirmButton = {
-                Button(onClick = { showDialog.value = false }) {
-                    Text("Aceptar")
-                }
-            }
-        )
-    }
 }
-
 
 fun Context.findAncestorActivity(): Activity? {
     var context = this

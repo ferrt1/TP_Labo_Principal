@@ -3,6 +3,7 @@ import android.graphics.Bitmap
 import android.util.Log
 import androidx.compose.runtime.MutableState
 import androidx.navigation.NavController
+import com.example.cypher_vault.controller.messages.getMessageError
 import com.example.cypher_vault.controller.messages.registrationValidation
 import com.example.cypher_vault.database.ImagesLogin
 import com.example.cypher_vault.database.ImagesRegister
@@ -72,6 +73,7 @@ class AuthenticationController(private val navController: NavController) {
         email: String,
         name: String,
         password: String,
+        errorMessage: MutableState<String>,
     ): UUID?
     {
         val uid = UUID.randomUUID()
@@ -89,7 +91,7 @@ class AuthenticationController(private val navController: NavController) {
             navigateToCamera(uid.toString())
             return uid
         } else {
-            // errorMessage.value = getMessageError(email, name, pin).toString()
+            errorMessage.value = getMessageError(email, name, password)
             return null
         }
     }
