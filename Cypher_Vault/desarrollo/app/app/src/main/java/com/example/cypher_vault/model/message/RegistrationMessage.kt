@@ -1,13 +1,6 @@
 package com.example.cypher_vault.model.message
 import android.util.Log
 
-//Funciones en donde se valida los campos de registro, son funciones booleanas-----------------------
-
-
-
-
-
-
 
 //Funciones en donde se valida los campos de registro, son funciones booleanas-----------------------
 
@@ -33,7 +26,6 @@ fun validateName(name: String): Boolean{
     return name.length in 3..50
 }
 
-//esta funcion se utiliza para ver si el usuario se paso de los 50 letra
 fun validateNameMax(name: String): Boolean {
     return name.length > 50
 }
@@ -94,20 +86,22 @@ private fun emailLettersOnlyMessege(): String{
     return "no puede exitir espacios en un correo "
 }
 
-private fun name(): String{
-    return "tiene que ingresar un nombre valido minimo de 3 caracteres No numerico"
-}
 //--------------------------------------------------------------------------------------------------
 
 
 //esta funcion se encarga verificar si todos los datos que ingreso el usuario son valido y luego lo devuelve al controllador (true o false)
+// si es valido se alamacena en la base de datos
 fun validate(email: String, name: String, pin: String): Boolean {
     Log.d("MiTag", "estoy en la parte logica y mi valoes que me dieron fueron:  $email,$name,$pin ")
     return (validateNameLettersOnly(name) && !validateNameSpacesAndLineBreaks(name) && validateMail(email) && !validateNameNumbers(name) && validateName(name)
             && validatePasswordCharacters(pin) && validatePasswordLength(pin) && validatePasswordLengthMax(pin) && !validateFields(email, name))
 }
 
-//todas las condicones del campo de nombre (si hay numero, espacio, o menor que 3 caracteres)
+
+
+//-------------------------------------------------------------------------------------------------//
+
+//todas las condicones del campo de nombre (si hay numero, espacio,menor que 3 caracteres)
 fun fullnamefield (name : String): String{
     if(!validateName(name))
         return nameMesseger()
@@ -128,6 +122,8 @@ fun fullemailfield (email : String): String{
     return null.toString()
 }
 
+
+//toda la condiciones del campo de contraseña (si es mayor que 16 caracteres, si es menor que 32 caracteres)
 fun fullpassword(password: String): String{
     if(!validatePasswordLength(password))
         return passwordLengthMessger()
@@ -136,7 +132,7 @@ fun fullpassword(password: String): String{
     return null.toString()
 }
 
-//Esta funciom se encargar de asignar el mensaje correspondiente al error (TIPO ERROR)
+//Esta funciom se encargar de asignar el mensaje correspondiente al error, (zocalo de mensaje que esta abajo del boton de REGISTRARSE)
 fun errorMessage(email: String, name: String, pin: String): String {
     if(validateFields(email, name))
         return fieldsMesseger()
@@ -154,24 +150,7 @@ fun errorMessage(email: String, name: String, pin: String): String {
         return passwordCharactersMesseger()
     else if(!validatePasswordLength(pin))
         return passwordLengthMessger()
+    else if(!validatePasswordLengthMax(pin))
+        return passwordLengthMaxMessger()
     return ""
 }
-
-
-
-
-
-//Esta funciom se encargar de asignar el mensaje correspondiente al campo que esta pocisionado el
-//usuario, se en via informacion de lo que tiene que completar (TIPO ACLARACION)
-/*
-fun clarificationMessage(estado: String ): String {
-    if(estado=="email")
-        return email()
-    else if(estado=="name")
-        return name()
-    else
-        return "null"
-}
-
-
-*/
