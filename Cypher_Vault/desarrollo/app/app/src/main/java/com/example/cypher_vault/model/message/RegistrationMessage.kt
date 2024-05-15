@@ -33,6 +33,12 @@ fun validateName(name: String): Boolean{
     return name.length in 3..50
 }
 
+//esta funcion se utiliza para ver si el usuario se paso de los 50 letra
+fun validateNameMax(name: String): Boolean {
+    return name.length > 50
+}
+
+
 fun validateFields(email: String, name: String): Boolean{
     return name.isEmpty() || email.isEmpty()
 }
@@ -73,12 +79,15 @@ private fun fieldsMesseger(): String{
     return "Por favor, rellena todos los campos correctamente."
 }
 private fun passwordLengthMessger(): String{
-    return "El PIN debe contener 16 carácteres"
+    return "El password debe contener un minimo de 16 carácteres y 1 espacial"
 }
 private fun passwordCharactersMesseger(): String{
-    return  "El PIN debe tener un carácter especial"
+    return  "El password debe tener un carácter especial"
 }
 
+private fun passwordLengthMaxMessger(): String{
+    return "El password no debe ser mayor a 32 caracteres"
+}
 
 
 private fun emailLettersOnlyMessege(): String{
@@ -119,8 +128,16 @@ fun fullemailfield (email : String): String{
     return null.toString()
 }
 
+fun fullpassword(password: String): String{
+    if(!validatePasswordLength(password))
+        return passwordLengthMessger()
+    else if(!validatePasswordLengthMax(password))
+        return passwordLengthMaxMessger()
+    return null.toString()
+}
+
 //Esta funciom se encargar de asignar el mensaje correspondiente al error (TIPO ERROR)
-fun errorMessage(email: String, name: String, pin: String): String? {
+fun errorMessage(email: String, name: String, pin: String): String {
     if(validateFields(email, name))
         return fieldsMesseger()
     else if(validateNameSpacesAndLineBreaks(name))
@@ -137,7 +154,7 @@ fun errorMessage(email: String, name: String, pin: String): String? {
         return passwordCharactersMesseger()
     else if(!validatePasswordLength(pin))
         return passwordLengthMessger()
-    return null
+    return ""
 }
 
 
