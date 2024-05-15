@@ -513,6 +513,8 @@ Dentro del marco de la metodología Scrum, se promueve una comunicación abierta
 * *OpenCV:* Es una biblioteca que proporciona una amplia gama de funciones y algoritmos para el procesamiento de imágenes y vídeo
 * *TensorFlow Lite* TensorFlow Lite es un marco de trabajo ligero desarrollado por Google que permite ejecutar modelos de aprendizaje automático en dispositivos móviles e integrados.
 * *SQLite:* SQLite es un sistema de gestión de bases de datos relacional (RDBMS) ligero, rápido, autónomo y de código abierto.
+* *Python:* Lenguaje de programación de código abierto.
+* *Flask:* Es un microframework de Python que proporciona las herramientas necesarias para construir una aplicación web.
 
 NOTE: *Continua:* por motivos de estetica y facil acceso se implementa dentro del indice Herramientas / Implementacion.
 
@@ -1140,6 +1142,61 @@ NOTE: *Mejora herramientas basicas:* como esta en fase de desarrollo las comprob
 NOTE: *Mejora en la captura:* mejora en la captura fotografica, realizando el recorte del rostro y recien en ese momento la toma de datos ( landmarks y contornos ), luego enderezamientos utilizando puntos del rostro, para que los rostros queden alineados al eje Y.
 
 NOTE: *Mejoras visuales:* verificacion del tamaño del rostro en pantalla, ya que si los rostros son de distintas dimensiones, el codigo no funciona, avisos visuales al usuario los cuales le iran indicando que tiene que tiene que hacer en el area de captura de fotos ( Acercarse a la camara, alejarse, inclinacion de rostro en ese Y y Z, subir o bajar el rostro dentro del area de captura ), con verificaciones visuales para asegurar el margen de error en este area tan critica.
+
+== Reconocimiento facial
+
+=== Implementación con internet
+
+* *Detección de Rostros en Tiempo Real y Captura de Fotos*
+** Esta implementación también utiliza ML Kit para la detección de rostros. El registro funciona en tiempo real y cuando se detecta un rostro, se comienza un temporizador de 3 segundos. Si el rostro se mantiene en el cuadro durante estos 3 segundos, la aplicación toma una foto y la guarda en la base de datos para luego poder utilizarla en el reconocimiento.
+
+** Para el inicio de sesión, el proceso de detección de rostros en tiempo real y captura de fotos se repite. Cuando el usuario inicia sesión, la aplicación detecta el rostro del usuario y toma una foto después de 3 segundos. Esta foto se envía al servidor para el reconocimiento facial.
+
+** En el servidor, tenemos dos versiones de una API para el reconocimiento facial. Ambas versiones de la API reciben la foto del usuario y la comparan con la foto guardada en la base de datos para verificar la identidad del usuario.
+
+NOTE: *Las dos API utilizan Flask como framework para construir la app web.*
+
+=== API Versión 1
+
+Esta API proporciona un servicio para comparar dos caras en imágenes diferentes. Utiliza la biblioteca face_recognition para la detección y comparación de caras.
+
+* *Librerias utilizadas:*
+** *Numpy:*
+*** Es una biblioteca que da soporte para crear vectores y matrices grandes multidimensionales, junto con una gran colección de funciones matemáticas de alto nivel ya que permite trabajar con datos numéricos de manera eficiente. 
+** *cv2:*
+*** Es una biblioteca de OpenCV para Python que proporciona funciones y algoritmos para el procesamiento de imágenes y vídeo.
+** *face_recognition:*
+*** Es una biblioteca simple de reconocimiento facial que incluye detección de rostros, reconocimiento de rostros y manipulación de rostros.
+
+*Endpoint*
+[source, python]
+----
+@app.route('/compare_faces', methods=['POST'])
+def compare_faces():
+    image1 = np.frombuffer(request.files['image1'].read(), np.uint8)
+    image2 = np.frombuffer(request.files['image2'].read(), np.uint8)
+----
+
+*POST /compare_faces*
+
+Toma dos imágenes en formato binario como parámetro
+
+[source, python]
+----
+face_location1 = face_recognition.face_locations(image1)[0]
+face_location2 = face_recognition.face_locations(image2)[0]
+face_image1_encodings = face_recognition.face_encodings(image1, known_face_locations=[face_loc1])[0]
+face_image2_encodings = face_recognition.face_encodings(image2, known_face_locations=[face_loc2])[0]
+----
+
+Se utiliza *face_locations* de face_recognition para detectar el rostro de la imágen y luego *face_encodings* para decodificar el rostro en un vector de 128 dimensiones.
+Por último se utiliza la función *compare_faces* también de face_recognition y se guarda el resultado en una variable. Esta variable es la que se devuelve en un objeto JSON a la aplicación con un true si las dos caras son de la misma persona o false en caso contrario.
+
+[source, python]
+----
+result = face_recognition.compare_faces([face_image1_encodings], face_image2_encodings, 0.5)
+return jsonify({"result": bool(result[0])})
+----
 
 == Mejora de interfaz
 
