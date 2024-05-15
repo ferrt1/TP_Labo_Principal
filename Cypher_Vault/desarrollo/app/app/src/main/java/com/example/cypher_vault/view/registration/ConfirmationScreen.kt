@@ -66,16 +66,7 @@ fun ConfirmationScreen(authenticationController: AuthenticationController, userI
                 imageRegister.imageData.size
             )
             bitmap?.let {
-                val rotatedBitmap = Bitmap.createBitmap(
-                    it,
-                    0,
-                    0,
-                    it.width,
-                    it.height,
-                    Matrix().apply { postRotate(270f) },
-                    true
-                )
-                val imageBitmap = rotatedBitmap.asImageBitmap()
+                val imageBitmap = it.asImageBitmap()
                 Image(
                     painter = BitmapPainter(imageBitmap),
                     contentDescription = "Imagen guardada",
@@ -105,3 +96,4 @@ fun ConfirmationScreen(authenticationController: AuthenticationController, userI
     }
 
 }
+

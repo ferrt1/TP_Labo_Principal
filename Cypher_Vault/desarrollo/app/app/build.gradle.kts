@@ -87,6 +87,14 @@ dependencies {
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
 
+    // TENSORFLOW-LITE
+
+    implementation("org.tensorflow:tensorflow-lite:0.0.0-nightly-SNAPSHOT")
+    implementation("org.tensorflow:tensorflow-lite-gpu:0.0.0-nightly-SNAPSHOT")
+    implementation("org.tensorflow:tensorflow-lite-support:0.0.0-nightly-SNAPSHOT")
+
+
+
     //RETROFIT
 
     implementation("com.squareup.retrofit2:retrofit:2.9.0")

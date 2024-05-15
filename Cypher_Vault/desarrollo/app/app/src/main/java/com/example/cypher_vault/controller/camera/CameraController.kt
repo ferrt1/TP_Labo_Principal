@@ -3,6 +3,7 @@ package com.example.cypher_vault.controller.camera
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.graphics.Matrix
 import android.graphics.Rect
 import android.util.Log
 import androidx.camera.core.ImageCapture
@@ -64,23 +65,25 @@ class CameraController(
                 // Convierte los bytes de la imagen en un Bitmap
                 val imgBitmap = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.size)
 
+                val rotatedBitmap = rotateBitmap(imgBitmap, -90f)
+
                 // Calcula las coordenadas del targetBox en las coordenadas de la imagen
                 val targetBoxInImageCoordinates = Rect(
-                    faceOverlayView.targetBox!!.left * imgBitmap.width / faceOverlayView.width,
-                    faceOverlayView.targetBox!!.top * imgBitmap.height / faceOverlayView.height,
-                    faceOverlayView.targetBox!!.right * imgBitmap.width / faceOverlayView.width,
-                    faceOverlayView.targetBox!!.bottom * imgBitmap.height / faceOverlayView.height
+                    faceOverlayView.targetBox!!.left * rotatedBitmap.width / faceOverlayView.width,
+                    faceOverlayView.targetBox!!.top * rotatedBitmap.height / faceOverlayView.height,
+                    faceOverlayView.targetBox!!.right * rotatedBitmap.width / faceOverlayView.width,
+                    faceOverlayView.targetBox!!.bottom * rotatedBitmap.height / faceOverlayView.height
                 )
 
                 // Recorta el Bitmap para que tenga el mismo tamaño que el targetBox
-                val croppedBitmap = Bitmap.createBitmap(imgBitmap, targetBoxInImageCoordinates.left,
+                val croppedBitmap = Bitmap.createBitmap(rotatedBitmap, targetBoxInImageCoordinates.left,
                     targetBoxInImageCoordinates.top, targetBoxInImageCoordinates.width(), targetBoxInImageCoordinates.height())
 
                 val newWidth = croppedBitmap.width / 3
                 val newHeight = croppedBitmap.height / 3
 
                 // Crea un nuevo Bitmap con la mitad del tamaño original
-                val resizedBitmap = Bitmap.createScaledBitmap(croppedBitmap, newWidth, newHeight, false)
+                val resizedBitmap = Bitmap.createScaledBitmap(croppedBitmap, 112, 112, false)
 
 
                 // Convierte el Bitmap recortado de nuevo a un array de bytes
@@ -107,12 +110,12 @@ class CameraController(
     }
 
     fun captureImageLogin(context: Context,
-                             imageCapture: ImageCapture,
-                             cameraProvider: ProcessCameraProvider,
-                             state: MutableState<Boolean>,
-                             coroutineScope: CoroutineScope,
-                             authenticationController: AuthenticationController,
-                             faceOverlayView: FaceOverlayView
+                          imageCapture: ImageCapture,
+                          cameraProvider: ProcessCameraProvider,
+                          state: MutableState<Boolean>,
+                          coroutineScope: CoroutineScope,
+                          authenticationController: AuthenticationController,
+                          faceOverlayView: FaceOverlayView
     ) {
         Log.d("Imagen", "entra aca")
         val tempFile = File.createTempFile("tempImage", ".jpg", context.cacheDir)
@@ -124,23 +127,23 @@ class CameraController(
                 // Convierte los bytes de la imagen en un Bitmap
                 val imgBitmap = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.size)
 
+                val rotatedBitmap = rotateBitmap(imgBitmap, -90f)
+
                 // Calcula las coordenadas del targetBox en las coordenadas de la imagen
                 val targetBoxInImageCoordinates = Rect(
-                    faceOverlayView.targetBox!!.left * imgBitmap.width / faceOverlayView.width,
-                    faceOverlayView.targetBox!!.top * imgBitmap.height / faceOverlayView.height,
-                    faceOverlayView.targetBox!!.right * imgBitmap.width / faceOverlayView.width,
-                    faceOverlayView.targetBox!!.bottom * imgBitmap.height / faceOverlayView.height
+                    faceOverlayView.targetBox!!.left * rotatedBitmap.width / faceOverlayView.width,
+                    faceOverlayView.targetBox!!.top * rotatedBitmap.height / faceOverlayView.height,
+                    faceOverlayView.targetBox!!.right * rotatedBitmap.width / faceOverlayView.width,
+                    faceOverlayView.targetBox!!.bottom * rotatedBitmap.height / faceOverlayView.height
                 )
 
                 // Recorta el Bitmap para que tenga el mismo tamaño que el targetBox
-                val croppedBitmap = Bitmap.createBitmap(imgBitmap, targetBoxInImageCoordinates.left,
+                val croppedBitmap = Bitmap.createBitmap(rotatedBitmap, targetBoxInImageCoordinates.left,
                     targetBoxInImageCoordinates.top, targetBoxInImageCoordinates.width(), targetBoxInImageCoordinates.height())
 
-                val newWidth = croppedBitmap.width / 3
-                val newHeight = croppedBitmap.height / 3
 
                 // Crea un nuevo Bitmap con la mitad del tamaño original
-                val resizedBitmap = Bitmap.createScaledBitmap(croppedBitmap, newWidth, newHeight, false)
+                val resizedBitmap = Bitmap.createScaledBitmap(croppedBitmap, 112, 112, false)
 
 
                 // Convierte el Bitmap recortado de nuevo a un array de bytes
@@ -166,8 +169,12 @@ class CameraController(
         })
     }
 
-    fun captureImageRegister() {
-        // ... implementación ...
+    fun rotateBitmap(source: Bitmap, angle: Float): Bitmap {
+        val matrix = Matrix()
+        matrix.postRotate(angle)
+        return Bitmap.createBitmap(source, 0, 0, source.width, source.height, matrix, true)
     }
+
+
 
 }
