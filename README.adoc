@@ -1198,6 +1198,89 @@ result = face_recognition.compare_faces([face_image1_encodings], face_image2_enc
 return jsonify({"result": bool(result[0])})
 ----
 
+=== API Versión 2
+
+Esta API proporciona un servicio para comparar dos caras en imágenes diferentes. Utiliza la biblioteca facenet_pytorch y cv2 para la detección y comparación de caras.
+
+* *Librerias utilizadas:*
+** *Numpy*: 
+*** Es una biblioteca que da soporte para crear vectores y matrices grandes multidimensionales, junto con una gran colección de funciones matemáticas de alto nivel ya que permite trabajar con datos numéricos de manera eficiente. 
+** *cv2:*
+*** Es una biblioteca de OpenCV para Python que proporciona funciones y algoritmos para el procesamiento de imágenes y vídeo. 
+** *facenet_pytorch:* 
+*** Es una biblioteca que proporciona una implementación de FaceNet, un sistema de reconocimiento facial que utiliza una red neuronal para extraer características útiles de las imágenes de los rostros.
+
+*ENDPOINT* 
+
+[source, python]
+----
+@app.route('/compare_faces', methods=['POST'])
+def compare_faces():
+    image1 = np.frombuffer(request.files['image1'].read(), np.uint8)
+    image2 = np.frombuffer(request.files['image2'].read(), np.uint8)
+----
+
+*POST /compare_faces*
+
+Toma dos imágenes en formato binario como parámetro
+
+
+[source, python]
+----
+embedding1 = get_embedding(resizedImage1)
+embedding2 = get_embedding(resizedImage2)
+----
+Se llama a la función get_embedding para guardar la codificación del rostro en una variable.
+
+[source, python]
+----
+def get_embedding(img):
+        # Detectar rostros
+    faces = face_cascade.detectMultiScale(img, 1.1, 4)
+    # Para cada rostro detectado, extraer las características con FaceNet
+    for (x, y, w, h) in faces:
+        face = img[y:y+h, x:x+w]
+        face = cv2.resize(face, (160, 160))
+        face = Image.fromarray(face)
+        face = np.array(face)  # Convertir la imagen a un array de NumPy
+        face = torch.unsqueeze(torch.tensor(face), 0)
+        embedding = model(face.permute(0, 3, 1, 2).float())
+            
+        return embedding
+----
+
+Se utiliza esta función para detectar los rostros y obtener las características.
+
+<1> *Se detecta el rostro*:
+*  Se utiliza un clasificador de cascada Haar pre-entrenado (en este caso, ‘haarcascade_frontalface_default.xml’ de OpenCV) para detectar rostros en la imagen.
+<2> *Extraer las características del rostro.:*
+* Una vez se detecta el rostro se extrae de la imagen. Luego, se redimensiona la imagen del rostro a un tamaño fijo (en este caso, 160x160 píxeles).
+<3> *Codificación del rostro:*
+* La imagen del rostro se pasa a través del modelo FaceNet pre-entrenado para obtener una representación numérica, o “incrustación”, del rostro. Esta incrustación es un vector de 512 dimensiones12 que captura las características únicas del rostro.
+<4> *Se devuelve para compararlos*
+
+
+Por último se comparan las distancias y se devuelve la respuesta.
+[source, python]
+---- 
+    distance = torch.dist(embedding1, embedding2)
+    print(distance)
+    # Si la distancia es menor a un cierto umbral, entonces los rostros son el mismo
+    if distance < 0.36:
+        return jsonify({"result": True})
+    else:
+        return jsonify({"result": False})\
+----
+
+<1> *Cálculo de la distancia:*
+* La línea distance = torch.dist(embedding1, embedding2) está calculando la distancia entre las dos "incrustaciones" (mencionadas anteriormente) de rostros. La función torch.dist calcula la distancia euclidiana entre estos dos vectores, que es una medida de cuán diferentes son las dos caras.
+
+<2> *Comparación de la distancia con un umbral:*
+* La distancia calculada se compara con un umbral predefinido de 0.36. Este umbral es un valor que se ha elegido para determinar si dos caras son la misma persona. Si la distancia es menor a 0.36, entonces se considera que las caras son de la misma persona.
+
+<3> *Devolución del resultado a la aplicación*
+
+
 == Mejora de interfaz
 
 === Cambio de tipo de letra
