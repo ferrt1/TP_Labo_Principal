@@ -66,6 +66,8 @@ import com.example.cypher_vault.controller.authentication.AuthenticationControll
 import com.example.cypher_vault.view.resources.CustomTitle
 
 import com.example.cypher_vault.controller.messages.*
+import com.example.cypher_vault.model.message.validatePasswordCharacters
+import com.example.cypher_vault.model.message.validatePasswordSpecialcharacters
 import com.example.cypher_vault.view.resources.*
 
 
@@ -240,7 +242,7 @@ fun InitialScreen(authenticationController: AuthenticationController) {
                     nameState.value = it
                 },
                 textStyle = TextStyle(
-                    color = if (getvalidateNameNumbers(nameState.value.text) || getvalidateNameMax(nameState.value.text) || getvalidateNameSpacesAndLineBreaks(nameState.value.text)) redColor else firstColor,
+                    color = if (getvalidateNameNumbers(nameState.value.text) || getvalidateNamedSpecialcharacters(nameState.value.text) || getvalidateNameMax(nameState.value.text) || getvalidateNameSpacesAndLineBreaks(nameState.value.text)) redColor else firstColor,
                     fontSize = 16.sp,
                     fontFamily = fontFamily,
                     fontWeight = FontWeight.Bold
@@ -296,7 +298,7 @@ fun InitialScreen(authenticationController: AuthenticationController) {
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
                         Row(verticalAlignment = Alignment.CenterVertically) {
-                            (if (getvalidateNameNumbers(nameState.value.text) || getvalidateNameSpacesAndLineBreaks(nameState.value.text)) {
+                            (if (getvalidateNameNumbers(nameState.value.text) || getvalidateNamedSpecialcharacters(nameState.value.text) || getvalidateNameSpacesAndLineBreaks(nameState.value.text)) {
                                 R.drawable.icoerror
                             } else if (!getvalidateName(nameState.value.text)) {
 
@@ -363,7 +365,7 @@ fun InitialScreen(authenticationController: AuthenticationController) {
                     },
                     placeholder = {
                         Text(
-                            "16 caracteres y 1 espacial",
+                            "16 caracteres alfanumerico y 1 caracter espacial",
                             style = TextStyle(
                                 color = Color.Gray,
                                 fontSize = 16.sp,
@@ -414,7 +416,7 @@ fun InitialScreen(authenticationController: AuthenticationController) {
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
                         Row(verticalAlignment = Alignment.CenterVertically) {
-                            if (!getvalidatePasswordLength(passwordState.value.text) || !getvalidatePasswordLengthMax(passwordState.value.text)) {
+                            if (!getvalidatePasswordCharacters(passwordState.value.text)|| !getvalidatePasswordsSecialcharacters(passwordState.value.text)||!getvalidatePasswordLength(passwordState.value.text) || !getvalidatePasswordLengthMax(passwordState.value.text)) {
                                 Image(
                                     painter = painterResource(id = R.drawable.iconwarning),
                                     contentDescription = "",
