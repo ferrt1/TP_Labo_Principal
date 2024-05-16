@@ -17,7 +17,9 @@ import kotlinx.coroutines.withContext
     }
 
     fun validateMail(email: String): Boolean {
-        return android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()
+        val emailRegex =  "^[_a-z0-9-]+(.[_a-z0-9-]+)*@[a-z0-9-]+(.[a-z0-9-]+)*(.[a-z]{2,4})\$".toRegex()
+        val isValid = emailRegex.matches(email)
+        return isValid
     }
 
     fun isEmailRegistered(email: String): Boolean {
@@ -93,8 +95,7 @@ import kotlinx.coroutines.withContext
 //---------FUNCIONES EN DONDE SE ENVIA EL MENSAJE DEL ERROR O ACLARACION, SON FUNCIONES CON STRING----------//
 
     private fun nameLettersOnlyMesseger(): String{
-        return "El nombre debe contener caracteres alfabéticos únicamente"
-    }
+        return "El nombre debe contener caracteres alfabéticos únicamente" }
     private fun mailMesserger(): String{
         return "El email debe ser válido"
     }
