@@ -202,8 +202,7 @@ fun InitialScreen(authenticationController: AuthenticationController) {
                         Row(verticalAlignment = Alignment.CenterVertically) {
                             (if (getvalidateNameSpacesAndLineBreaks(emailState.value.text)) {
                                 R.drawable.icoerror
-                            } else if (!getvalidateMail(emailState.value.text)) {
-
+                            } else if (!getvalidateMail(emailState.value.text) || !getEmailInDatabase(emailState.value.text)) {
                                 R.drawable.iconwarning
                             } else {
                                 null
@@ -281,10 +280,8 @@ fun InitialScreen(authenticationController: AuthenticationController) {
                     .border(BorderStroke(3.dp, firstColor), shape = RoundedCornerShape(4.dp),)
                     .onFocusChanged { focusState ->
                         if (focusState.isFocused) {
-                            // El campo de entrada de texto tiene el foco
                             isContentVisiblename = true
                         } else {
-                            // El campo de entrada de texto perdió el foco
                             isContentVisiblename = false
                         }
                     }
@@ -334,7 +331,7 @@ fun InitialScreen(authenticationController: AuthenticationController) {
 
             Row(
                 modifier = Modifier
-                    .width(290.dp) // Establece un ancho fijo para el TextField
+                    .width(290.dp)
                     .padding(top = 15.dp)
                     .border(
                         BorderStroke(3.dp, firstColor),
@@ -398,10 +395,8 @@ fun InitialScreen(authenticationController: AuthenticationController) {
                     modifier = Modifier.weight(1f)
                         .onFocusChanged { focusState ->
                             if (focusState.isFocused) {
-                                // El campo de entrada de texto tiene el foco
                                 isContentVisiblpasswordState = true
                             } else {
-                                // El campo de entrada de texto perdió el foco
                                 isContentVisiblpasswordState = false
                             }
                         }
@@ -481,8 +476,8 @@ fun InitialScreen(authenticationController: AuthenticationController) {
                         text = errorMessage.value,
                         fontFamily = fontFamily,
                         fontWeight = FontWeight.Bold,
-                        color = redColor, // Asignar el color determinado al texto
-                        modifier = Modifier.padding(start = 8.dp) // Añadir un espacio entre la imagen y el texto
+                        color = redColor,
+                        modifier = Modifier.padding(start = 8.dp)
                     )
                 }
             }

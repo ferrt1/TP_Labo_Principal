@@ -191,7 +191,7 @@ fun LoginCamera(authenticationController: AuthenticationController, userId: Stri
         contentAlignment = Alignment.BottomCenter
     ) {
         if (isCameraOpen.value) {
-            com.example.cypher_vault.view.registration.CameraPreview(preview)
+            CameraPreview(preview)
             AndroidView( {faceOverlayView} )
 
             when (currentOrientation.value) {

@@ -276,7 +276,7 @@ fun NavigationLogin(authenticationController: AuthenticationController) {
                 TextField(
                     value = enteredPassword,
                     onValueChange = {
-                        if (it.length <= 16) {
+                        if (it.length <= 32) {
                             enteredPassword = it
                         }
                     },
@@ -346,7 +346,7 @@ fun NavigationLogin(authenticationController: AuthenticationController) {
                     border = BorderStroke(3.dp, Color.Gray),
                     colors = ButtonDefaults.buttonColors(
                         containerColor = Color.Transparent,
-                        contentColor = Color.Gray
+                        contentColor = thirdColor
                     ),
                     modifier = Modifier
                         .fillMaxWidth()
@@ -357,7 +357,7 @@ fun NavigationLogin(authenticationController: AuthenticationController) {
                     Text(
                         "Aceptar",
                         fontFamily = fontFamily,
-                        color = Color.Gray,
+                        color = thirdColor,
                         fontWeight = FontWeight.Bold
                     )
                 }

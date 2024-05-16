@@ -79,6 +79,10 @@ fun getvalidateMail(email: String): Boolean{
     return validateMail(email)
 }
 
+fun getEmailInDatabase(email: String): Boolean{
+    return validateEmailNotRegistered(email)
+}
+
 fun getvalidateNamedSpecialcharacters(name: String): Boolean{
     return validateNamedSpecialcharacters(name)
 }

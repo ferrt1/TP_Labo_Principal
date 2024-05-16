@@ -1,6 +1,12 @@
 package com.example.cypher_vault.model.message
 import android.util.Log
-
+import com.example.cypher_vault.model.dbmanager.DatabaseManager
+import com.example.cypher_vault.model.dbmanager.DatabaseManager.getAllUsers
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withContext
 
 //-----------FUNCIONES EN DONDE SE VALIDA LOS CAMPOS DE REGISTRO, SON FUNCIONES BOOLEANAS-----------------------//
 
@@ -12,6 +18,26 @@ import android.util.Log
 
     fun validateMail(email: String): Boolean {
         return android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()
+    }
+
+    fun isEmailRegistered(email: String): Boolean {
+        var result = false
+        runBlocking {
+            launch(Dispatchers.IO) {
+                val users = getAllUsers()
+                for (user in users) {
+                    if (user.email == email) {
+                        result = true
+                        break
+                    }
+                }
+            }
+        }
+        return result
+    }
+
+    fun validateEmailNotRegistered(email: String): Boolean {
+        return !isEmailRegistered(email)
     }
 
     fun validateNameNumbers(name: String): Boolean {
@@ -41,18 +67,16 @@ import android.util.Log
        return alphanumericOnly.length >= 1
    }
 
-fun validateNamedSpecialcharacters(name: String): Boolean {
-    val alphanumericOnly = name.filter {!it.isLetterOrDigit() }
-    return alphanumericOnly.length >= 1
-}
+    fun validateNamedSpecialcharacters(name: String): Boolean {
+        val alphanumericOnly = name.filter {!it.isLetterOrDigit() }
+        return alphanumericOnly.length >= 1
+    }
 
 
-
-
-fun validatePasswordCharacters(password: String): Boolean {
-    val alphanumericOnly = password.filter { it.isLetterOrDigit() }
-    return alphanumericOnly.length >= 15
-}
+    fun validatePasswordCharacters(password: String): Boolean {
+        val alphanumericOnly = password.filter { it.isLetterOrDigit() }
+        return alphanumericOnly.length >= 15
+    }
 
 
     fun validatePasswordLength(password: String): Boolean {
@@ -74,6 +98,11 @@ fun validatePasswordCharacters(password: String): Boolean {
     private fun mailMesserger(): String{
         return "El email debe ser válido"
     }
+
+    private fun emailRegisteredMesseger(): String{
+        return "El email ya está registrado"
+    }
+
     private fun nameNumbersMesseger(): String{
         return "El nombre no puede tener números"
     }
@@ -117,9 +146,9 @@ private fun validatepasswordspecialcharacters(): String{
 
 
 //esta funcion se encarga verificar si todos los datos que ingreso el usuario son valido y luego lo devuelve al controllador (true o false)
-// si es valido se alamacena en la base de datos
+// si es valido se almacena en la base de datos
     fun validate(email: String, name: String, pin: String): Boolean {
-        return (validateNameLettersOnly(name) && !validateNamedSpecialcharacters(name) && !validateNameSpacesAndLineBreaks(name) && validateMail(email) && !validateNameNumbers(name) && validateName(name)
+        return (validateEmailNotRegistered(email) && validateNameLettersOnly(name) && !validateNamedSpecialcharacters(name) && !validateNameSpacesAndLineBreaks(name) && validateMail(email) && !validateNameNumbers(name) && validateName(name)
                 && validatePasswordCharacters(pin) && validatePasswordSpecialcharacters(pin) && validatePasswordLength(pin) && validatePasswordLengthMax(pin) && !validateFields(email, name))
     }
 
@@ -153,6 +182,8 @@ private fun validatepasswordspecialcharacters(): String{
             return emailLettersOnlyMessege()
         else if (!validateMail(email))
             return mailMesserger()
+        else if (!validateEmailNotRegistered(email))
+            return emailRegisteredMesseger()
         return null.toString()
     }
 
@@ -187,6 +218,8 @@ private fun validatepasswordspecialcharacters(): String{
             return nameLettersOnlyMesseger()
         else if(!validateMail(email))
             return mailMesserger()
+        else if (!validateEmailNotRegistered(email))
+            return emailRegisteredMesseger()
         else if(validateNameNumbers(name))
             return nameNumbersMesseger()
         else if(!validateName(name))
