@@ -748,7 +748,7 @@ image::Recursos/mejora_De_Interfaz/logo-de-la-app.JPG[]
 
 ==== Diseño
 
-* Para la vista general de la galeria se utiliza el elemento Scaffold
+* Para la vista general de la galeria se utiliza el elemento Scaffold:
 
 ** En Material Design, un andamiaje es una estructura fundamental que proporciona una plataforma estandarizada para interfaces de usuario complejas. Mantiene unidas diferentes partes de la IU, como las barras de la app y los botones de acción flotantes, lo que les da a las apps un aspecto coherente.
 
