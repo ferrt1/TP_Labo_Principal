@@ -742,6 +742,115 @@ image::Recursos/mejora_De_Interfaz/optimizacion-de-busqueda-de-usuario.JPG[]
 
 image::Recursos/mejora_De_Interfaz/logo-de-la-app.JPG[]
 
+=== Galeria de Imagenes
+
+*En esta interfaz se visualizan las imagenes privadas el usuario que ya se encuentran cifradas, en la misma el usuario puede agregar sus imagenes mediante un boton, aparte tiene acceso a su perfil en el cual puede visualizar sus datos personales y actualizar su contraseña.*
+
+==== Diseño
+
+* Para la vista general de la galeria se utiliza el elemento Scaffold:
+
+** En Material Design, un andamiaje es una estructura fundamental que proporciona una plataforma estandarizada para interfaces de usuario complejas. Mantiene unidas diferentes partes de la IU, como las barras de la app y los botones de acción flotantes, lo que les da a las apps un aspecto coherente.
+
+*** *topBar:* Es la barra de la app en la parte superior de la pantalla.
+*** *bottomBar:* Es la barra de la app que se muestra en la parte inferior de la pantalla.
+*** *floatingActionButton:* Es un botón que se desplaza sobre la esquina inferior derecha de la pantalla que puedes usar para exponer acciones clave.
+*** *Contenido Scaffold:* se agregan elementos como lo harías a otros contenedores. Pasa un valor de innerPadding a la expresión lambda content que puedes usar en los elementos componibles secundarios.
+
+.Ejemplo de codigo generico
+[source,kotlin]
+----
+@Composable
+fun ScaffoldExample() { 
+    var presses by remember { mutableIntStateOf(0) }
+
+    Scaffold( # <1>
+        topBar = { # <2>
+            TopAppBar(
+                colors = topAppBarColors(
+                    containerColor = MaterialTheme.colorScheme.primaryContainer,
+                    titleContentColor = MaterialTheme.colorScheme.primary,
+                ),
+                title = {
+                    Text("Top app bar")
+                }
+            )
+        },
+        bottomBar = { # <3>
+            BottomAppBar(
+                containerColor = MaterialTheme.colorScheme.primaryContainer,
+                contentColor = MaterialTheme.colorScheme.primary,
+            ) {
+                Text(
+                    modifier = Modifier
+                        .fillMaxWidth(),
+                    textAlign = TextAlign.Center,
+                    text = "Bottom app bar",
+                )
+            }
+        },
+        floatingActionButton = { # <4>
+            FloatingActionButton(onClick = { presses++ }) {
+                Icon(Icons.Default.Add, contentDescription = "Add")
+            }
+        }
+    ) { innerPadding -> # <5>
+        Column(
+            modifier = Modifier
+                .padding(innerPadding),
+            verticalArrangement = Arrangement.spacedBy(16.dp),
+        ) {
+            Text(
+                modifier = Modifier.padding(8.dp),
+                text =
+                """
+                    This is an example of a scaffold. It uses the Scaffold composable's parameters to create a screen with a simple top app bar, bottom app bar, and floating action button.
+
+                    It also contains some basic inner content, such as this text.
+
+                    You have pressed the floating action button $presses times.
+                """.trimIndent(),
+            )
+        }
+    }
+}
+----
+<1> Se declara el elemento contendor Scaffold
+<2> Se declara la barra principal superior
+<3> Se declara la barra inferior
+<4> Se declada un boton flotante
+<5> El contenido el cual puede tener elementos variados como textos, imagenes, etc.
+
+==== Implementacion 
+
+.Imagenes de la implementacion
+====
+
+image:Recursos/Pantallas-de-galeria.png[Imagen en galeria,700,700,align="center"]
+
+====
+* *Vista principal de la galeria:* 
+** boton atras
+** texto con el nombre del usuario
+** boton de pefil
+** boton para agregar imagenes
+
+* *Imagenes del disposivo:*
+** se seleccionan las imagenes a cargar dentro de la aplicacion
+
+* *Imagen en la aplicacion:*
+** visualizacion de la imagen seleccionada dentro de la aplicacion
+
+* *Dentro de la aplicacion:*
+
+** Para esta implementacion se creo una vista llamada Gallery dentro del paquete de vistas y en paralelo se implementa el controlador GalleryController:
+
+*** *Gallery:* dentro de la misma se encuentra toda la declaracion de los elementos visuales, con los cuales el usuario interactua.
+
+*** *GalleryController:* tiene los accesos a la base de datos, es decir, la vista no interactua con la base de datos directamente sino que pasa por el controlador. Tanto para la carga de imagenes al inicio de la galeria como cuando se almacenan nuevas imagenes 
+
+
+
 === Almacenamiento
 
 image::imagenAdoc/icondatabase.png[100,100]
