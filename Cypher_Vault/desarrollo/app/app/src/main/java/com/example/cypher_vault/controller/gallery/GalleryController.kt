@@ -1,9 +1,11 @@
 package com.example.cypher_vault.controller.gallery
 
 
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import com.example.cypher_vault.controller.income.UserAccessController
 import com.example.cypher_vault.database.Images
+import com.example.cypher_vault.database.UserIncome
 import com.example.cypher_vault.model.dbmanager.DatabaseManager
 import com.example.cypher_vault.model.income.UserAccessManager
 import kotlinx.coroutines.CoroutineScope
@@ -23,8 +25,8 @@ class GalleryController() {
         userAccessController.insertUserIncome(userId).await()
     }
 
-    suspend fun loadAllIncomes(userId: String): List<UserIncome> {
-        userAccessController.loadLastIncome(userId).await()
+    suspend fun loadAllIncomes(userId: String): MutableState<List<UserIncome>> {
+        userAccessController.loadLastIncome(userId)
         return userAccessController.userIncomes
     }
 

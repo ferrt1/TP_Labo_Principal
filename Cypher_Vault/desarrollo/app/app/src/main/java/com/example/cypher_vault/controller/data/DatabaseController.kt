@@ -76,27 +76,27 @@ class DatabaseController(){
         }
     }
 
-    suspend fun getLastIncome(): List<UserIncome?> {
+    suspend fun getLastIncome(userId: String): List<UserIncome?> {
         return withContext(Dispatchers.IO) {
-            DatabaseManager.getLastIncome()
+            DatabaseManager.getLastIncome(userId)
         }
     }
 
-    suspend fun hasIncomeOnDay(specificIncome: Long): Boolean {
+    suspend fun hasIncomeOnDay(userId: String, specificIncome: Long): Boolean {
         return withContext(Dispatchers.IO) {
-            DatabaseManager.hasIncomeOnDay(specificIncome) > 0
+            DatabaseManager.hasIncomeOnDay(userId,specificIncome) > 0
         }
     }
 
-    suspend fun getAllIncomes(): List<UserIncome?> {
+    suspend fun getAllIncomes(userId: String): List<UserIncome?> {
         return withContext(Dispatchers.IO) {
-            DatabaseManager.getAllIncomes()
+            DatabaseManager.getAllIncomes(userId)
         }
     }
 
-    suspend fun getLastTenIncomes(): List<UserIncome?> {
+    suspend fun getLastTenIncomes(userId: String): List<UserIncome?> {
         return withContext(Dispatchers.IO) {
-            DatabaseManager.getLastTenIncomes()
+            DatabaseManager.getLastTenIncomes(userId)
         }
     }
 }

@@ -2,6 +2,7 @@ package com.example.cypher_vault.view.navigation
 
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -60,6 +61,9 @@ fun NavigationHost() {
         composable("gallery/{userId}") {backStackEntry ->
             val userId = backStackEntry.arguments?.getString("userId")
             if (userId != null) {
+                LaunchedEffect(userId) {
+                    galleryController.performUserIncomeInsertion(userId)
+                }
                 Gallery(authenticationController, userId, galleryController)
             } else {
                 // Manejar el caso en que el userId no se pudo recuperar

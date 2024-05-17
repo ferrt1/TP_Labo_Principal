@@ -20,7 +20,7 @@ class UserAccessController(private val userAccessManager: UserAccessManager) {
         return insertUserIncomeAux(userIncome)
     }
 
-    private fun insertUserIncomeAux(userId: String, userIncome: UserIncome): Deferred<Unit> {
+    private fun insertUserIncomeAux(userIncome: UserIncome): Deferred<Unit> {
         return CoroutineScope(Dispatchers.IO).async {
             userAccessManager.insertUserIncome(userIncome)
         }

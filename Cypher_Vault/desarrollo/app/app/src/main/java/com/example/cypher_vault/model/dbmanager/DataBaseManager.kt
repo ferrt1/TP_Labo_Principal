@@ -84,7 +84,7 @@ object DatabaseManager {
     }
 
     suspend fun getLastIncome(userId: String): List<UserIncome?> {
-        return database.userIncomeDao().getLastIncome(userId: String)
+        return database.userIncomeDao().getLastIncome(userId)
     }
 
     suspend fun hasIncomeOnDay(userId: String,specificIncome: Long): Int {
