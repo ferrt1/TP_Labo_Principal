@@ -57,6 +57,7 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.app.ActivityCompat
@@ -220,12 +221,9 @@ fun InitialScreen(authenticationController: AuthenticationController) {
 
                             Spacer(modifier = Modifier.width(8.dp)) // Espacio entre la imagen y el texto
                             if (getfullemailfield(emailState.value.text) != "null") {
-                                Text(
-                                    getfullemailfield(emailState.value.text),
-                                    fontSize = 13.sp,
-                                    fontFamily = fontFamily,
-                                    color = thirdColor,
-                                    fontWeight = FontWeight.Bold
+                                LimitedTextBox(
+                                    text = getfullemailfield(emailState.value.text),
+                                    maxWidth = 250.dp // Ajusta este valor según tus necesidades
                                 )
                             }
                         }
@@ -316,12 +314,9 @@ fun InitialScreen(authenticationController: AuthenticationController) {
 
                             Spacer(modifier = Modifier.width(8.dp)) // Espacio entre la imagen y el texto
                             if (getfullnamefield(nameState.value.text) != "null") {
-                                Text(
-                                    getfullnamefield(nameState.value.text),
-                                    fontSize = 13.sp,
-                                    fontFamily = fontFamily,
-                                    color = thirdColor,
-                                    fontWeight = FontWeight.Bold
+                                LimitedTextBox(
+                                    text =  getfullnamefield(nameState.value.text),
+                                    maxWidth = 250.dp // Ajusta este valor según tus necesidades
                                 )
                             }
                         }
@@ -419,13 +414,10 @@ fun InitialScreen(authenticationController: AuthenticationController) {
                                 )
                             }
                             Spacer(modifier = Modifier.width(8.dp)) // Espacio entre la imagen y el texto
-                            if (getfullpasswordfield(passwordState.value.text) != "null") {
-                                Text(
-                                    getfullpasswordfield(passwordState.value.text),
-                                    fontSize = 13.sp,
-                                    fontFamily = fontFamily,
-                                    color =firstColor,
-                                    fontWeight = FontWeight.Bold
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                LimitedTextBox(
+                                    text = getfullpasswordfield(passwordState.value.text),
+                                    maxWidth = 250.dp // Ajusta este valor según tus necesidades
                                 )
                             }
                         }
@@ -471,13 +463,10 @@ fun InitialScreen(authenticationController: AuthenticationController) {
                             modifier = Modifier.size(24.dp)
                         )
                     }
-
-                    Text(
+                    Spacer(modifier = Modifier.width(8.dp)) // Espacio entre la imagen y el texto
+                    LimitedTextBoxError(
                         text = errorMessage.value,
-                        fontFamily = fontFamily,
-                        fontWeight = FontWeight.Bold,
-                        color = redColor,
-                        modifier = Modifier.padding(start = 8.dp)
+                        maxWidth = 250.dp // Ajusta este valor según tus necesidades
                     )
                 }
             }
@@ -519,4 +508,39 @@ fun Context.findAncestorActivity(): Activity? {
         context = context.baseContext
     }
     return null
+}
+
+@Composable
+fun LimitedTextBox(text: String, maxWidth: Dp) {
+    Box(
+        modifier = Modifier
+            .width(maxWidth)
+
+
+    ) {
+        Text(
+            text = text,
+            fontSize = 14.sp,
+            fontFamily = fontFamily,
+            color = thirdColor,
+            fontWeight = FontWeight.Bold
+        )
+    }
+}
+@Composable
+fun LimitedTextBoxError(text: String, maxWidth: Dp) {
+    Box(
+        modifier = Modifier
+            .width(maxWidth)
+
+
+    ) {
+        Text(
+            text = text,
+            fontSize = 14.sp,
+            fontFamily = fontFamily,
+            color = thirdColor,
+            fontWeight = FontWeight.Bold
+        )
+    }
 }

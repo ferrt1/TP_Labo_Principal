@@ -96,10 +96,11 @@ import kotlinx.coroutines.withContext
 
     private fun nameLettersOnlyMesseger(): String{
         return "El nombre debe contener únicamente caracteres alfabéticos." }
-    private fun mailMesserger(): String{
+
+
+private fun mailMesserger(): String{
         return "El correo electrónico debe ser válido."
     }
-
     private fun emailRegisteredMesseger(): String{
         return "El correo electrónico ya está registrado."
     }
@@ -113,22 +114,27 @@ import kotlinx.coroutines.withContext
     private fun nameMesseger(): String{
         return "El nombre debe tener más de 3 caracteres y menos de 50 caracteres."
     }
-    private fun fieldsMesseger(): String{
+
+private fun fieldsMesseger(): String{
         return "Por favor, rellena todos los campos correctamente."
     }
-    private fun passwordLengthMessger(): String{
-        return "La contraseña debe contener un mínimo de 16 caracteres y al menos 1 espacio."
+
+private fun passwordLengthMessger(): String{
+        return "La contraseña debe contener un mínimo de 15 caracteres alfanumerico y al menos 1 espacio."
     }
     private fun passwordCharactersMesseger(): String{
         return  "La contraseña debe contener al menos un carácter especial"
     }
 
+
     private fun passwordLengthMaxMessger(): String{
         return "La contraseña no debe exceder los 32 caracteres."
     }
+
 private fun validateNamedSpecialcharactersMesseger():String{
     return "No se admite caracteres especiales o espacios"
 }
+
 
 
     private fun emailLettersOnlyMessege(): String{
