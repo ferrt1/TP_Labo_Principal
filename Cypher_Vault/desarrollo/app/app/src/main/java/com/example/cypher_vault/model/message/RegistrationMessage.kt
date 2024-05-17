@@ -59,8 +59,8 @@ import kotlinx.coroutines.withContext
     }
 
 
-    fun validateFields(email: String, name: String): Boolean{
-        return name.isEmpty() || email.isEmpty()
+    fun validateFields(email: String, name: String , password: String): Boolean{
+        return name.isEmpty() || email.isEmpty() || password.isEmpty()
     }
 
 
@@ -68,6 +68,13 @@ import kotlinx.coroutines.withContext
        val alphanumericOnly = password.filter {!it.isLetterOrDigit() }
        return alphanumericOnly.length >= 1
    }
+
+
+fun validatePasswordSpacioCharacters(password: String): Boolean {
+    // Verifica si hay al menos un espacio en la contraseña
+    return password.contains(' ')
+}
+
 
     fun validateNamedSpecialcharacters(name: String): Boolean {
         val alphanumericOnly = name.filter {!it.isLetterOrDigit() }
@@ -148,15 +155,20 @@ private fun validatepasswordspecialcharacters(): String{
     return "A tu contraseña le faltan caracteres alfanuméricos"
 }
 
+private fun validatePasswordSpacioCharacters(): String{
+    return "No se permite el espacio como caracter especial"
+}
 
 //--------------------------------------------------------------------------------------------------//
 
 
 //esta funcion se encarga verificar si todos los datos que ingreso el usuario son valido y luego lo devuelve al controllador (true o false)
 // si es valido se almacena en la base de datos
-    fun validate(email: String, name: String, pin: String): Boolean {
-        return (validateEmailNotRegistered(email) && validateNameLettersOnly(name) && !validateNamedSpecialcharacters(name) && !validateNameSpacesAndLineBreaks(name) && validateMail(email) && !validateNameNumbers(name) && validateName(name)
-                && validatePasswordCharacters(pin) && validatePasswordSpecialcharacters(pin) && validatePasswordLength(pin) && validatePasswordLengthMax(pin) && !validateFields(email, name))
+    fun validate(email: String, name: String, password: String): Boolean {
+        return (validateEmailNotRegistered(email) && validateNameLettersOnly(name) && !validateNamedSpecialcharacters(name) &&
+                !validateNameSpacesAndLineBreaks(name) && validateMail(email) && !validateNameNumbers(name) && validateName(name)
+                && validatePasswordCharacters(password) && validatePasswordSpecialcharacters(password) && validatePasswordLength(password) &&
+                validatePasswordLengthMax(password) && !validateFields(email, name, password) && !validatePasswordSpacioCharacters(password))
     }
 
 
@@ -197,7 +209,9 @@ private fun validatepasswordspecialcharacters(): String{
 
 //toda la condiciones del campo de contraseña (si es mayor que 16 caracteres, si es menor que 32 caracteres)
     fun fullpassword(password: String): String{
-        if(!validatePasswordLength(password))
+         if(validatePasswordSpacioCharacters(password))
+           return validatePasswordSpacioCharacters()
+        else if(!validatePasswordLength(password))
             return passwordLengthMessger()
         else if(!validatePasswordLengthMax(password))
             return passwordLengthMaxMessger()
@@ -215,7 +229,7 @@ private fun validatepasswordspecialcharacters(): String{
 
 //Esta funciom se encargar de asignar el mensaje correspondiente al error, (zocalo de mensaje que esta abajo del boton de REGISTRARSE)
     fun errorMessage(email: String, name: String, password: String): String {
-        if(validateFields(email, name))
+        if(validateFields(email, name, password))
             return fieldsMesseger()
         else if(validateNameSpacesAndLineBreaks(name))
             return nameSpacesAndLineBreaksMesseger()
@@ -231,6 +245,8 @@ private fun validatepasswordspecialcharacters(): String{
             return nameNumbersMesseger()
         else if(!validateName(name))
             return nameMesseger()
+        else if(validatePasswordSpacioCharacters(password))
+            return validatePasswordSpacioCharacters()
         else if(validatePasswordCharacters(password))
             return passwordCharactersMesseger()
         else if(!validatePasswordSpecialcharacters(password))
@@ -239,6 +255,7 @@ private fun validatepasswordspecialcharacters(): String{
             return passwordLengthMessger()
         else if(!validatePasswordLengthMax(password))
             return passwordLengthMaxMessger()
+
         return ""
     }
 //------------------------------------------------------------------------------------------------//

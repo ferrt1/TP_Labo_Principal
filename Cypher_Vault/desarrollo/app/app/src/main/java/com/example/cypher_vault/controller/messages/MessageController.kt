@@ -95,4 +95,8 @@ fun getvalidatePasswordCharacters(password: String):Boolean{
     return validatePasswordCharacters(password)
 }
 
+fun getvalidatePasswordSpecialCharacters(password: String): Boolean{
+    return validatePasswordSpacioCharacters(password)
+}
+
 //-------------------------------------------------------------------------------------------------//

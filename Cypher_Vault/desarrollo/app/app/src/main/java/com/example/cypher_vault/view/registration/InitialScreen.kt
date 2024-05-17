@@ -341,7 +341,7 @@ fun InitialScreen(authenticationController: AuthenticationController) {
 
                     },
                     textStyle = TextStyle(
-                        color = if(!getvalidatePasswordLengthMax(passwordState.value.text)) redColor else firstColor,
+                        color = if(!getvalidatePasswordLengthMax(passwordState.value.text) || getvalidatePasswordSpecialCharacters(passwordState.value.text)) redColor else firstColor,
                         fontSize = 16.sp,
                         fontFamily = fontFamily,
                         fontWeight = FontWeight.Bold
@@ -399,6 +399,9 @@ fun InitialScreen(authenticationController: AuthenticationController) {
 
             }
 
+
+
+
             if (isContentVisiblpasswordState) {
                 if (getfullpasswordfield(passwordState.value.text) != "") {
                     Column(
@@ -406,19 +409,34 @@ fun InitialScreen(authenticationController: AuthenticationController) {
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
                         Row(verticalAlignment = Alignment.CenterVertically) {
-                            if (!getvalidatePasswordCharacters(passwordState.value.text)|| !getvalidatePasswordsSecialcharacters(passwordState.value.text)||!getvalidatePasswordLength(passwordState.value.text) || !getvalidatePasswordLengthMax(passwordState.value.text)) {
-                                Image(
-                                    painter = painterResource(id = R.drawable.iconwarning),
-                                    contentDescription = "",
-                                    modifier = Modifier.size(24.dp)
-                                )
-                            }
+                            (if (!getvalidatePasswordCharacters(passwordState.value.text)|| !getvalidatePasswordsSecialcharacters(passwordState.value.text)
+                                ||!getvalidatePasswordLength(passwordState.value.text)
+                                || !getvalidatePasswordLengthMax(passwordState.value.text)) {
+                                R.drawable.iconwarning
+                            } else if (getvalidatePasswordSpecialCharacters(passwordState.value.text)) {
+                              R.drawable.icoerror
+                            } else {
+                                null
+                            })?.let {
+                            painterResource(
+                                id = it
+                            )
+                        }?.let {
+                            Image(
+                                painter = it,
+                                contentDescription = "",
+                                modifier = Modifier.size(24.dp)
+                            )
+                        }
+
                             Spacer(modifier = Modifier.width(8.dp)) // Espacio entre la imagen y el texto
                             Row(verticalAlignment = Alignment.CenterVertically) {
-                                LimitedTextBox(
-                                    text = getfullpasswordfield(passwordState.value.text),
-                                    maxWidth = 250.dp // Ajusta este valor según tus necesidades
-                                )
+                                if (getfullpasswordfield(passwordState.value.text) != "null") {
+                                    LimitedTextBox(
+                                        text = getfullpasswordfield(passwordState.value.text),
+                                        maxWidth = 250.dp // Ajusta este valor según tus necesidades
+                                    )
+                                }
                             }
                         }
                     }
