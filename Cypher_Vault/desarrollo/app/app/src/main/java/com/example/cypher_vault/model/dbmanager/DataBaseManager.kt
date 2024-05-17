@@ -8,6 +8,7 @@ import com.example.cypher_vault.database.Images
 import com.example.cypher_vault.database.ImagesLogin
 import com.example.cypher_vault.database.ImagesRegister
 import com.example.cypher_vault.database.User
+import com.example.cypher_vault.database.UserIncome
 
 
 object DatabaseManager {
@@ -76,6 +77,26 @@ object DatabaseManager {
     fun getLastImageLoginForUser(user_id: String): ImagesLogin? {
         val imagesLogin = database.imageLoginDao().getImagesForUser(user_id)
         return imagesLogin.lastOrNull()
+    }
+
+    suspend fun insertIncome(userIncome: UserIncome) {
+        database.userIncomeDao().insertIncome(userIncome)
+    }
+
+    suspend fun getLastIncome(): List<UserIncome?> {
+        return database.userIncomeDao().getLastIncome()
+    }
+
+    suspend fun hasIncomeOnDay(specificIncome: Long): Int {
+        return database.userIncomeDao().hasIncomeOnDay(specificIncome)
+    }
+
+    suspend fun getAllIncomes(): List<UserIncome?> {
+        return database.userIncomeDao().getAllIncomes()
+    }
+
+    suspend fun getLastTenIncomes(): List<UserIncome?> {
+        return database.userIncomeDao().getLastTenIncomes()
     }
 
 

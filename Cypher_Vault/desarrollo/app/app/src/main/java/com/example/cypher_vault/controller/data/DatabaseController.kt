@@ -3,6 +3,7 @@ package com.example.cypher_vault.controller.data
 import com.example.cypher_vault.database.ImagesLogin
 import com.example.cypher_vault.database.ImagesRegister
 import com.example.cypher_vault.database.User
+import com.example.cypher_vault.database.UserIncome
 import com.example.cypher_vault.model.dbmanager.DatabaseManager
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Deferred
@@ -14,7 +15,6 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 class DatabaseController(){
-
 
     suspend fun getUserById(userId: String): User? {
         return withContext(Dispatchers.IO) {
@@ -68,5 +68,35 @@ class DatabaseController(){
             }
         }
         return imageLogin
+    }
+
+    suspend fun insertIncome(userIncome: UserIncome) {
+        withContext(Dispatchers.IO) {
+            DatabaseManager.insertIncome(userIncome)
+        }
+    }
+
+    suspend fun getLastIncome(): List<UserIncome?> {
+        return withContext(Dispatchers.IO) {
+            DatabaseManager.getLastIncome()
+        }
+    }
+
+    suspend fun hasIncomeOnDay(specificIncome: Long): Boolean {
+        return withContext(Dispatchers.IO) {
+            DatabaseManager.hasIncomeOnDay(specificIncome) > 0
+        }
+    }
+
+    suspend fun getAllIncomes(): List<UserIncome?> {
+        return withContext(Dispatchers.IO) {
+            DatabaseManager.getAllIncomes()
+        }
+    }
+
+    suspend fun getLastTenIncomes(): List<UserIncome?> {
+        return withContext(Dispatchers.IO) {
+            DatabaseManager.getLastTenIncomes()
+        }
     }
 }
