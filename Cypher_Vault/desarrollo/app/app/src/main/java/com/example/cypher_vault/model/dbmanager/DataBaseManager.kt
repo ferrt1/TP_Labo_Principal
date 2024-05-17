@@ -83,20 +83,20 @@ object DatabaseManager {
         database.userIncomeDao().insertIncome(userIncome)
     }
 
-    suspend fun getLastIncome(): List<UserIncome?> {
-        return database.userIncomeDao().getLastIncome()
+    suspend fun getLastIncome(userId: String): List<UserIncome?> {
+        return database.userIncomeDao().getLastIncome(userId: String)
     }
 
-    suspend fun hasIncomeOnDay(specificIncome: Long): Int {
-        return database.userIncomeDao().hasIncomeOnDay(specificIncome)
+    suspend fun hasIncomeOnDay(userId: String,specificIncome: Long): Int {
+        return database.userIncomeDao().hasIncomeOnDay(userId,specificIncome)
     }
 
-    suspend fun getAllIncomes(): List<UserIncome?> {
-        return database.userIncomeDao().getAllIncomes()
+    suspend fun getAllIncomes(userId: String): List<UserIncome?> {
+        return database.userIncomeDao().getAllIncomes(userId)
     }
 
-    suspend fun getLastTenIncomes(): List<UserIncome?> {
-        return database.userIncomeDao().getLastTenIncomes()
+    suspend fun getLastTenIncomes(userId: String): List<UserIncome?> {
+        return database.userIncomeDao().getLastTenIncomes(userId)
     }
 
 
