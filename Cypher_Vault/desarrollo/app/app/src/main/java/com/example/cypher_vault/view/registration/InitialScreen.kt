@@ -146,7 +146,7 @@ fun InitialScreen(authenticationController: AuthenticationController) {
                 ),
                 placeholder = {
                     Text(
-                        "ingrese un correo valido",
+                        "Ingrese un correo válido",
                         style = TextStyle(
                             color = Color.Gray,
                             fontSize = 16.sp,
@@ -248,7 +248,7 @@ fun InitialScreen(authenticationController: AuthenticationController) {
                 ),
                 placeholder = {
                     Text(
-                        "Minimo 3 Letras",
+                        "Mínimo 3 letras",
                         style = TextStyle(
                             color = Color.Gray,
                             fontSize = 16.sp,
@@ -362,7 +362,7 @@ fun InitialScreen(authenticationController: AuthenticationController) {
                     },
                     placeholder = {
                         Text(
-                            "16 caracteres alfanumerico y 1 caracter espacial",
+                            "15 caracteres alfanuméricos y 1 carácter especial.",
                             style = TextStyle(
                                 color = Color.Gray,
                                 fontSize = 16.sp,

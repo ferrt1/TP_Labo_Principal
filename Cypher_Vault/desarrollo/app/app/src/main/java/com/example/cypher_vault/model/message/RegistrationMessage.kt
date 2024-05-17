@@ -95,51 +95,51 @@ import kotlinx.coroutines.withContext
 //---------FUNCIONES EN DONDE SE ENVIA EL MENSAJE DEL ERROR O ACLARACION, SON FUNCIONES CON STRING----------//
 
     private fun nameLettersOnlyMesseger(): String{
-        return "El nombre debe contener caracteres alfabéticos únicamente" }
+        return "El nombre debe contener únicamente caracteres alfabéticos." }
     private fun mailMesserger(): String{
-        return "El email debe ser válido"
+        return "El correo electrónico debe ser válido."
     }
 
     private fun emailRegisteredMesseger(): String{
-        return "El email ya está registrado"
+        return "El correo electrónico ya está registrado."
     }
 
     private fun nameNumbersMesseger(): String{
-        return "El nombre no puede tener números"
+        return "El nombre no puede contener números"
     }
     private fun nameSpacesAndLineBreaksMesseger(): String{
-        return "El nombre no puede contener espacios en blanco"
+        return "El nombre no puede contener espacios en blanco."
     }
     private fun nameMesseger(): String{
-        return "El nombre debe tener más de 3 carácteres y menos de 50"
+        return "El nombre debe tener más de 3 caracteres y menos de 50 caracteres."
     }
     private fun fieldsMesseger(): String{
         return "Por favor, rellena todos los campos correctamente."
     }
     private fun passwordLengthMessger(): String{
-        return "El password debe contener un minimo de 16 carácteres y 1 espacial"
+        return "La contraseña debe contener un mínimo de 16 caracteres y al menos 1 espacio."
     }
     private fun passwordCharactersMesseger(): String{
-        return  "El password debe tener un carácter especial"
+        return  "La contraseña debe contener al menos un carácter especial"
     }
 
     private fun passwordLengthMaxMessger(): String{
-        return "El password no debe ser mayor a 32 caracteres"
+        return "La contraseña no debe exceder los 32 caracteres."
     }
 private fun validateNamedSpecialcharactersMesseger():String{
-    return "no se admite caracteres especiales o espacios"
+    return "No se admite caracteres especiales o espacios"
 }
 
 
     private fun emailLettersOnlyMessege(): String{
-        return "no puede exitir espacios en un correo "
+        return "No pueden haber espacios en un correo."
     }
 
 private fun validatePasswordCharactersMessage(): String{
-    return "tu contraseña solo contiene caracteres alfanumericos, falta un caracter espacial"
+    return "Tu contraseña solo contiene caracteres alfanuméricos, falta un carácter especial."
 }
 private fun validatepasswordspecialcharacters(): String{
-    return "tu contraseña le falta caracteres alfanumerico"
+    return "A tu contraseña le faltan caracteres alfanuméricos"
 }
 
 
