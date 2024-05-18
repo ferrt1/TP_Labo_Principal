@@ -858,7 +858,7 @@ image::imagenAdoc/icondatabase.png[100,100]
 
 *Guardar datos en una base de datos es ideal para los datos estructurados o que se repiten, como la información de contacto. En esta página, en la que se asume que estás familiarizado con las bases de datos SQL en general, encontrarás información que te ayudará a comenzar a usar bases de datos SQLite en Android. Las APIs que necesitarás para utilizar una base de datos en Android están disponibles en el paquete android.database.sqlite.*
 
-*Consideramos utilizar:* la libreria Room de Android Studio.
+NOTE: *Consideramos utilizar:* la libreria Room de Android Studio.
 
 Fuente : link:https://developer.android.com/training/data-storage/room?hl=es-419#kts[android.com/room]
 
@@ -1102,7 +1102,6 @@ object DatabaseManager {
     // Otros métodos según sea necesario para otras operaciones con usuarios, imágenes e imágenes registros
 }
 ----
-
 
 === Reconocimiento facial
 
