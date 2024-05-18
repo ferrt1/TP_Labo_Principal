@@ -17,7 +17,7 @@ import kotlinx.coroutines.withContext
     }
 
     fun validateMail(email: String): Boolean {
-        val emailRegex =   "^[a-zA-Z0-9](?:[a-zA-Z0-9._%+-]*[a-zA-Z0-9])?@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$".toRegex()
+        val emailRegex =   "^[a-zA-Z0-9](?:[a-zA-Z0-9._%+-]*[a-zA-Z0-9])?@[a-zA-Z.-]+\\.[a-zA-Z]{2,}$".toRegex()
         val isValid = emailRegex.matches(email)
         return isValid
     }
@@ -122,7 +122,7 @@ private fun mailMesserger(): String{
         return "El nombre no puede contener espacios en blanco."
     }
     private fun nameMesseger(): String{
-        return "El nombre debe tener más de 3 caracteres alfabético y menos de 50 caracteres alfabético."
+        return "El nombre debe tener entre 3 y 50 caracteres alfabético."
     }
 
 private fun fieldsMesseger(): String{

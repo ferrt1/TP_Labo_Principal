@@ -13,6 +13,9 @@
 ** El objetivo de los zócalos de mensajes es guiar al usuario sobre qué debe completar en cada campo. Además, sirven para ofrecer consejos y mejorar la comodidad del usuario. También son útiles para proporcionar orientación.
 
 == Iconos de mensaje
+** En nuestra app existira 3 tipos de imagenes que aconsejara a los usuario o le advertira si se cumple ciertas condiciones, las imagenes que utilizaremos es: 
+
+
 
 == Vista
 ** Registro: En la sección de registro, hay tres campos obligatorios que se deben completar: `correo electrónico`, `nombre de usuario` y `contraseña`. Para completar estos campos, se requieren ciertas condiciones.
