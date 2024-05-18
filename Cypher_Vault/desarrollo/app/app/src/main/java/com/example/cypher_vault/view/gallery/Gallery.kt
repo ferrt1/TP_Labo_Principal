@@ -5,15 +5,19 @@ import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.net.Uri
+import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -26,6 +30,7 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowBackIosNew
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.BottomAppBar
+import androidx.compose.material3.Button
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.DrawerState
 import androidx.compose.material3.DrawerValue
@@ -68,10 +73,13 @@ import com.example.cypher_vault.controller.authentication.AuthenticationControll
 import com.example.cypher_vault.controller.data.DatabaseController
 import com.example.cypher_vault.controller.gallery.GalleryController
 import com.example.cypher_vault.database.User
+import com.example.cypher_vault.database.UserIncome
 import com.example.cypher_vault.view.registration.findAncestorActivity
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import java.io.ByteArrayOutputStream
+import java.text.SimpleDateFormat
+import java.util.Date
 import java.util.Locale
 
 val firstColor = Color(0xFF02a6c3)
@@ -102,11 +110,13 @@ fun Gallery(authenticationController: AuthenticationController, userId: String, 
 
     var usuario by remember { mutableStateOf<User?>(null) }
     var nombre by remember { mutableStateOf("") }
+    var email by remember { mutableStateOf("") }
     var dbc = DatabaseController()
     LaunchedEffect(key1 = Unit) { // Key can be anything to trigger on recomposition
         val usuarioTemp = dbc.getUserById(userId)
         usuario = usuarioTemp
         nombre = usuarioTemp?.firstName.toString()
+        email = usuarioTemp?.email.toString()
     }
 
 
@@ -168,7 +178,13 @@ fun Gallery(authenticationController: AuthenticationController, userId: String, 
     ModalNavigationDrawer(
         drawerState = drawerState,
         drawerContent = {
-            ModalDrawerSheet { /* Drawer content */ }
+            ModalDrawerSheet(
+                drawerContainerColor = thirdColor,
+                modifier = Modifier.background(thirdColor).fillMaxHeight(),
+                content = {
+                    DrawerContent(userId,galleryController,nombre,email)
+                }
+            )
         },
     ) {
         Scaffold(
@@ -368,6 +384,89 @@ fun procesarString(texto: String): String {
         minusculas
     } else {
         minusculas.substring(0, 14) + ".."
+    }
+}
+
+@Composable
+fun DrawerContent(userId: String, galeryController: GalleryController,nombre: String, email: String) {
+    var listaDeIngresos by remember { mutableStateOf<List<UserIncome>>(emptyList()) }
+    var showIncomes by remember { mutableStateOf(false) }
+
+    LaunchedEffect(userId) {
+        // Cargar todos los ingresos del usuario
+        listaDeIngresos = galeryController.loadAllIncomes(userId).value
+    }
+    Log.e("galeria","LISTA DE INGRESOS : $listaDeIngresos")
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(16.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
+    ) {
+        Row(horizontalArrangement = Arrangement.Absolute.Center) {
+            Text(
+                text = "Panel de ",
+                color = mainBackgroundColor,
+                style = textStyleTittle2,
+                onTextLayout = { /* No se necesita hacer nada aquí */ }
+            )
+            Text(
+                text = capitalizarPrimeraLetra(nombre),
+                color = firstColor,
+                style = textStyleTittle2,
+                onTextLayout = { /* No se necesita hacer nada aquí */ }
+            )
+            Text(
+                text = procesarString(nombre),
+                color = mainBackgroundColor,
+                style = textStyleTittle2,
+                onTextLayout = { /* No se necesita hacer nada aquí */ }
+            )
+        }
+        Spacer(modifier = Modifier.height(8.dp))
+        Text(
+            text = email,
+            color = mainBackgroundColor,
+            style = textStyleTittle2,
+            onTextLayout = { /* No se necesita hacer nada aquí */ }
+        )
+        Spacer(modifier = Modifier.height(16.dp))
+        Button(onClick = { /* Acción cambiar contraseña */ }) {
+            Text(text = "Cambiar Contraseña")
+        }
+        Spacer(modifier = Modifier.height(8.dp))
+        Button(onClick = { showIncomes = !showIncomes }) {
+            Text(text = "Tus ingresos en la App")
+        }
+        Spacer(modifier = Modifier.height(16.dp))
+        // Mostrar la lista de ingresos si showIncomes es true
+        if (showIncomes) {
+            IncomeList(incomes = listaDeIngresos)
+        }
+    }
+}
+
+@Composable
+fun IncomeList(incomes: List<UserIncome>) {
+    Column {
+        incomes.forEach { income ->
+            Text(text = formatIncomeDate(income.income),
+                color = mainBackgroundColor,
+                style = textStyleTittle2,
+                onTextLayout = { /* No se necesita hacer nada aquí */ })
+            Spacer(modifier = Modifier.height(4.dp))
+        }
+    }
+}
+
+fun formatIncomeDate(income: Long?): String {
+    return if (income != null) {
+        val date = Date(income)
+        val formatter = SimpleDateFormat("HH:mm - dd MMM yyyy", Locale.getDefault())
+        formatter.format(date)
+    } else {
+        "Fecha no disponible"
     }
 }
 

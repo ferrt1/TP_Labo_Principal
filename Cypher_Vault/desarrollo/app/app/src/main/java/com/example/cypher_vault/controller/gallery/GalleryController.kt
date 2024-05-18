@@ -26,7 +26,7 @@ class GalleryController() {
     }
 
     suspend fun loadAllIncomes(userId: String): MutableState<List<UserIncome>> {
-        userAccessController.loadLastIncome(userId)
+        userAccessController.loadAllIncomes(userId)
         return userAccessController.userIncomes
     }
 
