@@ -27,19 +27,25 @@ import androidx.compose.material.icons.filled.ArrowBackIosNew
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.CenterAlignedTopAppBar
+import androidx.compose.material3.DrawerState
+import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.ModalDrawerSheet
+import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.rememberDrawerState
 import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -63,6 +69,8 @@ import com.example.cypher_vault.controller.data.DatabaseController
 import com.example.cypher_vault.controller.gallery.GalleryController
 import com.example.cypher_vault.database.User
 import com.example.cypher_vault.view.registration.findAncestorActivity
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
 import java.io.ByteArrayOutputStream
 import java.util.Locale
 
@@ -154,160 +162,192 @@ fun Gallery(authenticationController: AuthenticationController, userId: String, 
     val firstLetter = Color(0xFF2DDEFD)
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(rememberTopAppBarState())
 
-    Scaffold(
-        modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
 
-        topBar = {
-            CenterAlignedTopAppBar(
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = thirdColor,
-                    titleContentColor = thirdColor,
-                ),
-                title = {
-                    Column(horizontalAlignment = Alignment.Start) {
-                        Row(horizontalArrangement = Arrangement.Absolute.Left) {
-                            Text(
-                                text = "C",
-                                color = firstColor,
-                                style = textStyleTittle,
-                            )
-                            Text(
-                                text = "ypher ",
-                                color = mainBackgroundColor,
-                                style = textStyleTittle,
-                            )
-                            Text(
-                                text = "V",
-                                color = firstColor,
-                                style = textStyleTittle,
-                            )
-                            Text(
-                                text = "ault",
-                                color = mainBackgroundColor,
-                                style = textStyleTittle,
-                            )
+    val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
+    val scope = rememberCoroutineScope()
+    ModalNavigationDrawer(
+        drawerState = drawerState,
+        drawerContent = {
+            ModalDrawerSheet { /* Drawer content */ }
+        },
+    ) {
+        Scaffold(
+            modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
 
+            topBar = {
+                CenterAlignedTopAppBar(
+                    colors = TopAppBarDefaults.topAppBarColors(
+                        containerColor = thirdColor,
+                        titleContentColor = thirdColor,
+                    ),
+                    title = {
+                        Column(horizontalAlignment = Alignment.Start) {
+                            Row(horizontalArrangement = Arrangement.Absolute.Left) {
+                                Text(
+                                    text = "C",
+                                    color = firstColor,
+                                    style = textStyleTittle,
+                                    onTextLayout = { /* No se necesita hacer nada aquí */ }
+                                )
+                                Text(
+                                    text = "ypher ",
+                                    color = mainBackgroundColor,
+                                    style = textStyleTittle,
+                                    onTextLayout = { /* No se necesita hacer nada aquí */ }
+                                )
+                                Text(
+                                    text = "V",
+                                    color = firstColor,
+                                    style = textStyleTittle,
+                                    onTextLayout = { /* No se necesita hacer nada aquí */ }
+                                )
+                                Text(
+                                    text = "ault",
+                                    color = mainBackgroundColor,
+                                    style = textStyleTittle,
+                                    onTextLayout = { /* No se necesita hacer nada aquí */ }
+                                )
+
+                            }
+                            Row(horizontalArrangement = Arrangement.Absolute.Left) {
+                                Text(
+                                    text = "G",
+                                    color = firstColor,
+                                    style = textStyleTittle2,
+                                    onTextLayout = { /* No se necesita hacer nada aquí */ }
+                                )
+                                Text(
+                                    text = "aleria de ",
+                                    color = mainBackgroundColor,
+                                    style = textStyleTittle2,
+                                    onTextLayout = { /* No se necesita hacer nada aquí */ }
+                                )
+                                Text(
+                                    text = capitalizarPrimeraLetra(nombre),
+                                    color = firstColor,
+                                    style = textStyleTittle2,
+                                    onTextLayout = { /* No se necesita hacer nada aquí */ }
+                                )
+                                Text(
+                                    text = procesarString(nombre),
+                                    color = mainBackgroundColor,
+                                    style = textStyleTittle2,
+                                    onTextLayout = { /* No se necesita hacer nada aquí */ }
+                                )
+
+                            }
                         }
-                        Row(horizontalArrangement = Arrangement.Absolute.Left) {
-                            Text(
-                                text = "G",
-                                color = firstColor,
-                                style = textStyleTittle2,
-                            )
-                            Text(
-                                text = "aleria de ",
-                                color = mainBackgroundColor,
-                                style = textStyleTittle2,
-                            )
-                            Text(
-                                text = capitalizarPrimeraLetra(nombre!!),
-                                color = firstColor,
-                                style = textStyleTittle2,
-                            )
-                            Text(
-                                text = procesarString(nombre),
-                                color = mainBackgroundColor,
-                                style = textStyleTittle2,
-                            )
 
+                    },
+                    navigationIcon = {
+                        IconButton(onClick = { authenticationController.navigateToListLogin() }) {
+                            Icon(
+                                modifier = Modifier.width(30.dp),
+                                tint = firstColor,
+                                imageVector = Icons.Filled.ArrowBackIosNew,
+                                contentDescription = "Localized description"
+                            )
                         }
-                    }
-
-                },
-                navigationIcon = {
-                    IconButton(onClick = { authenticationController.navigateToListLogin() }) {
-                        Icon(
-                            modifier = Modifier.width(30.dp),
-                            tint = firstColor,
-                            imageVector = Icons.Filled.ArrowBackIosNew,
-                            contentDescription = "Localized description"
-                        )
-                    }
-                },
-                actions = {
-                    IconButton(onClick = { authenticationController.navigateToProfile(userId) }) {
-                        Icon(
-                            modifier = Modifier
-                                .height(100.dp)
-                                .width(30.dp),
-                            tint = firstColor,
-                            imageVector = Icons.Filled.Person,
-                            contentDescription = "Perfil de Usuario"
-                        )
-                    }
-                },
-                scrollBehavior = scrollBehavior,
-            )
-        },
-        bottomBar = {
-            BottomAppBar(
-                containerColor = thirdColor,
-                contentColor = firstColor,
-            ) {
-                Text(
-                    modifier = Modifier
-                        .fillMaxWidth(),
-                    textAlign = TextAlign.Center,
-                    text = "Area de mensaje sys?",
-                )
-            }
-        },
-        floatingActionButton = {
-            FloatingActionButton(onClick = { launcher.launch("image/*") }) {
-                Icon(
-                    modifier = Modifier.width(30.dp),
-                    tint = firstColor,
-                    imageVector = Icons.Default.Add,
-                    contentDescription = "Add"
-                )
-            }
-        },
-        content = { innerPadding ->
-            Column(
-                modifier = Modifier
-                    .padding(innerPadding),
-                verticalArrangement = Arrangement.spacedBy(16.dp),
-            ) {
-                LazyVerticalGrid(
-                    columns = GridCells.Fixed(3),
-                    contentPadding = PaddingValues(8.dp),
-                    modifier = Modifier.weight(1f)
-                ) {
-                    items(images.size) { index ->
-                        val image = images[index]
-                        val bitmap =
-                            BitmapFactory.decodeByteArray(image.imageData, 0, image.imageData.size)
-                        bitmap?.let {
-                            Image(
-                                bitmap = it.asImageBitmap(),
-                                contentDescription = null,
+                    },
+                    actions = {
+                        IconButton(onClick = { abrirPanel(scope, drawerState ) }) {
+                            Icon(
                                 modifier = Modifier
-                                    .size(100.dp)
-                                    .padding(4.dp)
-                                    .border(2.dp, Color.Black)
-                                    .clickable {
-                                        selectedImageBitmap.value = BitmapFactory.decodeByteArray(
-                                            image.imageData,
-                                            0,
-                                            image.imageData.size
-                                        )
-                                    }
+                                    .height(100.dp)
+                                    .width(30.dp),
+                                tint = firstColor,
+                                imageVector = Icons.Filled.Person,
+                                contentDescription = "Perfil de Usuario"
                             )
                         }
-                    }
-                }
-            }
-            if (selectedImageBitmap.value != null) {
-                Dialog(onDismissRequest = { selectedImageBitmap.value = null }) {
-                    Image(
-                        bitmap = selectedImageBitmap.value!!.asImageBitmap(),
-                        contentDescription = null,
-                        modifier = Modifier.fillMaxWidth()
+                    },
+                    scrollBehavior = scrollBehavior,
+                )
+            },
+            bottomBar = {
+                BottomAppBar(
+                    containerColor = thirdColor,
+                    contentColor = firstColor,
+                ) {
+                    Text(
+                        modifier = Modifier
+                            .fillMaxWidth(),
+                        textAlign = TextAlign.Center,
+                        text = "Area de mensaje sys?",
+                        onTextLayout = { /* No se necesita hacer nada aquí */ }
                     )
                 }
+            },
+            floatingActionButton = {
+                FloatingActionButton(onClick = { launcher.launch("image/*") }) {
+                    Icon(
+                        modifier = Modifier.width(30.dp),
+                        tint = firstColor,
+                        imageVector = Icons.Default.Add,
+                        contentDescription = "Add"
+                    )
+                }
+            },
+            content = { innerPadding ->
+                Column(
+                    modifier = Modifier
+                        .padding(innerPadding),
+                    verticalArrangement = Arrangement.spacedBy(16.dp),
+                ) {
+                    LazyVerticalGrid(
+                        columns = GridCells.Fixed(3),
+                        contentPadding = PaddingValues(8.dp),
+                        modifier = Modifier.weight(1f)
+                    ) {
+                        items(images.size) { index ->
+                            val image = images[index]
+                            val bitmap =
+                                BitmapFactory.decodeByteArray(
+                                    image.imageData,
+                                    0,
+                                    image.imageData.size
+                                )
+                            bitmap?.let {
+                                Image(
+                                    bitmap = it.asImageBitmap(),
+                                    contentDescription = null,
+                                    modifier = Modifier
+                                        .size(100.dp)
+                                        .padding(4.dp)
+                                        .border(2.dp, Color.Black)
+                                        .clickable {
+                                            selectedImageBitmap.value =
+                                                BitmapFactory.decodeByteArray(
+                                                    image.imageData,
+                                                    0,
+                                                    image.imageData.size
+                                                )
+                                        }
+                                )
+                            }
+                        }
+                    }
+                }
+                if (selectedImageBitmap.value != null) {
+                    Dialog(onDismissRequest = { selectedImageBitmap.value = null }) {
+                        Image(
+                            bitmap = selectedImageBitmap.value!!.asImageBitmap(),
+                            contentDescription = null,
+                            modifier = Modifier.fillMaxWidth()
+                        )
+                    }
+                }
             }
+        )
+    }
+}
+
+fun abrirPanel(scope: CoroutineScope, drawerState: DrawerState) {
+    scope.launch {
+        drawerState.apply {
+            if (isClosed) open() else close()
         }
-    )
+    }
 }
 
 
@@ -330,4 +370,5 @@ fun procesarString(texto: String): String {
         minusculas.substring(0, 14) + ".."
     }
 }
+
 

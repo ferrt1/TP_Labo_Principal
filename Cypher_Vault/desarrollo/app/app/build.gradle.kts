@@ -58,6 +58,7 @@ dependencies {
 
     implementation("androidx.room:room-runtime:2.6.1")
     implementation("androidx.room:room-ktx:2.6.1")
+    implementation(libs.androidx.material3.android)
     annotationProcessor("androidx.room:room-compiler:2.6.1")
     kapt("androidx.room:room-compiler:2.6.1")
     //////////////////////////////////////////////
@@ -67,8 +68,8 @@ dependencies {
 
     // MEDIAPIPE ///
     implementation("com.google.mediapipe:tasks-vision:latest.release")
-    
-    //////////////////////////////////////////////
+
+    // Dependencias estándar
     implementation("androidx.navigation:navigation-compose:2.7.7")
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
@@ -77,9 +78,22 @@ dependencies {
     implementation(libs.androidx.ui)
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
-    implementation(libs.androidx.material3)
+    implementation(libs.androidx.material3) // Asegúrate de que esta sea la versión 1.2.1
     implementation("androidx.compose.material:material-icons-extended:1.6.6")
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.7.0")
+
+    // Excluir cualquier versión conflictiva
+    implementation("androidx.navigation:navigation-compose:2.7.7") {
+        exclude(group = "androidx.compose.material3", module = "material3")
+    }
+    implementation("androidx.compose.material:material-icons-extended:1.6.6") {
+        exclude(group = "androidx.compose.material3", module = "material3")
+    }
+    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.7.0") {
+        exclude(group = "androidx.compose.material3", module = "material3")
+    }
+
+    // Dependencias para pruebas
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -122,4 +136,13 @@ dependencies {
     // BASE DE DATOS ///////////////////////
 
     //////////////////////////////////////////////
+}
+
+// Configuración de resolución de dependencias
+configurations.all {
+    resolutionStrategy.eachDependency {
+        if (requested.group == "androidx.compose.material3" && requested.name == "material3") {
+            useVersion("1.2.1")
+        }
+    }
 }
