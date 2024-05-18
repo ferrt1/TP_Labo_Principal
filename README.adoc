@@ -1303,7 +1303,7 @@ NOTE: *Mejoras visuales:* verificacion del tamaño del rostro en pantalla, ya qu
 
 NOTE: *Las dos API utilizan Flask como framework para construir la app web.*
 
-=== API Versión 1
+==== API Versión 1
 
 Esta API proporciona un servicio para comparar dos caras en imágenes diferentes. Utiliza la biblioteca face_recognition para la detección y comparación de caras.
 
@@ -1345,7 +1345,7 @@ result = face_recognition.compare_faces([face_image1_encodings], face_image2_enc
 return jsonify({"result": bool(result[0])})
 ----
 
-=== API Versión 2
+==== API Versión 2
 
 Esta API proporciona un servicio para comparar dos caras en imágenes diferentes. Utiliza la biblioteca facenet_pytorch y cv2 para la detección y comparación de caras.
 
