@@ -1,0 +1,29 @@
+:toc:
+:toc-title: Contenido
+:icons: font
+:source-highlighter: highlight.js
+:experimental:
+:leveloffset: 0.
+
+
+
+= Zócalo de Mensaje
+
+== Objetivo
+** El objetivo de los zócalos de mensajes es guiar al usuario sobre qué debe completar en cada campo. Además, sirven para ofrecer consejos y mejorar la comodidad del usuario. También son útiles para proporcionar orientación.
+
+== Iconos de mensaje
+
+== Vista
+** Registro: En la sección de registro, hay tres campos obligatorios que se deben completar: `correo electrónico`, `nombre de usuario` y `contraseña`. Para completar estos campos, se requieren ciertas condiciones.
+
+*** Correo Electrónico: Se le pedirá al usuario un correo electrónico válido para registrarse. De lo contrario, pueden aparecer ciertos mensajes de precaución:
+
+image::../../../Recursos/combinacionDeMensajes/diapositiva(Correo).JPG[700,700]
+
+** Como se puede apreciar en la imagen, existen varios tipos de mensajes.
+
+*** Mensaje Principal: Debajo del campo de correo electrónico, se muestra un mensaje que estará activo hasta que el usuario ingrese un valor válido.
+
+== Controlador y Lógica
+
