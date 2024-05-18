@@ -8,29 +8,36 @@ import android.net.Uri
 import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowBackIosNew
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.DrawerState
 import androidx.compose.material3.DrawerValue
@@ -404,25 +411,59 @@ fun DrawerContent(userId: String, galeryController: GalleryController,nombre: St
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
-        Row(horizontalArrangement = Arrangement.Absolute.Center) {
-            Text(
-                text = "Panel de ",
-                color = mainBackgroundColor,
-                style = textStyleTittle2,
-                onTextLayout = { /* No se necesita hacer nada aquí */ }
-            )
-            Text(
-                text = capitalizarPrimeraLetra(nombre),
-                color = firstColor,
-                style = textStyleTittle2,
-                onTextLayout = { /* No se necesita hacer nada aquí */ }
-            )
-            Text(
-                text = procesarString(nombre),
-                color = mainBackgroundColor,
-                style = textStyleTittle2,
-                onTextLayout = { /* No se necesita hacer nada aquí */ }
-            )
+        Box(modifier = Modifier.fillMaxWidth()) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center
+            ) {
+                Row(
+                    horizontalArrangement = Arrangement.Absolute.Center
+                ) {
+                    Text(
+                        text = "Panel de ",
+                        color = mainBackgroundColor,
+                        style = textStyleTittle2,
+                        onTextLayout = { /* No se necesita hacer nada aquí */ }
+                    )
+                    Text(
+                        text = capitalizarPrimeraLetra(nombre),
+                        color = firstColor,
+                        style = textStyleTittle2,
+                        onTextLayout = { /* No se necesita hacer nada aquí */ }
+                    )
+                    Text(
+                        text = procesarString(nombre),
+                        color = mainBackgroundColor,
+                        style = textStyleTittle2,
+                        onTextLayout = { /* No se necesita hacer nada aquí */ }
+                    )
+                }
+                Row(
+                    horizontalArrangement = Arrangement.Absolute.Center
+                ) {
+                    Box(
+                        modifier = Modifier.height(height = 100.dp).fillMaxSize(),
+                        contentAlignment = Alignment.Center
+                    ) {
+
+                        IconButton(
+                            onClick = { /* Acción de la imagen */ },
+                            modifier = Modifier
+                                .size(100.dp)
+                        ) {
+                            Icon(
+                                modifier = Modifier.fillMaxSize(),
+                                tint = firstColor,
+                                imageVector = Icons.Filled.Person,
+                                contentDescription = "Perfil de Usuario"
+                            )
+                        }
+                    }
+                }
+            }
         }
         Spacer(modifier = Modifier.height(8.dp))
         Text(
@@ -432,11 +473,31 @@ fun DrawerContent(userId: String, galeryController: GalleryController,nombre: St
             onTextLayout = { /* No se necesita hacer nada aquí */ }
         )
         Spacer(modifier = Modifier.height(16.dp))
-        Button(onClick = { /* Acción cambiar contraseña */ }) {
+        Button(
+            onClick = { /* Acción cambiar contraseña */ },
+            shape = RoundedCornerShape(4.dp),
+            border = BorderStroke(3.dp, firstColor),
+            colors = ButtonDefaults.buttonColors(
+                containerColor = Color.Transparent,
+                contentColor = firstColor
+            ),
+            modifier = Modifier.width(290.dp).padding(top = 15.dp)
+        )
+        {
             Text(text = "Cambiar Contraseña")
         }
         Spacer(modifier = Modifier.height(8.dp))
-        Button(onClick = { showIncomes = !showIncomes }) {
+        Button(
+            onClick = { showIncomes = !showIncomes },
+            shape = RoundedCornerShape(4.dp),
+            border = BorderStroke(3.dp, firstColor),
+            colors = ButtonDefaults.buttonColors(
+                containerColor = Color.Transparent,
+                contentColor = firstColor
+            ),
+            modifier = Modifier.width(290.dp).padding(top = 15.dp)
+        )
+        {
             Text(text = "Tus ingresos en la App")
         }
         Spacer(modifier = Modifier.height(16.dp))
