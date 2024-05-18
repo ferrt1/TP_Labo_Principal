@@ -293,7 +293,8 @@ fun InitialScreen(authenticationController: AuthenticationController) {
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
                         Row(verticalAlignment = Alignment.CenterVertically) {
-                            (if (getvalidateNameNumbers(nameState.value.text) || getvalidateNamedSpecialcharacters(nameState.value.text) || getvalidateNameSpacesAndLineBreaks(nameState.value.text)) {
+                            (if (getvalidateNameNumbers(nameState.value.text) || getvalidateNamedSpecialcharacters(nameState.value.text)
+                                || getvalidateNameSpacesAndLineBreaks(nameState.value.text) || getvalidateNameMax(nameState.value.text)) {
                                 R.drawable.icoerror
                             } else if (!getvalidateName(nameState.value.text)) {
 

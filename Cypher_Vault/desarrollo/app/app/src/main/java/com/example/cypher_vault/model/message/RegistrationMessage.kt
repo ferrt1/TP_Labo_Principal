@@ -104,6 +104,9 @@ fun validatePasswordSpacioCharacters(password: String): Boolean {
     private fun nameLettersOnlyMesseger(): String{
         return "El nombre debe contener únicamente caracteres alfabéticos." }
 
+    private fun validateNameMaxMessage(): String{
+        return "El nombre de usuario supera los 50 caracteres alfabéticos"
+    }
 
 private fun mailMesserger(): String{
         return "El correo electrónico debe ser válido."
@@ -119,7 +122,7 @@ private fun mailMesserger(): String{
         return "El nombre no puede contener espacios en blanco."
     }
     private fun nameMesseger(): String{
-        return "El nombre debe tener más de 3 caracteres y menos de 50 caracteres."
+        return "El nombre debe tener más de 3 caracteres alfabético y menos de 50 caracteres alfabético."
     }
 
 private fun fieldsMesseger(): String{
@@ -127,7 +130,7 @@ private fun fieldsMesseger(): String{
     }
 
 private fun passwordLengthMessger(): String{
-        return "La contraseña debe contener un mínimo de 15 caracteres alfanumerico y al menos 1 espacio."
+        return "La contraseña debe contener un mínimo de 15 caracteres alfanumerico y al menos 1 caracter especial ."
     }
     private fun passwordCharactersMesseger(): String{
         return  "La contraseña debe contener al menos un carácter especial"
@@ -185,6 +188,8 @@ private fun validatePasswordSpacioCharacters(): String{
     fun fullnamefield (name : String): String{
         if (validateNamedSpecialcharacters(name))
             return validateNamedSpecialcharactersMesseger()
+        else if(validateNameMax(name))
+            return validateNameMaxMessage()
        else if(!validateName(name))
             return nameMesseger()
         else if (validateNameNumbers(name))
