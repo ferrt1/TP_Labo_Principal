@@ -17,7 +17,7 @@ import kotlinx.coroutines.withContext
     }
 
     fun validateMail(email: String): Boolean {
-        val emailRegex =  "^[_a-z0-9-]+(.[_a-z0-9-]+)*@[a-z0-9-]+(.[a-z0-9-]+)*(.[a-z]{2,4})\$".toRegex()
+        val emailRegex =   "^[a-zA-Z0-9](?:[a-zA-Z0-9._%+-]*[a-zA-Z0-9])?@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$".toRegex()
         val isValid = emailRegex.matches(email)
         return isValid
     }
