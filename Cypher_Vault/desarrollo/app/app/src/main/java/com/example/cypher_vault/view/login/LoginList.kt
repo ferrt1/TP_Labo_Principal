@@ -6,9 +6,11 @@ import androidx.compose.animation.core.animateDp
 import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.updateTransition
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -26,10 +28,13 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.offset
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -50,16 +55,22 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.collectAsState
+import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.sp
+import com.example.cypher_vault.R
 import com.example.cypher_vault.controller.authentication.AuthenticationController
 import com.example.cypher_vault.controller.data.DatabaseController
+import com.example.cypher_vault.controller.messages.getsearcherMessage
+import com.example.cypher_vault.controller.messages.getvalidaUserMessage
 import com.example.cypher_vault.view.resources.CustomTitle
 import com.example.cypher_vault.view.resources.*
 import kotlinx.coroutines.CoroutineScope
@@ -78,9 +89,9 @@ fun LoginText(){
         "Inicio de sesión",
         style = textStyle,
         modifier = Modifier
-                        .padding(top = 70.dp)
-                        .offset(x = -(50.dp)),
-        )
+            .padding(top = 70.dp)
+            .offset(x = -(50.dp)),
+    )
 
 }
 
@@ -98,6 +109,9 @@ fun NavigationLogin(authenticationController: AuthenticationController) {
     var errorMessage by remember { mutableStateOf("") }
 
     val passwordVisible = remember { mutableStateOf(false) }
+
+    var searcherVisible by remember { mutableStateOf(false) }
+    var searcherUserVisible by remember { mutableStateOf(false) }
 
 
     val transition = updateTransition(showConnectionOption, label = "")
@@ -119,11 +133,16 @@ fun NavigationLogin(authenticationController: AuthenticationController) {
             CustomTitle()
             LoginText()
 
+
             OutlinedTextField(
                 value = searchQuery,
                 onValueChange = { searchQuery = it },
                 placeholder = { Text("Buscá tu usuario", style = TextStyle(color = thirdColor)) },
-                modifier = Modifier.padding(top = 20.dp),
+                modifier = Modifier
+                    .padding(top = 20.dp)
+                    .onFocusChanged { focusState ->
+                        searcherVisible = !focusState.isFocused
+                    },
                 colors = OutlinedTextFieldDefaults.colors(
                     cursorColor = secondColor,
                     focusedBorderColor = firstColor,
@@ -139,6 +158,53 @@ fun NavigationLogin(authenticationController: AuthenticationController) {
                     )
                 },
             )
+
+            val filteredUsers = users.filter { it.firstName?.contains(searchQuery, ignoreCase = true) == true }
+            if (filteredUsers.isEmpty()) {
+                Column(
+                    verticalArrangement = Arrangement.Center,
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Image(
+                            painter = painterResource(id = R.drawable.iconwarning),
+                            contentDescription = "",
+                            modifier = Modifier.size(24.dp)
+                        )
+                        Spacer(modifier = Modifier.width(8.dp)) // Espacio entre la imagen y el texto
+                        LimitedTextBox(
+                            text = getvalidaUserMessage(),
+                            maxWidth = 250.dp // Ajusta este valor según tus necesidades
+                        )
+
+                    }
+                }
+            }
+
+
+
+            if(searchQuery.length==0) {
+                Column(
+                    verticalArrangement = Arrangement.Center,
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Image(
+                            painter = painterResource(id = R.drawable.iconclarificatio),
+                            contentDescription = "",
+                            modifier = Modifier.size(24.dp)
+                        )
+                        Spacer(modifier = Modifier.width(8.dp)) // Espacio entre la imagen y el texto
+                        LimitedTextBox(
+                            text = getsearcherMessage(),
+                            maxWidth = 250.dp // Ajusta este valor según tus necesidades
+                        )
+
+                    }
+                }
+            }
+
+
 
             LazyColumn(
                 modifier = Modifier.padding(top = 20.dp).heightIn(max = 250.dp),
@@ -391,6 +457,25 @@ fun NavigationLogin(authenticationController: AuthenticationController) {
         }
     }
 
+}
+
+
+@Composable
+fun LimitedTextBox(text: String, maxWidth: Dp) {
+    Box(
+        modifier = Modifier
+            .width(maxWidth)
+
+
+    ) {
+        Text(
+            text = text,
+            fontSize = 14.sp,
+            fontFamily = fontFamily,
+            color = thirdColor,
+            fontWeight = FontWeight.Bold
+        )
+    }
 }
 
 

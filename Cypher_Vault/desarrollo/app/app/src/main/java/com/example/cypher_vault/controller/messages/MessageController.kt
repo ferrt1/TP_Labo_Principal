@@ -13,7 +13,7 @@ fun registrationValidation(email: String, name: String, pin: String): Boolean {
 
 //Encargado de comunicarse entre la parte de vista y la parte logica cuando existe un error en un campo
 fun getMessageError(email: String, name: String, pin: String): String {
-   return errorMessage(email, name, pin).toString()
+    return errorMessage(email, name, pin).toString()
 }
 
 //------------------------------------------------------------------------------------------------//
@@ -100,3 +100,18 @@ fun getvalidatePasswordSpecialCharacters(password: String): Boolean{
 }
 
 //-------------------------------------------------------------------------------------------------//
+
+
+
+
+//-------------------------------------------------------------------------------------------------//
+//-------------------------------------CAMPO DE LOGIN----------------------------------------------//
+//-------------------------------------------------------------------------------------------------//
+
+fun getsearcherMessage(): String{
+    return searcherMessage()
+}
+
+fun getvalidaUserMessage(): String{
+    return validaUserMessage()
+}
