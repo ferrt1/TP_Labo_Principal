@@ -289,10 +289,10 @@ fun NavigationLogin(authenticationController: AuthenticationController) {
                             contentColor = thirdColor
                         ),
                         modifier = Modifier
-                            .width(250.dp)
+                            .width(300.dp)
                     ) {
                         Text(
-                            "Continuar con conexión",
+                            "Continuar por reconocimiento facial",
                             fontFamily = fontFamily,
                             color = thirdColor,
                             fontWeight = FontWeight.Bold
@@ -310,11 +310,11 @@ fun NavigationLogin(authenticationController: AuthenticationController) {
                             contentColor = thirdColor
                         ),
                         modifier = Modifier
-                            .width(250.dp)
+                            .width(300.dp)
                             .padding(top = 30.dp)
                     ) {
                         Text(
-                            "Continuar sin conexión",
+                            "Continuar por contraseña",
                             fontFamily = fontFamily,
                             color = thirdColor,
                             fontWeight = FontWeight.Bold
