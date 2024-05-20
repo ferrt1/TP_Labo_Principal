@@ -211,6 +211,8 @@ Una vez explicado las clasificación de requerimientos funcionales,  se hará a 
 
 image::Recursos/Sprint 2/WBS.jpg[]
 
+PONER NUEVA WBS
+
 === Diccionario
 
 Los pesos se clasifican en base a:
@@ -354,6 +356,14 @@ image::Recursos/HORAS.PNG[700,700]
 
 image::Recursos/Sprint 2/HORAS.PNG[700,700]
 
+=== Horas empleadas Sprint 3
+
+* *Srum Master:* 29hs
+* *Desarrollo:* 120hs en total
+* *Testing:* 40hs por tester.
+
+PONER IMAGEN HORAS SPRINT 3
+
 === Riesgos
 
 * R1 Falta de claridad en los objetivos
@@ -390,7 +400,13 @@ image::imagenAdoc/riesgos_para_informe.PNG[]
 
 image::Recursos/Sprint 2/indice de mitigacion tabla.PNG[700,700]
 
+** Plan de mitigación sprint 2
+
 image::Recursos/Sprint 2/indice de mit grafico.PNG[700,700]
+
+** Plan de mitigación sprint 3
+
+PONER IMAGEN INDICE DE MITIGACION 3
  
 === Entregables
 
@@ -417,6 +433,9 @@ En los hitos restantes se presentará al cliente los avances en el producto.
 * Guardar datos de ingreso
 * Implementar mensajes de Registro y logueo
 
+** Entregables para el proximo sprint del dia 05/06:
+
+PONER ENTREGABLES SPRINT 4
 
 === Administración en el Manejo de Bugs
 
@@ -429,7 +448,7 @@ image::Recursos/Sprint 2/Diagrama de bugs.drawio (2).png[700,700]
 
 Los bugs, se identificaron a través de la ejecución de pruebas. Dichas pruebas se llevaron a cabo utilizando como referencia las tablas de equivalencia que se detallan a continuación.
 
-image::Recursos/Sprint 2/Tabla de equivalencia - registro.png[700,700]
+PONER IMAGEN DE PRUEBA SPRINT 3
 
 image::Recursos/Sprint 2/Tabla de equivalencia - inicio de sesion.png[700,700]
 
@@ -482,15 +501,32 @@ image::Recursos/Sprint 2/bugs sprint 2 bien.PNG[700,700]
 
 image::Recursos/Sprint 2/Burndown chart sprint 2.PNG[700,700]
 
+* Funcionalidad Completa Sprint 3
+
+PONER IMAGEN FUNCIONALIDAD COMPLETA 3
+
+* Nivel de Calidad Sprint 3
+
+PONER IMAGEN DE NIVEL DE CALIDAD SPRINT 3
+
+* Evolución de la Prueba Sprint 3
+
+PONER IMAGEN DE EVOLUCION DE LA PRUEBA SPRINT 3
+
+* Burndown Chart Sprint 3
+
+PONER IMAGEN DE BURNADOWN CHART SPRINT 3
+
+
 === Indicadores Acumulados
 
 * Evolución de la Prueba Acumulado
 
-image::Recursos/Sprint 2/bugs acumulados bien.PNG[700,700]
+PONER IMANGE DE EVOLUCION DE LA PRUEBA ACUMULADOS
 
 * Burndown Chart Acumulado
 
-image::Recursos/Sprint 2/Burndown chart acumulado.PNG[700,700]
+PONER IMAGEN DE BURNADOWN CHART ACUMULADOS
 
 === Problemas encontrados
 
@@ -499,6 +535,9 @@ Uno de los desafíos que enfrentamos se relacionó con la organización de las t
 
 * Poca o nula experiencia en nuevas tecnologías:
 La falta de familiaridad con las tecnologías aplicadas en el proyecto planteó un desafío significativo para ambos equipos, tanto de desarrollo como de Testing, en la resolución de problemas emergentes. Este escenario resultó en una utilización menos eficiente del tiempo asignado a cada tarea, lo cual impactó en la productividad general del equipo.
+
+* Ausencia de miembro por problemas de salud:
+Durante la ejecución del sprint 3, uno de los miembros del equipo estuvo ausente un día debido a problemas de salud. Aunque no se produjo un retraso en la implementación de la funcionalidad en desarrollo, se identificó la posibilidad de que este contratiempo pudiera haber tenido consecuencias más graves, comprometiendo así la calidad del producto final en el momento de su entrega.
 
 === Lecciones aprendidas:
 
