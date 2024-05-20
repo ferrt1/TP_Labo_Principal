@@ -263,6 +263,8 @@ Los pesos se clasifican en base a:
 | 2.4.4 | Mensaje de perfil de usuario | Mensajes del sistema para el perfil del usuario | Desarrollo | Equipo de desarrollo | 3
 | 2.4.5 | Creación de metodos y funciones | Creacipon de metodos y funciones para los mensajes del sistema  | Desarrollo | Equipo de desarrollo | 3
 | 2.5 | Gestión de cuenta | Gestión para la cuenta del usuario | Desarrollo | Equipo de desarrollo | 3
+| 2.5.1 | Crear perfil de usuario | Crear perfil para el usuario | Desarrollo | Equipo de desarrollo | 3
+| 2.5.2 | Ver horas de ingreso | Ver horas de ingreso del usuario en su perfil | Desarrollo | Equipo de desarrollo | 3
 | 3 | Desarrollo backend | Desarrollar la lógica de la aplicación | Desarrollo | Equipo de desarrollo | 3 
 | 3.1 | Capacitación del equipo de desarrollo | Capacitar al equipo de desarrollo con las tecnologías a utilizar | Capacitación | Equipo de desarrollo | 2 
 | 3.2 | Almacenamiento de imágenes | Almacenar las imágenes en el dispositivo del usuario | Desarrollo | Equipo de desarrollo | 2 
