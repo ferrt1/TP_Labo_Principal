@@ -7,7 +7,7 @@ fun validaUser(name: String): Boolean {
 }
 
 fun validaUserMessage(): String {
-    return "No se encontro el usuario "
+    return "No se encontró el usuario "
 }
 
 fun searcherMessage(): String {

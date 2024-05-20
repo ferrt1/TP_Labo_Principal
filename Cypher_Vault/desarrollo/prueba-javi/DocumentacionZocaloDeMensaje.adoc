@@ -10,50 +10,50 @@
 = Zócalo de Mensaje
 
 == Objetivo
-** El objetivo de los zócalos de mensajes es guiar al usuario sobre qué debe completar en cada campo. Además, sirven para ofrecer consejos y mejorar la comodidad del usuario. También son útiles para proporcionar orientación.
+** Los zócalos de mensajes son elementos importante en nuestra aplicación, estan diseñados para proporcionar orientación y mejorar la experiencia del usuario. A continuación, se explicara su objetivos y los diferentes iconos que encontrarás en nuestra aplicacion:
 
 == Iconos de mensaje
-** En nuestra app existirán 3 tipos de imágenes para indicar situaciones posibles cuando el usuario realiza una acción:
+** En nuestra aplicación, utilizamos tres tipos de iconos de mensaje para comunicar diferentes situaciones a los usuarios cuando realizan un acción.
 
 
 image::../../../Recursos/iconos-msg-01.png[]
-** Este icono tiene como objetivo clarificar para qué sirve un campo, es decir, dar una guía al usuario para realizar una acción.
+** Tiene como objetivo proporcionar una guía al usuario sobre cómo completar un campo específico. Es una forma de aclarar el propósito del campo y aconsejar al usuario.
 
 image::../../../Recursos/iconos-msg-03.png[]
-** El propósito de este icono es indicar que se debe tener precaución porque existen campos que no se están completando correctamente o algo puede fallar.
+** Este icono tiene como objetivo indicar precaución. Aparece cuando existen campos que no se están completando correctamente o cuando algo podría fallar. Es una señal para que el usuario revise la información antes de continuar.
 
 image::../../../Recursos/iconos-msg-02.png[]
-** Este icono tiene como objetivo indicar un error cuando el usuario realiza una acción, generalmente al completar los campos durante el registro.
+** Este icono tiene como objetivo indicar un error cuando el usuario completa un campo de manera erronea.
 
-== Vista
-** Registro: En la sección de registro, hay tres campos obligatorios que se deben completar: `correo electrónico`, `nombre de usuario` y `contraseña`. Para completar estos campos, se requieren ciertas condiciones.
+== Vista registration
+** Registration: En la sección de registro, hay tres campos obligatorios que se deben completar: `correo electrónico`, `nombre de usuario` y `contraseña`. Para completar estos campos, se requieren ciertas condiciones.
 
 === Campo de Correo Electrónico 
-** Se le pedirá al usuario un correo electrónico válido para registrarse. De lo contrario, pueden aparecer ciertos mensajes de precaución y error. Los posibles mensajes son:
+** En el campo de Correo Electrónico, se le solicitará al usuario que proporcione una dirección de correo válida para completar su registro. Si el usuario ingresa un correo incorrecto, pueden aparecer los siguientes mensajes:
 
 image::../../../Recursos/combinacionDeMensajes/diapositiva(Correo).JPG[700,700]
-** Como se puede apreciar en la imagen, existen varios tipos de mensajes.
+** Como se puede apreciar en la imagen, existen varios tipos de mensajes, los posibles mensajes son:
 
-*** Mensaje Principal: Debajo del campo de correo electrónico, se muestra un mensaje que estará activo hasta que el usuario ingrese un valor válido.
+*** Mensaje Principal: Este mensaje estará activo hasta que el usuario ingrese un correo válido. Sirve como recordatorio para completar correctamente el campo.
 
-*** Correo con espacio: Si el usuario ingresa un correo con espacio, se indicará un mensaje de que no se permite el espacio y el texto ingresado por el usuario se tornará en rojo, haciendo entender que algo está fallando.
+*** Correo con Espacio: Si el usuario ingresa un correo con espacios, se mostrará un mensaje indicando que no se permite el uso de espacios. Además, el texto ingresado por el usuario se resaltará en rojo, lo que señala que algo está fallando.
 
-*** Correo registrado: Este mensaje indica que un usuario ya se ha registrado con ese correo, por lo que tendrá que ingresar otro correo.
+*** Correo Registrado: Si un usuario ya se ha registrado con la dirección de correo proporcionada, se mostrará un mensaje informando que ese correo ya está en uso. En este caso, el usuario deberá ingresar una dirección diferente.
 
-*** Correo válido: Cuando se completa correctamente el campo, desaparecerán todos los mensajes, indicando que se completó el correo correctamente.
+*** Correo Válido: Cuando el usuario completa correctamente el campo con una dirección de correo válida, todos los mensajes desaparecerán, indicando que se ha ingresado el correo correctamente.
 
 === Campo de Nombre
 
 ** En esta sección se le pedirá al usuario un nombre para su cuenta. Para generar un nombre de usuario existirán ciertas condiciones al completar este campo.
 
 image::../../../Recursos/combinacionDeMensajes/diapositiva(nombre).JPG[]
-** Analogamente que la imagen anterior, en el campo de nombre tambien existen posibles mensajes:
+** Análogamente a la imagen anterior, en el campo de nombre también existen posibles mensajes que se presentarán a la hora de completar este campo:
 
-*** Mensaje principal: Al posicionarse en el campo de nombre, existe un mensaje que indicará al usuario cuál es el rango de letras que puede ingresar y debe contener caracteres alfabéticos.
+*** Mensaje Principal: Este mensaje estará activo cuando el usuario quiera ingresar sus datos, se le indicara cuál es el rango de letras permitido y que debe contener caracteres alfabéticos.
 
-*** Nombre de usuario largo: Este mensaje se presentará cuando el nombre de usuario supera los 50 caracteres.
+*** Nombre de Usuario Largo: Si el nombre de usuario supera los 50 caracteres, se mostrará un mensaje indicando que es demasiado largo. En este caso, el usuario deberá acortarlo, además, los datos ingresado se tornaran un tono rojo indicando que algo esta fallando.
 
-*** Nombre con espacio: Cuando el usuario ingrese un nombre que contenga espacio entre caracteres, se indicará un mensaje de que no se admite espacio en el campo de nombre.
+*** Nombre con Espacio: Si el usuario ingresa un nombre que contiene espacios entre caracteres, se mostrará un mensaje indicando que no se admite espacio en el campo de nombre de usuario.
 
 *** Nombre con número: Existe la posibilidad de que el usuario ingrese caracteres numéricos. En este caso, no se permitirá esta situación, generando un mensaje debajo del campo de nombre.
 
@@ -63,7 +63,7 @@ image::../../../Recursos/combinacionDeMensajes/diapositiva(nombre).JPG[]
 
 === Campo de Contraseña
 
-** En este campo se le pedirá al usuario una contraseña como requisito para iniciar sesión. Al completar el campo, se pueden presentar diferentes tipos de mensajes:
+** En nuestra aplicación, el campo de Contraseña es crucial para la seguridad de las cuentas de los usuario, además es un dato fundamental para poder registrase. Al completar el campo, se pueden presentar diferentes tipos de mensajes:
 
 image::../../../Recursos/combinacionDeMensajes/diapositiva(Contraseña).JPG[]
 ** A medida que el usuario ingresa la contraseña, puede surgir los mensajes de advertencia y error según los datos que se ingrese.
@@ -80,7 +80,46 @@ image::../../../Recursos/combinacionDeMensajes/diapositiva(Contraseña).JPG[]
 
 *** Contraseña válida: En el caso de que el usuario ingrese una contraseña respetando las condiciones pedidas, desaparecerá cualquier tipo de mensaje. 
 
-== Controllador y logica:
 
-** Respetando el patron de diseño, se separo la parte  de vista, controlador, logica (continura...)
+=== Mensaje general:
 
+image::../../../Recursos/combinacionDeMensajes/diapositiva(general).JPG[]
+
+*** En el caso hipotético de que el usuario no aprecio los mensajes de cada campo correspondiente y seleccione el botón `Registrarse`, aparecerá un mensaje de error indicando que existe un dato incorrecto en alguno de los campos. Esto impedirá que el usuario complete el registro y avance a la siguiente vista.
+
+
+== Vista Login
+
+** Login: En la vista de inicio de sesión, se pueden apreciar diferentes tipos de cuentas que los usuarios han ingresado. Además, se han implementado mensajes de sugerencia para guiar a los usuarios durante el proceso de inicio de sesión
+
+=== Mensaje de busqueda
+
+image::../../../Recursos/login/sugerenciademensaje.JPG[]
+
+** En nuestra aplicación, hemos incluido un mensaje de sugerencia para facilitar la búsqueda de cuentas. Los usuarios pueden buscar su cuenta ingresando su nombre de usuario. Esto es especialmente útil cuando hay muchas cuentas registradas y puede resultar tedioso buscar manualmente.
+
+image::../../../Recursos/login/MnesajeNoExisteElUsuario.JPG[]
+
+** En caso de que el usuario ingrese un nombre que no esté registrado en nuestra aplicación, se mostrará un mensaje indicando que no se encuentra en nuestra base de datos
+
+== Vista, controlador y modelo:
+
+** Respetando el patrón de diseño MVC, se ha separado la vista, el controlador y el modelo de los zocalos de mensajes, a contunuacion se indicara las responasabilidades de cada paquete y se explicara cual es el objetivo de cada uno.
+
+** view > Registration > InitialScreen.kt
+
+image::../../../Recursos/MVC/view.JPG[]
+
+*** El paquete `view` contiene toda la parte visual donde el usuario interactúa. En este caso, es el formulario de registro. El objetivo de la `view` es visualizar los campos de registro (nombre, correo, contraseña) y los botones (registrarse, iniciar seccion). A medida que el usuario rellena los campos, la vista envía los datos al controlador.
+
+** Controller > messages > MessageController.kt
+
+image::../../../Recursos/MVC/controller.JPG[]
+
+*** El paquete `Controller` se encarga de gestionar los datos ingresados por el usuario y coordinar la comunicación entre la vista y el modelo. La funcion del controlador es recibir los datos enviados desde la vista (campos de registro completados por el usuario) y enviar esos datos al modelo para su análisis y procesamiento. por ultimo, Una vez que el modelo devuelve un resultado (por ejemplo, validación exitosa o error), el controlador actualiza la vista con la respuesta correspondiente.
+
+** Model > message > RegistrationMessage.kt
+
+image::../../../Recursos/MVC/model.JPG[]
+
+*** El paquete `Model` contiene la lógica de negocio y la validación de datos. Las funciones del modelo es validar los datos, analiza los datos ingresados por el usuario (nombre, correo, contraseña) y verifica si cumplen con las condiciones requeridas. Contiene las reglas de negocio para la aplicación, por ejemplo, longitud mínima de contraseña, formato de correo válido, etc. por ultimo se obtiene una devolucion de resultados, el modelo envía una respuesta al controlador (éxitoso o erroneo) según el análisis de los datos.

@@ -137,7 +137,7 @@ fun NavigationLogin(authenticationController: AuthenticationController) {
             OutlinedTextField(
                 value = searchQuery,
                 onValueChange = { searchQuery = it },
-                placeholder = { Text("Buscá tu usuario", style = TextStyle(color = thirdColor)) },
+                placeholder = { Text("Busqué su usuario", style = TextStyle(color = thirdColor)) },
                 modifier = Modifier
                     .padding(top = 20.dp)
                     .onFocusChanged { focusState ->
@@ -181,8 +181,7 @@ fun NavigationLogin(authenticationController: AuthenticationController) {
                 }
             }
 
-
-
+            
             if(searchQuery.length==0) {
                 Column(
                     verticalArrangement = Arrangement.Center,
