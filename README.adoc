@@ -209,8 +209,7 @@ Una vez explicado las clasificación de requerimientos funcionales,  se hará a 
 
 === WBS
 
-image::Recursos/Sprint 3/WBS (1).jpg[]
-
+image::Recursos/Sprint 3/WBS (1).jpg[700,700]
 
 
 === Diccionario
@@ -375,7 +374,7 @@ PONER IMAGEN HORAS SPRINT 3
 * R7 La curva de aprendizaje en nuevas tecnologias podria afectar la eficiencia de los desarrolladores
 * R8 Variación en los tiempos de dedicación entre los miembros del equipo
 
-image::imagenAdoc/riesgos_para_informe.PNG[]
+image::imagenAdoc/riesgos_para_informe.PNG[700,700]
 
 ** Plan de mitigacion
 * R1 = Armado detallado de la WBS. Organizar reuniones para revisar y aclarar los objetivos.
@@ -406,7 +405,7 @@ image::Recursos/Sprint 2/indice de mit grafico.PNG[700,700]
 
 ** Plan de mitigación sprint 3
 
-image::Recursos/Sprint 3/Indice de mitigacion grafico.PNG[]
+image::Recursos/Sprint 3/Indice de mitigacion grafico.PNG[700,700]
  
 === Entregables
 
@@ -448,7 +447,7 @@ image::Recursos/Sprint 2/Diagrama de bugs.drawio (2).png[700,700]
 
 Los bugs, se identificaron a través de la ejecución de pruebas. Dichas pruebas se llevaron a cabo utilizando como referencia las tablas de equivalencia que se detallan a continuación.
 
-image::Recursos/Sprint 3/Pruebas sprint 3.PNG[]
+image::Recursos/Sprint 3/Pruebas sprint 3.PNG[700,700]
 
 image::Recursos/Sprint 2/Tabla de equivalencia - inicio de sesion.png[700,700]
 
@@ -503,30 +502,30 @@ image::Recursos/Sprint 2/Burndown chart sprint 2.PNG[700,700]
 
 * Funcionalidad Completa Sprint 3
 
-image::Recursos/Sprint 3/Funcionalidad completa tabla.PNG[]
+image::Recursos/Sprint 3/Funcionalidad completa tabla.PNG[700,700]
 
 * Nivel de Calidad Sprint 3
 
-image::Recursos/Sprint 3/Nivel de calidad grafico.PNG[]
+image::Recursos/Sprint 3/Nivel de calidad grafico.PNG[700,700]
 
 * Evolución de la Prueba Sprint 3
 
-image::Recursos/Sprint 3/Evolucion de la prueba sprint 3.PNG[]
+image::Recursos/Sprint 3/Evolucion de la prueba sprint 3.PNG[700,700]
 
 * Burndown Chart Sprint 3
 
-image::Recursos/Sprint 3/Burndown chart sprint 3.PNG[]
+image::Recursos/Sprint 3/Burndown chart sprint 3.PNG[700,700]
 
 
 === Indicadores Acumulados
 
 * Evolución de la Prueba Acumulado
 
-image::Recursos/Sprint 3/Evolucion de la prueba acumulado.PNG[]
+image::Recursos/Sprint 3/Evolucion de la prueba acumulado.PNG[700,700]
 
 * Burndown Chart Acumulado
 
-image::Recursos/Sprint 3/Burndown cgart acumulado.PNG[]
+image::Recursos/Sprint 3/Burndown cgart acumulado.PNG[700,700]
 
 === Problemas encontrados
 
