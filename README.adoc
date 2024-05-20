@@ -539,6 +539,9 @@ La falta de familiaridad con las tecnologías aplicadas en el proyecto planteó 
 * Ausencia de miembro por problemas de salud:
 Durante la ejecución del sprint 3, uno de los miembros del equipo estuvo ausente un día debido a problemas de salud. Aunque no se produjo un retraso en la implementación de la funcionalidad en desarrollo, se identificó la posibilidad de que este contratiempo pudiera haber tenido consecuencias más graves, comprometiendo así la calidad del producto final en el momento de su entrega.
 
+* Falta de servicio de luz:
+Durante la ejecución del proyecto, nos enfrentamos a contratiempos relacionados con la interrupción del suministro eléctrico. En varios días, algunos miembros del equipo se vieron imposibilitados de avanzar en sus tareas debido a la falta de energía eléctrica.
+
 === Lecciones aprendidas:
 
 * Planificación y gestión de proyecto:
