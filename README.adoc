@@ -1467,7 +1467,7 @@ NOTE: *Mejoras visuales:* verificacion del tamaño del rostro en pantalla, ya qu
 * *Librerías utilizadas:*
 ** *TensorFlow Lite:* Es una biblioteca que permite ejecutar modelos de machine learning en dispositivos móviles.
 
-* *Funciones utilizadas: *
+* *Funciones utilizadas:*
 
 [source, kotlin]
 ----
