@@ -361,11 +361,12 @@ image::Recursos/Sprint 2/HORAS.PNG[700,700]
 * *Desarrollo:* 120hs en total
 * *Testing:* 40hs por tester.
 
-PONER IMAGEN HORAS SPRINT 3
+image::Recursos/Sprint 3/horas sprint 3.PNG[700,700]
 
 === Horas empleadas Acumuladas
 
-PONER IMAGEN HORAS ACUMULADAS
+
+image::Recursos/Sprint 3/horas acumuladas.PNG[700,700]
 
 === Riesgos
 
