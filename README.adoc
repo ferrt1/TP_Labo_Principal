@@ -1455,12 +1455,66 @@ NOTE: *Mejora en la captura:* mejora en la captura fotografica, realizando el re
 
 NOTE: *Mejoras visuales:* verificacion del tamaño del rostro en pantalla, ya que si los rostros son de distintas dimensiones, el codigo no funciona, avisos visuales al usuario los cuales le iran indicando que tiene que tiene que hacer en el area de captura de fotos ( Acercarse a la camara, alejarse, inclinacion de rostro en ese Y y Z, subir o bajar el rostro dentro del area de captura ), con verificaciones visuales para asegurar el margen de error en este area tan critica.
 
-=== Reconocimiento facial ( con internet )
+=== Reconocimiento facial implementación al día 20/05
 
 * *Detección de Rostros en Tiempo Real y Captura de Fotos*
 ** Esta implementación también utiliza ML Kit para la detección de rostros. El registro funciona en tiempo real y cuando se detecta un rostro, se comienza un temporizador de 3 segundos. Si el rostro se mantiene en el cuadro durante estos 3 segundos, la aplicación toma una foto y la guarda en la base de datos para luego poder utilizarla en el reconocimiento.
 
-** Para el inicio de sesión, el proceso de detección de rostros en tiempo real y captura de fotos se repite. Cuando el usuario inicia sesión, la aplicación detecta el rostro del usuario y toma una foto después de 3 segundos. Esta foto se envía al servidor para el reconocimiento facial.
+** Para el inicio de sesión, el proceso de detección de rostros en tiempo real y captura de fotos se repite. Cuando el usuario inicia sesión, la aplicación detecta el rostro del usuario y toma una foto después de 3 segundos. Esta foto se utiliza para compararla con la del registro guardada en nuestra base de datos.
+
+** La aplicación utiliza un modelo de TensorFlow Lite cargado localmente para extraer características del rostro. Luego, compara estas características con las características del rostro guardado en la base de datos para verificar la identidad del usuario. Para compararlas se utiliza lo mencionado anteriormente. La distancia euclidiana
+
+* *Librerías utilizadas:*
+** *TensorFlow Lite:* Es una biblioteca que permite ejecutar modelos de machine learning en dispositivos móviles.
+
+* *Funciones utilizadas: *
+
+[source, kotlin]
+----
+fun loadModelFile(assetManager: AssetManager, modelPath: String): MappedByteBuffer {
+    val fileDescriptor: AssetFileDescriptor = assetManager.openFd(modelPath)
+    val inputStream = FileInputStream(fileDescriptor.fileDescriptor)
+    val fileChannel: FileChannel = inputStream.channel
+    val startOffset: Long = fileDescriptor.startOffset
+    val declaredLength: Long = fileDescriptor.declaredLength
+    return fileChannel.map(FileChannel.MapMode.READ_ONLY, startOffset, declaredLength)
+}
+----
+
+*loadModelFile* esta función carga el modelo utilizado llamado MobileFaceNet en la aplicación.
+
+[source, kotlin]
+----
+fun extractFaceFeatures(model: Interpreter, faceImage: Bitmap): FloatArray {
+    val faceFeatures = Array(1) { FloatArray(192) } // El modelo produce 192 características
+    val faceImageBuffer = convertBitmapToBuffer(faceImage) 
+    model.run(faceImageBuffer, faceFeatures)
+    return faceFeatures[0] 
+}
+----
+
+*extractFaceFeatures* : Esta función utiliza el modelo para extraer características del rostro en la imagen proporcionada. Las características son un conjunto de 192 valores flotantes que representan diferentes aspectos del rostro.
+
+
+[source, kotlin]
+----
+fun compareFaceFeatures(features1: FloatArray, features2: FloatArray): Float {
+    var sum = 0.0f
+    for (i in features1.indices) {
+        sum += (features1[i] - features2[i]).pow(2)
+    }
+    val result = sqrt(sum)
+    return result
+}
+----
+
+Por último tenemos la función *compareFaceFeatures* la cuál se encargara de calcular la distancia euclidiana entre los dos conjuntos de características extraídas anteriormente. Como ya fue explicado se tiene un umbral y si entra dentro de ese rango decimos que los dos rostros pertenecen a la misma persona.
+
+=== Reconocimiento facial ( con internet )
+
+* *Detección de Rostros en Tiempo Real y Captura de Fotos*
+
+** Esta implementación también utiliza lo mismo que la anterior para la detección facial.
 
 ** En el servidor, tenemos dos versiones de una API para el reconocimiento facial. Ambas versiones de la API reciben la foto del usuario y la comparan con la foto guardada en la base de datos para verificar la identidad del usuario.
 
@@ -1590,4 +1644,4 @@ Por último se comparan las distancias y se devuelve la respuesta.
 
 <3> *Devolución del resultado a la aplicación*
 
-
+NOTE: Se decidió implementar el reconocimiento facial sin internet y con el modelo de TensorFlow Lite.
