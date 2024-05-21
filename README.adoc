@@ -295,7 +295,7 @@ Los pesos se clasifican en base a:
 | 2 | (26/4) | Implementacion de interfaz inicial
 | 3 | (8/5) | Implementación de algoritmo de reconocimiento facial
 | 4 | (22/5) | Interfaz galeria, ver imagenes, cargar imagenes, guardar datos de ingreso, implementar mensajes de registro y logueo
-| 5 | (5/6) | A definir 
+| 5 | (5/6) | Agregar foto de perfil, Cambiar contraseña, Cerrar sesión, Eliminar cuenta, Implementar mensajes de perfil de usuario y galeria, Cifrar imagenes
 | 6 | (14/6) | A definir 
 | 7 | (26/6) | A definir 
 |===
@@ -433,8 +433,12 @@ En los hitos restantes se presentará al cliente los avances en el producto.
 * Implementar mensajes de Registro y logueo
 
 ** Entregables para el proximo sprint del dia 05/06:
-
-PONER ENTREGABLES SPRINT 4
+* Agregar foto de perfil
+* Cambiar contraseña
+* Cerrar sesión
+* Eliminar cuenta
+* Implementar mensajes de perfil de usuario y galeria
+* Cifrar imagenes
 
 === Administración en el Manejo de Bugs
 
