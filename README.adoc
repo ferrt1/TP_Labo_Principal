@@ -363,6 +363,10 @@ image::Recursos/Sprint 2/HORAS.PNG[700,700]
 
 PONER IMAGEN HORAS SPRINT 3
 
+=== Horas empleadas Acumuladas
+
+PONER IMAGEN HORAS ACUMULADAS
+
 === Riesgos
 
 * R1 Falta de claridad en los objetivos
