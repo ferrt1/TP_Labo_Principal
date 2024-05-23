@@ -45,11 +45,13 @@ class FaceOverlayView(context: Context) : View(context) {
             paint.color = Color.RED
             paint.style = Paint.Style.STROKE
             paint.strokeWidth = 4f
+            val adjustmentWidth = 150
+            val adjustmentHeight = 10
 
-            val left = width - it.right * width.toFloat()  / imageHeight
-            val top = it.top * height.toFloat() / imageWidth
-            val right = width - it.left * width.toFloat()  / imageHeight
-            val bottom = it.bottom * height.toFloat() / imageWidth
+            val left = width - it.right * width.toFloat() / imageHeight - adjustmentWidth / 2
+            val top = it.top * height.toFloat() / imageWidth + adjustmentHeight
+            val right = width - it.left * width.toFloat() / imageHeight + adjustmentWidth / 2
+            val bottom = it.bottom * height.toFloat() / imageWidth - adjustmentHeight
 
             canvas.drawRect(left, top, right, bottom, paint)
         }
@@ -61,13 +63,17 @@ class FaceOverlayView(context: Context) : View(context) {
     }
 
     private fun transformBoundingBox(boundingBox: Rect): Rect {
-        val left = width - boundingBox.right * width.toFloat() / imageHeight
-        val top = boundingBox.top * height.toFloat() / imageWidth
-        val right = width - boundingBox.left * width.toFloat() / imageHeight
-        val bottom = boundingBox.bottom * height.toFloat() / imageWidth
+        val adjustmentWidth = 150
+        val adjustmentHeight = 10
+
+        val left = width - boundingBox.right * width.toFloat() / imageHeight - adjustmentWidth / 2
+        val top = boundingBox.top * height.toFloat() / imageWidth + adjustmentHeight
+        val right = width - boundingBox.left * width.toFloat() / imageHeight + adjustmentWidth / 2
+        val bottom = boundingBox.bottom * height.toFloat() / imageWidth - adjustmentHeight
 
         return Rect(left.toInt(), top.toInt(), right.toInt(), bottom.toInt())
     }
+
 
 }
 
