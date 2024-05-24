@@ -347,9 +347,11 @@ fun Gallery(navController: NavController, userId: String, galleryController: Gal
                     }
                 }
                 if (selectedImageBitmap.value != null) {
+
                     Dialog(onDismissRequest = { selectedImageBitmap.value = null }) {
+                        val redimensionar = galleryController.reduceImageSize(selectedImageBitmap.value!!.asImageBitmap(), 2f)
                         Image(
-                            bitmap = selectedImageBitmap.value!!.asImageBitmap(),
+                            bitmap = redimensionar,
                             contentDescription = null,
                             modifier = Modifier.fillMaxWidth()
                         )

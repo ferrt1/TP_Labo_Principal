@@ -1,8 +1,10 @@
 package com.example.cypher_vault.controller.gallery
 
 
+import android.graphics.Bitmap
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.ui.graphics.ImageBitmap
 import com.example.cypher_vault.controller.income.UserAccessController
 import com.example.cypher_vault.database.Images
 import com.example.cypher_vault.database.UserIncome
@@ -13,7 +15,6 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 
@@ -57,6 +58,10 @@ class GalleryController() {
 
     fun formatIncomeDate(income: Long?): String{
         return galleryManager.formatIncomeDate(income)
+    }
+
+    fun reduceImageSize(bitmap: ImageBitmap, maxMegapixels: Float): ImageBitmap {
+        return galleryManager.reduceImageSize(bitmap, maxMegapixels)
     }
 
 }

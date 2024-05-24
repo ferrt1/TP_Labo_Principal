@@ -76,7 +76,8 @@ dependencies {
     implementation(libs.androidx.activity.compose)
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.ui)
-    implementation(libs.androidx.ui.graphics)
+    //implementation(libs.androidx.ui.graphics)
+    implementation("androidx.compose.ui:ui-graphics:1.4.3")
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3) // Asegúrate de que esta sea la versión 1.2.1
     implementation("androidx.compose.material:material-icons-extended:1.6.6")

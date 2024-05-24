@@ -1,15 +1,14 @@
 package com.example.cypher_vault.model.gallery
-
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.height
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
-import com.example.cypher_vault.database.UserIncome
-import com.example.cypher_vault.view.gallery.mainBackgroundColor
-import com.example.cypher_vault.view.gallery.textStyleTittle2
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import android.graphics.Matrix
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Canvas
+import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.graphics.ImageBitmapConfig
+import androidx.compose.ui.graphics.Paint
+import androidx.compose.ui.graphics.asAndroidBitmap
+import java.io.ByteArrayOutputStream
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -44,6 +43,36 @@ class GalleryManager {
         } else {
             "Fecha no disponible"
         }
+    }
+
+    fun reduceImageSize(imageBitmap: ImageBitmap, maxMegapixels: Float): ImageBitmap {
+        val bitmap = imageBitmap
+        val reducedBitmap = reduceImageSize(bitmap, maxMegapixels)
+
+        // Create a new ImageBitmap from the reduced Bitmap
+        val config : ImageBitmapConfig = bitmap.config
+        val newImageBitmap = ImageBitmap(reducedBitmap.width, reducedBitmap.height, config)
+
+        // Copy the pixels from the reduced Bitmap to the new ImageBitmap
+        val canvas = Canvas(newImageBitmap)
+        canvas.drawImage(reducedBitmap, Offset.Zero, Paint())
+
+        return newImageBitmap
+    }
+
+    private fun reduceImageSize(bitmap: Bitmap, maxMegapixels: Float): Bitmap {
+        val megapixels = (bitmap.width * bitmap.height) / 1000000f
+
+        if (megapixels <= maxMegapixels) {
+            return bitmap
+        }
+
+        val scale = Math.sqrt((maxMegapixels / megapixels).toDouble())
+
+        val matrix = Matrix()
+        matrix.postScale(scale.toFloat(), scale.toFloat())
+
+        return Bitmap.createBitmap(bitmap, 0, 0, bitmap.width, bitmap.height, matrix, true)
     }
 
 
