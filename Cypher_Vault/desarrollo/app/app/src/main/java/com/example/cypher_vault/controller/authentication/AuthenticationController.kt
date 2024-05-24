@@ -13,7 +13,7 @@ import kotlinx.coroutines.launch
 class AuthenticationController(context: Context) {
     private val databaseController = DatabaseController()
     private val model = FaceRecognitionModel(context.assets, "mobilefacenet.tflite")
-    private val threshold = 0.8f
+    private val threshold = 0.6f
 
     fun authenticate(userId: String, callback: (Boolean, Bitmap?, Bitmap?) -> Unit) {
         CoroutineScope(Dispatchers.IO).launch {
