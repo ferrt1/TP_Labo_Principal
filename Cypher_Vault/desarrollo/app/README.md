@@ -76,10 +76,10 @@ Empieza en register por predeterminado y luego va cambiando, toma como parámetr
 <hr>
 
 ```kotlin
-fun RegistrationCameraScreen(authenticationController: AuthenticationController)
+fun RegistrationCameraScreen(navController: AuthenticationController)
 ```
 
-Recibe como parametro authenticationController para luego poder navegar por la aplicacion
+Recibe como parametro navController para luego poder navegar por la aplicacion
 
 `InitialScreen` es la pantalla inicial donde los usuarios se van a registrar. Se encuentran los campos de entrada para el correo electrónico y el nombre. Al hacer clic en el botón "Registrarse", se llama al método `registerUser` del 
 `AuthenticationController`.
@@ -92,10 +92,10 @@ Recibe como parametro authenticationController para luego poder navegar por la a
 <hr>
 
 ```kotlin
-fun RegistrationCameraScreen(authenticationController: AuthenticationController)
+fun RegistrationCameraScreen(navController: AuthenticationController)
 ```
 
-Recibe como parametro authenticationController para luego poder navegar por la aplicacion
+Recibe como parametro navController para luego poder navegar por la aplicacion
 
 Esta función Muestra la vista previa de la cámara
 `ProcessCameraProvider:` Esta es una clase que se utiliza para interactuar con las cámaras disponibles en el dispositivo. En este caso, se obtiene una instancia de ProcessCameraProvider y 
@@ -109,7 +109,7 @@ se recuerda para su uso posterior.
 ```kotlin
 fun CloseCameraButton(isCameraOpen: MutableState<Boolean>,
                       cameraProvider: ProcessCameraProvider,
-                        authenticationController: AuthenticationController)
+                        navController: AuthenticationController)
 ```
 
 Botón que se muestra para cerrar la cámara e ir a la parte de ConfirmationScreen
@@ -130,10 +130,10 @@ Muestra la vista previa de la cámara en la interfaz de usuario. Utiliza la clas
 <hr>
 
 ```kotlin
-fun ConfirmationScreen(authenticationController: AuthenticationController)
+fun ConfirmationScreen(navController: AuthenticationController)
 ```
 
-Recibe como parametro authenticationController para luego poder navegar por la aplicacion
+Recibe como parametro navController para luego poder navegar por la aplicacion
 
 `ConfirmationScreen` Es una pantalla que muestra un mensaje de que se pudo registrar y un botón para iniciar sesión
 

@@ -29,7 +29,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.ContextCompat
-import com.example.cypher_vault.controller.authentication.AuthenticationController
+import com.example.cypher_vault.controller.navigation.NavController
 import com.example.cypher_vault.controller.camera.CameraController
 import com.example.cypher_vault.controller.data.DatabaseController
 import com.example.cypher_vault.view.resources.FaceOverlayView
@@ -44,7 +44,7 @@ private val databaseController = DatabaseController()
 
 @OptIn(ExperimentalGetImage::class)
 @Composable
-fun RegistrationCameraScreen(authenticationController: AuthenticationController, userId: String) {
+fun RegistrationCameraScreen(navController: NavController, userId: String) {
 
     val context = LocalContext.current
     val cameraProviderFuture = remember { ProcessCameraProvider.getInstance(context) }
@@ -76,7 +76,7 @@ fun RegistrationCameraScreen(authenticationController: AuthenticationController,
 
     val faceOverlayView = remember { FaceOverlayView(context) }
 
-    val cameraController = CameraController(context, authenticationController, userId, databaseController)
+    val cameraController = CameraController(context, navController, userId, databaseController)
 
 
     imageAnalysis.setAnalyzer(ContextCompat.getMainExecutor(context)) { imageProxy ->
@@ -135,7 +135,7 @@ fun RegistrationCameraScreen(authenticationController: AuthenticationController,
                                     cameraProvider,
                                     isImageCaptured,
                                     coroutineScope,
-                                    authenticationController,
+                                    navController,
                                     faceOverlayView
                                 )
                                 timer.intValue = 3

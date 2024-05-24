@@ -27,7 +27,6 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -38,7 +37,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -56,19 +54,16 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.input.VisualTransformation
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.example.cypher_vault.R
-import com.example.cypher_vault.controller.authentication.AuthenticationController
+import com.example.cypher_vault.controller.navigation.NavController
 import com.example.cypher_vault.view.resources.CustomTitle
 
 import com.example.cypher_vault.controller.messages.*
-import com.example.cypher_vault.model.message.validatePasswordCharacters
-import com.example.cypher_vault.model.message.validatePasswordSpecialcharacters
 import com.example.cypher_vault.view.resources.*
 
 
@@ -94,7 +89,7 @@ fun RegisterText(){
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun InitialScreen(authenticationController: AuthenticationController) {
+fun InitialScreen(navController: NavController) {
     val context = LocalContext.current
     val activity = context.findAncestorActivity()
 
@@ -449,7 +444,7 @@ fun InitialScreen(authenticationController: AuthenticationController) {
 
             Button(
                 onClick = {
-                    authenticationController.registerUser(emailState.value.text, nameState.value.text, passwordState.value.text,errorMessage)
+                    navController.registerUser(emailState.value.text, nameState.value.text, passwordState.value.text,errorMessage)
                           },
                 shape = RoundedCornerShape(4.dp),
                 border = BorderStroke(3.dp, firstColor),
@@ -491,7 +486,7 @@ fun InitialScreen(authenticationController: AuthenticationController) {
             }
 
             OutlinedButton(
-                onClick = { authenticationController.navigateToListLogin()
+                onClick = { navController.navigateToListLogin()
                  },
                 shape = RoundedCornerShape(15.dp),
                 border = BorderStroke(3.dp, Color.Gray),

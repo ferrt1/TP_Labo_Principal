@@ -1,98 +1,48 @@
 package com.example.cypher_vault.controller.authentication
+
+import android.content.Context
 import android.graphics.Bitmap
-import android.util.Log
-import androidx.compose.runtime.MutableState
-import androidx.navigation.NavController
-import com.example.cypher_vault.controller.messages.getMessageError
-import com.example.cypher_vault.controller.messages.registrationValidation
-import com.example.cypher_vault.database.ImagesLogin
-import com.example.cypher_vault.database.ImagesRegister
-import com.example.cypher_vault.database.User
-import com.example.cypher_vault.model.dbmanager.DatabaseManager
-import com.example.cypher_vault.model.dbmanager.DatabaseManager.getAllUsers
+import android.graphics.BitmapFactory
+import com.example.cypher_vault.model.authentication.FaceRecognitionModel
+import com.example.cypher_vault.controller.data.DatabaseController
+import com.example.cypher_vault.controller.navigation.NavController
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.async
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
-import java.util.UUID
 
-class AuthenticationController(private val navController: NavController) {
+class AuthenticationController(context: Context) {
+    private val databaseController = DatabaseController()
+    private val model = FaceRecognitionModel(context.assets, "mobilefacenet.tflite")
+    private val threshold = 0.8f
 
-    init{
-        getAllUsers()
-    }
-
-    private fun getAllUsers() {
+    fun authenticate(userId: String, callback: (Boolean, Bitmap?, Bitmap?) -> Unit) {
         CoroutineScope(Dispatchers.IO).launch {
-            _users.value = DatabaseManager.getAllUsers()
-        }
-    }
+            val imageLogin = databaseController.getImageLoginForUser(userId)
+            val imageRegister = databaseController.getImageRegistersForUser(userId)
 
-    private val _users = MutableStateFlow<List<User>>(emptyList())
-    val users: StateFlow<List<User>> get() = _users
-
-    private fun navigateToCamera(uid: String) {
-        navController.navigate("camera/$uid")
-    }
-
-    fun navigateToConfirmation(uid: String) {
-        navController.navigate("confirmation/$uid")
-    }
-
-    fun navigateToListLogin(){
-        getAllUsers()
-        navController.navigate("list")
-    }
-
-    fun navigateToConfirmationLogin(uid: String) {
-        navController.navigate("authenticate/$uid")
-    }
-
-    fun navigateToCameraLogin(uid: String) {
-        navController.navigate("cameralogin/$uid")
-    }
-
-
-    fun navigateToRegister(){
-        navController.navigate("register")
-    }
-
-    fun navigateToGallery(uid: String){
-        navController.navigate("gallery/$uid")
-    }
-
-    fun navigateToProfile(uid: String){
-        navController.navigate("profile/$uid")
-    }
-
-    fun registerUser(
-        email: String,
-        name: String,
-        password: String,
-        errorMessage: MutableState<String>,
-    ): UUID?
-    {
-        val uid = UUID.randomUUID()
-        if (registrationValidation(email, name, password)) {
-            CoroutineScope(Dispatchers.IO).launch {
-                val user = User(
-                    uid = uid.toString(),
-                    firstName = name,
-                    email = email,
-                    entryDate = System.currentTimeMillis(),
-                    password = password
-                )
-                DatabaseManager.insertUser(user)
+            if (imageLogin.isNullOrEmpty() || imageRegister.isNullOrEmpty()) {
+                callback(false, null, null)
+                return@launch
             }
-            navigateToCamera(uid.toString())
-            return uid
-        } else {
-            errorMessage.value = getMessageError(email, name, password)
-            return null
+            val registerImage = imageRegister[0]
+            val loginImage = imageLogin[0]
+
+            val registerBitmap = BitmapFactory.decodeByteArray(registerImage.imageData, 0, registerImage.imageData.size)
+            val loginBitmap = BitmapFactory.decodeByteArray(loginImage.imageData, 0, loginImage.imageData.size)
+
+            val registerFeatures = model.extractFeatures(registerBitmap)
+            val loginFeatures = model.extractFeatures(loginBitmap)
+
+            val result = model.compareFaceFeatures(registerFeatures, loginFeatures)
+
+            if (result < threshold) {
+                databaseController.deleteImageLogin(userId)
+                callback(true, registerBitmap, loginBitmap)
+            } else {
+                databaseController.deleteImageLogin(userId)
+                callback(false, registerBitmap, loginBitmap)
+            }
         }
     }
+
 }

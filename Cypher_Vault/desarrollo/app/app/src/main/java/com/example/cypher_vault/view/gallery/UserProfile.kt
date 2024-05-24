@@ -19,20 +19,15 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.Font
-import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import com.example.cypher_vault.R
-import com.example.cypher_vault.controller.authentication.AuthenticationController
+import com.example.cypher_vault.controller.navigation.NavController
 import com.example.cypher_vault.view.registration.findAncestorActivity
 import com.example.cypher_vault.view.resources.*
 
 
 @Composable
-fun UserProfile(authenticationController: AuthenticationController, userId: String) {
+fun UserProfile(navController: NavController, userId: String) {
     val context = LocalContext.current
     val activity = context.findAncestorActivity()
 
@@ -70,7 +65,7 @@ fun UserProfile(authenticationController: AuthenticationController, userId: Stri
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
             OutlinedButton(
-                onClick = { authenticationController.navigateToListLogin() },
+                onClick = { navController.navigateToListLogin() },
                 shape = RoundedCornerShape(15.dp),
                 border = BorderStroke(3.dp, Color.Gray),
                 colors = ButtonDefaults.buttonColors(
@@ -106,7 +101,7 @@ fun UserProfile(authenticationController: AuthenticationController, userId: Stri
             }
 
             OutlinedButton(
-                onClick = { authenticationController.navigateToListLogin() },
+                onClick = { navController.navigateToListLogin() },
                 shape = RoundedCornerShape(15.dp),
                 border = BorderStroke(3.dp, thirdColor),
                 colors = ButtonDefaults.buttonColors(

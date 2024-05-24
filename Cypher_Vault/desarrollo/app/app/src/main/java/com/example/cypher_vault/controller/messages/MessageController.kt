@@ -5,7 +5,7 @@ import com.example.cypher_vault.model.message.*
 //------------------GET PRINCIPALES PARA VALIDAR LOS DATOS DE USUARIO Y INDICAR EL ERROR (abajo del boton de regitrarse -----//
 
 
-//Encargado de comunicarse entre el controller authentication y la parte logica de Message
+//Encargado de comunicarse entre el controller navigation y la parte logica de Message
 fun registrationValidation(email: String, name: String, pin: String): Boolean {
     return validate(email, name, pin)
 }

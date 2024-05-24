@@ -6,7 +6,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.example.cypher_vault.controller.authentication.AuthenticationController
+import com.example.cypher_vault.controller.navigation.NavController
 import com.example.cypher_vault.view.login.ConfirmationLoginScreen
 import com.example.cypher_vault.view.login.LoginCamera
 import com.example.cypher_vault.view.login.NavigationLogin
@@ -20,24 +20,25 @@ import com.example.cypher_vault.view.gallery.UserProfile
 @Composable
 fun NavigationHost() {
     val navController = rememberNavController()
-    val authenticationController = AuthenticationController(navController)
+    val navigationController = NavController(navController)
     val galleryController = GalleryController()
 
     NavHost(navController, startDestination = "register") {
         composable("register") {
-            InitialScreen(authenticationController)
+            InitialScreen(navigationController)
         }
+
         composable("camera/{userId}") { backStackEntry ->
             val userId = backStackEntry.arguments?.getString("userId")
             if (userId != null) {
-                RegistrationCameraScreen(authenticationController, userId)
+                RegistrationCameraScreen(navigationController, userId)
             } else {
             }
         }
         composable("cameralogin/{userId}") { backStackEntry ->
             val userId = backStackEntry.arguments?.getString("userId")
             if (userId != null) {
-                LoginCamera(authenticationController, userId)
+                LoginCamera(navigationController, userId)
             } else {
 
             }
@@ -46,16 +47,16 @@ fun NavigationHost() {
         composable("confirmation/{userId}") {backStackEntry ->
             val userId = backStackEntry.arguments?.getString("userId")
             if (userId != null) {
-                ConfirmationScreen(authenticationController, userId)
+                ConfirmationScreen(navigationController, userId)
             } else {
             }
         }
         composable("authenticate/{userId}") {backStackEntry ->
             val userId = backStackEntry.arguments?.getString("userId")
             if (userId != null) {
-                ConfirmationLoginScreen(authenticationController, userId)
+                ConfirmationLoginScreen(navigationController, userId)
             } else {
-                // Manejar el caso en que el userId no se pudo recuperar
+
             }
         }
         composable("gallery/{userId}") {backStackEntry ->
@@ -64,7 +65,7 @@ fun NavigationHost() {
                 LaunchedEffect(userId) {
                     galleryController.performUserIncomeInsertion(userId)
                 }
-                Gallery(authenticationController, userId, galleryController)
+                Gallery(navigationController, userId, galleryController)
             } else {
                 // Manejar el caso en que el userId no se pudo recuperar
             }
@@ -72,14 +73,14 @@ fun NavigationHost() {
         composable("profile/{userId}") {backStackEntry ->
             val userId = backStackEntry.arguments?.getString("userId")
             if (userId != null) {
-                UserProfile(authenticationController, userId)
+                UserProfile(navigationController, userId)
             } else {
                 // Manejar el caso en que el userId no se pudo recuperar
             }
         }
 
         composable("list") {
-            NavigationLogin(authenticationController)
+            NavigationLogin(navigationController)
         }
 
 

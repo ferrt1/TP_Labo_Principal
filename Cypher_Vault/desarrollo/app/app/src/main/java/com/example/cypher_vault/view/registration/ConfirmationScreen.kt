@@ -1,9 +1,7 @@
 package com.example.cypher_vault.view.registration
 
 import android.annotation.SuppressLint
-import android.graphics.Bitmap
 import android.graphics.BitmapFactory
-import android.graphics.Matrix
 import android.util.Log
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
@@ -29,7 +27,7 @@ import androidx.compose.ui.graphics.painter.BitmapPainter
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.cypher_vault.controller.authentication.AuthenticationController
+import com.example.cypher_vault.controller.navigation.NavController
 import com.example.cypher_vault.controller.data.DatabaseController
 import com.example.cypher_vault.database.ImagesRegister
 import kotlinx.coroutines.launch
@@ -39,7 +37,7 @@ private val databaseController = DatabaseController()
 
 @SuppressLint("CoroutineCreationDuringComposition")
 @Composable
-fun ConfirmationScreen(authenticationController: AuthenticationController, userId: String) {
+fun ConfirmationScreen(navController: NavController, userId: String) {
     val coroutineScope = rememberCoroutineScope()
     val imageRegisters = remember { mutableStateOf<List<ImagesRegister>?>(null) }
     coroutineScope.launch {
@@ -75,7 +73,7 @@ fun ConfirmationScreen(authenticationController: AuthenticationController, userI
             }
         }
         OutlinedButton(
-            onClick = { authenticationController.navigateToListLogin() },
+            onClick = { navController.navigateToListLogin() },
             shape = RoundedCornerShape(15.dp), // Esto hará que los bordes sean completamente redondos
             border = BorderStroke(3.dp, Color.Gray), // Establece el color del borde a gris
             colors = ButtonDefaults.buttonColors(

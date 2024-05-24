@@ -67,7 +67,7 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.sp
 import com.example.cypher_vault.R
-import com.example.cypher_vault.controller.authentication.AuthenticationController
+import com.example.cypher_vault.controller.navigation.NavController
 import com.example.cypher_vault.controller.data.DatabaseController
 import com.example.cypher_vault.controller.messages.getsearcherMessage
 import com.example.cypher_vault.controller.messages.getvalidaUserMessage
@@ -96,8 +96,8 @@ fun LoginText(){
 }
 
 @Composable
-fun NavigationLogin(authenticationController: AuthenticationController) {
-    val users by authenticationController.users.collectAsState()
+fun NavigationLogin(navController: NavController) {
+    val users by navController.users.collectAsState()
     val buttonTextStyle = TextStyle(fontWeight = FontWeight.Bold, fontSize = 16.sp, color = thirdColor, fontFamily = fontFamily)
     var selectedPersona by remember { mutableStateOf<String?>(null) }
     var searchQuery by remember { mutableStateOf("") }
@@ -252,7 +252,7 @@ fun NavigationLogin(authenticationController: AuthenticationController) {
             contentAlignment = Alignment.BottomCenter
         ) {
             OutlinedButton(
-                onClick = { authenticationController.navigateToRegister() },
+                onClick = { navController.navigateToRegister() },
                 border = BorderStroke(2.dp, Color.White),
                 modifier = Modifier.padding(8.dp)
             ) {
@@ -281,7 +281,7 @@ fun NavigationLogin(authenticationController: AuthenticationController) {
                         .height(IntrinsicSize.Min)
                 ) {
                     OutlinedButton(
-                        onClick = { authenticationController.navigateToCameraLogin(userSelected) },
+                        onClick = { navController.navigateToCameraLogin(userSelected) },
                         shape = RoundedCornerShape(15.dp),
                         border = BorderStroke(3.dp, firstColor),
                         colors = ButtonDefaults.buttonColors(
@@ -397,7 +397,7 @@ fun NavigationLogin(authenticationController: AuthenticationController) {
                                 val isPasswordCorrect = databaseController.comparePasswords(userSelected, enteredPassword)
                                 if (isPasswordCorrect) {
                                     withContext(Dispatchers.Main){
-                                        authenticationController.navigateToGallery(userSelected)
+                                        navController.navigateToGallery(userSelected)
                                     }
                                 }
                                 else{

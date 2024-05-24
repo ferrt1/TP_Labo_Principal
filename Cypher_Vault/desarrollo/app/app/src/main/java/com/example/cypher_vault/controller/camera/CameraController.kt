@@ -14,7 +14,7 @@ import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.compose.runtime.MutableIntState
 import androidx.compose.runtime.MutableState
 import androidx.core.content.ContextCompat
-import com.example.cypher_vault.controller.authentication.AuthenticationController
+import com.example.cypher_vault.controller.navigation.NavController
 import com.example.cypher_vault.controller.data.DatabaseController
 import com.example.cypher_vault.view.resources.FaceOverlayView
 import kotlinx.coroutines.CoroutineScope
@@ -25,7 +25,7 @@ import java.io.File
 
 class CameraController(
     private val context: Context,
-    private val authenticationController: AuthenticationController,
+    private val navController: NavController,
     private val userId: String,
     private val databaseController: DatabaseController
 ) {
@@ -60,7 +60,7 @@ class CameraController(
         cameraProvider: ProcessCameraProvider,
         state: MutableState<Boolean>,
         coroutineScope: CoroutineScope,
-        authenticationController: AuthenticationController,
+        navController: NavController,
         faceOverlayView: FaceOverlayView
     ) {
         Log.d("Imagen", "entra aca")
@@ -139,7 +139,7 @@ class CameraController(
                         state.value = false
                         tempFile.delete()
                         cameraProvider.unbindAll()
-                        authenticationController.navigateToConfirmation(userId)
+                        navController.navigateToConfirmation(userId)
                     }
                 }
 
@@ -156,7 +156,7 @@ class CameraController(
         cameraProvider: ProcessCameraProvider,
         state: MutableState<Boolean>,
         coroutineScope: CoroutineScope,
-        authenticationController: AuthenticationController,
+        navController: NavController,
         faceOverlayView: FaceOverlayView
     ) {
         Log.d("Imagen", "entra aca")
@@ -236,7 +236,7 @@ class CameraController(
                         state.value = false
                         tempFile.delete()
                         cameraProvider.unbindAll()
-                        authenticationController.navigateToConfirmationLogin(userId)
+                        navController.navigateToConfirmationLogin(userId)
                     }
                 }
 

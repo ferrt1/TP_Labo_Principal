@@ -1,34 +1,18 @@
 package com.example.cypher_vault.view.login
 
-import android.content.Context
-import android.graphics.Bitmap
-import android.graphics.BitmapFactory
-import android.graphics.ImageFormat
-import android.graphics.Rect
-import android.graphics.YuvImage
-import android.media.Image
-import android.util.Log
-import android.util.Size
-import android.widget.Toast
 import androidx.camera.core.CameraSelector
 import androidx.camera.core.ExperimentalGetImage
 import androidx.camera.core.ImageAnalysis
 import androidx.camera.core.ImageCapture
-import androidx.camera.core.ImageCaptureException
 import androidx.camera.core.Preview
-import androidx.camera.core.resolutionselector.ResolutionSelector
-import androidx.camera.core.resolutionselector.ResolutionStrategy
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.PreviewView
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.MutableIntState
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -38,27 +22,18 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shadow
-import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.ContextCompat
-import com.example.cypher_vault.controller.authentication.AuthenticationController
+import com.example.cypher_vault.controller.navigation.NavController
 import com.example.cypher_vault.controller.data.DatabaseController
 import com.google.mlkit.vision.common.InputImage
 import com.google.mlkit.vision.face.FaceContour
 import com.google.mlkit.vision.face.FaceDetection
 import com.google.mlkit.vision.face.FaceDetectorOptions
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
-import java.io.ByteArrayOutputStream
-import java.io.File
 import com.example.cypher_vault.view.resources.*
 import com.example.cypher_vault.controller.camera.CameraController
 
@@ -67,7 +42,7 @@ private val databaseController = DatabaseController()
 
 @androidx.annotation.OptIn(ExperimentalGetImage::class)
 @Composable
-fun LoginCamera(authenticationController: AuthenticationController, userId: String) {
+fun LoginCamera(navController: NavController, userId: String) {
     val context = LocalContext.current
     val cameraProviderFuture = remember { ProcessCameraProvider.getInstance(context) }
     val lifecycleOwner = LocalLifecycleOwner.current
@@ -76,7 +51,7 @@ fun LoginCamera(authenticationController: AuthenticationController, userId: Stri
         .requireLensFacing(CameraSelector.LENS_FACING_FRONT)
         .build()
 
-    val cameraController = CameraController(context, authenticationController, userId, databaseController)
+    val cameraController = CameraController(context, navController, userId, databaseController)
 
     val cameraProvider = cameraProviderFuture.get()
     val preview = Preview.Builder().build()
@@ -158,7 +133,7 @@ fun LoginCamera(authenticationController: AuthenticationController, userId: Stri
                                         cameraProvider,
                                         isImageCaptured,
                                         coroutineScope,
-                                        authenticationController,
+                                        navController,
                                         faceOverlayView
                                     )
                                     timer.intValue = 3

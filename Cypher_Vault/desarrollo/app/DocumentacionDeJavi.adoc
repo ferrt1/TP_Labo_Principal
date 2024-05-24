@@ -69,10 +69,10 @@ Empieza en register por predeterminado y luego va cambiando, toma como parámetr
 
 
 ```kotlin
-fun RegistrationCameraScreen(authenticationController: AuthenticationController)
+fun RegistrationCameraScreen(navController: AuthenticationController)
 ```
 
-Recibe como parametro authenticationController para luego poder navegar por la aplicacion
+Recibe como parametro navController para luego poder navegar por la aplicacion
 
 `InitialScreen` es la pantalla inicial donde los usuarios se van a registrar. Se encuentran los campos de entrada para el correo electrónico y el nombre. Al hacer clic en el botón "Registrarse", se llama al método `registerUser` del 
 `AuthenticationController`.
@@ -81,10 +81,10 @@ Recibe como parametro authenticationController para luego poder navegar por la a
 === RegistrationCameraScreen.kt
 
 ```kotlin
-fun RegistrationCameraScreen(authenticationController: AuthenticationController)
+fun RegistrationCameraScreen(navController: AuthenticationController)
 ```
 
-Recibe como parametro authenticationController para luego poder navegar por la aplicacion
+Recibe como parametro navController para luego poder navegar por la aplicacion
 
 Esta función Muestra la vista previa de la cámara
 `ProcessCameraProvider:` Esta es una clase que se utiliza para interactuar con las cámaras disponibles en el dispositivo. En este caso, se obtiene una instancia de ProcessCameraProvider y 
@@ -98,7 +98,7 @@ se recuerda para su uso posterior.
 ```kotlin
 fun CloseCameraButton(isCameraOpen: MutableState<Boolean>,
                       cameraProvider: ProcessCameraProvider,
-                        authenticationController: AuthenticationController)
+                        navController: AuthenticationController)
 ```
 
 Botón que se muestra para cerrar la cámara e ir a la parte de ConfirmationScreen
@@ -118,11 +118,11 @@ Muestra la vista previa de la cámara en la interfaz de usuario. Utiliza la clas
 
 
 ```kotlin
-fun ConfirmationScreen(authenticationController: AuthenticationController)
+fun ConfirmationScreen(navController: AuthenticationController)
 ```
 
 
-Recibe como parametro authenticationController para luego poder navegar por la aplicacion
+Recibe como parametro navController para luego poder navegar por la aplicacion
 
 `ConfirmationScreen` Es una pantalla que muestra un mensaje de que se pudo registrar y un botón para iniciar sesión
 
@@ -130,17 +130,17 @@ Recibe como parametro authenticationController para luego poder navegar por la a
 == Paquete View > Login
 === LoginList.kt
 ```kotlin
-fun NavigationLogin(authenticationController: AuthenticationController) 
+fun NavigationLogin(navController: AuthenticationController)
 ```
 `NavigationLogin()`: Esta función se encarga de mostrar un lista de los usuarios que ya están registrados en la aplicación. Permite a los usuarios navegar a través de sus cuentas de forma eficiente.  
 
 ```kotlin
-fun loginCamera(authenticationController: AuthenticationController, user: String) 
+fun loginCamera(navController: AuthenticationController, user: String)
 ```
 La función `loginCamera` se activa después de que el usuario ha seleccionado su cuenta. Su propósito es encender la cámara frontal para realizar una verificación biométrica,asegurándose de que la cuenta seleccionada pertenezca realmente al usuario en cuestión. Esta validación permite mantener la seguridad y la integridad de la cuenta.
 
 ```kotlin
-fun CloseCameraButton(cameraProvider: ProcessCameraProvider, authenticationController: AuthenticationController)
+fun CloseCameraButton(cameraProvider: ProcessCameraProvider, navController: AuthenticationController)
 ```
 La función `CloseCameraButton` permite al usuario cerrar la cámara frontal si se ha seleccionado una cuenta incorrecta. Ofrece una interfaz para regresar de manera rápida al inicio de sesión, específicamente a la pantalla de `NavigationLogin`, facilitando el desplazamiento dentro de la aplicación.
 

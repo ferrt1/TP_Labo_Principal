@@ -19,12 +19,10 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -76,7 +74,7 @@ import androidx.compose.ui.window.Dialog
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.example.cypher_vault.R
-import com.example.cypher_vault.controller.authentication.AuthenticationController
+import com.example.cypher_vault.controller.navigation.NavController
 import com.example.cypher_vault.controller.data.DatabaseController
 import com.example.cypher_vault.controller.gallery.GalleryController
 import com.example.cypher_vault.database.User
@@ -113,7 +111,7 @@ val textStyleTittle2 = TextStyle(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun Gallery(authenticationController: AuthenticationController, userId: String, galleryController: GalleryController) {
+fun Gallery(navController: NavController, userId: String, galleryController: GalleryController) {
 
     var usuario by remember { mutableStateOf<User?>(null) }
     var nombre by remember { mutableStateOf("") }
@@ -263,7 +261,7 @@ fun Gallery(authenticationController: AuthenticationController, userId: String, 
 
                     },
                     navigationIcon = {
-                        IconButton(onClick = { authenticationController.navigateToListLogin() }) {
+                        IconButton(onClick = { navController.navigateToListLogin() }) {
                             Icon(
                                 modifier = Modifier.width(30.dp),
                                 tint = firstColor,
