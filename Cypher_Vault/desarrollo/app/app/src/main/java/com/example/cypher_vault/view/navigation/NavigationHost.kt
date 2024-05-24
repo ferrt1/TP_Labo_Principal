@@ -62,9 +62,6 @@ fun NavigationHost() {
         composable("gallery/{userId}") {backStackEntry ->
             val userId = backStackEntry.arguments?.getString("userId")
             if (userId != null) {
-                LaunchedEffect(userId) {
-                    galleryController.performUserIncomeInsertion(userId)
-                }
                 Gallery(navigationController, userId, galleryController)
             } else {
                 // Manejar el caso en que el userId no se pudo recuperar

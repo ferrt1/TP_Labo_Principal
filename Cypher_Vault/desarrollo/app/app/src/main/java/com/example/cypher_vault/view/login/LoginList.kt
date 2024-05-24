@@ -54,6 +54,7 @@ import androidx.compose.material3.Snackbar
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
@@ -69,8 +70,10 @@ import androidx.compose.ui.unit.sp
 import com.example.cypher_vault.R
 import com.example.cypher_vault.controller.navigation.NavController
 import com.example.cypher_vault.controller.data.DatabaseController
+import com.example.cypher_vault.controller.income.UserAccessController
 import com.example.cypher_vault.controller.messages.getsearcherMessage
 import com.example.cypher_vault.controller.messages.getvalidaUserMessage
+import com.example.cypher_vault.model.income.UserAccessManager
 import com.example.cypher_vault.view.resources.CustomTitle
 import com.example.cypher_vault.view.resources.*
 import kotlinx.coroutines.CoroutineScope
@@ -396,6 +399,11 @@ fun NavigationLogin(navController: NavController) {
                             CoroutineScope(Dispatchers.IO).launch {
                                 val isPasswordCorrect = databaseController.comparePasswords(userSelected, enteredPassword)
                                 if (isPasswordCorrect) {
+                                    //Se agrega ingreso de usuario
+                                    val userAccessManager = UserAccessManager()
+                                    val userAccessController = UserAccessController(userAccessManager)
+                                    //Ingreso de usuario
+                                    userAccessController.insertUserIncome(userSelected)
                                     withContext(Dispatchers.Main){
                                         navController.navigateToGallery(userSelected)
                                     }

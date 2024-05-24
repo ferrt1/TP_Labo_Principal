@@ -29,7 +29,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.cypher_vault.controller.authentication.AuthenticationController
+import com.example.cypher_vault.controller.income.UserAccessController
 import com.example.cypher_vault.controller.navigation.NavController
+import com.example.cypher_vault.model.income.UserAccessManager
 
 @Composable
 fun ConfirmationLoginScreen(navController: NavController, userId: String) {
@@ -39,6 +41,14 @@ fun ConfirmationLoginScreen(navController: NavController, userId: String) {
     val imagePrintRegister = remember { mutableStateOf<Bitmap?>(null) }
     val imagePrintLogin = remember { mutableStateOf<Bitmap?>(null) }
     val result = remember { mutableStateOf<Boolean?>(null) }
+
+    //Se agrega ingreso de usuario
+    val userAccessManager = UserAccessManager()
+    val userAccessController = UserAccessController(userAccessManager)
+    //Ingreso de usuario
+    LaunchedEffect(userId) {
+        userAccessController.insertUserIncome(userId)
+    }
 
     // Utiliza LaunchedEffect para asegurar que la autenticación se ejecute una vez
     LaunchedEffect(userId) {
