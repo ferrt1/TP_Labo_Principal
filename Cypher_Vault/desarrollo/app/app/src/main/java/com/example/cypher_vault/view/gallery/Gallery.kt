@@ -83,9 +83,6 @@ import com.example.cypher_vault.view.registration.findAncestorActivity
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import java.io.ByteArrayOutputStream
-import java.text.SimpleDateFormat
-import java.util.Date
-import java.util.Locale
 
 val firstColor = Color(0xFF02a6c3)
 val secondColor = Color(0xFF01243a)
@@ -244,13 +241,13 @@ fun Gallery(navController: NavController, userId: String, galleryController: Gal
                                     onTextLayout = { /* No se necesita hacer nada aquí */ }
                                 )
                                 Text(
-                                    text = capitalizarPrimeraLetra(nombre),
+                                    text = galleryController.capitalizarPrimeraLetra(nombre),
                                     color = firstColor,
                                     style = textStyleTittle2,
                                     onTextLayout = { /* No se necesita hacer nada aquí */ }
                                 )
                                 Text(
-                                    text = procesarString(nombre),
+                                    text = galleryController.procesarString(nombre),
                                     color = mainBackgroundColor,
                                     style = textStyleTittle2,
                                     onTextLayout = { /* No se necesita hacer nada aquí */ }
@@ -372,34 +369,16 @@ fun abrirPanel(scope: CoroutineScope, drawerState: DrawerState) {
 }
 
 
-fun capitalizarPrimeraLetra(palabra: String): String {
-    if (palabra.isEmpty()) {
-        return palabra
-    }
-    return palabra.substring(0, 1).uppercase(Locale.getDefault())
-}
 
-fun procesarString(texto: String): String {
-    if (texto.length <= 1) {
-        return texto
-    }
-
-    val minusculas = texto.substring(1).lowercase(Locale.getDefault())
-    return if (minusculas.length <= 16) {
-        minusculas
-    } else {
-        minusculas.substring(0, 14) + ".."
-    }
-}
 
 @Composable
-fun DrawerContent(userId: String, galeryController: GalleryController,nombre: String, email: String) {
+fun DrawerContent(userId: String, galleryController: GalleryController,nombre: String, email: String) {
     var listaDeIngresos by remember { mutableStateOf<List<UserIncome>>(emptyList()) }
     var showIncomes by remember { mutableStateOf(false) }
 
     LaunchedEffect(userId) {
         // Cargar todos los ingresos del usuario
-        listaDeIngresos = galeryController.loadAllIncomes(userId).value
+        listaDeIngresos = galleryController.loadAllIncomes(userId).value
     }
     Log.e("galeria","LISTA DE INGRESOS : $listaDeIngresos")
     Column(
@@ -427,13 +406,13 @@ fun DrawerContent(userId: String, galeryController: GalleryController,nombre: St
                         onTextLayout = { /* No se necesita hacer nada aquí */ }
                     )
                     Text(
-                        text = capitalizarPrimeraLetra(nombre),
+                        text = galleryController.capitalizarPrimeraLetra(nombre),
                         color = firstColor,
                         style = textStyleTittle2,
                         onTextLayout = { /* No se necesita hacer nada aquí */ }
                     )
                     Text(
-                        text = procesarString(nombre),
+                        text = galleryController.procesarString(nombre),
                         color = mainBackgroundColor,
                         style = textStyleTittle2,
                         onTextLayout = { /* No se necesita hacer nada aquí */ }
@@ -501,16 +480,16 @@ fun DrawerContent(userId: String, galeryController: GalleryController,nombre: St
         Spacer(modifier = Modifier.height(16.dp))
         // Mostrar la lista de ingresos si showIncomes es true
         if (showIncomes) {
-            IncomeList(incomes = listaDeIngresos)
+            IncomeList(galleryController,incomes = listaDeIngresos)
         }
     }
 }
 
 @Composable
-fun IncomeList(incomes: List<UserIncome>) {
+fun IncomeList(galleryController: GalleryController, incomes: List<UserIncome>) {
     Column {
         incomes.forEach { income ->
-            Text(text = formatIncomeDate(income.income),
+            Text(text = galleryController.formatIncomeDate(income.income),
                 color = mainBackgroundColor,
                 style = textStyleTittle2,
                 onTextLayout = { /* No se necesita hacer nada aquí */ })
@@ -518,15 +497,4 @@ fun IncomeList(incomes: List<UserIncome>) {
         }
     }
 }
-
-fun formatIncomeDate(income: Long?): String {
-    return if (income != null) {
-        val date = Date(income)
-        val formatter = SimpleDateFormat("HH:mm - dd MMM yyyy", Locale.getDefault())
-        formatter.format(date)
-    } else {
-        "Fecha no disponible"
-    }
-}
-
 

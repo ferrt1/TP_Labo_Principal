@@ -7,6 +7,7 @@ import com.example.cypher_vault.controller.income.UserAccessController
 import com.example.cypher_vault.database.Images
 import com.example.cypher_vault.database.UserIncome
 import com.example.cypher_vault.model.dbmanager.DatabaseManager
+import com.example.cypher_vault.model.gallery.GalleryManager
 import com.example.cypher_vault.model.income.UserAccessManager
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Deferred
@@ -20,6 +21,7 @@ class GalleryController() {
 
     val userAccessManager = UserAccessManager()
     val userAccessController = UserAccessController(userAccessManager)
+    val galleryManager = GalleryManager()
 
     suspend fun performUserIncomeInsertion(userId: String) {
         userAccessController.insertUserIncome(userId).await()
@@ -44,4 +46,17 @@ class GalleryController() {
             DatabaseManager.getImagesForUser(userId)
         }
     }
+
+    fun capitalizarPrimeraLetra(palabra: String): String{
+        return galleryManager.capitalizarPrimeraLetra(palabra)
+    }
+
+    fun procesarString(palabra: String): String{
+        return galleryManager.procesarString(palabra)
+    }
+
+    fun formatIncomeDate(income: Long?): String{
+        return galleryManager.formatIncomeDate(income)
+    }
+
 }
