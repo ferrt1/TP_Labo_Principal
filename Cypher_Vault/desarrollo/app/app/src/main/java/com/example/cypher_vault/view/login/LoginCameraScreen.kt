@@ -140,21 +140,22 @@ fun LoginCamera(navController: NavController, userId: String) {
 
                                     "front" -> if (face.headEulerAngleY in -10.0..10.0)
                                         cameraController.startTimer(
-                                        timer,
-                                        timerStarted,
-                                        timerFinished,
-                                        coroutineScope
-                                    )
+                                            timer,
+                                            timerStarted,
+                                            timerFinished,
+                                            coroutineScope
+                                        )
                                 }
                                 if (timer.intValue == 0 && !isImageCaptured.value) {
-                                    cameraController.captureImageLogin(
+                                    cameraController.captureImage(
                                         context,
                                         imageCapture,
                                         cameraProvider,
                                         isImageCaptured,
                                         coroutineScope,
                                         navController,
-                                        faceOverlayView
+                                        faceOverlayView,
+                                        true
                                     )
                                     timer.intValue = 3
                                     timerStarted.value = false

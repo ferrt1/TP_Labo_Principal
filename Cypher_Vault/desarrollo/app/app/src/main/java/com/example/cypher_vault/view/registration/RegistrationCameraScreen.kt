@@ -149,14 +149,15 @@ fun RegistrationCameraScreen(navController: NavController, userId: String) {
                                         )
                                 }
                                 if (timer.intValue == 0 && !isImageCaptured.value) {
-                                    cameraController.captureImageRegister(
+                                    cameraController.captureImage(
                                         context,
                                         imageCapture,
                                         cameraProvider,
                                         isImageCaptured,
                                         coroutineScope,
                                         navController,
-                                        faceOverlayView
+                                        faceOverlayView,
+                                        false
                                     )
                                     timer.intValue = 3
                                     timerStarted.value = false

@@ -29,11 +29,7 @@ class CameraController(
     private val userId: String,
     private val databaseController: DatabaseController
 ) {
-//    fun startImageAnalysis() {
-//        imageAnalysis.setAnalyzer(ContextCompat.getMainExecutor(context)) { imageProxy ->
-//            // ... implementación ...
-//        }
-//    }
+
 
     fun startTimer(
         timer: MutableIntState,
@@ -54,14 +50,15 @@ class CameraController(
         }
     }
 
-    fun captureImageRegister(
+    fun captureImage(
         context: Context,
         imageCapture: ImageCapture,
         cameraProvider: ProcessCameraProvider,
         state: MutableState<Boolean>,
         coroutineScope: CoroutineScope,
         navController: NavController,
-        faceOverlayView: FaceOverlayView
+        faceOverlayView: FaceOverlayView,
+        isRegister: Boolean
     ) {
         Log.d("Imagen", "entra aca")
         val tempFile = File.createTempFile("tempImage", ".jpg", context.cacheDir)
@@ -132,111 +129,23 @@ class CameraController(
                     finalBitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream)
                     val finalImageBytes = stream.toByteArray()
 
-                    val saveImageDeferred = databaseController.saveImage(finalImageBytes, userId)
-                    coroutineScope.launch {
-                        saveImageDeferred.await()
-                        state.value = true
-                        state.value = false
-                        tempFile.delete()
-                        cameraProvider.unbindAll()
-                        navController.navigateToConfirmation(userId)
-                    }
-                }
-
-
-                override fun onError(exception: ImageCaptureException) {
-                    Log.d("Imagen", "entro aca y tiro error$exception")
-                }
-            })
-    }
-
-    fun captureImageLogin(
-        context: Context,
-        imageCapture: ImageCapture,
-        cameraProvider: ProcessCameraProvider,
-        state: MutableState<Boolean>,
-        coroutineScope: CoroutineScope,
-        navController: NavController,
-        faceOverlayView: FaceOverlayView
-    ) {
-        Log.d("Imagen", "entra aca")
-        val tempFile = File.createTempFile("tempImage", ".jpg", context.cacheDir)
-        val outputFileOptions = ImageCapture.OutputFileOptions.Builder(tempFile).build()
-        imageCapture.takePicture(
-            outputFileOptions,
-            ContextCompat.getMainExecutor(context),
-            object : ImageCapture.OnImageSavedCallback {
-                override fun onImageSaved(outputFileResults: ImageCapture.OutputFileResults) {
-                    val imageBytes = tempFile.readBytes()
-
-                    // Convierte los bytes de la imagen en un Bitmap
-                    val imgBitmap = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.size)
-
-                    val rotatedBitmap = rotateBitmap(imgBitmap, -90f)
-
-                    val boundingBoxInImageCoordinates = Rect(
-                        faceOverlayView.boundingBox!!.left * imgBitmap.width / faceOverlayView.imageWidth,
-                        faceOverlayView.boundingBox!!.top * imgBitmap.height / faceOverlayView.imageHeight,
-                        faceOverlayView.boundingBox!!.right * imgBitmap.width / faceOverlayView.imageWidth,
-                        faceOverlayView.boundingBox!!.bottom * imgBitmap.height / faceOverlayView.imageHeight
-                    )
-
-                    // Recorta el Bitmap para que tenga el mismo tamaño que el boundingBox
-                    val croppedBitmap = Bitmap.createBitmap(
-                        rotatedBitmap,
-                        boundingBoxInImageCoordinates.left,
-                        boundingBoxInImageCoordinates.top,
-                        boundingBoxInImageCoordinates.width(),
-                        boundingBoxInImageCoordinates.height()
-                    )
-
-                    val aspectRatio = boundingBoxInImageCoordinates.width()
-                        .toFloat() / boundingBoxInImageCoordinates.height().toFloat()
-
-                    val targetWidth: Int
-                    val targetHeight: Int
-
-                    if (boundingBoxInImageCoordinates.width() > boundingBoxInImageCoordinates.height()) {
-                        // El bounding box es más ancho que alto
-                        targetWidth = 112
-                        targetHeight = Math.round(targetWidth / aspectRatio)
-                    } else {
-                        // El bounding box es más alto que ancho
-                        targetHeight = 112
-                        targetWidth = Math.round(targetHeight * aspectRatio)
-                    }
-
-                    val resizedBitmap =
-                        Bitmap.createScaledBitmap(croppedBitmap, targetWidth, targetHeight, false)
-
-                    // Crea un Bitmap final de 112x112 con un color de fondo
-                    val finalBitmap = Bitmap.createBitmap(112, 112, Bitmap.Config.ARGB_8888)
-
-                    // Rellena el Bitmap final con el color de fondo
-                    val canvas = Canvas(finalBitmap)
-                    canvas.drawColor(Color.BLACK)
-
-                    // Calcula la posición donde se debe dibujar el Bitmap redimensionado en el Bitmap final
-                    val left = (finalBitmap.width - resizedBitmap.width) / 2f
-                    val top = (finalBitmap.height - resizedBitmap.height) / 2f
-
-                    // Dibuja el Bitmap redimensionado en el Bitmap final
-                    canvas.drawBitmap(resizedBitmap, left, top, null)
-
-                    // Convierte el Bitmap final de nuevo a un array de bytes
-                    val stream = ByteArrayOutputStream()
-                    finalBitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream)
-                    val finalImageBytes = stream.toByteArray()
-
-                    val saveImageDeferred =
+                    val saveImageDeferred = if (isRegister) {
                         databaseController.saveImageLogin(finalImageBytes, userId)
+                    } else {
+                        databaseController.saveImage(finalImageBytes, userId)
+                    }
+
                     coroutineScope.launch {
                         saveImageDeferred.await()
                         state.value = true
                         state.value = false
                         tempFile.delete()
                         cameraProvider.unbindAll()
-                        navController.navigateToConfirmationLogin(userId)
+                        if (isRegister) {
+                            navController.navigateToConfirmationLogin(userId)
+                        } else {
+                            navController.navigateToConfirmation(userId)
+                        }
                     }
                 }
 
@@ -246,6 +155,7 @@ class CameraController(
                 }
             })
     }
+
 
     fun rotateBitmap(source: Bitmap, angle: Float): Bitmap {
         val matrix = Matrix()
