@@ -1,14 +1,24 @@
 package com.example.cypher_vault.model.gallery
+import android.content.ContentValues
+import android.content.Context
 import android.graphics.Bitmap
-import android.graphics.BitmapFactory
 import android.graphics.Matrix
+import android.net.Uri
+import android.os.Build
+import android.os.Environment
+import android.provider.MediaStore
+import androidx.annotation.RequiresApi
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Canvas
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.ImageBitmapConfig
 import androidx.compose.ui.graphics.Paint
 import androidx.compose.ui.graphics.asAndroidBitmap
+import androidx.compose.ui.graphics.asImageBitmap
 import java.io.ByteArrayOutputStream
+import java.io.File
+import java.io.FileOutputStream
+import java.io.OutputStream
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -46,25 +56,15 @@ class GalleryManager {
     }
 
     fun reduceImageSize(imageBitmap: ImageBitmap, maxMegapixels: Float): ImageBitmap {
-        val bitmap = imageBitmap
-        val reducedBitmap = reduceImageSize(bitmap, maxMegapixels)
-
-        // Create a new ImageBitmap from the reduced Bitmap
-        val config : ImageBitmapConfig = bitmap.config
-        val newImageBitmap = ImageBitmap(reducedBitmap.width, reducedBitmap.height, config)
-
-        // Copy the pixels from the reduced Bitmap to the new ImageBitmap
-        val canvas = Canvas(newImageBitmap)
-        canvas.drawImage(reducedBitmap, Offset.Zero, Paint())
-
-        return newImageBitmap
+        val reducedBitmap = reduceImage(imageBitmap, maxMegapixels)
+        return reducedBitmap.asImageBitmap()
     }
 
-    private fun reduceImageSize(bitmap: Bitmap, maxMegapixels: Float): Bitmap {
+    private fun reduceImage(bitmap: ImageBitmap, maxMegapixels: Float): Bitmap {
         val megapixels = (bitmap.width * bitmap.height) / 1000000f
 
         if (megapixels <= maxMegapixels) {
-            return bitmap
+            return bitmap.asAndroidBitmap()
         }
 
         val scale = Math.sqrt((maxMegapixels / megapixels).toDouble())
@@ -72,7 +72,43 @@ class GalleryManager {
         val matrix = Matrix()
         matrix.postScale(scale.toFloat(), scale.toFloat())
 
-        return Bitmap.createBitmap(bitmap, 0, 0, bitmap.width, bitmap.height, matrix, true)
+        return Bitmap.createBitmap(bitmap.asAndroidBitmap(), 0, 0, bitmap.width, bitmap.height, matrix, true)
+    }
+
+    @RequiresApi(Build.VERSION_CODES.Q)
+    fun saveBitmapToFile(context: Context, bitmap: Bitmap, fileName: String) {
+        val resolver = context.contentResolver
+        val contentValues = ContentValues().apply {
+            put(MediaStore.MediaColumns.DISPLAY_NAME, fileName)
+            put(MediaStore.MediaColumns.MIME_TYPE, "image/png")
+            put(MediaStore.MediaColumns.RELATIVE_PATH, Environment.DIRECTORY_DOWNLOADS)
+        }
+        val uri: Uri? = resolver.insert(MediaStore.Downloads.EXTERNAL_CONTENT_URI, contentValues)
+        uri?.let {
+            val outputStream: OutputStream? = resolver.openOutputStream(it)
+            outputStream.use {
+                if (it != null) {
+                    bitmap.compress(Bitmap.CompressFormat.PNG, 100, it)
+                }
+            }
+        }
+    }
+
+    @RequiresApi(Build.VERSION_CODES.Q)
+    fun saveByteArrayToFile(context: Context, byteArray: ByteArray, fileName: String) {
+        val resolver = context.contentResolver
+        val contentValues = ContentValues().apply {
+            put(MediaStore.MediaColumns.DISPLAY_NAME, fileName)
+            put(MediaStore.MediaColumns.MIME_TYPE, "image/png")
+            put(MediaStore.MediaColumns.RELATIVE_PATH, Environment.DIRECTORY_DOWNLOADS)
+        }
+        val uri: Uri? = resolver.insert(MediaStore.Downloads.EXTERNAL_CONTENT_URI, contentValues)
+        uri?.let {
+            val outputStream: OutputStream? = resolver.openOutputStream(it)
+            outputStream.use {
+                it?.write(byteArray)
+            }
+        }
     }
 
 

@@ -1,7 +1,10 @@
 package com.example.cypher_vault.controller.gallery
 
 
+import android.content.Context
 import android.graphics.Bitmap
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.graphics.ImageBitmap
@@ -62,6 +65,16 @@ class GalleryController() {
 
     fun reduceImageSize(bitmap: ImageBitmap, maxMegapixels: Float): ImageBitmap {
         return galleryManager.reduceImageSize(bitmap, maxMegapixels)
+    }
+
+    @RequiresApi(Build.VERSION_CODES.Q)
+    fun saveByteArrayToFile(context: Context, byteArray: ByteArray, fileName: String){
+        return galleryManager.saveByteArrayToFile(context,byteArray,fileName)
+    }
+
+    @RequiresApi(Build.VERSION_CODES.Q)
+    fun saveBitmapToFile(context: Context, bitmap: Bitmap, fileName: String){
+        return galleryManager.saveBitmapToFile(context,bitmap,fileName)
     }
 
 }

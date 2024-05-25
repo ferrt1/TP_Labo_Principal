@@ -5,9 +5,11 @@ import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.net.Uri
+import android.os.Build
 import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -60,6 +62,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.asAndroidBitmap
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
@@ -106,6 +109,7 @@ val textStyleTittle2 = TextStyle(
 )
 
 
+@RequiresApi(Build.VERSION_CODES.Q)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun Gallery(navController: NavController, userId: String, galleryController: GalleryController) {
@@ -156,11 +160,18 @@ fun Gallery(navController: NavController, userId: String, galleryController: Gal
         rememberLauncherForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
             uri?.let {
                 val inputStream = context.contentResolver.openInputStream(it)
-                val bitmap = BitmapFactory.decodeStream(inputStream)
+                val bitmapOriginal = BitmapFactory.decodeStream(inputStream)
+                //Test Imagen Original
+                //galleryController.saveBitmapToFile(context, bitmapOriginal, "original_image.png")
+                val bitmapResize = galleryController.reduceImageSize(bitmapOriginal.asImageBitmap(), 1f)
+                //Test Imagen Redim
+                //galleryController.saveBitmapToFile(context, bitmapResize.asAndroidBitmap(), "resized_image.png")
                 val byteArrayOutputStream = ByteArrayOutputStream()
-                bitmap.compress(Bitmap.CompressFormat.PNG, 100, byteArrayOutputStream)
-                val imageData = byteArrayOutputStream.toByteArray()
-                galleryController.saveImage(imageData, userId)
+                bitmapResize.asAndroidBitmap().compress(Bitmap.CompressFormat.PNG, 60, byteArrayOutputStream)
+                val compressedImageData = byteArrayOutputStream.toByteArray()
+                //Test Imagen bajo compresion
+                //galleryController.saveByteArrayToFile(context, compressedImageData, "compressed_image.png")
+                galleryController.saveImage(compressedImageData, userId)
                 imageUris.value += it
             }
         }
@@ -347,11 +358,9 @@ fun Gallery(navController: NavController, userId: String, galleryController: Gal
                     }
                 }
                 if (selectedImageBitmap.value != null) {
-
                     Dialog(onDismissRequest = { selectedImageBitmap.value = null }) {
-                        val redimensionar = galleryController.reduceImageSize(selectedImageBitmap.value!!.asImageBitmap(), 2f)
                         Image(
-                            bitmap = redimensionar,
+                            bitmap = selectedImageBitmap.value!!.asImageBitmap(),
                             contentDescription = null,
                             modifier = Modifier.fillMaxWidth()
                         )
@@ -369,9 +378,6 @@ fun abrirPanel(scope: CoroutineScope, drawerState: DrawerState) {
         }
     }
 }
-
-
-
 
 @Composable
 fun DrawerContent(userId: String, galleryController: GalleryController,nombre: String, email: String) {
