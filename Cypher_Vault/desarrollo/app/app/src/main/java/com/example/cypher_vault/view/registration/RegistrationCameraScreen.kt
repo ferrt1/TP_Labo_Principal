@@ -45,7 +45,6 @@ private val databaseController = DatabaseController()
 @OptIn(ExperimentalGetImage::class)
 @Composable
 fun RegistrationCameraScreen(navController: NavController, userId: String) {
-
     val context = LocalContext.current
     val cameraProviderFuture = remember { ProcessCameraProvider.getInstance(context) }
     val lifecycleOwner = LocalLifecycleOwner.current
@@ -53,6 +52,9 @@ fun RegistrationCameraScreen(navController: NavController, userId: String) {
     val cameraSelector = CameraSelector.Builder()
         .requireLensFacing(CameraSelector.LENS_FACING_FRONT)
         .build()
+
+    val cameraController = CameraController(context, navController, userId, databaseController
+    )
 
     val cameraProvider = cameraProviderFuture.get()
     val preview = Preview.Builder().build()
@@ -72,12 +74,11 @@ fun RegistrationCameraScreen(navController: NavController, userId: String) {
 
     val isImageCaptured = remember { mutableStateOf(false) }
 
-    val currentOrientation = remember { mutableStateOf("front") }
+    val currentOrientation = remember { mutableStateOf("smile") }
 
     val faceOverlayView = remember { FaceOverlayView(context) }
 
-    val cameraController = CameraController(context, navController, userId, databaseController)
-
+    val eyesOpens = remember { mutableIntStateOf(3) }
 
     imageAnalysis.setAnalyzer(ContextCompat.getMainExecutor(context)) { imageProxy ->
         val mediaImage = imageProxy.image
@@ -94,6 +95,7 @@ fun RegistrationCameraScreen(navController: NavController, userId: String) {
             val realTimeOpts = FaceDetectorOptions.Builder()
                 .setContourMode(FaceDetectorOptions.CONTOUR_MODE_ALL)
                 .setPerformanceMode(FaceDetectorOptions.PERFORMANCE_MODE_FAST)
+                .setClassificationMode(FaceDetectorOptions.CLASSIFICATION_MODE_ALL)
                 .enableTracking()
                 .build()
 
@@ -104,52 +106,70 @@ fun RegistrationCameraScreen(navController: NavController, userId: String) {
                         timer.intValue = 3
                         timerStarted.value = false
                     } else {
-                    for (face in faces) {
-                        val hasLeftEye = face.getContour(FaceContour.LEFT_EYE)?.points?.isNotEmpty()
-                        val hasRightEye =
-                            face.getContour(FaceContour.RIGHT_EYE)?.points?.isNotEmpty()
-                        val hasNose = face.getContour(FaceContour.NOSE_BRIDGE)?.points?.isNotEmpty()
-                        val hasMouth =
-                            face.getContour(FaceContour.UPPER_LIP_TOP)?.points?.isNotEmpty() == true && face.getContour(
-                                FaceContour.LOWER_LIP_BOTTOM
-                            )?.points?.isNotEmpty()!!
+                        for (face in faces) {
+                            val hasLeftEye = face.getContour(FaceContour.LEFT_EYE)?.points?.isNotEmpty()
+                            val hasRightEye =
+                                face.getContour(FaceContour.RIGHT_EYE)?.points?.isNotEmpty()
+                            val hasNose = face.getContour(FaceContour.NOSE_BRIDGE)?.points?.isNotEmpty()
+                            val hasMouth =
+                                face.getContour(FaceContour.UPPER_LIP_TOP)?.points?.isNotEmpty() == true && face.getContour(
+                                    FaceContour.LOWER_LIP_BOTTOM
+                                )?.points?.isNotEmpty()!!
+
+                            val smilingProb = face.smilingProbability ?: 0f
+
+                            val leftEyeOpenProbability = face.leftEyeOpenProbability ?: 0f
+                            val rightEyeOpenProbability = face.leftEyeOpenProbability ?: 0f
+
+                            faceOverlayView.boundingBox = face.boundingBox
+                            faceOverlayView.invalidate()
 
 
-                        faceOverlayView.boundingBox = face.boundingBox
-                        faceOverlayView.invalidate()
+                            if (hasLeftEye == true && hasRightEye == true && hasNose == true && hasMouth && faceOverlayView.isBoundingBoxInsideTarget()) {
+                                when (currentOrientation.value) {
+                                    "smile" -> if (smilingProb > 0.7f) {
+                                        currentOrientation.value = "eyes"
+                                    }
 
+                                    "eyes" -> if (leftEyeOpenProbability < 0.5f && rightEyeOpenProbability < 0.5f){
+                                        if ( eyesOpens.intValue == 0){
+                                            currentOrientation.value = "front"
+                                        }
+                                        else{
+                                            eyesOpens.intValue--
+                                        }
+                                    }
 
-                        if (hasLeftEye == true && hasRightEye == true && hasNose == true && hasMouth && faceOverlayView.isBoundingBoxInsideTarget()) {
-                            when (currentOrientation.value) {
-                                "front" -> if (face.headEulerAngleY in -10.0..10.0) cameraController.startTimer(
-                                    timer,
-                                    timerStarted,
-                                    timerFinished,
-                                    coroutineScope
-                                )
-                            }
-                            if (timer.intValue == 0 && !isImageCaptured.value) {
-                                cameraController.captureImageRegister(
-                                    context,
-                                    imageCapture,
-                                    cameraProvider,
-                                    isImageCaptured,
-                                    coroutineScope,
-                                    navController,
-                                    faceOverlayView
-                                )
-                                timer.intValue = 3
-                                timerStarted.value = false
-                                isImageCaptured.value = false
-                                currentOrientation.value = when (currentOrientation.value) {
-                                    "front" -> "done"
-                                    else -> "done"
+                                    "front" -> if (face.headEulerAngleY in -10.0..10.0)
+                                        cameraController.startTimer(
+                                            timer,
+                                            timerStarted,
+                                            timerFinished,
+                                            coroutineScope
+                                        )
+                                }
+                                if (timer.intValue == 0 && !isImageCaptured.value) {
+                                    cameraController.captureImageRegister(
+                                        context,
+                                        imageCapture,
+                                        cameraProvider,
+                                        isImageCaptured,
+                                        coroutineScope,
+                                        navController,
+                                        faceOverlayView
+                                    )
+                                    timer.intValue = 3
+                                    timerStarted.value = false
+                                    isImageCaptured.value = false
+                                    currentOrientation.value = when (currentOrientation.value) {
+                                        "front" -> "done"
+                                        else -> "done"
+                                    }
                                 }
                             }
                         }
                     }
                 }
-        }
                 .addOnFailureListener { e ->
                 }
                 .addOnCompleteListener {
@@ -172,6 +192,48 @@ fun RegistrationCameraScreen(navController: NavController, userId: String) {
             AndroidView( {faceOverlayView} )
 
             when (currentOrientation.value) {
+                "smile" -> {
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Text(
+                            text = "${timer.intValue}",
+                            color = Color.Black,
+                            fontSize = 36.sp,
+                            style = textStyle.copy(shadow = Shadow(color = firstColor, offset = Offset(-3f,3f), blurRadius = 0f)),
+                            textAlign = TextAlign.Center
+                        )
+                        Text(
+                            "Por favor sonría",
+                            color = Color.Black,
+                            fontSize = 36.sp,
+                            style = textStyle.copy(shadow = Shadow(color = firstColor, offset = Offset(-3f,3f), blurRadius = 0f)),
+                            textAlign = TextAlign.Center,
+                        )
+                    }
+                }
+
+                "eyes" -> {
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Text(
+                            text = "${timer.intValue}",
+                            color = Color.Black,
+                            fontSize = 36.sp,
+                            style = textStyle.copy(shadow = Shadow(color = firstColor, offset = Offset(-3f,3f), blurRadius = 0f)),
+                            textAlign = TextAlign.Center
+                        )
+                        Text(
+                            "Por favor, pestañee. Restantes ${eyesOpens.intValue}",
+                            color = Color.Black,
+                            fontSize = 36.sp,
+                            style = textStyle.copy(shadow = Shadow(color = firstColor, offset = Offset(-3f,3f), blurRadius = 0f)),
+                            textAlign = TextAlign.Center,
+                        )
+                    }
+                }
+
                 "front" -> if (timer.value > 0) {
                     Column(
                         horizontalAlignment = Alignment.CenterHorizontally
