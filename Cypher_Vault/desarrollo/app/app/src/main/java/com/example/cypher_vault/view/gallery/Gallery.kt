@@ -87,6 +87,9 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import java.io.ByteArrayOutputStream
 
+//Variables de entorno
+val pixelesDeRedimensionamiento = 1f
+//Colores de la ui, tipo de letra, etc.
 val firstColor = Color(0xFF02a6c3)
 val secondColor = Color(0xFF01243a)
 val thirdColor = Color(0xFF005767)
@@ -114,6 +117,10 @@ val textStyleTittle2 = TextStyle(
 @Composable
 fun Gallery(navController: NavController, userId: String, galleryController: GalleryController) {
 
+    //Variables necesarias
+    val context = LocalContext.current
+    val activity = context.findAncestorActivity()
+    //Carga datos para el perfil y para el socalo de nombre
     var usuario by remember { mutableStateOf<User?>(null) }
     var nombre by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
@@ -124,11 +131,7 @@ fun Gallery(navController: NavController, userId: String, galleryController: Gal
         nombre = usuarioTemp?.firstName.toString()
         email = usuarioTemp?.email.toString()
     }
-
-
-    val context = LocalContext.current
-    val activity = context.findAncestorActivity()
-
+    //Acceso a la galeria/imagenes del celular
     if (ContextCompat.checkSelfPermission(
             context,
             Manifest.permission.READ_EXTERNAL_STORAGE
@@ -140,22 +143,16 @@ fun Gallery(navController: NavController, userId: String, galleryController: Gal
             200
         )
     }
-
+    //Carga de imagenes del usuario en la galeria
     LaunchedEffect(key1 = userId) {
         galleryController.loadImagesForUser(userId)
     }
-
-
     val images = galleryController.images.value
-
-
     val imageUris = remember { mutableStateOf<List<Uri>>(listOf()) }
-
     LaunchedEffect(key1 = imageUris.value) {
         galleryController.loadImagesForUser(userId)
     }
-
-    val selectedImage = remember { mutableStateOf<Uri?>(null) }
+    //Seleccion de imagenes de la galeria del celular y almacenamiento
     val launcher =
         rememberLauncherForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
             uri?.let {
@@ -163,7 +160,7 @@ fun Gallery(navController: NavController, userId: String, galleryController: Gal
                 val bitmapOriginal = BitmapFactory.decodeStream(inputStream)
                 //Test Imagen Original
                 //galleryController.saveBitmapToFile(context, bitmapOriginal, "original_image.png")
-                val bitmapResize = galleryController.reduceImageSize(bitmapOriginal.asImageBitmap(), 1f)
+                val bitmapResize = galleryController.reduceImageSize(bitmapOriginal.asImageBitmap(), pixelesDeRedimensionamiento)
                 //Test Imagen Redim
                 //galleryController.saveBitmapToFile(context, bitmapResize.asAndroidBitmap(), "resized_image.png")
                 val byteArrayOutputStream = ByteArrayOutputStream()
@@ -176,18 +173,12 @@ fun Gallery(navController: NavController, userId: String, galleryController: Gal
             }
         }
     val selectedImageBitmap = remember { mutableStateOf<Bitmap?>(null) }
-    val textStyle = TextStyle(
-        fontWeight = FontWeight.ExtraBold,
-        fontSize = 42.sp,
-        fontFamily = com.example.cypher_vault.view.resources.fontFamily,
-        letterSpacing = 2.sp
-    )
-    val firstLetter = Color(0xFF2DDEFD)
-    val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(rememberTopAppBarState())
 
+    val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(rememberTopAppBarState())
 
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
+    //Panel del usuario
     ModalNavigationDrawer(
         drawerState = drawerState,
         drawerContent = {
@@ -200,6 +191,7 @@ fun Gallery(navController: NavController, userId: String, galleryController: Gal
             )
         },
     ) {
+        //Pantalla principal de la galeria
         Scaffold(
             modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
 
@@ -317,6 +309,7 @@ fun Gallery(navController: NavController, userId: String, galleryController: Gal
                     )
                 }
             },
+            //Contenido de la galeria del usuario
             content = { innerPadding ->
                 Column(
                     modifier = Modifier
@@ -371,6 +364,7 @@ fun Gallery(navController: NavController, userId: String, galleryController: Gal
     }
 }
 
+//Apertura del panel de usuario
 fun abrirPanel(scope: CoroutineScope, drawerState: DrawerState) {
     scope.launch {
         drawerState.apply {
@@ -379,6 +373,7 @@ fun abrirPanel(scope: CoroutineScope, drawerState: DrawerState) {
     }
 }
 
+//Contenido del panel de usuario
 @Composable
 fun DrawerContent(userId: String, galleryController: GalleryController,nombre: String, email: String) {
     var listaDeIngresos by remember { mutableStateOf<List<UserIncome>>(emptyList()) }
@@ -493,6 +488,7 @@ fun DrawerContent(userId: String, galleryController: GalleryController,nombre: S
     }
 }
 
+//Lista de ingresos
 @Composable
 fun IncomeList(galleryController: GalleryController, incomes: List<UserIncome>) {
     Column {
