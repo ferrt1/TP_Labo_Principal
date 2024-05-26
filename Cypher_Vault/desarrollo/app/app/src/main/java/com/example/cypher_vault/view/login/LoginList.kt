@@ -167,7 +167,7 @@ fun NavigationLogin(navController: NavController) {
             val filteredUsers = users.filter {
                 it.firstName?.startsWith(searchQuery, ignoreCase = true) == true ||
                         it.email?.startsWith(searchQuery, ignoreCase = true) == true }
-            if (filteredUsers.isEmpty()) {
+            if (filteredUsers.isEmpty() && searchQuery.isNotEmpty()) {
                 Column(
                     verticalArrangement = Arrangement.Center,
                     horizontalAlignment = Alignment.CenterHorizontally
@@ -189,7 +189,7 @@ fun NavigationLogin(navController: NavController) {
             }
 
 
-            if(searchQuery.length==0) {
+            if(users.size!=0 && searchQuery.isEmpty()) {
                 Column(
                     verticalArrangement = Arrangement.Center,
                     horizontalAlignment = Alignment.CenterHorizontally

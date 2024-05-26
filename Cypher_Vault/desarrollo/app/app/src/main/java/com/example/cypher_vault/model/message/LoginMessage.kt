@@ -11,7 +11,7 @@ fun validaUserMessage(): String {
 }
 
 fun searcherMessage(): String {
-    return "Puede buscar su cuenta con el nombre de usuario"
+    return "Puede buscar su cuenta con el nombre de usuario o por su correo"
 }
 
 fun incorrectPassword(): String {
