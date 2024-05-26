@@ -36,8 +36,8 @@ fun getfullemailfield(email: String): String{
 }
 
 //Encargado de comunicarse entre la parte visual y logica si existe un error en el campo Contraseña//
-fun getfullpasswordfield(password: String): String{
-    return  fullpassword(password)
+fun getfullpasswordfield(password: String, name: String): String{
+    return  fullpassword(password, name)
 }
 
 
@@ -99,6 +99,10 @@ fun getvalidatePasswordSpecialCharacters(password: String): Boolean{
     return validatePasswordSpacioCharacters(password)
 }
 
+fun getvalidatePasswordNotContainUserName(password: String, name: String): Boolean{
+    return validatePasswordNotContainUserName(password, name)
+}
+
 //-------------------------------------------------------------------------------------------------//
 
 
@@ -119,3 +123,8 @@ fun getvalidaUserMessage(): String{
 fun getincorrectPassword(): String{
     return incorrectPassword()
 }
+
+
+//-------------------------------------------------------------------------------------------------//
+//-------------------------------------CAMPO DE GALLERY----------------------------------------------//
+//-------------------------------------------------------------------------------------------------//

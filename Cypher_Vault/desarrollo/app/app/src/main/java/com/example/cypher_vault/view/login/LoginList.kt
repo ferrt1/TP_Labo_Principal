@@ -420,7 +420,7 @@ fun NavigationLogin(navController: NavController) {
                             )
                             Spacer(modifier = Modifier.width(8.dp)) // Espacio entre la imagen y el texto
                             LimitedTextBox(
-                                text = "La contraseña es incorrecta.",
+                                text = getincorrectPassword(),
                                 maxWidth = 250.dp // Ajusta este valor según tus necesidades
                             )
                         }

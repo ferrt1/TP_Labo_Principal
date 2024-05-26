@@ -337,7 +337,7 @@ fun InitialScreen(navController: NavController) {
 
                     },
                     textStyle = TextStyle(
-                        color = if(!getvalidatePasswordLengthMax(passwordState.value.text) || getvalidatePasswordSpecialCharacters(passwordState.value.text)) redColor else firstColor,
+                        color = if(!getvalidatePasswordLengthMax(passwordState.value.text) || getvalidatePasswordSpecialCharacters(passwordState.value.text) || getvalidatePasswordNotContainUserName(passwordState.value.text,nameState.value.text) ) redColor else firstColor,
                         fontSize = 16.sp,
                         fontFamily = fontFamily,
                         fontWeight = FontWeight.Bold
@@ -399,7 +399,7 @@ fun InitialScreen(navController: NavController) {
 
 
             if (isContentVisiblpasswordState) {
-                if (getfullpasswordfield(passwordState.value.text) != "") {
+                if (getfullpasswordfield(passwordState.value.text, nameState.value.text) != "") {
                     Column(
                         verticalArrangement = Arrangement.Center,
                         horizontalAlignment = Alignment.CenterHorizontally
@@ -409,7 +409,8 @@ fun InitialScreen(navController: NavController) {
                                 ||!getvalidatePasswordLength(passwordState.value.text)
                                 || !getvalidatePasswordLengthMax(passwordState.value.text)) {
                                 R.drawable.iconwarning
-                            } else if (getvalidatePasswordSpecialCharacters(passwordState.value.text)) {
+                            } else if (getvalidatePasswordNotContainUserName(passwordState.value.text,nameState.value.text)
+                                || getvalidatePasswordSpecialCharacters(passwordState.value.text)) {
                               R.drawable.icoerror
                             } else {
                                 null
@@ -427,9 +428,9 @@ fun InitialScreen(navController: NavController) {
 
                             Spacer(modifier = Modifier.width(8.dp)) // Espacio entre la imagen y el texto
                             Row(verticalAlignment = Alignment.CenterVertically) {
-                                if (getfullpasswordfield(passwordState.value.text) != "null") {
+                                if (getfullpasswordfield(passwordState.value.text, nameState.value.text) != "null") {
                                     LimitedTextBox(
-                                        text = getfullpasswordfield(passwordState.value.text),
+                                        text = getfullpasswordfield(passwordState.value.text, nameState.value.text),
                                         maxWidth = 250.dp // Ajusta este valor según tus necesidades
                                     )
                                 }
