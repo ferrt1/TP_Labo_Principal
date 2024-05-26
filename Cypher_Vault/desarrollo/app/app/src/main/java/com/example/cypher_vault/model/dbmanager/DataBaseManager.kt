@@ -9,6 +9,7 @@ import com.example.cypher_vault.database.ImagesLogin
 import com.example.cypher_vault.database.ImagesRegister
 import com.example.cypher_vault.database.User
 import com.example.cypher_vault.database.UserIncome
+import com.example.cypher_vault.database.UserPremium
 
 
 object DatabaseManager {
@@ -99,6 +100,13 @@ object DatabaseManager {
         return database.userIncomeDao().getLastTenIncomes(userId)
     }
 
+    suspend fun insertPremiumActiveAccount(userPremium: UserPremium) {
+        database.userPremiumDao().insertPremiumActiveAccount(userPremium)
+    }
 
-    // Otros métodos según sea necesario para otras operaciones con usuarios, imágenes e imágenes registros
+    suspend fun getPremiumActiveAccount(userId: String): UserPremium? {
+        return database.userPremiumDao().getPremiumAccount(userId)
+    }
+
+
 }
