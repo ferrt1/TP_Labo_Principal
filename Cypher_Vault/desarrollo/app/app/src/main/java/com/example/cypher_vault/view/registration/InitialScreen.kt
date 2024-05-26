@@ -407,7 +407,7 @@ fun InitialScreen(navController: NavController) {
                         Row(verticalAlignment = Alignment.CenterVertically) {
                             (if (!getvalidatePasswordCharacters(passwordState.value.text)|| !getvalidatePasswordsSecialcharacters(passwordState.value.text)
                                 ||!getvalidatePasswordLength(passwordState.value.text)
-                                || !getvalidatePasswordLengthMax(passwordState.value.text)) {
+                                || !getvalidatePasswordLengthMax(passwordState.value.text) || !getvalidatePasswordNotContainNumber(passwordState.value.text)) {
                                 R.drawable.iconwarning
                             } else if (getvalidatePasswordNotContainUserName(passwordState.value.text,nameState.value.text)
                                 || getvalidatePasswordSpecialCharacters(passwordState.value.text)) {

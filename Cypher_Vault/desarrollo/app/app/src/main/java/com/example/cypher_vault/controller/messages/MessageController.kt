@@ -103,6 +103,10 @@ fun getvalidatePasswordNotContainUserName(password: String, name: String): Boole
     return validatePasswordNotContainUserName(password, name)
 }
 
+fun getvalidatePasswordNotContainNumber(password: String): Boolean{
+    return validatePasswordCharactersNumber(password)
+}
+
 //-------------------------------------------------------------------------------------------------//
 
 

@@ -87,6 +87,11 @@ fun validatePasswordSpacioCharacters(password: String): Boolean {
         return alphanumericOnly.length >= 15
     }
 
+fun validatePasswordCharactersNumber(password: String): Boolean {
+    val alphanumericOnly = password.filter { it.isLetterOrDigit() }
+    return alphanumericOnly.any { it.isDigit() }
+}
+
 fun validateNumPasswordCharacters(password: String): Int {
     val alphanumericOnly = password.filter { it.isLetterOrDigit() }
     return 15-alphanumericOnly.length
@@ -177,6 +182,9 @@ private fun validatePasswordSpacioCharacters(): String{
 fun validatePasswordNotContainUserNameMessege(): String {
     return "No puede ingresar el nombre de usuario como contraseña"
 }
+fun validatePasswordCharactersNumberMessege(): String {
+    return "La contraseña debe contener al menos un número"
+}
 
 //--------------------------------------------------------------------------------------------------//
 
@@ -187,7 +195,8 @@ fun validatePasswordNotContainUserNameMessege(): String {
         return (validateEmailNotRegistered(email) && validateNameLettersOnly(name) && !validateNamedSpecialcharacters(name) &&
                 !validateNameSpacesAndLineBreaks(name) && validateMail(email) && !validateNameNumbers(name) && validateName(name)
                 && validatePasswordCharacters(password) && validatePasswordSpecialcharacters(password) && validatePasswordLength(password) &&
-                validatePasswordLengthMax(password) && !validateFields(email, name, password) && !validatePasswordSpacioCharacters(password) && !validatePasswordNotContainUserName(password, name))
+                validatePasswordLengthMax(password) && !validateFields(email, name, password) && !validatePasswordSpacioCharacters(password) &&
+                !validatePasswordNotContainUserName(password, name) && validatePasswordCharactersNumber(password))
     }
 
 
@@ -242,6 +251,8 @@ fun validatePasswordNotContainUserNameMessege(): String {
             return validatepasswordspecialcharacters(password)
         else if(!validatePasswordSpecialcharacters(password))
             return validatePasswordCharactersMessage()
+        else if(!validatePasswordCharactersNumber(password))
+            return validatePasswordCharactersNumberMessege()
 
         return null.toString()
     }
@@ -273,6 +284,8 @@ fun validatePasswordNotContainUserNameMessege(): String {
             return validatePasswordNotContainUserNameMessege()
         else if(validatePasswordSpacioCharacters(password))
             return validatePasswordSpacioCharacters()
+        else if(!validatePasswordCharactersNumber(password))
+            return validatePasswordCharactersNumberMessege()
         else if(validatePasswordCharacters(password))
             return passwordCharactersMesseger()
         else if(!validatePasswordSpecialcharacters(password))
@@ -283,6 +296,8 @@ fun validatePasswordNotContainUserNameMessege(): String {
             return passwordLengthMaxMessger()
 
 
-        return ""
+
+
+    return ""
     }
 //------------------------------------------------------------------------------------------------//
