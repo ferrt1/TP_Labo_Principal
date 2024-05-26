@@ -142,7 +142,7 @@ fun Gallery(navController: NavController, userId: String, galleryController: Gal
     val premiumManager = PremiumManager()
     val premiumController = PremiumController(premiumManager)
 
-    val usuarioPremium = premiumController.getPremiumUser(userId)
+    var usuarioPremium = premiumController.getPremiumUser(userId)
     isPremium = if (usuarioPremium != null) {
         usuarioPremium.premium_account
     } else {
@@ -486,8 +486,8 @@ fun Gallery(navController: NavController, userId: String, galleryController: Gal
             //Agregar imagen a la galeria de imagenes////////////////////////////////
             floatingActionButton = {
                 FloatingActionButton(onClick = {
-                    if (isPremium == true && imageUris.value.size < maximoImagenesPremium) {
-                        if (imageUris.value.size < maximoImagenesPremium) {
+                    if (isPremium == true) {
+                        if(images.size < maximoImagenesPremium) {
                             launcher.launch("image/*")
                         } else {
                             Toast.makeText(
@@ -497,7 +497,7 @@ fun Gallery(navController: NavController, userId: String, galleryController: Gal
                             ).show()
                         }
                     } else {
-                        if (imageUris.value.size < maximoImagenesModoPobre) {
+                        if (images.size < maximoImagenesModoPobre) {
                             launcher.launch("image/*")
                         } else {
                             Toast.makeText(
@@ -576,10 +576,13 @@ fun Gallery(navController: NavController, userId: String, galleryController: Gal
                         },
                         sheetState = sheetState
                     ) {
-                        Column(horizontalAlignment = Alignment.Start) {
+                        Column(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalAlignment = Alignment.Start) {
                             if (isPremium == true) {
                                 Row(
-                                    horizontalArrangement = Arrangement.Absolute.Center
+                                    horizontalArrangement = Arrangement.Center,
+                                    modifier = Modifier.align(Alignment.CenterHorizontally)
                                 ) {
                                     Image(
                                         painter = painterResource(id = R.drawable.cyphervaulpremium),
@@ -589,18 +592,20 @@ fun Gallery(navController: NavController, userId: String, galleryController: Gal
                                     )
                                 }
                                 Row(
-                                    horizontalArrangement = Arrangement.Absolute.Center
-                                )
-                                {
+                                    horizontalArrangement = Arrangement.Center,
+                                    modifier = Modifier.align(Alignment.CenterHorizontally)
+                                ) {
                                     Text(
                                         text = "Premium User Since: ${userPremiumSince}",
                                         style = MaterialTheme.typography.bodyLarge,
-                                        color = Color.White
+                                        color = Color.White,
+                                        modifier = Modifier.padding(bottom = 70.dp)
                                     )
                                 }
                             } else {
                                 Row(
-                                    horizontalArrangement = Arrangement.Absolute.Center
+                                    horizontalArrangement = Arrangement.Center,
+                                    modifier = Modifier.align(Alignment.CenterHorizontally)
                                 ) {
                                     Image(
                                         painter = painterResource(id = R.drawable.cyphervaultcomprapremium2),
@@ -610,12 +615,18 @@ fun Gallery(navController: NavController, userId: String, galleryController: Gal
                                     )
                                 }
                                 Row(
-                                    horizontalArrangement = Arrangement.Absolute.Center
-                                )
-                                {
+                                    horizontalArrangement = Arrangement.Center,
+                                    modifier = Modifier.align(Alignment.CenterHorizontally)
+                                ) {
                                     Button(
-                                        onClick = { /* Acción de  la compra llamar al controller*/ },
-                                        modifier = Modifier.padding(top = 16.dp),
+                                        onClick = { premiumController.buyPremium(userId)
+                                            isPremium = premiumController.getPremiumUser(userId)?.premium_account
+                                            val userPremiumSinceDate = premiumController.getPremiumUser(userId)?.active_subscription
+                                            userPremiumSince = premiumController.formatIncomeDate(userPremiumSinceDate)
+                                            showPremiumPanel = false
+                                            navController.navigateToListLogin()
+                                                  },
+                                        modifier = Modifier.padding(top = 16.dp, bottom = 70.dp),
                                         colors = ButtonDefaults.buttonColors(
                                             containerColor = premiumButtonColor,
                                             contentColor = premiumButtonTextColor,

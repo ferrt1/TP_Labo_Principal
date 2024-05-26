@@ -23,4 +23,8 @@ class PremiumController(private val premiumManager: PremiumManager) {
     fun formatIncomeDate(date: Long?): String {
        return premiumManager.formatIncomeDate(date)
     }
+
+    fun buyPremium(userId: String): Boolean{
+       return premiumManager.buyPremium(userId)
+    }
 }

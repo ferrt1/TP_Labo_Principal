@@ -39,4 +39,12 @@ class PremiumManager() {
         }
     }
 
+    fun buyPremium(userId: String): Boolean {
+        try {
+            insertPremiumUser(userId)
+            return true
+        }catch ( e: Exception){
+            return false
+        }
+    }
 }
