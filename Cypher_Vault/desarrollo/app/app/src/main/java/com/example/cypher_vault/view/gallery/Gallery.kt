@@ -90,11 +90,11 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import java.io.ByteArrayOutputStream
 
-//Variables de entorno
+//Variables de entorno/////////////////////////////
 val pixelesDeRedimensionamiento = 1f
-val maximoImagenesPremium = 5//860
-val maximoImagenesModoPobre = 2//42
-//Colores de la ui, tipo de letra, etc.
+val maximoImagenesPremium = 5 //860
+val maximoImagenesModoPobre = 2 //42
+//Colores de la ui, tipo de letra, etc.///////////////////////
 val firstColor = Color(0xFF02a6c3)
 val secondColor = Color(0xFF01243a)
 val thirdColor = Color(0xFF005767)
