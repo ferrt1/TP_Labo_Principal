@@ -117,10 +117,11 @@ val textStyleTittle2 = TextStyle(
 @Composable
 fun Gallery(navController: NavController, userId: String, galleryController: GalleryController) {
 
-    //Variables necesarias
+    //Variables necesarias/////////////////////////
     val context = LocalContext.current
     val activity = context.findAncestorActivity()
-    //Carga datos para el perfil y para el socalo de nombre
+
+    //Carga datos para el perfil y para el socalo de nombre/////////////////////
     var usuario by remember { mutableStateOf<User?>(null) }
     var nombre by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
@@ -131,7 +132,8 @@ fun Gallery(navController: NavController, userId: String, galleryController: Gal
         nombre = usuarioTemp?.firstName.toString()
         email = usuarioTemp?.email.toString()
     }
-    //Acceso a la galeria/imagenes del celular
+
+    //Acceso a la galeria/imagenes del celular///////////////////////
     if (ContextCompat.checkSelfPermission(
             context,
             Manifest.permission.READ_EXTERNAL_STORAGE
@@ -143,7 +145,8 @@ fun Gallery(navController: NavController, userId: String, galleryController: Gal
             200
         )
     }
-    //Carga de imagenes del usuario en la galeria
+
+    //Carga de imagenes del usuario en la galeria//////////////////////
     LaunchedEffect(key1 = userId) {
         galleryController.loadImagesForUser(userId)
     }
@@ -152,7 +155,8 @@ fun Gallery(navController: NavController, userId: String, galleryController: Gal
     LaunchedEffect(key1 = imageUris.value) {
         galleryController.loadImagesForUser(userId)
     }
-    //Seleccion de imagenes de la galeria del celular y almacenamiento
+
+    //Seleccion de imagenes de la galeria del celular y almacenamiento////////////////
     val launcher =
         rememberLauncherForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
             uri?.let {
@@ -178,7 +182,8 @@ fun Gallery(navController: NavController, userId: String, galleryController: Gal
 
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
-    //Panel del usuario
+
+    //Panel del usuario///////////////////////////////
     ModalNavigationDrawer(
         drawerState = drawerState,
         drawerContent = {
@@ -191,7 +196,7 @@ fun Gallery(navController: NavController, userId: String, galleryController: Gal
             )
         },
     ) {
-        //Pantalla principal de la galeria
+        //Pantalla principal de la galeria///////////////////////
         Scaffold(
             modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
 
@@ -309,7 +314,7 @@ fun Gallery(navController: NavController, userId: String, galleryController: Gal
                     )
                 }
             },
-            //Contenido de la galeria del usuario
+            //Contenido de la galeria del usuario//////////////////////////////
             content = { innerPadding ->
                 Column(
                     modifier = Modifier
@@ -364,7 +369,7 @@ fun Gallery(navController: NavController, userId: String, galleryController: Gal
     }
 }
 
-//Apertura del panel de usuario
+//Apertura del panel de usuario/////////////////////////////
 fun abrirPanel(scope: CoroutineScope, drawerState: DrawerState) {
     scope.launch {
         drawerState.apply {
@@ -373,14 +378,14 @@ fun abrirPanel(scope: CoroutineScope, drawerState: DrawerState) {
     }
 }
 
-//Contenido del panel de usuario
+//Contenido del panel de usuario/////////////////////////////
 @Composable
 fun DrawerContent(userId: String, galleryController: GalleryController,nombre: String, email: String) {
     var listaDeIngresos by remember { mutableStateOf<List<UserIncome>>(emptyList()) }
     var showIncomes by remember { mutableStateOf(false) }
 
     LaunchedEffect(userId) {
-        // Cargar todos los ingresos del usuario
+        // Cargar todos los ingresos del usuario//////////////////////////
         listaDeIngresos = galleryController.loadAllIncomes(userId).value
     }
     Log.e("galeria","LISTA DE INGRESOS : $listaDeIngresos")
@@ -488,7 +493,7 @@ fun DrawerContent(userId: String, galleryController: GalleryController,nombre: S
     }
 }
 
-//Lista de ingresos
+//Lista de ingresos//////////////////////////////////
 @Composable
 fun IncomeList(galleryController: GalleryController, incomes: List<UserIncome>) {
     Column {

@@ -4,6 +4,7 @@ import com.example.cypher_vault.database.ImagesLogin
 import com.example.cypher_vault.database.ImagesRegister
 import com.example.cypher_vault.database.User
 import com.example.cypher_vault.database.UserIncome
+import com.example.cypher_vault.database.UserPremium
 import com.example.cypher_vault.model.dbmanager.DatabaseManager
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Deferred
@@ -97,6 +98,18 @@ class DatabaseController(){
     suspend fun getLastTenIncomes(userId: String): List<UserIncome?> {
         return withContext(Dispatchers.IO) {
             DatabaseManager.getLastTenIncomes(userId)
+        }
+    }
+
+    suspend fun insertPremiumActiveAccount(userPremium: UserPremium) {
+        withContext(Dispatchers.IO) {
+            DatabaseManager.insertPremiumActiveAccount(userPremium)
+        }
+    }
+
+    suspend fun getPremiumActiveAccount(userId: String): List<UserPremium?> {
+        return withContext(Dispatchers.IO) {
+            DatabaseManager.getPremiumActiveAccount(userId)
         }
     }
 }
