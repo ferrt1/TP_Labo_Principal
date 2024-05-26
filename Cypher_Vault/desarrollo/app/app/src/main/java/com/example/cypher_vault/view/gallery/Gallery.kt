@@ -7,6 +7,7 @@ import android.graphics.BitmapFactory
 import android.net.Uri
 import android.os.Build
 import android.util.Log
+import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
@@ -80,8 +81,10 @@ import com.example.cypher_vault.R
 import com.example.cypher_vault.controller.navigation.NavController
 import com.example.cypher_vault.controller.data.DatabaseController
 import com.example.cypher_vault.controller.gallery.GalleryController
+import com.example.cypher_vault.controller.premium.PremiumController
 import com.example.cypher_vault.database.User
 import com.example.cypher_vault.database.UserIncome
+import com.example.cypher_vault.model.premium.PremiumManager
 import com.example.cypher_vault.view.registration.findAncestorActivity
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
@@ -89,6 +92,8 @@ import java.io.ByteArrayOutputStream
 
 //Variables de entorno
 val pixelesDeRedimensionamiento = 1f
+val maximoImagenesPremium = 5//860
+val maximoImagenesModoPobre = 2//42
 //Colores de la ui, tipo de letra, etc.
 val firstColor = Color(0xFF02a6c3)
 val secondColor = Color(0xFF01243a)
@@ -116,6 +121,16 @@ val textStyleTittle2 = TextStyle(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun Gallery(navController: NavController, userId: String, galleryController: GalleryController) {
+
+    //Logica de usuario Premium
+    val premiumManager = PremiumManager()
+    val premiumController = PremiumController(premiumManager)
+    val usuarioPremium = premiumController.getPremiumUser(userId)
+    val isPremium = if (usuarioPremium!=null) {
+        usuarioPremium.premium_account
+    } else{
+        false
+    }
 
     //Variables necesarias/////////////////////////
     val context = LocalContext.current
@@ -304,8 +319,23 @@ fun Gallery(navController: NavController, userId: String, galleryController: Gal
                     )
                 }
             },
+            //Agregar imagen a la galeria de imagenes////////////////////////////////
             floatingActionButton = {
-                FloatingActionButton(onClick = { launcher.launch("image/*") }) {
+                FloatingActionButton(onClick = {
+                    if (isPremium == true && imageUris.value.size < maximoImagenesPremium) {
+                        if(imageUris.value.size < maximoImagenesPremium){
+                            launcher.launch("image/*")
+                        }else{
+                            Toast.makeText(context, "Ja! no tenes mas espacio, No sos pobre pero te zarpaste con las fotos", Toast.LENGTH_SHORT).show()
+                        }
+                    } else {
+                        if (imageUris.value.size < maximoImagenesModoPobre) {
+                            launcher.launch("image/*")
+                        } else {
+                            Toast.makeText(context, "Ja! no tenes mas espacio, Pobre! comprate un paquete premium", Toast.LENGTH_SHORT).show()
+                        }
+                    }
+                }) {
                     Icon(
                         modifier = Modifier.width(30.dp),
                         tint = firstColor,

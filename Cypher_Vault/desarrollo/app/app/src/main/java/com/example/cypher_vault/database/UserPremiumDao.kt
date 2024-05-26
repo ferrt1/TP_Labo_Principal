@@ -12,7 +12,7 @@ interface UserPremiumDao {
     suspend fun insertPremiumActiveAccount(userPremium: UserPremium)
 
     @Query("SELECT * FROM user_premium WHERE user_id = :userId")
-    suspend fun getPremiumAccount(userId: String): List<UserPremium?>
+    suspend fun getPremiumAccount(userId: String): UserPremium?
 
 
 }

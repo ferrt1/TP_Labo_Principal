@@ -107,7 +107,7 @@ class DatabaseController(){
         }
     }
 
-    suspend fun getPremiumActiveAccount(userId: String): List<UserPremium?> {
+    suspend fun getPremiumActiveAccount(userId: String): UserPremium? {
         return withContext(Dispatchers.IO) {
             DatabaseManager.getPremiumActiveAccount(userId)
         }

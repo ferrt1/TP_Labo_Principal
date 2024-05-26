@@ -8,9 +8,12 @@ import androidx.annotation.RequiresApi
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.graphics.ImageBitmap
+import com.example.cypher_vault.controller.data.DatabaseController
 import com.example.cypher_vault.controller.income.UserAccessController
 import com.example.cypher_vault.database.Images
 import com.example.cypher_vault.database.UserIncome
+import com.example.cypher_vault.database.UserPremium
+import com.example.cypher_vault.database.UserPremiumDao
 import com.example.cypher_vault.model.dbmanager.DatabaseManager
 import com.example.cypher_vault.model.gallery.GalleryManager
 import com.example.cypher_vault.model.income.UserAccessManager
@@ -18,6 +21,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 
 
@@ -26,6 +30,7 @@ class GalleryController() {
     val userAccessManager = UserAccessManager()
     val userAccessController = UserAccessController(userAccessManager)
     val galleryManager = GalleryManager()
+    val databaseController = DatabaseController()
 
     suspend fun performUserIncomeInsertion(userId: String) {
         userAccessController.insertUserIncome(userId).await()
@@ -76,5 +81,6 @@ class GalleryController() {
     fun saveBitmapToFile(context: Context, bitmap: Bitmap, fileName: String){
         return galleryManager.saveBitmapToFile(context,bitmap,fileName)
     }
+
 
 }

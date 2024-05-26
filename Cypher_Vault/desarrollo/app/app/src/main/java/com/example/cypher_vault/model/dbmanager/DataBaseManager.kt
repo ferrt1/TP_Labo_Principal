@@ -104,7 +104,7 @@ object DatabaseManager {
         database.userPremiumDao().insertPremiumActiveAccount(userPremium)
     }
 
-    suspend fun getPremiumActiveAccount(userId: String): List<UserPremium?> {
+    suspend fun getPremiumActiveAccount(userId: String): UserPremium? {
         return database.userPremiumDao().getPremiumAccount(userId)
     }
 
