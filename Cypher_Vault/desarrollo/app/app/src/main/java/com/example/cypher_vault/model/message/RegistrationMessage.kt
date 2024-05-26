@@ -187,7 +187,7 @@ fun validatePasswordNotContainUserNameMessege(): String {
         return (validateEmailNotRegistered(email) && validateNameLettersOnly(name) && !validateNamedSpecialcharacters(name) &&
                 !validateNameSpacesAndLineBreaks(name) && validateMail(email) && !validateNameNumbers(name) && validateName(name)
                 && validatePasswordCharacters(password) && validatePasswordSpecialcharacters(password) && validatePasswordLength(password) &&
-                validatePasswordLengthMax(password) && !validateFields(email, name, password) && !validatePasswordSpacioCharacters(password) && validatePasswordNotContainUserName(password, name))
+                validatePasswordLengthMax(password) && !validateFields(email, name, password) && !validatePasswordSpacioCharacters(password) && !validatePasswordNotContainUserName(password, name))
     }
 
 
@@ -269,6 +269,8 @@ fun validatePasswordNotContainUserNameMessege(): String {
             return nameNumbersMesseger()
         else if(!validateName(name))
             return nameMesseger()
+        else if(validatePasswordNotContainUserName(password,name))
+            return validatePasswordNotContainUserNameMessege()
         else if(validatePasswordSpacioCharacters(password))
             return validatePasswordSpacioCharacters()
         else if(validatePasswordCharacters(password))
@@ -279,6 +281,7 @@ fun validatePasswordNotContainUserNameMessege(): String {
             return passwordLengthMessger()
         else if(!validatePasswordLengthMax(password))
             return passwordLengthMaxMessger()
+
 
         return ""
     }
