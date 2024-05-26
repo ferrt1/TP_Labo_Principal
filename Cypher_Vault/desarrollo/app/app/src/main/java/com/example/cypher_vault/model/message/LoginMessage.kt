@@ -14,5 +14,9 @@ fun searcherMessage(): String {
     return "Puede buscar su cuenta con el nombre de usuario"
 }
 
+fun incorrectPassword(): String {
+    return "La contraseña es incorrecta"
+}
+
 
 

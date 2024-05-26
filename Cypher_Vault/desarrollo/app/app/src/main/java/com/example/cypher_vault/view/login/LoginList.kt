@@ -65,12 +65,14 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.sp
 import com.example.cypher_vault.R
 import com.example.cypher_vault.controller.navigation.NavController
 import com.example.cypher_vault.controller.data.DatabaseController
 import com.example.cypher_vault.controller.income.UserAccessController
+import com.example.cypher_vault.controller.messages.getincorrectPassword
 import com.example.cypher_vault.controller.messages.getsearcherMessage
 import com.example.cypher_vault.controller.messages.getvalidaUserMessage
 import com.example.cypher_vault.model.income.UserAccessManager
@@ -162,7 +164,9 @@ fun NavigationLogin(navController: NavController) {
                 },
             )
 
-            val filteredUsers = users.filter { it.firstName?.contains(searchQuery, ignoreCase = true) == true }
+            val filteredUsers = users.filter {
+                it.firstName?.startsWith(searchQuery, ignoreCase = true) == true ||
+                        it.email?.startsWith(searchQuery, ignoreCase = true) == true }
             if (filteredUsers.isEmpty()) {
                 Column(
                     verticalArrangement = Arrangement.Center,
@@ -184,7 +188,7 @@ fun NavigationLogin(navController: NavController) {
                 }
             }
 
-            
+
             if(searchQuery.length==0) {
                 Column(
                     verticalArrangement = Arrangement.Center,
@@ -209,10 +213,17 @@ fun NavigationLogin(navController: NavController) {
 
 
             LazyColumn(
-                modifier = Modifier.padding(top = 20.dp).heightIn(max = 250.dp),
+                modifier = Modifier
+                    .padding(top = 20.dp)
+                    .heightIn(max = 250.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                items(users.filter { it.firstName?.contains(searchQuery, ignoreCase = true) == true } ) { user ->
+                val filteredUsers = users.filter {
+                    it.firstName?.startsWith(searchQuery, ignoreCase = true) == true ||
+                            it.email?.startsWith(searchQuery, ignoreCase = true) == true
+                }
+
+                items(filteredUsers) { user ->
                     Button(
                         onClick = {
                             userSelected = user.uid
@@ -225,7 +236,9 @@ fun NavigationLogin(navController: NavController) {
                             containerColor = Color.Transparent,
                             contentColor = firstColor
                         ),
-                        modifier = Modifier.width(290.dp).padding(top = 15.dp)
+                        modifier = Modifier
+                            .width(290.dp)
+                            .padding(top = 15.dp)
                     ) {
                         Column(
                             horizontalAlignment = Alignment.CenterHorizontally,
@@ -298,7 +311,9 @@ fun NavigationLogin(navController: NavController) {
                             "Continuar por reconocimiento facial",
                             fontFamily = fontFamily,
                             color = thirdColor,
-                            fontWeight = FontWeight.Bold
+                            fontWeight = FontWeight.Bold,
+                            textAlign = TextAlign.Center
+
                         )
                     }
                     OutlinedButton(
@@ -328,6 +343,9 @@ fun NavigationLogin(navController: NavController) {
         }
     }
     else if (showPasswordDialog) {
+        var showError by remember { mutableStateOf(false) }
+
+
         AlertDialog(
             containerColor = Color.White,
             shape = RoundedCornerShape(15.dp),
@@ -336,83 +354,126 @@ fun NavigationLogin(navController: NavController) {
                 Text(
                     "Inicio de sesión",
                     style = textStyle,
-                    modifier = Modifier
-                        .background(Color.White),
+                    modifier = Modifier.background(Color.White),
                 )
             },
             text = {
-                TextField(
-                    value = enteredPassword,
-                    onValueChange = {
-                        if (it.length <= 32) {
-                            enteredPassword = it
-                        }
-                    },
-                    textStyle = TextStyle(
-                        color = firstColor,
-                        fontSize = 16.sp,
-                        fontFamily = fontFamily,
-                        fontWeight = FontWeight.Bold
-                    ),
-                    label = {
-                        Text(
-                            "Contraseña",
-                            fontSize = 20.sp,
+                Column {
+                    TextField(
+                        value = enteredPassword,
+                        onValueChange = {
+                            if (it.length <= 32) {
+                                enteredPassword = it
+                                showError = false  // Resetear showError cuando la contraseña cambia
+                            }
+                        },
+                        textStyle = TextStyle(
+                            color = firstColor,
+                            fontSize = 16.sp,
                             fontFamily = fontFamily,
-                            color = thirdColor,
                             fontWeight = FontWeight.Bold
-                        )
-                    },
-                    singleLine = true,
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text, imeAction = ImeAction.Done),
-                    visualTransformation = if (passwordVisible.value) VisualTransformation.None else PasswordVisualTransformation(),
-                    trailingIcon = {
-                        IconButton(
-                            onClick = { passwordVisible.value = !passwordVisible.value },
-                            modifier = Modifier.offset(y = 10.dp) // Ajusta este valor a tu preferencia
-                        ) {
-                            Icon(
-                                imageVector = if (passwordVisible.value) Icons.Filled.VisibilityOff else Icons.Filled.Visibility,
-                                contentDescription = if (passwordVisible.value) "Ocultar contraseña" else "Mostrar contraseña"
+                        ),
+                        label = {
+                            Text(
+                                "Contraseña",
+                                fontSize = 20.sp,
+                                fontFamily = fontFamily,
+                                color = thirdColor,
+                                fontWeight = FontWeight.Bold
+                            )
+                        },
+                        singleLine = true,
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text, imeAction = ImeAction.Done),
+                        visualTransformation = if (passwordVisible.value) VisualTransformation.None else PasswordVisualTransformation(),
+                        trailingIcon = {
+                            IconButton(
+                                onClick = { passwordVisible.value = !passwordVisible.value },
+                                modifier = Modifier.offset(y = 10.dp) // Ajusta este valor a tu preferencia
+                            ) {
+                                Icon(
+                                    imageVector = if (passwordVisible.value) Icons.Filled.VisibilityOff else Icons.Filled.Visibility,
+                                    contentDescription = if (passwordVisible.value) "Ocultar contraseña" else "Mostrar contraseña"
+                                )
+                            }
+                        },
+                        colors = TextFieldDefaults.colors(
+                            focusedContainerColor = Color.Transparent,
+                            unfocusedContainerColor = Color.Transparent,
+                            disabledContainerColor = Color.Transparent,
+                            cursorColor = thirdColor,
+                            focusedIndicatorColor = firstColor,
+                            unfocusedIndicatorColor = firstColor,
+                        ),
+                        modifier = Modifier
+                            .width(250.dp)
+                            .padding(top = 15.dp)
+                            .border(BorderStroke(3.dp, firstColor), shape = RoundedCornerShape(4.dp))
+                    )
+
+                    if (showError) {
+                        Spacer(modifier = Modifier.height(8.dp))
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Image(
+                                painter = painterResource(id = R.drawable.icoerror),
+                                contentDescription = "",
+                                modifier = Modifier.size(24.dp)
+                            )
+                            Spacer(modifier = Modifier.width(8.dp)) // Espacio entre la imagen y el texto
+                            LimitedTextBox(
+                                text = "La contraseña es incorrecta.",
+                                maxWidth = 250.dp // Ajusta este valor según tus necesidades
                             )
                         }
-                    },
-                    colors = TextFieldDefaults.colors(
-                        focusedContainerColor = Color.Transparent,
-                        unfocusedContainerColor = Color.Transparent,
-                        disabledContainerColor = Color.Transparent,
-                        cursorColor = thirdColor,
-                        focusedIndicatorColor = firstColor,
-                        unfocusedIndicatorColor = firstColor,
-                    ),
-                    modifier = Modifier
-                        .width(290.dp)
-                        .padding(top = 15.dp)
-                        .border(BorderStroke(3.dp, firstColor), shape =  RoundedCornerShape(4.dp))
-                )
+                    }
+                }
             },
             confirmButton = {
                 OutlinedButton(
                     onClick = {
                         val password = enteredPassword
-                        if (enteredPassword != null) {
+                        if (password.isNotEmpty()) {
                             CoroutineScope(Dispatchers.IO).launch {
-                                val isPasswordCorrect = databaseController.comparePasswords(userSelected, enteredPassword)
-                                if (isPasswordCorrect) {
-                                    //Se agrega ingreso de usuario
-                                    val userAccessManager = UserAccessManager()
-                                    val userAccessController = UserAccessController(userAccessManager)
-                                    //Ingreso de usuario
-                                    userAccessController.insertUserIncome(userSelected)
-                                    withContext(Dispatchers.Main){
+                                val isPasswordCorrect = databaseController.comparePasswords(userSelected, password)
+                                withContext(Dispatchers.Main) {
+                                    if (isPasswordCorrect) {
+                                        // Se agrega ingreso de usuario
+                                        val userAccessManager = UserAccessManager()
+                                        val userAccessController = UserAccessController(userAccessManager)
+                                        // Ingreso de usuario
+                                        userAccessController.insertUserIncome(userSelected)
                                         navController.navigateToGallery(userSelected)
+                                        showPasswordDialog = false
+
+                                    } else {
+                                        showError = true
                                     }
-                                }
-                                else{
-                                    errorMessage = "La contraseña ingresada es incorrecta."
                                 }
                             }
                         }
+                    },
+                    shape = RoundedCornerShape(15.dp),
+                    border = BorderStroke(3.dp, Color.Gray),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = Color.Transparent,
+                        contentColor = thirdColor
+                    ),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .wrapContentSize(Alignment.Center)
+                        .width(200.dp)
+                        .padding(vertical = 5.dp)
+                ) {
+                    Text(
+                        "Aceptar",
+                        fontFamily = fontFamily,
+                        color = thirdColor,
+                        fontWeight = FontWeight.Bold
+                    )
+                }
+            },
+            dismissButton = {
+                OutlinedButton(
+                    onClick = {
                         showPasswordDialog = false
                     },
                     shape = RoundedCornerShape(15.dp),
@@ -425,10 +486,10 @@ fun NavigationLogin(navController: NavController) {
                         .fillMaxWidth()
                         .wrapContentSize(Alignment.Center)
                         .width(200.dp)
-                        .padding(top = 30.dp)
+                        .padding(vertical = 5.dp)
                 ) {
                     Text(
-                        "Aceptar",
+                        "Cancelar",
                         fontFamily = fontFamily,
                         color = thirdColor,
                         fontWeight = FontWeight.Bold
@@ -438,31 +499,6 @@ fun NavigationLogin(navController: NavController) {
         )
     }
 
-
-    // Muestra un Snackbar con el mensaje de error si hay uno
-    Box(
-        modifier = Modifier.fillMaxSize(),
-        contentAlignment = Alignment.BottomCenter // Alinea el Snackbar en la parte inferior
-    ) {
-        if (errorMessage.isNotEmpty()) {
-            Snackbar(
-                action = {
-                    TextButton(
-                        onClick = { errorMessage = "" },
-                        colors = ButtonDefaults.textButtonColors(contentColor = Color.White)
-                    ) {
-                        Text("OK")
-                    }
-                },
-                shape = RoundedCornerShape(8.dp),
-                containerColor = Color.Red,
-                contentColor = Color.White,
-                modifier = Modifier.padding(8.dp)
-            ) {
-                Text(errorMessage)
-            }
-        }
-    }
 
 }
 

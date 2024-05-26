@@ -115,3 +115,7 @@ fun getsearcherMessage(): String{
 fun getvalidaUserMessage(): String{
     return validaUserMessage()
 }
+
+fun getincorrectPassword(): String{
+    return incorrectPassword()
+}
