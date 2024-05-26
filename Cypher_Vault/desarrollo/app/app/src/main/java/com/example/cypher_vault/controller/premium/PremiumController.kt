@@ -19,4 +19,8 @@ class PremiumController(private val premiumManager: PremiumManager) {
     fun insertPremiumUser(userId: String) {
         premiumManager.insertPremiumUser(userId)
     }
+
+    fun formatIncomeDate(date: Long?): String {
+       return premiumManager.formatIncomeDate(date)
+    }
 }

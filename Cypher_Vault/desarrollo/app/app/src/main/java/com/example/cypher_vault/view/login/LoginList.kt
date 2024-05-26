@@ -308,7 +308,7 @@ fun NavigationLogin(navController: NavController) {
                             .width(300.dp)
                     ) {
                         Text(
-                            "Continuar por reconocimiento facial",
+                            "Usar reconocimiento facial",
                             fontFamily = fontFamily,
                             color = thirdColor,
                             fontWeight = FontWeight.Bold,
@@ -332,7 +332,7 @@ fun NavigationLogin(navController: NavController) {
                             .padding(top = 30.dp)
                     ) {
                         Text(
-                            "Continuar por contraseña",
+                            "Usar contraseña",
                             fontFamily = fontFamily,
                             color = thirdColor,
                             fontWeight = FontWeight.Bold

@@ -19,6 +19,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -26,6 +27,7 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -35,7 +37,9 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowBackIosNew
+import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -46,12 +50,16 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.ModalDrawerSheet
 import androidx.compose.material3.ModalNavigationDrawer
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberDrawerState
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -67,11 +75,13 @@ import androidx.compose.ui.graphics.asAndroidBitmap
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
@@ -94,10 +104,16 @@ import java.io.ByteArrayOutputStream
 val pixelesDeRedimensionamiento = 1f
 val maximoImagenesPremium = 5 //860
 val maximoImagenesModoPobre = 2 //42
+var isPremium: Boolean? = false
+var userPremiumSince = ""
+
 //Colores de la ui, tipo de letra, etc.///////////////////////
 val firstColor = Color(0xFF02a6c3)
 val secondColor = Color(0xFF01243a)
 val thirdColor = Color(0xFF005767)
+val premiumBackgroundColor = Color(0xFF131313)
+val premiumButtonColor = Color(0xFF64C4F1)
+val premiumButtonTextColor = Color(0xFF000000)
 val mainBackgroundColor = Color(0xFFdcdcdc)
 val fontFamily = FontFamily(
     Font(R.font.expandedconsolabold, FontWeight.Normal)
@@ -122,15 +138,23 @@ val textStyleTittle2 = TextStyle(
 @Composable
 fun Gallery(navController: NavController, userId: String, galleryController: GalleryController) {
 
-    //Logica de usuario Premium
+    //Logica de usuario Premium/Panel
     val premiumManager = PremiumManager()
     val premiumController = PremiumController(premiumManager)
+
     val usuarioPremium = premiumController.getPremiumUser(userId)
-    val isPremium = if (usuarioPremium!=null) {
+    isPremium = if (usuarioPremium != null) {
         usuarioPremium.premium_account
-    } else{
+    } else {
         false
     }
+    userPremiumSince = if (usuarioPremium != null) {
+        premiumController.formatIncomeDate(usuarioPremium.active_subscription)
+    } else {
+        "no disponible"
+    }
+    val sheetState = rememberModalBottomSheetState()
+    var showPremiumPanel by remember { mutableStateOf(false) }
 
     //Variables necesarias/////////////////////////
     val context = LocalContext.current
@@ -179,11 +203,15 @@ fun Gallery(navController: NavController, userId: String, galleryController: Gal
                 val bitmapOriginal = BitmapFactory.decodeStream(inputStream)
                 //Test Imagen Original
                 //galleryController.saveBitmapToFile(context, bitmapOriginal, "original_image.png")
-                val bitmapResize = galleryController.reduceImageSize(bitmapOriginal.asImageBitmap(), pixelesDeRedimensionamiento)
+                val bitmapResize = galleryController.reduceImageSize(
+                    bitmapOriginal.asImageBitmap(),
+                    pixelesDeRedimensionamiento
+                )
                 //Test Imagen Redim
                 //galleryController.saveBitmapToFile(context, bitmapResize.asAndroidBitmap(), "resized_image.png")
                 val byteArrayOutputStream = ByteArrayOutputStream()
-                bitmapResize.asAndroidBitmap().compress(Bitmap.CompressFormat.PNG, 60, byteArrayOutputStream)
+                bitmapResize.asAndroidBitmap()
+                    .compress(Bitmap.CompressFormat.PNG, 60, byteArrayOutputStream)
                 val compressedImageData = byteArrayOutputStream.toByteArray()
                 //Test Imagen bajo compresion
                 //galleryController.saveByteArrayToFile(context, compressedImageData, "compressed_image.png")
@@ -197,6 +225,13 @@ fun Gallery(navController: NavController, userId: String, galleryController: Gal
 
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
+    var listaDeIngresos by remember { mutableStateOf<List<UserIncome>>(emptyList()) }
+    var showIncomes by remember { mutableStateOf(false) }
+    LaunchedEffect(userId) {
+        // Cargar todos los ingresos del usuario//////////////////////////
+        listaDeIngresos = galleryController.loadAllIncomes(userId).value
+    }
+    Log.e("galeria", "LISTA DE INGRESOS : $listaDeIngresos")
 
     //Panel del usuario///////////////////////////////
     ModalNavigationDrawer(
@@ -204,9 +239,138 @@ fun Gallery(navController: NavController, userId: String, galleryController: Gal
         drawerContent = {
             ModalDrawerSheet(
                 drawerContainerColor = thirdColor,
-                modifier = Modifier.background(thirdColor).fillMaxHeight(),
+                modifier = Modifier
+                    .background(thirdColor)
+                    .fillMaxHeight(),
                 content = {
-                    DrawerContent(userId,galleryController,nombre,email)
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(16.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.Center
+                    ) {
+                        // Informacion de usuario en el panel //////////////////////////
+                        Box(modifier = Modifier.fillMaxWidth()) {
+                            Column(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(16.dp),
+                                horizontalAlignment = Alignment.CenterHorizontally,
+                                verticalArrangement = Arrangement.Center
+                            ) {
+                                Row(
+                                    horizontalArrangement = Arrangement.Absolute.Center
+                                ) {
+                                    Text(
+                                        text = "Panel de ",
+                                        color = mainBackgroundColor,
+                                        style = textStyleTittle2,
+                                        onTextLayout = { /* No se necesita hacer nada aquí */ }
+                                    )
+                                    Text(
+                                        text = galleryController.capitalizarPrimeraLetra(nombre),
+                                        color = firstColor,
+                                        style = textStyleTittle2,
+                                        onTextLayout = { /* No se necesita hacer nada aquí */ }
+                                    )
+                                    Text(
+                                        text = galleryController.procesarString(nombre),
+                                        color = mainBackgroundColor,
+                                        style = textStyleTittle2,
+                                        onTextLayout = { /* No se necesita hacer nada aquí */ }
+                                    )
+                                }
+                                Row(
+                                    horizontalArrangement = Arrangement.Absolute.Center
+                                ) {
+                                    Box(
+                                        modifier = Modifier
+                                            .height(height = 100.dp)
+                                            .fillMaxSize(),
+                                        contentAlignment = Alignment.Center
+                                    ) {
+
+                                        IconButton(
+                                            onClick = { /* Acción de la imagen */ },
+                                            modifier = Modifier
+                                                .size(100.dp)
+                                        ) {
+                                            Icon(
+                                                modifier = Modifier.fillMaxSize(),
+                                                tint = firstColor,
+                                                imageVector = Icons.Filled.Person,
+                                                contentDescription = "Perfil de Usuario"
+                                            )
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        Spacer(modifier = Modifier.height(8.dp))
+                        Text(
+                            text = email,
+                            color = mainBackgroundColor,
+                            style = textStyleTittle2,
+                            onTextLayout = { /* No se necesita hacer nada aquí */ }
+                        )
+                        Spacer(modifier = Modifier.height(16.dp))
+                        // Boton para cambiar contraseña //////////////////////////
+                        Button(
+                            onClick = { /* Acción cambiar contraseña */ },
+                            shape = RoundedCornerShape(4.dp),
+                            border = BorderStroke(3.dp, firstColor),
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = Color.Transparent,
+                                contentColor = firstColor
+                            ),
+                            modifier = Modifier
+                                .width(290.dp)
+                                .padding(top = 15.dp)
+                        )
+                        {
+                            Text(text = "Cambiar Contraseña")
+                        }
+                        Spacer(modifier = Modifier.height(8.dp))
+                        // Boton para ver premium //////////////////////////
+                        Button(
+                            onClick = { showPremiumPanel = true },
+                            shape = RoundedCornerShape(4.dp),
+                            border = BorderStroke(3.dp, firstColor),
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = Color.Transparent,
+                                contentColor = firstColor
+                            ),
+                            modifier = Modifier
+                                .width(290.dp)
+                                .padding(top = 15.dp)
+                        )
+                        {
+                            Text(text = "Premium")
+                        }
+                        Spacer(modifier = Modifier.height(8.dp))
+                        // Boton para ver ingresos //////////////////////////
+                        Button(
+                            onClick = { showIncomes = !showIncomes },
+                            shape = RoundedCornerShape(4.dp),
+                            border = BorderStroke(3.dp, firstColor),
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = Color.Transparent,
+                                contentColor = firstColor
+                            ),
+                            modifier = Modifier
+                                .width(290.dp)
+                                .padding(top = 15.dp)
+                        )
+                        {
+                            Text(text = "Tus ingresos en la App")
+                        }
+                        Spacer(modifier = Modifier.height(16.dp))
+                        // Mostrar la lista de ingresos si showIncomes es true
+                        if (showIncomes) {
+                            IncomeList(galleryController, incomes = listaDeIngresos)
+                        }
+                    }
                 }
             )
         },
@@ -291,7 +455,7 @@ fun Gallery(navController: NavController, userId: String, galleryController: Gal
                         }
                     },
                     actions = {
-                        IconButton(onClick = { abrirPanel(scope, drawerState ) }) {
+                        IconButton(onClick = { abrirPanel(scope, drawerState) }) {
                             Icon(
                                 modifier = Modifier
                                     .height(100.dp)
@@ -323,16 +487,24 @@ fun Gallery(navController: NavController, userId: String, galleryController: Gal
             floatingActionButton = {
                 FloatingActionButton(onClick = {
                     if (isPremium == true && imageUris.value.size < maximoImagenesPremium) {
-                        if(imageUris.value.size < maximoImagenesPremium){
+                        if (imageUris.value.size < maximoImagenesPremium) {
                             launcher.launch("image/*")
-                        }else{
-                            Toast.makeText(context, "Ja! no tenes mas espacio, No sos pobre pero te zarpaste con las fotos", Toast.LENGTH_SHORT).show()
+                        } else {
+                            Toast.makeText(
+                                context,
+                                "Ja! no tenes mas espacio, No sos pobre pero te zarpaste con las fotos",
+                                Toast.LENGTH_SHORT
+                            ).show()
                         }
                     } else {
                         if (imageUris.value.size < maximoImagenesModoPobre) {
                             launcher.launch("image/*")
                         } else {
-                            Toast.makeText(context, "Ja! no tenes mas espacio, Pobre! comprate un paquete premium", Toast.LENGTH_SHORT).show()
+                            Toast.makeText(
+                                context,
+                                "Ja! no tenes mas espacio, Pobre! comprate un paquete premium",
+                                Toast.LENGTH_SHORT
+                            ).show()
                         }
                     }
                 }) {
@@ -385,6 +557,7 @@ fun Gallery(navController: NavController, userId: String, galleryController: Gal
                         }
                     }
                 }
+                // Mostrar la imagen seleccionada en un diálogo/////
                 if (selectedImageBitmap.value != null) {
                     Dialog(onDismissRequest = { selectedImageBitmap.value = null }) {
                         Image(
@@ -394,9 +567,71 @@ fun Gallery(navController: NavController, userId: String, galleryController: Gal
                         )
                     }
                 }
+                // Mostrar el panel de premium ///////////////////
+                if (showPremiumPanel) {
+                    ModalBottomSheet(
+                        containerColor = premiumBackgroundColor,
+                        onDismissRequest = {
+                            showPremiumPanel = false
+                        },
+                        sheetState = sheetState
+                    ) {
+                        Column(horizontalAlignment = Alignment.Start) {
+                            if (isPremium == true) {
+                                Row(
+                                    horizontalArrangement = Arrangement.Absolute.Center
+                                ) {
+                                    Image(
+                                        painter = painterResource(id = R.drawable.cyphervaulpremium),
+                                        contentDescription = "",
+                                        alignment = Alignment.TopCenter,
+                                        modifier = Modifier.fillMaxWidth()
+                                    )
+                                }
+                                Row(
+                                    horizontalArrangement = Arrangement.Absolute.Center
+                                )
+                                {
+                                    Text(
+                                        text = "Premium User Since: ${userPremiumSince}",
+                                        style = MaterialTheme.typography.bodyLarge,
+                                        color = Color.White
+                                    )
+                                }
+                            } else {
+                                Row(
+                                    horizontalArrangement = Arrangement.Absolute.Center
+                                ) {
+                                    Image(
+                                        painter = painterResource(id = R.drawable.cyphervaultcomprapremium2),
+                                        contentDescription = "Upgrade to premium",
+                                        alignment = Alignment.TopCenter,
+                                        modifier = Modifier.fillMaxWidth()
+                                    )
+                                }
+                                Row(
+                                    horizontalArrangement = Arrangement.Absolute.Center
+                                )
+                                {
+                                    Button(
+                                        onClick = { /* Acción de  la compra llamar al controller*/ },
+                                        modifier = Modifier.padding(top = 16.dp),
+                                        colors = ButtonDefaults.buttonColors(
+                                            containerColor = premiumButtonColor,
+                                            contentColor = premiumButtonTextColor,
+                                        ),
+                                    ) {
+                                        Text(text = "Comprar con 1 toque")
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
             }
         )
     }
+
 }
 
 //Apertura del panel de usuario/////////////////////////////
@@ -404,121 +639,6 @@ fun abrirPanel(scope: CoroutineScope, drawerState: DrawerState) {
     scope.launch {
         drawerState.apply {
             if (isClosed) open() else close()
-        }
-    }
-}
-
-//Contenido del panel de usuario/////////////////////////////
-@Composable
-fun DrawerContent(userId: String, galleryController: GalleryController,nombre: String, email: String) {
-    var listaDeIngresos by remember { mutableStateOf<List<UserIncome>>(emptyList()) }
-    var showIncomes by remember { mutableStateOf(false) }
-
-    LaunchedEffect(userId) {
-        // Cargar todos los ingresos del usuario//////////////////////////
-        listaDeIngresos = galleryController.loadAllIncomes(userId).value
-    }
-    Log.e("galeria","LISTA DE INGRESOS : $listaDeIngresos")
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(16.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
-    ) {
-        Box(modifier = Modifier.fillMaxWidth()) {
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp),
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.Center
-            ) {
-                Row(
-                    horizontalArrangement = Arrangement.Absolute.Center
-                ) {
-                    Text(
-                        text = "Panel de ",
-                        color = mainBackgroundColor,
-                        style = textStyleTittle2,
-                        onTextLayout = { /* No se necesita hacer nada aquí */ }
-                    )
-                    Text(
-                        text = galleryController.capitalizarPrimeraLetra(nombre),
-                        color = firstColor,
-                        style = textStyleTittle2,
-                        onTextLayout = { /* No se necesita hacer nada aquí */ }
-                    )
-                    Text(
-                        text = galleryController.procesarString(nombre),
-                        color = mainBackgroundColor,
-                        style = textStyleTittle2,
-                        onTextLayout = { /* No se necesita hacer nada aquí */ }
-                    )
-                }
-                Row(
-                    horizontalArrangement = Arrangement.Absolute.Center
-                ) {
-                    Box(
-                        modifier = Modifier.height(height = 100.dp).fillMaxSize(),
-                        contentAlignment = Alignment.Center
-                    ) {
-
-                        IconButton(
-                            onClick = { /* Acción de la imagen */ },
-                            modifier = Modifier
-                                .size(100.dp)
-                        ) {
-                            Icon(
-                                modifier = Modifier.fillMaxSize(),
-                                tint = firstColor,
-                                imageVector = Icons.Filled.Person,
-                                contentDescription = "Perfil de Usuario"
-                            )
-                        }
-                    }
-                }
-            }
-        }
-        Spacer(modifier = Modifier.height(8.dp))
-        Text(
-            text = email,
-            color = mainBackgroundColor,
-            style = textStyleTittle2,
-            onTextLayout = { /* No se necesita hacer nada aquí */ }
-        )
-        Spacer(modifier = Modifier.height(16.dp))
-        Button(
-            onClick = { /* Acción cambiar contraseña */ },
-            shape = RoundedCornerShape(4.dp),
-            border = BorderStroke(3.dp, firstColor),
-            colors = ButtonDefaults.buttonColors(
-                containerColor = Color.Transparent,
-                contentColor = firstColor
-            ),
-            modifier = Modifier.width(290.dp).padding(top = 15.dp)
-        )
-        {
-            Text(text = "Cambiar Contraseña")
-        }
-        Spacer(modifier = Modifier.height(8.dp))
-        Button(
-            onClick = { showIncomes = !showIncomes },
-            shape = RoundedCornerShape(4.dp),
-            border = BorderStroke(3.dp, firstColor),
-            colors = ButtonDefaults.buttonColors(
-                containerColor = Color.Transparent,
-                contentColor = firstColor
-            ),
-            modifier = Modifier.width(290.dp).padding(top = 15.dp)
-        )
-        {
-            Text(text = "Tus ingresos en la App")
-        }
-        Spacer(modifier = Modifier.height(16.dp))
-        // Mostrar la lista de ingresos si showIncomes es true
-        if (showIncomes) {
-            IncomeList(galleryController,incomes = listaDeIngresos)
         }
     }
 }
@@ -536,4 +656,5 @@ fun IncomeList(galleryController: GalleryController, incomes: List<UserIncome>) 
         }
     }
 }
+
 
