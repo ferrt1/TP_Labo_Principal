@@ -62,7 +62,7 @@ dependencies {
     annotationProcessor("androidx.room:room-compiler:2.6.1")
     kapt("androidx.room:room-compiler:2.6.1")
     //////////////////////////////////////////////
-
+    
     // MLKIT ///
     implementation("com.google.mlkit:face-detection:16.1.6")
 

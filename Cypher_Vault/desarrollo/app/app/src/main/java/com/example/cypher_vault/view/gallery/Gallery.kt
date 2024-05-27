@@ -67,6 +67,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -91,6 +92,8 @@ import com.example.cypher_vault.R
 import com.example.cypher_vault.controller.navigation.NavController
 import com.example.cypher_vault.controller.data.DatabaseController
 import com.example.cypher_vault.controller.gallery.GalleryController
+import com.example.cypher_vault.controller.messages.MessageController
+
 import com.example.cypher_vault.controller.premium.PremiumController
 import com.example.cypher_vault.database.User
 import com.example.cypher_vault.database.UserIncome
@@ -106,6 +109,11 @@ val maximoImagenesPremium = 5 //860
 val maximoImagenesModoPobre = 2 //42
 var isPremium: Boolean? = false
 var userPremiumSince = ""
+
+
+
+
+
 
 //Colores de la ui, tipo de letra, etc.///////////////////////
 val firstColor = Color(0xFF02a6c3)
@@ -138,6 +146,17 @@ val textStyleTittle2 = TextStyle(
 @Composable
 fun Gallery(navController: NavController, userId: String, galleryController: GalleryController) {
 
+    // implementacion para el movimiento de los menesajes (deuda tecnica)
+    var currentMessage by remember { mutableStateOf("") }
+    val messageController = MessageController()
+    LaunchedEffect(Unit) {
+        val messageChannel = messageController.getMessageChannel()
+        for (message in messageChannel) {
+            currentMessage = message
+        }
+    }
+
+
     //Logica de usuario Premium/Panel
     val premiumManager = PremiumManager()
     val premiumController = PremiumController(premiumManager)
@@ -159,6 +178,7 @@ fun Gallery(navController: NavController, userId: String, galleryController: Gal
     //Variables necesarias/////////////////////////
     val context = LocalContext.current
     val activity = context.findAncestorActivity()
+
 
     //Carga datos para el perfil y para el socalo de nombre/////////////////////
     var usuario by remember { mutableStateOf<User?>(null) }
@@ -475,10 +495,10 @@ fun Gallery(navController: NavController, userId: String, galleryController: Gal
                     contentColor = firstColor,
                 ) {
                     Text(
+                        text = currentMessage,
                         modifier = Modifier
                             .fillMaxWidth(),
                         textAlign = TextAlign.Center,
-                        text = "Area de mensaje sys?",
                         onTextLayout = { /* No se necesita hacer nada aquí */ }
                     )
                 }
@@ -645,6 +665,8 @@ fun Gallery(navController: NavController, userId: String, galleryController: Gal
 
 }
 
+
+
 //Apertura del panel de usuario/////////////////////////////
 fun abrirPanel(scope: CoroutineScope, drawerState: DrawerState) {
     scope.launch {
@@ -653,6 +675,7 @@ fun abrirPanel(scope: CoroutineScope, drawerState: DrawerState) {
         }
     }
 }
+
 
 //Lista de ingresos//////////////////////////////////
 @Composable

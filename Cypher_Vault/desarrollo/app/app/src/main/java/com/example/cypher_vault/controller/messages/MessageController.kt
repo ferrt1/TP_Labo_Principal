@@ -1,6 +1,10 @@
 package com.example.cypher_vault.controller.messages
 
 import com.example.cypher_vault.model.message.*
+import kotlinx.coroutines.CompletableDeferred
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.channels.ReceiveChannel
+import kotlinx.coroutines.runBlocking
 
 //------------------GET PRINCIPALES PARA VALIDAR LOS DATOS DE USUARIO Y INDICAR EL ERROR (abajo del boton de regitrarse -----//
 
@@ -107,6 +111,10 @@ fun getvalidatePasswordNotContainNumber(password: String): Boolean{
     return validatePasswordCharactersNumber(password)
 }
 
+fun getvalidateAlphabeticCharacter(password: String): Boolean{
+    return validateAlphabeticCharacter(password)
+}
+
 //-------------------------------------------------------------------------------------------------//
 
 
@@ -132,3 +140,10 @@ fun getincorrectPassword(): String{
 //-------------------------------------------------------------------------------------------------//
 //-------------------------------------CAMPO DE GALLERY----------------------------------------------//
 //-------------------------------------------------------------------------------------------------//
+
+
+class MessageController {
+    fun getMessageChannel(): Channel<String> {
+        return startMessageChannel()
+    }
+}

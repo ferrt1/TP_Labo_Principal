@@ -92,6 +92,10 @@ fun validatePasswordCharactersNumber(password: String): Boolean {
     return alphanumericOnly.any { it.isDigit() }
 }
 
+fun validateAlphabeticCharacter(input: String): Boolean {
+    return input.any { it.isLetter() }
+}
+
 fun validateNumPasswordCharacters(password: String): Int {
     val alphanumericOnly = password.filter { it.isLetterOrDigit() }
     return 15-alphanumericOnly.length
@@ -186,6 +190,10 @@ fun validatePasswordCharactersNumberMessege(): String {
     return "La contraseña debe contener al menos un número"
 }
 
+fun validateAlphabeticCharacterMessege(): String {
+    return "La contraseña debe contener al menos un carácter alfabético"
+}
+
 //--------------------------------------------------------------------------------------------------//
 
 
@@ -196,7 +204,7 @@ fun validatePasswordCharactersNumberMessege(): String {
                 !validateNameSpacesAndLineBreaks(name) && validateMail(email) && !validateNameNumbers(name) && validateName(name)
                 && validatePasswordCharacters(password) && validatePasswordSpecialcharacters(password) && validatePasswordLength(password) &&
                 validatePasswordLengthMax(password) && !validateFields(email, name, password) && !validatePasswordSpacioCharacters(password) &&
-                !validatePasswordNotContainUserName(password, name) && validatePasswordCharactersNumber(password))
+                !validatePasswordNotContainUserName(password, name) && validatePasswordCharactersNumber(password) && validateAlphabeticCharacter(password))
     }
 
 
@@ -253,6 +261,8 @@ fun validatePasswordCharactersNumberMessege(): String {
             return validatePasswordCharactersMessage()
         else if(!validatePasswordCharactersNumber(password))
             return validatePasswordCharactersNumberMessege()
+        else if(!validateAlphabeticCharacter(password))
+            return validateAlphabeticCharacterMessege()
 
         return null.toString()
     }
@@ -294,6 +304,8 @@ fun validatePasswordCharactersNumberMessege(): String {
             return passwordLengthMessger()
         else if(!validatePasswordLengthMax(password))
             return passwordLengthMaxMessger()
+        else if(!validateAlphabeticCharacter(password))
+            return validateAlphabeticCharacterMessege()
 
 
 
