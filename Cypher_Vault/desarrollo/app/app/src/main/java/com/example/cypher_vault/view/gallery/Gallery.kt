@@ -19,7 +19,6 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -68,6 +67,7 @@ import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -131,11 +131,6 @@ val maximoImagenesModoPobre = 2 //42
 var isPremium: Boolean? = false
 var userPremiumSince = ""
 
-
-
-
-
-
 //Colores de la ui, tipo de letra, etc.///////////////////////
 val firstColor = Color(0xFF02a6c3)
 val secondColor = Color(0xFF01243a)
@@ -144,6 +139,7 @@ val premiumBackgroundColor = Color(0xFF131313)
 val premiumButtonColor = Color(0xFF64C4F1)
 val premiumButtonTextColor = Color(0xFF000000)
 val mainBackgroundColor = Color(0xFFdcdcdc)
+val wingWhite = Color(0xFFdcdcdc)
 val fontFamily = FontFamily(
     Font(R.font.expandedconsolabold, FontWeight.Normal)
 )
@@ -180,8 +176,9 @@ fun Gallery(navController: NavController, userId: String, galleryController: Gal
     // Logica cambio de contraseña
     val sheetPasswordState = rememberModalBottomSheetState()
     var showPasswordPanel by remember { mutableStateOf(false) }
-    val nameState = remember { mutableStateOf(TextFieldValue()) }
+    var nameState by remember { mutableStateOf("") }
     val passwordState = remember { mutableStateOf(TextFieldValue()) }
+    val actualPasswordState = remember { mutableStateOf(TextFieldValue()) }
     val passwordVisible = remember { mutableStateOf(false) }
     var isContentVisiblpasswordState by remember { mutableStateOf(false) }
 
@@ -369,7 +366,9 @@ fun Gallery(navController: NavController, userId: String, galleryController: Gal
                         Spacer(modifier = Modifier.height(16.dp))
                         // Boton para cambiar contraseña ////////////////////////////////////////////////////////////////////
                         Button(
-                            onClick = {  showPasswordPanel = true },
+                            onClick = {
+                                nameState = nombre
+                                showPasswordPanel = true },
                             shape = RoundedCornerShape(4.dp),
                             border = BorderStroke(3.dp, firstColor),
                             colors = ButtonDefaults.buttonColors(
@@ -731,22 +730,22 @@ fun Gallery(navController: NavController, userId: String, galleryController: Gal
                                         )
                                 ) {
                                     TextField(
-                                        value = passwordState.value,
+                                        value = actualPasswordState.value,
                                         onValueChange = {
 
-                                            passwordState.value = it
+                                            actualPasswordState.value = it
 
                                         },
                                         textStyle = TextStyle(
-                                            color = if(!getvalidatePasswordLengthMax(passwordState.value.text) || getvalidatePasswordSpecialCharacters(passwordState.value.text) || getvalidatePasswordNotContainUserName(passwordState.value.text,nameState.value.text) ) redColor else com.example.cypher_vault.view.resources.firstColor,
-                                            fontSize = 16.sp,
+                                            color = if(!getvalidatePasswordLengthMax(actualPasswordState.value.text) || getvalidatePasswordSpecialCharacters(actualPasswordState.value.text) || getvalidatePasswordNotContainUserName(actualPasswordState.value.text,nameState) ) redColor else com.example.cypher_vault.view.resources.firstColor,
+                                            fontSize = 13.sp,
                                             fontFamily = com.example.cypher_vault.view.resources.fontFamily,
                                             fontWeight = FontWeight.Bold
                                         ),
                                         label = {
                                             Text(
                                                 "Contraseña Actual",
-                                                fontSize = 20.sp,
+                                                fontSize = 15.sp,
                                                 fontFamily = com.example.cypher_vault.view.resources.fontFamily,
                                                 color = com.example.cypher_vault.view.resources.thirdColor,
                                                 fontWeight = FontWeight.Bold
@@ -754,10 +753,10 @@ fun Gallery(navController: NavController, userId: String, galleryController: Gal
                                         },
                                         placeholder = {
                                             Text(
-                                                "15 caracteres alfanuméricos y 1 carácter especial.",
+                                                "",
                                                 style = TextStyle(
                                                     color = Color.Gray,
-                                                    fontSize = 16.sp,
+                                                    fontSize = 13.sp,
                                                     fontFamily = com.example.cypher_vault.view.resources.fontFamily
                                                 )
                                             )
@@ -812,15 +811,15 @@ fun Gallery(navController: NavController, userId: String, galleryController: Gal
 
                                         },
                                         textStyle = TextStyle(
-                                            color = if(!getvalidatePasswordLengthMax(passwordState.value.text) || getvalidatePasswordSpecialCharacters(passwordState.value.text) || getvalidatePasswordNotContainUserName(passwordState.value.text,nameState.value.text) ) redColor else com.example.cypher_vault.view.resources.firstColor,
-                                            fontSize = 16.sp,
+                                            color = if(!getvalidatePasswordLengthMax(passwordState.value.text) || getvalidatePasswordSpecialCharacters(passwordState.value.text) || getvalidatePasswordNotContainUserName(passwordState.value.text,nameState) ) redColor else com.example.cypher_vault.view.resources.firstColor,
+                                            fontSize = 13.sp,
                                             fontFamily = com.example.cypher_vault.view.resources.fontFamily,
                                             fontWeight = FontWeight.Bold
                                         ),
                                         label = {
                                             Text(
                                                 "Nueva Contraseña",
-                                                fontSize = 20.sp,
+                                                fontSize = 15.sp,
                                                 fontFamily = com.example.cypher_vault.view.resources.fontFamily,
                                                 color = com.example.cypher_vault.view.resources.thirdColor,
                                                 fontWeight = FontWeight.Bold
@@ -831,7 +830,7 @@ fun Gallery(navController: NavController, userId: String, galleryController: Gal
                                                 "15 caracteres alfanuméricos y 1 carácter especial.",
                                                 style = TextStyle(
                                                     color = Color.Gray,
-                                                    fontSize = 16.sp,
+                                                    fontSize = 13.sp,
                                                     fontFamily = com.example.cypher_vault.view.resources.fontFamily
                                                 )
                                             )
@@ -869,8 +868,13 @@ fun Gallery(navController: NavController, userId: String, galleryController: Gal
                                     )
 
                                 }
+                            }
+                            Row(
+                                horizontalArrangement = Arrangement.Center,
+                                modifier = Modifier.align(Alignment.CenterHorizontally)
+                            ) {
                                 if (isContentVisiblpasswordState) {
-                                    if (getfullpasswordfield(passwordState.value.text, nameState.value.text) != "") {
+                                    if (getfullpasswordfield(passwordState.value.text, nameState) != "") {
                                         Column(
                                             verticalArrangement = Arrangement.Center,
                                             horizontalAlignment = Alignment.CenterHorizontally
@@ -882,7 +886,7 @@ fun Gallery(navController: NavController, userId: String, galleryController: Gal
                                                     || !getvalidateAlphabeticCharacter(passwordState.value.text)
                                                 ){
                                                     R.drawable.iconwarning
-                                                } else if (getvalidatePasswordNotContainUserName(passwordState.value.text,nameState.value.text)
+                                                } else if (getvalidatePasswordNotContainUserName(passwordState.value.text,nameState)
                                                     || getvalidatePasswordSpecialCharacters(passwordState.value.text)
                                                 ) {
                                                     R.drawable.icoerror
@@ -902,9 +906,9 @@ fun Gallery(navController: NavController, userId: String, galleryController: Gal
 
                                                 Spacer(modifier = Modifier.width(8.dp)) // Espacio entre la imagen y el texto
                                                 Row(verticalAlignment = Alignment.CenterVertically) {
-                                                    if (getfullpasswordfield(passwordState.value.text, nameState.value.text) != "null") {
+                                                    if (getfullpasswordfield(passwordState.value.text, nameState) != "null") {
                                                         LimitedTextBox(
-                                                            text = getfullpasswordfield(passwordState.value.text, nameState.value.text),
+                                                            text = getfullpasswordfield(passwordState.value.text, nameState),
                                                             maxWidth = 250.dp // Ajusta este valor según tus necesidades
                                                         )
                                                     }
@@ -912,6 +916,23 @@ fun Gallery(navController: NavController, userId: String, galleryController: Gal
                                             }
                                         }
                                     }
+                                }
+                            }
+                            Row(
+                                horizontalArrangement = Arrangement.Center,
+                                modifier = Modifier.align(Alignment.CenterHorizontally)
+                            ) {
+                                Button(
+                                    onClick = {
+                                        //todo//
+                                    },
+                                    modifier = Modifier.padding(top = 16.dp, bottom = 100.dp),
+                                    colors = ButtonDefaults.buttonColors(
+                                        containerColor = thirdColor,
+                                        contentColor = wingWhite,
+                                    ),
+                                ) {
+                                    Text(text = "Cambiar Contraseña")
                                 }
                             }
                         }
