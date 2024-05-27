@@ -34,12 +34,15 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowBackIosNew
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Star
+import androidx.compose.material.icons.filled.Visibility
+import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -57,6 +60,8 @@ import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.material3.rememberModalBottomSheetState
@@ -71,6 +76,7 @@ import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asAndroidBitmap
 import androidx.compose.ui.graphics.asImageBitmap
@@ -81,6 +87,11 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.input.TextFieldValue
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -93,12 +104,22 @@ import com.example.cypher_vault.controller.navigation.NavController
 import com.example.cypher_vault.controller.data.DatabaseController
 import com.example.cypher_vault.controller.gallery.GalleryController
 import com.example.cypher_vault.controller.messages.MessageController
-
+import com.example.cypher_vault.controller.messages.getfullpasswordfield
+import com.example.cypher_vault.controller.messages.getvalidateAlphabeticCharacter
+import com.example.cypher_vault.controller.messages.getvalidatePasswordCharacters
+import com.example.cypher_vault.controller.messages.getvalidatePasswordLength
+import com.example.cypher_vault.controller.messages.getvalidatePasswordLengthMax
+import com.example.cypher_vault.controller.messages.getvalidatePasswordNotContainNumber
+import com.example.cypher_vault.controller.messages.getvalidatePasswordNotContainUserName
+import com.example.cypher_vault.controller.messages.getvalidatePasswordSpecialCharacters
+import com.example.cypher_vault.controller.messages.getvalidatePasswordsSecialcharacters
 import com.example.cypher_vault.controller.premium.PremiumController
 import com.example.cypher_vault.database.User
 import com.example.cypher_vault.database.UserIncome
 import com.example.cypher_vault.model.premium.PremiumManager
+import com.example.cypher_vault.view.registration.LimitedTextBox
 import com.example.cypher_vault.view.registration.findAncestorActivity
+import com.example.cypher_vault.view.resources.redColor
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import java.io.ByteArrayOutputStream
@@ -156,6 +177,14 @@ fun Gallery(navController: NavController, userId: String, galleryController: Gal
         }
     }
 
+    // Logica cambio de contraseña
+    val sheetPasswordState = rememberModalBottomSheetState()
+    var showPasswordPanel by remember { mutableStateOf(false) }
+    val nameState = remember { mutableStateOf(TextFieldValue()) }
+    val passwordState = remember { mutableStateOf(TextFieldValue()) }
+    val passwordVisible = remember { mutableStateOf(false) }
+    var isContentVisiblpasswordState by remember { mutableStateOf(false) }
+
 
     //Logica de usuario Premium/Panel
     val premiumManager = PremiumManager()
@@ -184,12 +213,14 @@ fun Gallery(navController: NavController, userId: String, galleryController: Gal
     var usuario by remember { mutableStateOf<User?>(null) }
     var nombre by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
+    var contrasena by remember { mutableStateOf("") }
     var dbc = DatabaseController()
     LaunchedEffect(key1 = Unit) { // Key can be anything to trigger on recomposition
         val usuarioTemp = dbc.getUserById(userId)
         usuario = usuarioTemp
         nombre = usuarioTemp?.firstName.toString()
         email = usuarioTemp?.email.toString()
+        contrasena = usuarioTemp?.password.toString()
     }
 
     //Acceso a la galeria/imagenes del celular///////////////////////
@@ -253,7 +284,8 @@ fun Gallery(navController: NavController, userId: String, galleryController: Gal
     }
     Log.e("galeria", "LISTA DE INGRESOS : $listaDeIngresos")
 
-    //Panel del usuario///////////////////////////////
+    //Panel del usuario//////////////////////////////////////////////////////////////////////////////////////////////
+    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     ModalNavigationDrawer(
         drawerState = drawerState,
         drawerContent = {
@@ -270,7 +302,7 @@ fun Gallery(navController: NavController, userId: String, galleryController: Gal
                         horizontalAlignment = Alignment.CenterHorizontally,
                         verticalArrangement = Arrangement.Center
                     ) {
-                        // Informacion de usuario en el panel //////////////////////////
+                        // Informacion de usuario en el panel ///////////////////////////////////////////////////////
                         Box(modifier = Modifier.fillMaxWidth()) {
                             Column(
                                 modifier = Modifier
@@ -335,9 +367,9 @@ fun Gallery(navController: NavController, userId: String, galleryController: Gal
                             onTextLayout = { /* No se necesita hacer nada aquí */ }
                         )
                         Spacer(modifier = Modifier.height(16.dp))
-                        // Boton para cambiar contraseña //////////////////////////
+                        // Boton para cambiar contraseña ////////////////////////////////////////////////////////////////////
                         Button(
-                            onClick = { /* Acción cambiar contraseña */ },
+                            onClick = {  showPasswordPanel = true },
                             shape = RoundedCornerShape(4.dp),
                             border = BorderStroke(3.dp, firstColor),
                             colors = ButtonDefaults.buttonColors(
@@ -352,24 +384,7 @@ fun Gallery(navController: NavController, userId: String, galleryController: Gal
                             Text(text = "Cambiar Contraseña")
                         }
                         Spacer(modifier = Modifier.height(8.dp))
-                        // Boton para ver premium //////////////////////////
-                        Button(
-                            onClick = { showPremiumPanel = true },
-                            shape = RoundedCornerShape(4.dp),
-                            border = BorderStroke(3.dp, firstColor),
-                            colors = ButtonDefaults.buttonColors(
-                                containerColor = Color.Transparent,
-                                contentColor = firstColor
-                            ),
-                            modifier = Modifier
-                                .width(290.dp)
-                                .padding(top = 15.dp)
-                        )
-                        {
-                            Text(text = "Premium")
-                        }
-                        Spacer(modifier = Modifier.height(8.dp))
-                        // Boton para ver ingresos //////////////////////////
+                        // Boton para ver ingresos ////////////////////////////////////////////////////////////////////////
                         Button(
                             onClick = { showIncomes = !showIncomes },
                             shape = RoundedCornerShape(4.dp),
@@ -386,7 +401,24 @@ fun Gallery(navController: NavController, userId: String, galleryController: Gal
                             Text(text = "Tus ingresos en la App")
                         }
                         Spacer(modifier = Modifier.height(16.dp))
-                        // Mostrar la lista de ingresos si showIncomes es true
+                        // Boton para ver premium ///////////////////////////////////////////////////////////////////////////
+                        Button(
+                            onClick = { showPremiumPanel = true },
+                            shape = RoundedCornerShape(4.dp),
+                            border = BorderStroke(3.dp, firstColor),
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = Color.Transparent,
+                                contentColor = firstColor
+                            ),
+                            modifier = Modifier
+                                .width(290.dp)
+                                .padding(top = 15.dp)
+                        )
+                        {
+                            Text(text = "Premium")
+                        }
+                        Spacer(modifier = Modifier.height(8.dp))
+                        // Mostrar la lista de ingresos si showIncomes es true/////////////////
                         if (showIncomes) {
                             IncomeList(galleryController, incomes = listaDeIngresos)
                         }
@@ -395,7 +427,8 @@ fun Gallery(navController: NavController, userId: String, galleryController: Gal
             )
         },
     ) {
-        //Pantalla principal de la galeria///////////////////////
+        //Pantalla principal de la galeria///////////////////////////////////////////////////////////////////////////////
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         Scaffold(
             modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
 
@@ -503,7 +536,7 @@ fun Gallery(navController: NavController, userId: String, galleryController: Gal
                     )
                 }
             },
-            //Agregar imagen a la galeria de imagenes////////////////////////////////
+            //Agregar imagen a la galeria de imagenes//////////////////////////////////////////////////////////////////
             floatingActionButton = {
                 FloatingActionButton(onClick = {
                     if (isPremium == true) {
@@ -536,7 +569,8 @@ fun Gallery(navController: NavController, userId: String, galleryController: Gal
                     )
                 }
             },
-            //Contenido de la galeria del usuario//////////////////////////////
+            //Contenido de la galeria del usuario///////////////////////////////////////////////////////////////////////////
+            //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
             content = { innerPadding ->
                 Column(
                     modifier = Modifier
@@ -577,7 +611,7 @@ fun Gallery(navController: NavController, userId: String, galleryController: Gal
                         }
                     }
                 }
-                // Mostrar la imagen seleccionada en un diálogo/////
+                // Mostrar la imagen seleccionada en un diálogo/////////////////////////////////////////////////////////////////
                 if (selectedImageBitmap.value != null) {
                     Dialog(onDismissRequest = { selectedImageBitmap.value = null }) {
                         Image(
@@ -587,7 +621,8 @@ fun Gallery(navController: NavController, userId: String, galleryController: Gal
                         )
                     }
                 }
-                // Mostrar el panel de premium ///////////////////
+                // Mostrar el panel de premium ////////////////////////////////////////////////////////////////////////////////////
+                //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
                 if (showPremiumPanel) {
                     ModalBottomSheet(
                         containerColor = premiumBackgroundColor,
@@ -598,7 +633,8 @@ fun Gallery(navController: NavController, userId: String, galleryController: Gal
                     ) {
                         Column(
                             modifier = Modifier.fillMaxWidth(),
-                            horizontalAlignment = Alignment.Start) {
+                            horizontalAlignment = Alignment.Start
+                        ) {
                             if (isPremium == true) {
                                 Row(
                                     horizontalArrangement = Arrangement.Center,
@@ -639,13 +675,18 @@ fun Gallery(navController: NavController, userId: String, galleryController: Gal
                                     modifier = Modifier.align(Alignment.CenterHorizontally)
                                 ) {
                                     Button(
-                                        onClick = { premiumController.buyPremium(userId)
-                                            isPremium = premiumController.getPremiumUser(userId)?.premium_account
-                                            val userPremiumSinceDate = premiumController.getPremiumUser(userId)?.active_subscription
-                                            userPremiumSince = premiumController.formatIncomeDate(userPremiumSinceDate)
+                                        onClick = {
+                                            premiumController.buyPremium(userId)
+                                            isPremium =
+                                                premiumController.getPremiumUser(userId)?.premium_account
+                                            val userPremiumSinceDate =
+                                                premiumController.getPremiumUser(userId)?.active_subscription
+                                            userPremiumSince = premiumController.formatIncomeDate(
+                                                userPremiumSinceDate
+                                            )
                                             showPremiumPanel = false
                                             navController.navigateToListLogin()
-                                                  },
+                                        },
                                         modifier = Modifier.padding(top = 16.dp, bottom = 70.dp),
                                         colors = ButtonDefaults.buttonColors(
                                             containerColor = premiumButtonColor,
@@ -659,15 +700,231 @@ fun Gallery(navController: NavController, userId: String, galleryController: Gal
                         }
                     }
                 }
+                // Mostrar el panel de contraseña ////////////////////////////////////////////////////////////////////////////////////
+                //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+                if (showPasswordPanel) {
+                    ModalBottomSheet(
+                        containerColor = premiumBackgroundColor,
+                        onDismissRequest = {
+                            showPasswordPanel = false
+                        },
+                        sheetState = sheetPasswordState
+                    ) {
+                        Column(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalAlignment = Alignment.Start
+                        ) {
+                            Row(
+                                horizontalArrangement = Arrangement.Center,
+                                modifier = Modifier.align(Alignment.CenterHorizontally)
+                            ) {
+                                //// INGRESO PASSWORD ACTUAL /////////////////////////////////////////////////////////
+                                Row(
+                                    modifier = Modifier
+                                        .width(290.dp)
+                                        .padding(top = 15.dp)
+                                        .border(
+                                            BorderStroke(3.dp,
+                                                com.example.cypher_vault.view.resources.firstColor
+                                            ),
+                                            shape = RoundedCornerShape(4.dp)
+                                        )
+                                ) {
+                                    TextField(
+                                        value = passwordState.value,
+                                        onValueChange = {
+
+                                            passwordState.value = it
+
+                                        },
+                                        textStyle = TextStyle(
+                                            color = if(!getvalidatePasswordLengthMax(passwordState.value.text) || getvalidatePasswordSpecialCharacters(passwordState.value.text) || getvalidatePasswordNotContainUserName(passwordState.value.text,nameState.value.text) ) redColor else com.example.cypher_vault.view.resources.firstColor,
+                                            fontSize = 16.sp,
+                                            fontFamily = com.example.cypher_vault.view.resources.fontFamily,
+                                            fontWeight = FontWeight.Bold
+                                        ),
+                                        label = {
+                                            Text(
+                                                "Contraseña Actual",
+                                                fontSize = 20.sp,
+                                                fontFamily = com.example.cypher_vault.view.resources.fontFamily,
+                                                color = com.example.cypher_vault.view.resources.thirdColor,
+                                                fontWeight = FontWeight.Bold
+                                            )
+                                        },
+                                        placeholder = {
+                                            Text(
+                                                "15 caracteres alfanuméricos y 1 carácter especial.",
+                                                style = TextStyle(
+                                                    color = Color.Gray,
+                                                    fontSize = 16.sp,
+                                                    fontFamily = com.example.cypher_vault.view.resources.fontFamily
+                                                )
+                                            )
+                                        },
+                                        singleLine = true,
+                                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text, imeAction = ImeAction.Done),
+                                        visualTransformation = if (passwordVisible.value) VisualTransformation.None else PasswordVisualTransformation(),
+                                        trailingIcon = {
+                                            IconButton(
+                                                onClick = { passwordVisible.value = !passwordVisible.value },
+                                                modifier = Modifier.offset(y = 10.dp)
+                                            ) {
+                                                Icon(
+                                                    imageVector = if (passwordVisible.value) Icons.Filled.VisibilityOff else Icons.Filled.Visibility,
+                                                    contentDescription = if (passwordVisible.value) "Ocultar contraseña" else "Mostrar contraseña"
+                                                )
+                                            }
+                                        },
+                                        colors = TextFieldDefaults.colors(
+                                            focusedContainerColor = Color.Transparent,
+                                            unfocusedContainerColor = Color.Transparent,
+                                            disabledContainerColor = Color.Transparent,
+                                            cursorColor = com.example.cypher_vault.view.resources.thirdColor,
+                                            focusedIndicatorColor = com.example.cypher_vault.view.resources.firstColor,
+                                            unfocusedIndicatorColor = com.example.cypher_vault.view.resources.firstColor,
+                                        ),
+                                        modifier = Modifier.weight(1f)
+                                    )
+                                }
+                            }
+                            Row(
+                                horizontalArrangement = Arrangement.Center,
+                                modifier = Modifier.align(Alignment.CenterHorizontally)
+                            ) {
+                                //// INGRESO DE NUEVO PASSWORD /////////////////////////////////////////////////////////
+                                Row(
+                                    modifier = Modifier
+                                        .width(290.dp)
+                                        .padding(top = 15.dp)
+                                        .border(
+                                            BorderStroke(3.dp,
+                                                com.example.cypher_vault.view.resources.firstColor
+                                            ),
+                                            shape = RoundedCornerShape(4.dp)
+                                        )
+                                ) {
+                                    TextField(
+                                        value = passwordState.value,
+                                        onValueChange = {
+
+                                            passwordState.value = it
+
+                                        },
+                                        textStyle = TextStyle(
+                                            color = if(!getvalidatePasswordLengthMax(passwordState.value.text) || getvalidatePasswordSpecialCharacters(passwordState.value.text) || getvalidatePasswordNotContainUserName(passwordState.value.text,nameState.value.text) ) redColor else com.example.cypher_vault.view.resources.firstColor,
+                                            fontSize = 16.sp,
+                                            fontFamily = com.example.cypher_vault.view.resources.fontFamily,
+                                            fontWeight = FontWeight.Bold
+                                        ),
+                                        label = {
+                                            Text(
+                                                "Nueva Contraseña",
+                                                fontSize = 20.sp,
+                                                fontFamily = com.example.cypher_vault.view.resources.fontFamily,
+                                                color = com.example.cypher_vault.view.resources.thirdColor,
+                                                fontWeight = FontWeight.Bold
+                                            )
+                                        },
+                                        placeholder = {
+                                            Text(
+                                                "15 caracteres alfanuméricos y 1 carácter especial.",
+                                                style = TextStyle(
+                                                    color = Color.Gray,
+                                                    fontSize = 16.sp,
+                                                    fontFamily = com.example.cypher_vault.view.resources.fontFamily
+                                                )
+                                            )
+                                        },
+                                        singleLine = true,
+                                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text, imeAction = ImeAction.Done),
+                                        visualTransformation = if (passwordVisible.value) VisualTransformation.None else PasswordVisualTransformation(),
+                                        trailingIcon = {
+                                            IconButton(
+                                                onClick = { passwordVisible.value = !passwordVisible.value },
+                                                modifier = Modifier.offset(y = 10.dp)
+                                            ) {
+                                                Icon(
+                                                    imageVector = if (passwordVisible.value) Icons.Filled.VisibilityOff else Icons.Filled.Visibility,
+                                                    contentDescription = if (passwordVisible.value) "Ocultar contraseña" else "Mostrar contraseña"
+                                                )
+                                            }
+                                        },
+                                        colors = TextFieldDefaults.colors(
+                                            focusedContainerColor = Color.Transparent,
+                                            unfocusedContainerColor = Color.Transparent,
+                                            disabledContainerColor = Color.Transparent,
+                                            cursorColor = com.example.cypher_vault.view.resources.thirdColor,
+                                            focusedIndicatorColor = com.example.cypher_vault.view.resources.firstColor,
+                                            unfocusedIndicatorColor = com.example.cypher_vault.view.resources.firstColor,
+                                        ),
+                                        modifier = Modifier.weight(1f)
+                                            .onFocusChanged { focusState ->
+                                                if (focusState.isFocused) {
+                                                    isContentVisiblpasswordState = true
+                                                } else {
+                                                    isContentVisiblpasswordState = false
+                                                }
+                                            }
+                                    )
+
+                                }
+                                if (isContentVisiblpasswordState) {
+                                    if (getfullpasswordfield(passwordState.value.text, nameState.value.text) != "") {
+                                        Column(
+                                            verticalArrangement = Arrangement.Center,
+                                            horizontalAlignment = Alignment.CenterHorizontally
+                                        ) {
+                                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                                (if (!getvalidatePasswordCharacters(passwordState.value.text) || !getvalidatePasswordsSecialcharacters(passwordState.value.text)
+                                                    ||!getvalidatePasswordLength(passwordState.value.text)
+                                                    || !getvalidatePasswordLengthMax(passwordState.value.text) || !getvalidatePasswordNotContainNumber(passwordState.value.text)
+                                                    || !getvalidateAlphabeticCharacter(passwordState.value.text)
+                                                ){
+                                                    R.drawable.iconwarning
+                                                } else if (getvalidatePasswordNotContainUserName(passwordState.value.text,nameState.value.text)
+                                                    || getvalidatePasswordSpecialCharacters(passwordState.value.text)
+                                                ) {
+                                                    R.drawable.icoerror
+                                                } else {
+                                                    null
+                                                })?.let {
+                                                    painterResource(
+                                                        id = it
+                                                    )
+                                                }?.let {
+                                                    Image(
+                                                        painter = it,
+                                                        contentDescription = "",
+                                                        modifier = Modifier.size(24.dp)
+                                                    )
+                                                }
+
+                                                Spacer(modifier = Modifier.width(8.dp)) // Espacio entre la imagen y el texto
+                                                Row(verticalAlignment = Alignment.CenterVertically) {
+                                                    if (getfullpasswordfield(passwordState.value.text, nameState.value.text) != "null") {
+                                                        LimitedTextBox(
+                                                            text = getfullpasswordfield(passwordState.value.text, nameState.value.text),
+                                                            maxWidth = 250.dp // Ajusta este valor según tus necesidades
+                                                        )
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
             }
         )
     }
-
 }
 
 
 
-//Apertura del panel de usuario/////////////////////////////
+//Apertura del panel de usuario//////////////////////////////////////////////////////////////////////////////////////////
 fun abrirPanel(scope: CoroutineScope, drawerState: DrawerState) {
     scope.launch {
         drawerState.apply {
@@ -677,7 +934,7 @@ fun abrirPanel(scope: CoroutineScope, drawerState: DrawerState) {
 }
 
 
-//Lista de ingresos//////////////////////////////////
+//Lista de ingresos/////////////////////////////////////////////////////////////////////////////////////////////////////
 @Composable
 fun IncomeList(galleryController: GalleryController, incomes: List<UserIncome>) {
     Column {
@@ -688,6 +945,25 @@ fun IncomeList(galleryController: GalleryController, incomes: List<UserIncome>) 
                 onTextLayout = { /* No se necesita hacer nada aquí */ })
             Spacer(modifier = Modifier.height(4.dp))
         }
+    }
+}
+
+//// Zona de mensajes //////////////////////////////////////////////////////////////////////////////////////////////
+@Composable
+fun LimitedTextBox(text: String, maxWidth: Dp) {
+    Box(
+        modifier = Modifier
+            .width(maxWidth)
+
+
+    ) {
+        Text(
+            text = text,
+            fontSize = 14.sp,
+            fontFamily = com.example.cypher_vault.view.resources.fontFamily,
+            color = com.example.cypher_vault.view.resources.thirdColor,
+            fontWeight = FontWeight.Bold
+        )
     }
 }
 
