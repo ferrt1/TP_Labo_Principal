@@ -345,158 +345,192 @@ fun NavigationLogin(navController: NavController) {
     else if (showPasswordDialog) {
         var showError by remember { mutableStateOf(false) }
 
+        Column(
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = Modifier.fillMaxSize()
+        ) {
+            AlertDialog(
+                containerColor = Color.White,
+                shape = RoundedCornerShape(15.dp),
+                onDismissRequest = { showPasswordDialog = false },
+                title = {
+                    Box(
+                        modifier = Modifier.fillMaxWidth(),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(
+                            "Inicio de sesión",
+                            style = textStyle,
+                            modifier = Modifier.background(Color.White),
+                        )
+                    }
+                },
+                text = {
+                    Column(
+                        verticalArrangement = Arrangement.Center,
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        TextField(
+                            value = enteredPassword,
+                            onValueChange = {
+                                if (it.length <= 32) {
+                                    enteredPassword = it
+                                    showError = false  // Resetear showError cuando la contraseña cambia
+                                }
+                            },
+                            textStyle = TextStyle(
+                                color = firstColor,
+                                fontSize = 16.sp,
+                                fontFamily = fontFamily,
+                                fontWeight = FontWeight.Bold
+                            ),
+                            label = {
+                                Box(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    Text(
+                                        "Contraseña",
+                                        fontSize = 20.sp,
+                                        fontFamily = fontFamily,
+                                        color = thirdColor,
+                                        fontWeight = FontWeight.Bold
+                                    )
+                                }
+                            },
+                            singleLine = true,
+                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text, imeAction = ImeAction.Done),
+                            visualTransformation = if (passwordVisible.value) VisualTransformation.None else PasswordVisualTransformation(),
+                            trailingIcon = {
+                                IconButton(
+                                    onClick = { passwordVisible.value = !passwordVisible.value },
+                                    modifier = Modifier.offset(y = 10.dp) // Ajusta este valor a tu preferencia
+                                ) {
+                                    Icon(
+                                        imageVector = if (passwordVisible.value) Icons.Filled.VisibilityOff else Icons.Filled.Visibility,
+                                        contentDescription = if (passwordVisible.value) "Ocultar contraseña" else "Mostrar contraseña"
+                                    )
+                                }
+                            },
+                            colors = TextFieldDefaults.colors(
+                                focusedContainerColor = Color.Transparent,
+                                unfocusedContainerColor = Color.Transparent,
+                                disabledContainerColor = Color.Transparent,
+                                cursorColor = thirdColor,
+                                focusedIndicatorColor = firstColor,
+                                unfocusedIndicatorColor = firstColor,
+                            ),
+                            modifier = Modifier
+                                .width(250.dp)
+                                .padding(top = 15.dp)
+                                .border(BorderStroke(3.dp, firstColor), shape = RoundedCornerShape(4.dp))
+                                .align(Alignment.CenterHorizontally)
+                        )
 
-        AlertDialog(
-            containerColor = Color.White,
-            shape = RoundedCornerShape(15.dp),
-            onDismissRequest = { showPasswordDialog = false },
-            title = {
-                Text(
-                    "Inicio de sesión",
-                    style = textStyle,
-                    modifier = Modifier.background(Color.White),
-                )
-            },
-            text = {
-                Column {
-                    TextField(
-                        value = enteredPassword,
-                        onValueChange = {
-                            if (it.length <= 32) {
-                                enteredPassword = it
-                                showError = false  // Resetear showError cuando la contraseña cambia
+                        if (showError) {
+                            Spacer(modifier = Modifier.height(8.dp))
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.Center,
+                                modifier = Modifier.fillMaxWidth()
+                            ) {
+                                Image(
+                                    painter = painterResource(id = R.drawable.icoerror),
+                                    contentDescription = "",
+                                    modifier = Modifier.size(24.dp)
+                                )
+                                Spacer(modifier = Modifier.width(8.dp)) // Espacio entre la imagen y el texto
+                                LimitedTextBox(
+                                    text = getincorrectPassword(),
+                                    maxWidth = 250.dp // Ajusta este valor según tus necesidades
+                                )
                             }
-                        },
-                        textStyle = TextStyle(
-                            color = firstColor,
-                            fontSize = 16.sp,
-                            fontFamily = fontFamily,
-                            fontWeight = FontWeight.Bold
-                        ),
-                        label = {
+                        }
+                    }
+                },
+                confirmButton = {
+                    Box(
+                        modifier = Modifier.fillMaxWidth(),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        OutlinedButton(
+                            onClick = {
+                                val password = enteredPassword
+                                if (password.isNotEmpty()) {
+                                    CoroutineScope(Dispatchers.IO).launch {
+                                        val isPasswordCorrect = databaseController.comparePasswords(userSelected, password)
+                                        withContext(Dispatchers.Main) {
+                                            if (isPasswordCorrect) {
+                                                // Se agrega ingreso de usuario
+                                                val userAccessManager = UserAccessManager()
+                                                val userAccessController = UserAccessController(userAccessManager)
+                                                // Ingreso de usuario
+                                                userAccessController.insertUserIncome(userSelected)
+                                                navController.navigateToGallery(userSelected)
+                                                showPasswordDialog = false
+
+                                            } else {
+                                                showError = true
+                                            }
+                                        }
+                                    }
+                                }
+                            },
+                            shape = RoundedCornerShape(15.dp),
+                            border = BorderStroke(3.dp, Color.Gray),
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = Color.Transparent,
+                                contentColor = thirdColor
+                            ),
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .wrapContentSize(Alignment.Center)
+                                .width(200.dp)
+                                .padding(vertical = 5.dp)
+                        ) {
                             Text(
-                                "Contraseña",
-                                fontSize = 20.sp,
+                                "Aceptar",
                                 fontFamily = fontFamily,
                                 color = thirdColor,
                                 fontWeight = FontWeight.Bold
                             )
-                        },
-                        singleLine = true,
-                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text, imeAction = ImeAction.Done),
-                        visualTransformation = if (passwordVisible.value) VisualTransformation.None else PasswordVisualTransformation(),
-                        trailingIcon = {
-                            IconButton(
-                                onClick = { passwordVisible.value = !passwordVisible.value },
-                                modifier = Modifier.offset(y = 10.dp) // Ajusta este valor a tu preferencia
-                            ) {
-                                Icon(
-                                    imageVector = if (passwordVisible.value) Icons.Filled.VisibilityOff else Icons.Filled.Visibility,
-                                    contentDescription = if (passwordVisible.value) "Ocultar contraseña" else "Mostrar contraseña"
-                                )
-                            }
-                        },
-                        colors = TextFieldDefaults.colors(
-                            focusedContainerColor = Color.Transparent,
-                            unfocusedContainerColor = Color.Transparent,
-                            disabledContainerColor = Color.Transparent,
-                            cursorColor = thirdColor,
-                            focusedIndicatorColor = firstColor,
-                            unfocusedIndicatorColor = firstColor,
-                        ),
-                        modifier = Modifier
-                            .width(250.dp)
-                            .padding(top = 15.dp)
-                            .border(BorderStroke(3.dp, firstColor), shape = RoundedCornerShape(4.dp))
-                    )
-
-                    if (showError) {
-                        Spacer(modifier = Modifier.height(8.dp))
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            Image(
-                                painter = painterResource(id = R.drawable.icoerror),
-                                contentDescription = "",
-                                modifier = Modifier.size(24.dp)
-                            )
-                            Spacer(modifier = Modifier.width(8.dp)) // Espacio entre la imagen y el texto
-                            LimitedTextBox(
-                                text = getincorrectPassword(),
-                                maxWidth = 250.dp // Ajusta este valor según tus necesidades
+                        }
+                    }
+                },
+                dismissButton = {
+                    Box(
+                        modifier = Modifier.fillMaxWidth(),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        OutlinedButton(
+                            onClick = {
+                                showPasswordDialog = false
+                            },
+                            shape = RoundedCornerShape(15.dp),
+                            border = BorderStroke(3.dp, Color.Gray),
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = Color.Transparent,
+                                contentColor = thirdColor
+                            ),
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .wrapContentSize(Alignment.Center)
+                                .width(200.dp)
+                                .padding(vertical = 5.dp)
+                        ) {
+                            Text(
+                                "Cancelar",
+                                fontFamily = fontFamily,
+                                color = thirdColor,
+                                fontWeight = FontWeight.Bold
                             )
                         }
                     }
                 }
-            },
-            confirmButton = {
-                OutlinedButton(
-                    onClick = {
-                        val password = enteredPassword
-                        if (password.isNotEmpty()) {
-                            CoroutineScope(Dispatchers.IO).launch {
-                                val isPasswordCorrect = databaseController.comparePasswords(userSelected, password)
-                                withContext(Dispatchers.Main) {
-                                    if (isPasswordCorrect) {
-                                        // Se agrega ingreso de usuario
-                                        val userAccessManager = UserAccessManager()
-                                        val userAccessController = UserAccessController(userAccessManager)
-                                        // Ingreso de usuario
-                                        userAccessController.insertUserIncome(userSelected)
-                                        navController.navigateToGallery(userSelected)
-                                        showPasswordDialog = false
-
-                                    } else {
-                                        showError = true
-                                    }
-                                }
-                            }
-                        }
-                    },
-                    shape = RoundedCornerShape(15.dp),
-                    border = BorderStroke(3.dp, Color.Gray),
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = Color.Transparent,
-                        contentColor = thirdColor
-                    ),
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .wrapContentSize(Alignment.Center)
-                        .width(200.dp)
-                        .padding(vertical = 5.dp)
-                ) {
-                    Text(
-                        "Aceptar",
-                        fontFamily = fontFamily,
-                        color = thirdColor,
-                        fontWeight = FontWeight.Bold
-                    )
-                }
-            },
-            dismissButton = {
-                OutlinedButton(
-                    onClick = {
-                        showPasswordDialog = false
-                    },
-                    shape = RoundedCornerShape(15.dp),
-                    border = BorderStroke(3.dp, Color.Gray),
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = Color.Transparent,
-                        contentColor = thirdColor
-                    ),
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .wrapContentSize(Alignment.Center)
-                        .width(200.dp)
-                        .padding(vertical = 5.dp)
-                ) {
-                    Text(
-                        "Cancelar",
-                        fontFamily = fontFamily,
-                        color = thirdColor,
-                        fontWeight = FontWeight.Bold
-                    )
-                }
-            }
-        )
+            )
+        }
     }
 
 
