@@ -26,4 +26,6 @@ interface UserDao {
     fun insertAll(vararg users: User)
     @Query("SELECT * FROM user WHERE uid = :userId")
     fun getUserById(userId: String): User?
+    @Query("UPDATE user SET password = :newPassword WHERE uid = :uid")
+    suspend fun updatePassword(uid: String, newPassword: String)
 }
