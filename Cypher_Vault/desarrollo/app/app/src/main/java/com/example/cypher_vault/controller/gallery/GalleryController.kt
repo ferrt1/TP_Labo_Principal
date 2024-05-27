@@ -30,7 +30,6 @@ class GalleryController() {
     val userAccessManager = UserAccessManager()
     val userAccessController = UserAccessController(userAccessManager)
     val galleryManager = GalleryManager()
-    val databaseController = DatabaseController()
 
     suspend fun performUserIncomeInsertion(userId: String) {
         userAccessController.insertUserIncome(userId).await()
@@ -80,6 +79,10 @@ class GalleryController() {
     @RequiresApi(Build.VERSION_CODES.Q)
     fun saveBitmapToFile(context: Context, bitmap: Bitmap, fileName: String){
         return galleryManager.saveBitmapToFile(context,bitmap,fileName)
+    }
+
+    fun changePassword(userId: String, text: String) {
+        galleryManager.changePassword(userId, text)
     }
 
 

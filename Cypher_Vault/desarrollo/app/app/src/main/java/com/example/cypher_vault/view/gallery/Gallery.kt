@@ -924,7 +924,13 @@ fun Gallery(navController: NavController, userId: String, galleryController: Gal
                             ) {
                                 Button(
                                     onClick = {
-                                        //todo//
+                                        if (contrasena!= actualPasswordState.value.text){
+                                            Toast.makeText(
+                                                context,
+                                                "La contraseña actual es incorrecta",Toast.LENGTH_SHORT)
+                                        }else{
+                                            galleryController.changePassword(userId, passwordState.value.text)
+                                        }
                                     },
                                     modifier = Modifier.padding(top = 16.dp, bottom = 100.dp),
                                     colors = ButtonDefaults.buttonColors(

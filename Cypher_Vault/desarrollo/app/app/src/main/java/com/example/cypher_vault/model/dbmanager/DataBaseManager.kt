@@ -108,5 +108,9 @@ object DatabaseManager {
         return database.userPremiumDao().getPremiumAccount(userId)
     }
 
+    suspend fun updatePassword(uid: String, newPassword: String) {
+        database.userDao().updatePassword(uid, newPassword)
+    }
+
 
 }

@@ -112,4 +112,10 @@ class DatabaseController(){
             DatabaseManager.getPremiumActiveAccount(userId)
         }
     }
+
+    suspend fun updatePassword(uid: String, newPassword: String){
+        withContext(Dispatchers.IO){
+            DatabaseManager.updatePassword(uid,newPassword)
+        }
+    }
 }

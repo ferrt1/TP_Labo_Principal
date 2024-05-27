@@ -15,6 +15,8 @@ import androidx.compose.ui.graphics.ImageBitmapConfig
 import androidx.compose.ui.graphics.Paint
 import androidx.compose.ui.graphics.asAndroidBitmap
 import androidx.compose.ui.graphics.asImageBitmap
+import com.example.cypher_vault.controller.data.DatabaseController
+import kotlinx.coroutines.runBlocking
 import java.io.ByteArrayOutputStream
 import java.io.File
 import java.io.FileOutputStream
@@ -24,6 +26,8 @@ import java.util.Date
 import java.util.Locale
 
 class GalleryManager {
+
+    val databaseController = DatabaseController()
 
     fun capitalizarPrimeraLetra(palabra: String): String {
         if (palabra.isEmpty()) {
@@ -111,5 +115,9 @@ class GalleryManager {
         }
     }
 
-
+    fun changePassword(userId: String, text: String) {
+        runBlocking {
+            databaseController.updatePassword(userId, text)
+        }
+    }
 }
