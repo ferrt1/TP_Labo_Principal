@@ -8,16 +8,10 @@ import androidx.camera.core.ImageCapture
 import androidx.camera.core.Preview
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.PreviewView
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.*
 import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
@@ -25,10 +19,13 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shadow
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.ContextCompat
+import com.example.cypher_vault.R
 import com.example.cypher_vault.controller.navigation.NavController
 import com.example.cypher_vault.controller.data.DatabaseController
 import com.google.mlkit.vision.common.InputImage
@@ -39,7 +36,6 @@ import com.example.cypher_vault.view.resources.*
 import com.example.cypher_vault.controller.camera.CameraController
 
 private val databaseController = DatabaseController()
-
 
 @androidx.annotation.OptIn(ExperimentalGetImage::class)
 @Composable
@@ -78,15 +74,18 @@ fun LoginCamera(navController: NavController, userId: String) {
 
     val eyesOpens = remember { mutableIntStateOf(3) }
 
+    val silhouetteError = painterResource(id = R.drawable.siluetaerror)
+    val silhouette = painterResource(id = R.drawable.siluetabien)
+
     imageAnalysis.setAnalyzer(ContextCompat.getMainExecutor(context)) { imageProxy ->
         val mediaImage = imageProxy.image
         if (mediaImage != null) {
             val rotationDegrees = imageProxy.imageInfo.rotationDegrees
             val image = InputImage.fromMediaImage(mediaImage, rotationDegrees)
 
-            val imageView = InputImage.fromMediaImage(mediaImage, imageProxy.imageInfo.rotationDegrees)
+            val imageView =
+                InputImage.fromMediaImage(mediaImage, imageProxy.imageInfo.rotationDegrees)
 
-            // Actualiza imageWidth e imageHeight.
             faceOverlayView.imageWidth = imageView.width
             faceOverlayView.imageHeight = imageView.height
 
@@ -105,10 +104,12 @@ fun LoginCamera(navController: NavController, userId: String) {
                         timerStarted.value = false
                     } else {
                         for (face in faces) {
-                            val hasLeftEye = face.getContour(FaceContour.LEFT_EYE)?.points?.isNotEmpty()
+                            val hasLeftEye =
+                                face.getContour(FaceContour.LEFT_EYE)?.points?.isNotEmpty()
                             val hasRightEye =
                                 face.getContour(FaceContour.RIGHT_EYE)?.points?.isNotEmpty()
-                            val hasNose = face.getContour(FaceContour.NOSE_BRIDGE)?.points?.isNotEmpty()
+                            val hasNose =
+                                face.getContour(FaceContour.NOSE_BRIDGE)?.points?.isNotEmpty()
                             val hasMouth =
                                 face.getContour(FaceContour.UPPER_LIP_TOP)?.points?.isNotEmpty() == true && face.getContour(
                                     FaceContour.LOWER_LIP_BOTTOM
@@ -120,49 +121,53 @@ fun LoginCamera(navController: NavController, userId: String) {
                             val rightEyeOpenProbability = face.leftEyeOpenProbability ?: 0f
 
                             faceOverlayView.boundingBox = face.boundingBox
+                            faceOverlayView.updateMessage()
+                            faceOverlayView.updateInside()
                             faceOverlayView.invalidate()
 
-
-                            if (hasLeftEye == true && hasRightEye == true && hasNose == true && hasMouth && faceOverlayView.isBoundingBoxInsideTarget()) {
-                                when (currentOrientation.value) {
-                                    "smile" -> if (smilingProb > 0.7f) {
-                                        currentOrientation.value = "eyes"
-                                    }
-
-                                    "eyes" -> if (leftEyeOpenProbability < 0.5f && rightEyeOpenProbability < 0.5f){
-                                        if ( eyesOpens.intValue == 0){
-                                            currentOrientation.value = "front"
+                            // Mostrar solo el mensaje de acercarse/alejarse si está presente
+                            if (faceOverlayView.message == null) {
+                                if (hasLeftEye == true && hasRightEye == true && hasNose == true && hasMouth && faceOverlayView.isBoundingBoxInsideTarget()) {
+                                    when (currentOrientation.value) {
+                                        "smile" -> if (smilingProb > 0.7f) {
+                                            currentOrientation.value = "eyes"
                                         }
-                                        else{
-                                            eyesOpens.intValue--
+
+                                        "eyes" -> if (leftEyeOpenProbability < 0.5f && rightEyeOpenProbability < 0.5f) {
+                                            if (eyesOpens.intValue > 0) {
+                                                currentOrientation.value = "front"
+                                            } else {
+                                                eyesOpens.intValue--
+                                            }
+                                        }
+
+                                        "front" -> if (face.headEulerAngleY in -10.0..10.0) {
+                                            cameraController.startTimer(
+                                                timer,
+                                                timerStarted,
+                                                timerFinished,
+                                                coroutineScope
+                                            )
                                         }
                                     }
-
-                                    "front" -> if (face.headEulerAngleY in -10.0..10.0)
-                                        cameraController.startTimer(
-                                            timer,
-                                            timerStarted,
-                                            timerFinished,
-                                            coroutineScope
+                                    if (timer.intValue == 0 && !isImageCaptured.value) {
+                                        cameraController.captureImage(
+                                            context,
+                                            imageCapture,
+                                            cameraProvider,
+                                            isImageCaptured,
+                                            coroutineScope,
+                                            navController,
+                                            faceOverlayView,
+                                            true
                                         )
-                                }
-                                if (timer.intValue == 0 && !isImageCaptured.value) {
-                                    cameraController.captureImage(
-                                        context,
-                                        imageCapture,
-                                        cameraProvider,
-                                        isImageCaptured,
-                                        coroutineScope,
-                                        navController,
-                                        faceOverlayView,
-                                        true
-                                    )
-                                    timer.intValue = 3
-                                    timerStarted.value = false
-                                    isImageCaptured.value = false
-                                    currentOrientation.value = when (currentOrientation.value) {
-                                        "front" -> "done"
-                                        else -> "done"
+                                        timer.intValue = 3
+                                        timerStarted.value = false
+                                        isImageCaptured.value = false
+                                        currentOrientation.value = when (currentOrientation.value) {
+                                            "front" -> "done"
+                                            else -> "done"
+                                        }
                                     }
                                 }
                             }
@@ -174,12 +179,17 @@ fun LoginCamera(navController: NavController, userId: String) {
                 .addOnCompleteListener {
                     imageProxy.close()
                 }
-
         }
     }
 
     LaunchedEffect(cameraProviderFuture) {
-        cameraProvider.bindToLifecycle(lifecycleOwner, cameraSelector, imageCapture , imageAnalysis, preview)
+        cameraProvider.bindToLifecycle(
+            lifecycleOwner,
+            cameraSelector,
+            imageCapture,
+            imageAnalysis,
+            preview
+        )
     }
 
     Box(
@@ -188,7 +198,8 @@ fun LoginCamera(navController: NavController, userId: String) {
     ) {
         if (isCameraOpen.value) {
             CameraPreview(preview)
-            AndroidView( {faceOverlayView} )
+            AndroidView({ faceOverlayView })
+
 
             when (currentOrientation.value) {
                 "smile" -> {
@@ -196,17 +207,16 @@ fun LoginCamera(navController: NavController, userId: String) {
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
                         Text(
-                            text = "${timer.intValue}",
-                            color = Color.Black,
-                            fontSize = 36.sp,
-                            style = textStyle.copy(shadow = Shadow(color = firstColor, offset = Offset(-3f,3f), blurRadius = 0f)),
-                            textAlign = TextAlign.Center
-                        )
-                        Text(
                             "Por favor sonría",
-                            color = Color.Black,
+                            color = Color.White,
                             fontSize = 36.sp,
-                            style = textStyle.copy(shadow = Shadow(color = firstColor, offset = Offset(-3f,3f), blurRadius = 0f)),
+                            style = textStyle.copy(
+                                shadow = Shadow(
+                                    color = firstColor,
+                                    offset = Offset(-3f, 3f),
+                                    blurRadius = 0f
+                                )
+                            ),
                             textAlign = TextAlign.Center,
                         )
                     }
@@ -217,17 +227,16 @@ fun LoginCamera(navController: NavController, userId: String) {
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
                         Text(
-                            text = "${timer.intValue}",
-                            color = Color.Black,
-                            fontSize = 36.sp,
-                            style = textStyle.copy(shadow = Shadow(color = firstColor, offset = Offset(-3f,3f), blurRadius = 0f)),
-                            textAlign = TextAlign.Center
-                        )
-                        Text(
                             "Por favor, pestañee. Restantes ${eyesOpens.intValue}",
-                            color = Color.Black,
+                            color = Color.White,
                             fontSize = 36.sp,
-                            style = textStyle.copy(shadow = Shadow(color = firstColor, offset = Offset(-3f,3f), blurRadius = 0f)),
+                            style = textStyle.copy(
+                                shadow = Shadow(
+                                    color = firstColor,
+                                    offset = Offset(-3f, 3f),
+                                    blurRadius = 0f
+                                )
+                            ),
                             textAlign = TextAlign.Center,
                         )
                     }
@@ -239,16 +248,28 @@ fun LoginCamera(navController: NavController, userId: String) {
                     ) {
                         Text(
                             text = "${timer.intValue}",
-                            color = Color.Black,
+                            color = Color.White,
                             fontSize = 36.sp,
-                            style = textStyle.copy(shadow = Shadow(color = firstColor, offset = Offset(-3f,3f), blurRadius = 0f)),
+                            style = textStyle.copy(
+                                shadow = Shadow(
+                                    color = firstColor,
+                                    offset = Offset(-3f, 3f),
+                                    blurRadius = 0f
+                                )
+                            ),
                             textAlign = TextAlign.Center
                         )
                         Text(
                             "Mire hacia la cámara.",
-                            color = Color.Black,
+                            color = Color.White,
                             fontSize = 36.sp,
-                            style = textStyle.copy(shadow = Shadow(color = firstColor, offset = Offset(-3f,3f), blurRadius = 0f)),
+                            style = textStyle.copy(
+                                shadow = Shadow(
+                                    color = firstColor,
+                                    offset = Offset(-3f, 3f),
+                                    blurRadius = 0f
+                                )
+                            ),
                             textAlign = TextAlign.Center,
                         )
                     }
@@ -256,9 +277,7 @@ fun LoginCamera(navController: NavController, userId: String) {
             }
         }
     }
-
 }
-
 
 
 @Composable

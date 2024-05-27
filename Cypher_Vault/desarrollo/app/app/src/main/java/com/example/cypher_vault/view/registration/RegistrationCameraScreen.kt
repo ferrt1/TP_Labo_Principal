@@ -25,10 +25,12 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shadow
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.ContextCompat
+import com.example.cypher_vault.R
 import com.example.cypher_vault.controller.navigation.NavController
 import com.example.cypher_vault.controller.camera.CameraController
 import com.example.cypher_vault.controller.data.DatabaseController
@@ -53,7 +55,8 @@ fun RegistrationCameraScreen(navController: NavController, userId: String) {
         .requireLensFacing(CameraSelector.LENS_FACING_FRONT)
         .build()
 
-    val cameraController = CameraController(context, navController, userId, databaseController
+    val cameraController = CameraController(context, navController, userId,
+        databaseController
     )
 
     val cameraProvider = cameraProviderFuture.get()
@@ -80,15 +83,18 @@ fun RegistrationCameraScreen(navController: NavController, userId: String) {
 
     val eyesOpens = remember { mutableIntStateOf(3) }
 
+    val silhouetteError = painterResource(id = R.drawable.siluetaerror)
+    val silhouette = painterResource(id = R.drawable.siluetabien)
+
     imageAnalysis.setAnalyzer(ContextCompat.getMainExecutor(context)) { imageProxy ->
         val mediaImage = imageProxy.image
         if (mediaImage != null) {
             val rotationDegrees = imageProxy.imageInfo.rotationDegrees
             val image = InputImage.fromMediaImage(mediaImage, rotationDegrees)
 
-            val imageView = InputImage.fromMediaImage(mediaImage, imageProxy.imageInfo.rotationDegrees)
+            val imageView =
+                InputImage.fromMediaImage(mediaImage, imageProxy.imageInfo.rotationDegrees)
 
-            // Actualiza imageWidth e imageHeight.
             faceOverlayView.imageWidth = imageView.width
             faceOverlayView.imageHeight = imageView.height
 
@@ -107,10 +113,12 @@ fun RegistrationCameraScreen(navController: NavController, userId: String) {
                         timerStarted.value = false
                     } else {
                         for (face in faces) {
-                            val hasLeftEye = face.getContour(FaceContour.LEFT_EYE)?.points?.isNotEmpty()
+                            val hasLeftEye =
+                                face.getContour(FaceContour.LEFT_EYE)?.points?.isNotEmpty()
                             val hasRightEye =
                                 face.getContour(FaceContour.RIGHT_EYE)?.points?.isNotEmpty()
-                            val hasNose = face.getContour(FaceContour.NOSE_BRIDGE)?.points?.isNotEmpty()
+                            val hasNose =
+                                face.getContour(FaceContour.NOSE_BRIDGE)?.points?.isNotEmpty()
                             val hasMouth =
                                 face.getContour(FaceContour.UPPER_LIP_TOP)?.points?.isNotEmpty() == true && face.getContour(
                                     FaceContour.LOWER_LIP_BOTTOM
@@ -122,49 +130,53 @@ fun RegistrationCameraScreen(navController: NavController, userId: String) {
                             val rightEyeOpenProbability = face.leftEyeOpenProbability ?: 0f
 
                             faceOverlayView.boundingBox = face.boundingBox
+                            faceOverlayView.updateMessage()
+                            faceOverlayView.updateInside()
                             faceOverlayView.invalidate()
 
-
-                            if (hasLeftEye == true && hasRightEye == true && hasNose == true && hasMouth && faceOverlayView.isBoundingBoxInsideTarget()) {
-                                when (currentOrientation.value) {
-                                    "smile" -> if (smilingProb > 0.7f) {
-                                        currentOrientation.value = "eyes"
-                                    }
-
-                                    "eyes" -> if (leftEyeOpenProbability < 0.5f && rightEyeOpenProbability < 0.5f){
-                                        if ( eyesOpens.intValue == 0){
-                                            currentOrientation.value = "front"
+                            // Mostrar solo el mensaje de acercarse/alejarse si está presente
+                            if (faceOverlayView.message == null) {
+                                if (hasLeftEye == true && hasRightEye == true && hasNose == true && hasMouth && faceOverlayView.isBoundingBoxInsideTarget()) {
+                                    when (currentOrientation.value) {
+                                        "smile" -> if (smilingProb > 0.7f) {
+                                            currentOrientation.value = "eyes"
                                         }
-                                        else{
-                                            eyesOpens.intValue--
+
+                                        "eyes" -> if (leftEyeOpenProbability < 0.5f && rightEyeOpenProbability < 0.5f) {
+                                            if (eyesOpens.intValue > 0) {
+                                                currentOrientation.value = "front"
+                                            } else {
+                                                eyesOpens.intValue--
+                                            }
+                                        }
+
+                                        "front" -> if (face.headEulerAngleY in -10.0..10.0) {
+                                            cameraController.startTimer(
+                                                timer,
+                                                timerStarted,
+                                                timerFinished,
+                                                coroutineScope
+                                            )
                                         }
                                     }
-
-                                    "front" -> if (face.headEulerAngleY in -10.0..10.0)
-                                        cameraController.startTimer(
-                                            timer,
-                                            timerStarted,
-                                            timerFinished,
-                                            coroutineScope
+                                    if (timer.intValue == 0 && !isImageCaptured.value) {
+                                        cameraController.captureImage(
+                                            context,
+                                            imageCapture,
+                                            cameraProvider,
+                                            isImageCaptured,
+                                            coroutineScope,
+                                            navController,
+                                            faceOverlayView,
+                                            false
                                         )
-                                }
-                                if (timer.intValue == 0 && !isImageCaptured.value) {
-                                    cameraController.captureImage(
-                                        context,
-                                        imageCapture,
-                                        cameraProvider,
-                                        isImageCaptured,
-                                        coroutineScope,
-                                        navController,
-                                        faceOverlayView,
-                                        false
-                                    )
-                                    timer.intValue = 3
-                                    timerStarted.value = false
-                                    isImageCaptured.value = false
-                                    currentOrientation.value = when (currentOrientation.value) {
-                                        "front" -> "done"
-                                        else -> "done"
+                                        timer.intValue = 3
+                                        timerStarted.value = false
+                                        isImageCaptured.value = false
+                                        currentOrientation.value = when (currentOrientation.value) {
+                                            "front" -> "done"
+                                            else -> "done"
+                                        }
                                     }
                                 }
                             }
@@ -176,12 +188,17 @@ fun RegistrationCameraScreen(navController: NavController, userId: String) {
                 .addOnCompleteListener {
                     imageProxy.close()
                 }
-
         }
     }
 
     LaunchedEffect(cameraProviderFuture) {
-        cameraProvider.bindToLifecycle(lifecycleOwner, cameraSelector, imageCapture , imageAnalysis, preview)
+        cameraProvider.bindToLifecycle(
+            lifecycleOwner,
+            cameraSelector,
+            imageCapture,
+            imageAnalysis,
+            preview
+        )
     }
 
     Box(
@@ -190,7 +207,8 @@ fun RegistrationCameraScreen(navController: NavController, userId: String) {
     ) {
         if (isCameraOpen.value) {
             CameraPreview(preview)
-            AndroidView( {faceOverlayView} )
+            AndroidView({ faceOverlayView })
+
 
             when (currentOrientation.value) {
                 "smile" -> {
@@ -198,17 +216,16 @@ fun RegistrationCameraScreen(navController: NavController, userId: String) {
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
                         Text(
-                            text = "${timer.intValue}",
-                            color = Color.Black,
-                            fontSize = 36.sp,
-                            style = textStyle.copy(shadow = Shadow(color = firstColor, offset = Offset(-3f,3f), blurRadius = 0f)),
-                            textAlign = TextAlign.Center
-                        )
-                        Text(
                             "Por favor sonría",
-                            color = Color.Black,
+                            color = Color.White,
                             fontSize = 36.sp,
-                            style = textStyle.copy(shadow = Shadow(color = firstColor, offset = Offset(-3f,3f), blurRadius = 0f)),
+                            style = textStyle.copy(
+                                shadow = Shadow(
+                                    color = firstColor,
+                                    offset = Offset(-3f, 3f),
+                                    blurRadius = 0f
+                                )
+                            ),
                             textAlign = TextAlign.Center,
                         )
                     }
@@ -219,17 +236,16 @@ fun RegistrationCameraScreen(navController: NavController, userId: String) {
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
                         Text(
-                            text = "${timer.intValue}",
-                            color = Color.Black,
-                            fontSize = 36.sp,
-                            style = textStyle.copy(shadow = Shadow(color = firstColor, offset = Offset(-3f,3f), blurRadius = 0f)),
-                            textAlign = TextAlign.Center
-                        )
-                        Text(
                             "Por favor, pestañee. Restantes ${eyesOpens.intValue}",
-                            color = Color.Black,
+                            color = Color.White,
                             fontSize = 36.sp,
-                            style = textStyle.copy(shadow = Shadow(color = firstColor, offset = Offset(-3f,3f), blurRadius = 0f)),
+                            style = textStyle.copy(
+                                shadow = Shadow(
+                                    color = firstColor,
+                                    offset = Offset(-3f, 3f),
+                                    blurRadius = 0f
+                                )
+                            ),
                             textAlign = TextAlign.Center,
                         )
                     }
@@ -241,16 +257,28 @@ fun RegistrationCameraScreen(navController: NavController, userId: String) {
                     ) {
                         Text(
                             text = "${timer.intValue}",
-                            color = Color.Black,
+                            color = Color.White,
                             fontSize = 36.sp,
-                            style = textStyle.copy(shadow = Shadow(color = firstColor, offset = Offset(-3f,3f), blurRadius = 0f)),
+                            style = textStyle.copy(
+                                shadow = Shadow(
+                                    color = firstColor,
+                                    offset = Offset(-3f, 3f),
+                                    blurRadius = 0f
+                                )
+                            ),
                             textAlign = TextAlign.Center
                         )
                         Text(
                             "Mire hacia la cámara.",
-                            color = Color.Black,
+                            color = Color.White,
                             fontSize = 36.sp,
-                            style = textStyle.copy(shadow = Shadow(color = firstColor, offset = Offset(-3f,3f), blurRadius = 0f)),
+                            style = textStyle.copy(
+                                shadow = Shadow(
+                                    color = firstColor,
+                                    offset = Offset(-3f, 3f),
+                                    blurRadius = 0f
+                                )
+                            ),
                             textAlign = TextAlign.Center,
                         )
                     }
@@ -258,7 +286,6 @@ fun RegistrationCameraScreen(navController: NavController, userId: String) {
             }
         }
     }
-
 }
 
 
