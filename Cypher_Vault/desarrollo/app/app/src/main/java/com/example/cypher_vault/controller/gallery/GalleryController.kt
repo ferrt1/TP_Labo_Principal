@@ -30,7 +30,6 @@ class GalleryController() {
     val userAccessManager = UserAccessManager()
     val userAccessController = UserAccessController(userAccessManager)
     val galleryManager = GalleryManager()
-
     suspend fun performUserIncomeInsertion(userId: String) {
         userAccessController.insertUserIncome(userId).await()
     }

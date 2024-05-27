@@ -918,6 +918,7 @@ fun Gallery(navController: NavController, userId: String, galleryController: Gal
                                     }
                                 }
                             }
+                            ///// BOTON DE ACTUALIZAR CONTRASEÑA ////////////////////////////////////////////
                             Row(
                                 horizontalArrangement = Arrangement.Center,
                                 modifier = Modifier.align(Alignment.CenterHorizontally)
@@ -927,9 +928,21 @@ fun Gallery(navController: NavController, userId: String, galleryController: Gal
                                         if (contrasena!= actualPasswordState.value.text){
                                             Toast.makeText(
                                                 context,
-                                                "La contraseña actual es incorrecta",Toast.LENGTH_SHORT)
-                                        }else{
+                                                "La contraseña actual es incorrecta",Toast.LENGTH_SHORT).show()
+                                        }else if(passwordState.value.text == actualPasswordState.value.text){
+                                            Toast.makeText(
+                                                context,
+                                                "La contraseña actual es igual a la nueva",Toast.LENGTH_SHORT).show()
+                                        }
+
+                                        else{
                                             galleryController.changePassword(userId, passwordState.value.text)
+                                            showPasswordPanel = false
+                                            passwordState.value = TextFieldValue("")
+                                            actualPasswordState.value = TextFieldValue("")
+                                            Toast.makeText(
+                                                context,
+                                                "Contraseña actulizada",Toast.LENGTH_SHORT).show()
                                         }
                                     },
                                     modifier = Modifier.padding(top = 16.dp, bottom = 100.dp),
