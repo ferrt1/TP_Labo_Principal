@@ -25,11 +25,55 @@ class FaceOverlayView(context: Context) : View(context) {
     private val silhouette: Bitmap = BitmapFactory.decodeResource(resources, R.drawable.siluetabien)
     private val silhouetteError: Bitmap = BitmapFactory.decodeResource(resources, R.drawable.siluetaerror)
 
+    var currentOrientation: String = ""
+    var timerValue: Int = 0
+    var eyesOpens: Int = 0
+
     @SuppressLint("DrawAllocation")
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
 
-        // Define el tamaño mínimo y máximo del targetBox
+        if(message==null) {
+            when (currentOrientation) {
+                "smile" -> {
+                    drawTextCentered(
+                        canvas,
+                        "Por favor sonría",
+                        canvas.width / 2f,
+                        canvas.height * 0.9f
+                    )
+                }
+
+                "eyes" -> {
+                    drawTextCentered(
+                        canvas,
+                        "Por favor, pestañee. Restantes $eyesOpens",
+                        canvas.width / 2f,
+                        canvas.height * 0.9f
+                    )
+                }
+
+                "front" -> {
+                    if (timerValue > 0) {
+                        drawTextCentered(
+                            canvas,
+                            "$timerValue",
+                            canvas.width / 2f,
+                            canvas.height * 0.85f
+                        )
+                        drawTextCentered(
+                            canvas,
+                            "Mire hacia la cámara.",
+                            canvas.width / 2f,
+                            canvas.height * 0.9f
+                        )
+                    }
+                }
+            }
+        }
+
+
+    // Define el tamaño mínimo y máximo del targetBox
         val minBoxWidth = width * 5 / 8 + 100  // Aumento del ancho del minTargetBox
         val minBoxHeight = height * 3 / 8 + 250  // Aumento de la altura del minTargetBox
         val maxBoxWidth = width * 3 / 4 + 100  // Aumento del ancho del maxTargetBox
@@ -103,6 +147,24 @@ class FaceOverlayView(context: Context) : View(context) {
             canvas.drawText(it, (width / 2).toFloat(), (height * 0.9).toFloat(), textPaint)
         }
     }
+
+
+private fun drawTextCentered(canvas: Canvas, text: String, x: Float, y: Float) {
+    val textPaint = Paint().apply {
+        color = Color.WHITE
+        textSize = 64f
+        textAlign = Paint.Align.CENTER
+    }
+    canvas.drawText(text, x, y, textPaint)
+}
+
+// Methods to update state
+fun updateState(orientation: String, timer: Int = 0, eyesOpen: Int = 0) {
+    currentOrientation = orientation
+    timerValue = timer
+    eyesOpens = eyesOpen
+    invalidate()
+}
 
     fun isBoundingBoxInsideTarget(): Boolean {
         val transformedBoundingBox = boundingBox?.let { transformBoundingBox(it) }

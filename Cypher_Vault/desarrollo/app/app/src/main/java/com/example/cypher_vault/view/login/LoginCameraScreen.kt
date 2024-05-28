@@ -150,6 +150,7 @@ fun LoginCamera(navController: NavController, userId: String) {
                                             )
                                         }
                                     }
+                                    faceOverlayView.updateState(currentOrientation.value, timer.intValue, eyesOpens.intValue)
                                     if (timer.intValue == 0 && !isImageCaptured.value) {
                                         cameraController.captureImage(
                                             context,
@@ -200,80 +201,8 @@ fun LoginCamera(navController: NavController, userId: String) {
             CameraPreview(preview)
             AndroidView({ faceOverlayView })
 
-
-            when (currentOrientation.value) {
-                "smile" -> {
-                    Column(
-                        horizontalAlignment = Alignment.CenterHorizontally
-                    ) {
-                        Text(
-                            "Por favor sonría",
-                            color = Color.White,
-                            fontSize = 36.sp,
-                            style = textStyle.copy(
-                                shadow = Shadow(
-                                    color = firstColor,
-                                    offset = Offset(-3f, 3f),
-                                    blurRadius = 0f
-                                )
-                            ),
-                            textAlign = TextAlign.Center,
-                        )
-                    }
-                }
-
-                "eyes" -> {
-                    Column(
-                        horizontalAlignment = Alignment.CenterHorizontally
-                    ) {
-                        Text(
-                            "Por favor, pestañee. Restantes ${eyesOpens.intValue}",
-                            color = Color.White,
-                            fontSize = 36.sp,
-                            style = textStyle.copy(
-                                shadow = Shadow(
-                                    color = firstColor,
-                                    offset = Offset(-3f, 3f),
-                                    blurRadius = 0f
-                                )
-                            ),
-                            textAlign = TextAlign.Center,
-                        )
-                    }
-                }
-
-                "front" -> if (timer.value > 0) {
-                    Column(
-                        horizontalAlignment = Alignment.CenterHorizontally
-                    ) {
-                        Text(
-                            text = "${timer.intValue}",
-                            color = Color.White,
-                            fontSize = 36.sp,
-                            style = textStyle.copy(
-                                shadow = Shadow(
-                                    color = firstColor,
-                                    offset = Offset(-3f, 3f),
-                                    blurRadius = 0f
-                                )
-                            ),
-                            textAlign = TextAlign.Center
-                        )
-                        Text(
-                            "Mire hacia la cámara.",
-                            color = Color.White,
-                            fontSize = 36.sp,
-                            style = textStyle.copy(
-                                shadow = Shadow(
-                                    color = firstColor,
-                                    offset = Offset(-3f, 3f),
-                                    blurRadius = 0f
-                                )
-                            ),
-                            textAlign = TextAlign.Center,
-                        )
-                    }
-                }
+            LaunchedEffect(currentOrientation.value, timer.intValue, eyesOpens.intValue) {
+                faceOverlayView.updateState(currentOrientation.value, timer.intValue, eyesOpens.intValue)
             }
         }
     }
