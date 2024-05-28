@@ -12,4 +12,6 @@ interface ImageDao {
     fun getImagesForUser(userId: String): List<Images>
 
     // Otros métodos según sea necesario
+    @Query("DELETE FROM images WHERE user_id = :userId")
+    fun deleteImagesForUser(userId: String)
 }

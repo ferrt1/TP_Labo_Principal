@@ -1135,25 +1135,30 @@ fun Gallery(navController: NavController, userId: String, galleryController: Gal
                             ) {
                                 Button(
                                     onClick = {
-                                        if (contrasena!= deletePasswordState.value.text){
+                                        if (contrasena != deletePasswordState.value.text) {
                                             showError = true
                                             Toast.makeText(
                                                 context,
-                                                "La contraseña es incorrecta",Toast.LENGTH_SHORT).show()
-                                        } else{
-                                            if (galleryController.deleteAccount(userId)){
-                                                deletePasswordState.value = TextFieldValue("")
-                                                Toast.makeText(
-                                                    context,
-                                                    "Cuenta Eliminada",Toast.LENGTH_SHORT).show()
-                                                showDeletePanel = false
-                                            }else{
-                                                deletePasswordState.value = TextFieldValue("")
-                                                Toast.makeText(
-                                                    context,
-                                                    "No se pudo eliminar la cuenta",Toast.LENGTH_SHORT).show()
-                                                showDeletePanel = false
-
+                                                "La contraseña es incorrecta", Toast.LENGTH_SHORT
+                                            ).show()
+                                        } else {
+                                            galleryController.deleteAccount(userId) { success ->
+                                                if (success) {
+                                                    deletePasswordState.value = TextFieldValue("")
+                                                    Toast.makeText(
+                                                        context,
+                                                        "Cuenta Eliminada", Toast.LENGTH_SHORT
+                                                    ).show()
+                                                    showDeletePanel = false
+                                                    navController.navigateToListLogin()
+                                                } else {
+                                                    deletePasswordState.value = TextFieldValue("")
+                                                    Toast.makeText(
+                                                        context,
+                                                        "No se pudo eliminar la cuenta", Toast.LENGTH_SHORT
+                                                    ).show()
+                                                    showDeletePanel = false
+                                                }
                                             }
                                         }
                                     },

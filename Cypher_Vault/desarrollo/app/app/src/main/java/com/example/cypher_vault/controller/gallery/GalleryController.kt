@@ -89,14 +89,16 @@ class GalleryController() {
         galleryManager.changePassword(userId, text)
     }
 
-    fun deleteAccount(userId: String): Boolean {
-        return galleryManager.deleteAccount(userId)
-    }
 
     fun closeSession(context: Context): Unit {
         galleryManager.closeSession(context)
         return Unit
     }
+
+    fun deleteAccount(userId: String, onComplete: (Boolean) -> Unit) {
+        galleryManager.deleteAccount(userId, onComplete)
+    }
+
 
 
 }

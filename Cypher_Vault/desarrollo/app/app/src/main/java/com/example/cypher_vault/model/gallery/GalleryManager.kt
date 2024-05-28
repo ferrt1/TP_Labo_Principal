@@ -123,13 +123,14 @@ class GalleryManager {
         }
     }
 
-    fun deleteAccount(userId: String): Boolean {
-                //TODO("Javi, Not yet implemented")
-        return false
+
+    fun deleteAccount(userId: String, callback: (Boolean) -> Unit) {
+        databaseController.deleteImageGalleryAndUser(userId, callback)
     }
 
 
     fun closeSession(context: Context) {
         SessionController.logout(context)
     }
+
 }

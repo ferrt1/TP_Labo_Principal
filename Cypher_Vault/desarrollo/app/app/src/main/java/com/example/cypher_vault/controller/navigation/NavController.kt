@@ -76,7 +76,8 @@ class NavController(private val navController: NavController) {
                     firstName = name,
                     email = email,
                     entryDate = System.currentTimeMillis(),
-                    password = password
+                    password = password,
+                    authentication= false
                 )
                 DatabaseManager.insertUser(user)
             }

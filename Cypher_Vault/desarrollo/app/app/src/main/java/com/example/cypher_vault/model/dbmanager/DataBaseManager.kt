@@ -10,6 +10,8 @@ import com.example.cypher_vault.database.ImagesRegister
 import com.example.cypher_vault.database.User
 import com.example.cypher_vault.database.UserIncome
 import com.example.cypher_vault.database.UserPremium
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 
 
 object DatabaseManager {
@@ -112,5 +114,16 @@ object DatabaseManager {
         database.userDao().updatePassword(uid, newPassword)
     }
 
+    suspend fun deleteUser(uid: String) {
+        withContext(Dispatchers.IO) {
+            database.userDao().deleteUserById(uid)
+        }
+    }
+
+    suspend fun deleteImgUser(uid: String) {
+        withContext(Dispatchers.IO) {
+            database.imageDao().deleteImagesForUser(uid)
+        }
+    }
 
 }

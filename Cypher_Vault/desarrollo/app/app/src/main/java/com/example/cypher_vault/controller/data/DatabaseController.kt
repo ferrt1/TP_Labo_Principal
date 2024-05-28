@@ -118,4 +118,20 @@ class DatabaseController(){
             DatabaseManager.updatePassword(uid,newPassword)
         }
     }
+    fun deleteImageGalleryAndUser(uid: String, callback: (Boolean) -> Unit) {
+        CoroutineScope(Dispatchers.IO).launch {
+            try {
+                DatabaseManager.deleteImgUser(uid)
+                DatabaseManager.deleteUser(uid)
+                withContext(Dispatchers.Main) {
+                    callback(true)
+                }
+            } catch (e: Exception) {
+                withContext(Dispatchers.Main) {
+                    callback(false)
+                }
+            }
+        }
+    }
+
 }
