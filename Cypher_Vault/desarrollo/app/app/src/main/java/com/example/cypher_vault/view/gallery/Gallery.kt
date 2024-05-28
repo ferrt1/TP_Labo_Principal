@@ -180,7 +180,6 @@ fun Gallery(navController: NavController, userId: String, galleryController: Gal
     var showDeletePanel by remember { mutableStateOf(false) }
     val deletePasswordState = remember { mutableStateOf(TextFieldValue()) }
     var showError by remember { mutableStateOf(false) }
-    var isContentVisibleDeleteState by remember { mutableStateOf(false) }
 
     // Logica cambio de contraseña
     val sheetPasswordState = rememberModalBottomSheetState()
@@ -989,7 +988,7 @@ fun Gallery(navController: NavController, userId: String, galleryController: Gal
                     ModalBottomSheet(
                         containerColor = premiumBackgroundColor,
                         onDismissRequest = {
-                            showPasswordPanel = false
+                            showDeletePanel = false
                         },
                         sheetState = sheetDeleteState
                     ) {
