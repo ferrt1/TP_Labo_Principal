@@ -42,6 +42,7 @@ import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -59,6 +60,7 @@ import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.TopAppBarDefaults
@@ -119,6 +121,7 @@ import com.example.cypher_vault.controller.premium.PremiumController
 import com.example.cypher_vault.database.User
 import com.example.cypher_vault.database.UserIncome
 import com.example.cypher_vault.model.premium.PremiumManager
+import com.example.cypher_vault.model.session.SessionState
 import com.example.cypher_vault.view.registration.LimitedTextBox
 import com.example.cypher_vault.view.registration.findAncestorActivity
 import com.example.cypher_vault.view.resources.redColor
@@ -175,13 +178,20 @@ fun Gallery(navController: NavController, userId: String, galleryController: Gal
         }
     }
 
-    // Logica eliminar usuario
+    //Variables de cerrar sesion
+    var alertCloseSession by remember { mutableStateOf(false) }
+    val sessionState = remember { SessionState() }
+    if (!sessionState.isLoggedIn) {
+        // Show a message or navigate to the login screen
+    }
+
+    // Variables eliminar usuario
     val sheetDeleteState = rememberModalBottomSheetState()
     var showDeletePanel by remember { mutableStateOf(false) }
     val deletePasswordState = remember { mutableStateOf(TextFieldValue()) }
     var showError by remember { mutableStateOf(false) }
 
-    // Logica cambio de contraseña
+    // Variables cambio de contraseña
     val sheetPasswordState = rememberModalBottomSheetState()
     var showPasswordPanel by remember { mutableStateOf(false) }
     var nameState by remember { mutableStateOf("") }
@@ -191,7 +201,7 @@ fun Gallery(navController: NavController, userId: String, galleryController: Gal
     var isContentVisiblpasswordState by remember { mutableStateOf(false) }
 
 
-    //Logica de usuario Premium/Panel
+    //Variables de usuario Premium/Panel
     val premiumManager = PremiumManager()
     val premiumController = PremiumController(premiumManager)
 
@@ -407,7 +417,12 @@ fun Gallery(navController: NavController, userId: String, galleryController: Gal
                         {
                             Text(text = "Tus ingresos en la App")
                         }
-                        Spacer(modifier = Modifier.height(16.dp))
+                        Spacer(modifier = Modifier.height(8.dp))
+                        // Mostrar la lista de ingresos si showIncomes es true/////////////////
+                        if (showIncomes) {
+                            IncomeList(galleryController, incomes = listaDeIngresos)
+                            Spacer(modifier = Modifier.height(8.dp))
+                        }
                         // Boton para ver premium ///////////////////////////////////////////////////////////////////////////
                         Button(
                             onClick = { showPremiumPanel = true },
@@ -425,9 +440,11 @@ fun Gallery(navController: NavController, userId: String, galleryController: Gal
                             Text(text = "Premium")
                         }
                         Spacer(modifier = Modifier.height(8.dp))
-                        // Boton para eliminar cuenta ///////////////////////////////////////////////////////////////////////////
+                        // Boton para cerra la sesion ////////////////////////////////////////////////////////////////////
                         Button(
-                            onClick = { showDeletePanel = true },
+                            onClick = {
+                                alertCloseSession = true
+                            },
                             shape = RoundedCornerShape(4.dp),
                             border = BorderStroke(3.dp, firstColor),
                             colors = ButtonDefaults.buttonColors(
@@ -439,13 +456,25 @@ fun Gallery(navController: NavController, userId: String, galleryController: Gal
                                 .padding(top = 15.dp)
                         )
                         {
+                            Text(text = "Cerrar sesion")
+                        }
+                        // Boton para eliminar cuenta ///////////////////////////////////////////////////////////////////////////
+                        Spacer(modifier = Modifier.weight(1f)) // Push the button to the bottom
+                        Button(
+                            onClick = { showDeletePanel = true },
+                            shape = RoundedCornerShape(4.dp),
+                            border = BorderStroke(3.dp, firstColor),
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = Color.Transparent,
+                                contentColor = firstColor
+                            ),
+                            modifier = Modifier
+                                .width(290.dp)
+                                .padding(top = 15.dp)
+                        ) {
                             Text(text = "Eliminar Cuenta")
                         }
-                        Spacer(modifier = Modifier.height(8.dp))
-                        // Mostrar la lista de ingresos si showIncomes es true/////////////////
-                        if (showIncomes) {
-                            IncomeList(galleryController, incomes = listaDeIngresos)
-                        }
+                        Spacer(modifier = Modifier.height(50.dp))
                     }
                 }
             )
@@ -748,7 +777,8 @@ fun Gallery(navController: NavController, userId: String, galleryController: Gal
                                         .width(290.dp)
                                         .padding(top = 15.dp)
                                         .border(
-                                            BorderStroke(3.dp,
+                                            BorderStroke(
+                                                3.dp,
                                                 com.example.cypher_vault.view.resources.firstColor
                                             ),
                                             shape = RoundedCornerShape(4.dp)
@@ -822,7 +852,8 @@ fun Gallery(navController: NavController, userId: String, galleryController: Gal
                                         .width(290.dp)
                                         .padding(top = 15.dp)
                                         .border(
-                                            BorderStroke(3.dp,
+                                            BorderStroke(
+                                                3.dp,
                                                 com.example.cypher_vault.view.resources.firstColor
                                             ),
                                             shape = RoundedCornerShape(4.dp)
@@ -882,7 +913,8 @@ fun Gallery(navController: NavController, userId: String, galleryController: Gal
                                             focusedIndicatorColor = com.example.cypher_vault.view.resources.firstColor,
                                             unfocusedIndicatorColor = com.example.cypher_vault.view.resources.firstColor,
                                         ),
-                                        modifier = Modifier.weight(1f)
+                                        modifier = Modifier
+                                            .weight(1f)
                                             .onFocusChanged { focusState ->
                                                 if (focusState.isFocused) {
                                                     isContentVisiblpasswordState = true
@@ -1006,7 +1038,8 @@ fun Gallery(navController: NavController, userId: String, galleryController: Gal
                                         .width(290.dp)
                                         .padding(top = 15.dp)
                                         .border(
-                                            BorderStroke(3.dp,
+                                            BorderStroke(
+                                                3.dp,
                                                 com.example.cypher_vault.view.resources.firstColor
                                             ),
                                             shape = RoundedCornerShape(4.dp)
@@ -1136,6 +1169,27 @@ fun Gallery(navController: NavController, userId: String, galleryController: Gal
                         }
                     }
                 }
+                /// Alerta de cerrar sesion /////////////////////////////////////////////////////////////
+                ///////////////////////////////////////////////////////////////////////////////////////////
+                if (alertCloseSession) {
+                    AlertDialog(
+                        onDismissRequest = { /* Do nothing */ },
+                        title = { Text(text = "Confirmar salida") },
+                        text = { Text(text = "¿Estás seguro de que quieres salir?") },
+                        confirmButton = {
+                            TextButton(onClick = { galleryController.closeSession(context) }) {
+                                Text(text = "Salir")
+                            }
+                        },
+                        dismissButton = {
+                            TextButton(onClick = {
+                                alertCloseSession = false
+                            }) {
+                                Text(text = "Cancelar")
+                            }
+                        }
+                    )
+                }
             }
         )
     }
@@ -1173,8 +1227,6 @@ fun LimitedTextBox(text: String, maxWidth: Dp) {
     Box(
         modifier = Modifier
             .width(maxWidth)
-
-
     ) {
         Text(
             text = text,

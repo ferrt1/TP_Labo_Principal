@@ -8,6 +8,7 @@ import android.os.Build
 import android.os.Environment
 import android.provider.MediaStore
 import androidx.annotation.RequiresApi
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Canvas
 import androidx.compose.ui.graphics.ImageBitmap
@@ -16,6 +17,7 @@ import androidx.compose.ui.graphics.Paint
 import androidx.compose.ui.graphics.asAndroidBitmap
 import androidx.compose.ui.graphics.asImageBitmap
 import com.example.cypher_vault.controller.data.DatabaseController
+import com.example.cypher_vault.controller.session.SessionController
 import kotlinx.coroutines.runBlocking
 import java.io.ByteArrayOutputStream
 import java.io.File
@@ -124,5 +126,10 @@ class GalleryManager {
     fun deleteAccount(userId: String): Boolean {
                 //TODO("Javi, Not yet implemented")
         return false
+    }
+
+
+    fun closeSession(context: Context) {
+        SessionController.logout(context)
     }
 }

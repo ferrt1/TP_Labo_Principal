@@ -2,12 +2,17 @@ package com.example.cypher_vault.controller.gallery
 
 
 import android.content.Context
+import android.content.Intent
 import android.graphics.Bitmap
 import android.os.Build
 import androidx.annotation.RequiresApi
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.platform.LocalContext
+import com.example.cypher_vault.MainActivity
 import com.example.cypher_vault.controller.data.DatabaseController
 import com.example.cypher_vault.controller.income.UserAccessController
 import com.example.cypher_vault.database.Images
@@ -86,6 +91,11 @@ class GalleryController() {
 
     fun deleteAccount(userId: String): Boolean {
         return galleryManager.deleteAccount(userId)
+    }
+
+    fun closeSession(context: Context): Unit {
+        galleryManager.closeSession(context)
+        return Unit
     }
 
 
