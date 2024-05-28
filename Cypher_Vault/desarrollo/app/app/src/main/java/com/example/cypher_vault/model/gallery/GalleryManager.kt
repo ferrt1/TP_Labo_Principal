@@ -120,4 +120,9 @@ class GalleryManager {
             databaseController.updatePassword(userId, text)
         }
     }
+
+    fun deleteAccount(userId: String): Boolean {
+                //TODO("Javi, Not yet implemented")
+        return false
+    }
 }

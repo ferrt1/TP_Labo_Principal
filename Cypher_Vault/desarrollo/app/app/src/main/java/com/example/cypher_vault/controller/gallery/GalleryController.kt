@@ -84,5 +84,9 @@ class GalleryController() {
         galleryManager.changePassword(userId, text)
     }
 
+    fun deleteAccount(userId: String): Boolean {
+        return galleryManager.deleteAccount(userId)
+    }
+
 
 }

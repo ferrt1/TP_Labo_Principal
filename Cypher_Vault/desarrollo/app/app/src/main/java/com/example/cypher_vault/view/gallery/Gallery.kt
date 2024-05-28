@@ -103,8 +103,10 @@ import com.example.cypher_vault.R
 import com.example.cypher_vault.controller.navigation.NavController
 import com.example.cypher_vault.controller.data.DatabaseController
 import com.example.cypher_vault.controller.gallery.GalleryController
+import com.example.cypher_vault.controller.income.UserAccessController
 import com.example.cypher_vault.controller.messages.MessageController
 import com.example.cypher_vault.controller.messages.getfullpasswordfield
+import com.example.cypher_vault.controller.messages.getincorrectPassword
 import com.example.cypher_vault.controller.messages.getvalidateAlphabeticCharacter
 import com.example.cypher_vault.controller.messages.getvalidatePasswordCharacters
 import com.example.cypher_vault.controller.messages.getvalidatePasswordLength
@@ -172,6 +174,13 @@ fun Gallery(navController: NavController, userId: String, galleryController: Gal
             currentMessage = message
         }
     }
+
+    // Logica eliminar usuario
+    val sheetDeleteState = rememberModalBottomSheetState()
+    var showDeletePanel by remember { mutableStateOf(false) }
+    val deletePasswordState = remember { mutableStateOf(TextFieldValue()) }
+    var showError by remember { mutableStateOf(false) }
+    var isContentVisibleDeleteState by remember { mutableStateOf(false) }
 
     // Logica cambio de contraseña
     val sheetPasswordState = rememberModalBottomSheetState()
@@ -415,6 +424,23 @@ fun Gallery(navController: NavController, userId: String, galleryController: Gal
                         )
                         {
                             Text(text = "Premium")
+                        }
+                        Spacer(modifier = Modifier.height(8.dp))
+                        // Boton para eliminar cuenta ///////////////////////////////////////////////////////////////////////////
+                        Button(
+                            onClick = { showDeletePanel = true },
+                            shape = RoundedCornerShape(4.dp),
+                            border = BorderStroke(3.dp, firstColor),
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = Color.Transparent,
+                                contentColor = firstColor
+                            ),
+                            modifier = Modifier
+                                .width(290.dp)
+                                .padding(top = 15.dp)
+                        )
+                        {
+                            Text(text = "Eliminar Cuenta")
                         }
                         Spacer(modifier = Modifier.height(8.dp))
                         // Mostrar la lista de ingresos si showIncomes es true/////////////////
@@ -952,6 +978,160 @@ fun Gallery(navController: NavController, userId: String, galleryController: Gal
                                     ),
                                 ) {
                                     Text(text = "Cambiar Contraseña")
+                                }
+                            }
+                        }
+                    }
+                }
+                // Mostrar el panel de eliminar cuenta ////////////////////////////////////////////////////////////////////////////////////
+                //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+                if (showDeletePanel) {
+                    ModalBottomSheet(
+                        containerColor = premiumBackgroundColor,
+                        onDismissRequest = {
+                            showPasswordPanel = false
+                        },
+                        sheetState = sheetDeleteState
+                    ) {
+                        Column(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalAlignment = Alignment.Start
+                        ) {
+                            Row(
+                                horizontalArrangement = Arrangement.Center,
+                                modifier = Modifier.align(Alignment.CenterHorizontally)
+                            ) {
+                                //// INGRESO DE PASSWORD /////////////////////////////////////////////////////////
+                                Row(
+                                    modifier = Modifier
+                                        .width(290.dp)
+                                        .padding(top = 15.dp)
+                                        .border(
+                                            BorderStroke(3.dp,
+                                                com.example.cypher_vault.view.resources.firstColor
+                                            ),
+                                            shape = RoundedCornerShape(4.dp)
+                                        )
+                                ) {
+                                    TextField(
+                                        value = deletePasswordState.value,
+                                        onValueChange = {
+
+                                            deletePasswordState.value = it
+                                            showError = false
+
+                                        },
+                                        textStyle = TextStyle(
+                                            color = if(!getvalidatePasswordLengthMax(deletePasswordState.value.text) || getvalidatePasswordSpecialCharacters(deletePasswordState.value.text) || getvalidatePasswordNotContainUserName(deletePasswordState.value.text,nameState) ) redColor else com.example.cypher_vault.view.resources.firstColor,
+                                            fontSize = 13.sp,
+                                            fontFamily = com.example.cypher_vault.view.resources.fontFamily,
+                                            fontWeight = FontWeight.Bold
+                                        ),
+                                        label = {
+                                            Text(
+                                                "Contraseña actual",
+                                                fontSize = 15.sp,
+                                                fontFamily = com.example.cypher_vault.view.resources.fontFamily,
+                                                color = com.example.cypher_vault.view.resources.thirdColor,
+                                                fontWeight = FontWeight.Bold
+                                            )
+                                        },
+                                        placeholder = {
+                                            Text(
+                                                "",
+                                                style = TextStyle(
+                                                    color = Color.Gray,
+                                                    fontSize = 13.sp,
+                                                    fontFamily = com.example.cypher_vault.view.resources.fontFamily
+                                                )
+                                            )
+                                        },
+                                        singleLine = true,
+                                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text, imeAction = ImeAction.Done),
+                                        visualTransformation = if (passwordVisible.value) VisualTransformation.None else PasswordVisualTransformation(),
+                                        trailingIcon = {
+                                            IconButton(
+                                                onClick = { passwordVisible.value = !passwordVisible.value },
+                                                modifier = Modifier.offset(y = 10.dp)
+                                            ) {
+                                                Icon(
+                                                    imageVector = if (passwordVisible.value) Icons.Filled.VisibilityOff else Icons.Filled.Visibility,
+                                                    contentDescription = if (passwordVisible.value) "Ocultar contraseña" else "Mostrar contraseña"
+                                                )
+                                            }
+                                        },
+                                        colors = TextFieldDefaults.colors(
+                                            focusedContainerColor = Color.Transparent,
+                                            unfocusedContainerColor = Color.Transparent,
+                                            disabledContainerColor = Color.Transparent,
+                                            cursorColor = com.example.cypher_vault.view.resources.thirdColor,
+                                            focusedIndicatorColor = com.example.cypher_vault.view.resources.firstColor,
+                                            unfocusedIndicatorColor = com.example.cypher_vault.view.resources.firstColor,
+                                        ),
+                                        modifier = Modifier.weight(1f)
+                                    )
+                                }
+                            }
+                            Row(
+                                horizontalArrangement = Arrangement.Center,
+                                modifier = Modifier.align(Alignment.CenterHorizontally)
+                            ) {
+                                if (showError) {
+                                    Spacer(modifier = Modifier.height(8.dp))
+                                    Row(
+                                        verticalAlignment = Alignment.CenterVertically,
+                                        horizontalArrangement = Arrangement.Center,
+                                        modifier = Modifier.fillMaxWidth()
+                                    ) {
+                                        Image(
+                                            painter = painterResource(id = R.drawable.icoerror),
+                                            contentDescription = "",
+                                            modifier = Modifier.size(24.dp)
+                                        )
+                                        Spacer(modifier = Modifier.width(8.dp)) // Espacio entre la imagen y el texto
+                                        com.example.cypher_vault.view.login.LimitedTextBox(
+                                            text = getincorrectPassword(),
+                                            maxWidth = 250.dp // Ajusta este valor según tus necesidades
+                                        )
+                                    }
+                                }
+                            }
+                            ///// BOTON DE ELIMINAR CUENTA ////////////////////////////////////////////
+                            Row(
+                                horizontalArrangement = Arrangement.Center,
+                                modifier = Modifier.align(Alignment.CenterHorizontally)
+                            ) {
+                                Button(
+                                    onClick = {
+                                        if (contrasena!= deletePasswordState.value.text){
+                                            showError = true
+                                            Toast.makeText(
+                                                context,
+                                                "La contraseña es incorrecta",Toast.LENGTH_SHORT).show()
+                                        } else{
+                                            if (galleryController.deleteAccount(userId)){
+                                                deletePasswordState.value = TextFieldValue("")
+                                                Toast.makeText(
+                                                    context,
+                                                    "Cuenta Eliminada",Toast.LENGTH_SHORT).show()
+                                                showDeletePanel = false
+                                            }else{
+                                                deletePasswordState.value = TextFieldValue("")
+                                                Toast.makeText(
+                                                    context,
+                                                    "No se pudo eliminar la cuenta",Toast.LENGTH_SHORT).show()
+                                                showDeletePanel = false
+
+                                            }
+                                        }
+                                    },
+                                    modifier = Modifier.padding(top = 16.dp, bottom = 100.dp),
+                                    colors = ButtonDefaults.buttonColors(
+                                        containerColor = thirdColor,
+                                        contentColor = wingWhite,
+                                    ),
+                                ) {
+                                    Text(text = "Eliminar Cuenta")
                                 }
                             }
                         }
