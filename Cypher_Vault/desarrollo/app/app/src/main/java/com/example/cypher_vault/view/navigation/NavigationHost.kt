@@ -2,6 +2,8 @@ package com.example.cypher_vault.view.navigation
 
 
 import android.os.Build
+import android.util.Log
+import androidx.activity.compose.BackHandler
 import androidx.annotation.RequiresApi
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -28,10 +30,17 @@ fun NavigationHost() {
 
     NavHost(navController, startDestination = "register") {
         composable("register") {
+            BackHandler(true) {
+                // Or do nothing
+                Log.i("LOG_TAG", "Clicked back")
+            }
             InitialScreen(navigationController)
         }
-
         composable("camera/{userId}") { backStackEntry ->
+//            BackHandler(true) {
+//                // Or do nothing
+//                Log.i("LOG_TAG", "Clicked back")
+//            }
             val userId = backStackEntry.arguments?.getString("userId")
             if (userId != null) {
                 RegistrationCameraScreen(navigationController, userId)
@@ -39,6 +48,10 @@ fun NavigationHost() {
             }
         }
         composable("cameralogin/{userId}") { backStackEntry ->
+//            BackHandler(true) {
+//                // Or do nothing
+//                Log.i("LOG_TAG", "Clicked back")
+//            }
             val userId = backStackEntry.arguments?.getString("userId")
             if (userId != null) {
                 LoginCamera(navigationController, userId)
@@ -46,8 +59,11 @@ fun NavigationHost() {
 
             }
         }
-
         composable("confirmation/{userId}") {backStackEntry ->
+            BackHandler(true) {
+                // Or do nothing
+                Log.i("LOG_TAG", "Clicked back")
+            }
             val userId = backStackEntry.arguments?.getString("userId")
             if (userId != null) {
                 ConfirmationScreen(navigationController, userId)
@@ -55,6 +71,10 @@ fun NavigationHost() {
             }
         }
         composable("authenticate/{userId}") {backStackEntry ->
+            BackHandler(true) {
+                // Or do nothing
+                Log.i("LOG_TAG", "Clicked back")
+            }
             val userId = backStackEntry.arguments?.getString("userId")
             if (userId != null) {
                 ConfirmationLoginScreen(navigationController, userId)
@@ -63,6 +83,10 @@ fun NavigationHost() {
             }
         }
         composable("gallery/{userId}") {backStackEntry ->
+            BackHandler(true) {
+                // Or do nothing
+                Log.i("LOG_TAG", "Clicked back")
+            }
             val userId = backStackEntry.arguments?.getString("userId")
             if (userId != null) {
                 Gallery(navigationController, userId, galleryController)
@@ -71,6 +95,10 @@ fun NavigationHost() {
             }
         }
         composable("profile/{userId}") {backStackEntry ->
+            BackHandler(true) {
+                // Or do nothing
+                Log.i("LOG_TAG", "Clicked back")
+            }
             val userId = backStackEntry.arguments?.getString("userId")
             if (userId != null) {
                 UserProfile(navigationController, userId)
@@ -78,11 +106,12 @@ fun NavigationHost() {
                 // Manejar el caso en que el userId no se pudo recuperar
             }
         }
-
         composable("list") {
+            BackHandler(true) {
+                // Or do nothing
+                Log.i("LOG_TAG", "Clicked back")
+            }
             NavigationLogin(navigationController)
         }
-
-
     }
 }
