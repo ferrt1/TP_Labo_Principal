@@ -2,23 +2,16 @@ package com.example.cypher_vault.controller.gallery
 
 
 import android.content.Context
-import android.content.Intent
 import android.graphics.Bitmap
 import android.os.Build
 import androidx.annotation.RequiresApi
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.graphics.ImageBitmap
-import androidx.compose.ui.platform.LocalContext
-import com.example.cypher_vault.MainActivity
-import com.example.cypher_vault.controller.data.DatabaseController
 import com.example.cypher_vault.controller.income.UserAccessController
+import com.example.cypher_vault.controller.navigation.NavController
 import com.example.cypher_vault.database.Images
 import com.example.cypher_vault.database.UserIncome
-import com.example.cypher_vault.database.UserPremium
-import com.example.cypher_vault.database.UserPremiumDao
 import com.example.cypher_vault.model.dbmanager.DatabaseManager
 import com.example.cypher_vault.model.gallery.GalleryManager
 import com.example.cypher_vault.model.income.UserAccessManager
@@ -26,7 +19,6 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
-import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 
 
@@ -89,9 +81,8 @@ class GalleryController() {
         galleryManager.changePassword(userId, text)
     }
 
-
-    fun closeSession(context: Context): Unit {
-        galleryManager.closeSession(context)
+    fun closeSession(context: Context, navController: NavController): Unit {
+        galleryManager.closeSession(context,navController)
         return Unit
     }
 

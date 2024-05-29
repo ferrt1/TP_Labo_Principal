@@ -1,6 +1,8 @@
 package com.example.cypher_vault.view.navigation
 
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.navigation.compose.NavHost
@@ -17,6 +19,7 @@ import com.example.cypher_vault.view.registration.RegistrationCameraScreen
 import com.example.cypher_vault.controller.gallery.GalleryController
 import com.example.cypher_vault.view.gallery.UserProfile
 
+@RequiresApi(Build.VERSION_CODES.Q)
 @Composable
 fun NavigationHost() {
     val navController = rememberNavController()
