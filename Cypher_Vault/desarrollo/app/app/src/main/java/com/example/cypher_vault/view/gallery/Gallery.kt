@@ -37,9 +37,7 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowBackIosNew
-import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.Person
-import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.AlertDialog
@@ -57,7 +55,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.ModalDrawerSheet
 import androidx.compose.material3.ModalNavigationDrawer
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -69,12 +66,10 @@ import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -105,7 +100,6 @@ import com.example.cypher_vault.R
 import com.example.cypher_vault.controller.navigation.NavController
 import com.example.cypher_vault.controller.data.DatabaseController
 import com.example.cypher_vault.controller.gallery.GalleryController
-import com.example.cypher_vault.controller.income.UserAccessController
 import com.example.cypher_vault.controller.messages.MessageController
 import com.example.cypher_vault.controller.messages.getfullpasswordfield
 import com.example.cypher_vault.controller.messages.getincorrectPassword
@@ -995,6 +989,7 @@ fun Gallery(navController: NavController, userId: String, galleryController: Gal
                                         else{
                                             galleryController.changePassword(userId, passwordState.value.text)
                                             showPasswordPanel = false
+                                            contrasena = passwordState.value.text
                                             passwordState.value = TextFieldValue("")
                                             actualPasswordState.value = TextFieldValue("")
                                             Toast.makeText(
@@ -1013,6 +1008,27 @@ fun Gallery(navController: NavController, userId: String, galleryController: Gal
                             }
                         }
                     }
+                }
+                /// Alerta de cerrar sesion /////////////////////////////////////////////////////////////
+                ///////////////////////////////////////////////////////////////////////////////////////////
+                if (alertCloseSession) {
+                    AlertDialog(
+                        onDismissRequest = { /* Do nothing */ },
+                        title = { Text(text = "Confirmar salida") },
+                        text = { Text(text = "¿Estás seguro de que quieres salir?") },
+                        confirmButton = {
+                            TextButton(onClick = { galleryController.closeSession(context,navController) }) {
+                                Text(text = "Salir")
+                            }
+                        },
+                        dismissButton = {
+                            TextButton(onClick = {
+                                alertCloseSession = false
+                            }) {
+                                Text(text = "Cancelar")
+                            }
+                        }
+                    )
                 }
                 // Mostrar el panel de eliminar cuenta ////////////////////////////////////////////////////////////////////////////////////
                 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1174,27 +1190,6 @@ fun Gallery(navController: NavController, userId: String, galleryController: Gal
                         }
                     }
                 }
-                /// Alerta de cerrar sesion /////////////////////////////////////////////////////////////
-                ///////////////////////////////////////////////////////////////////////////////////////////
-                if (alertCloseSession) {
-                    AlertDialog(
-                        onDismissRequest = { /* Do nothing */ },
-                        title = { Text(text = "Confirmar salida") },
-                        text = { Text(text = "¿Estás seguro de que quieres salir?") },
-                        confirmButton = {
-                            TextButton(onClick = { galleryController.closeSession(context) }) {
-                                Text(text = "Salir")
-                            }
-                        },
-                        dismissButton = {
-                            TextButton(onClick = {
-                                alertCloseSession = false
-                            }) {
-                                Text(text = "Cancelar")
-                            }
-                        }
-                    )
-                }
             }
         )
     }
@@ -1242,5 +1237,3 @@ fun LimitedTextBox(text: String, maxWidth: Dp) {
         )
     }
 }
-
-

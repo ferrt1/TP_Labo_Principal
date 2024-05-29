@@ -8,20 +8,13 @@ import android.os.Build
 import android.os.Environment
 import android.provider.MediaStore
 import androidx.annotation.RequiresApi
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.graphics.Canvas
 import androidx.compose.ui.graphics.ImageBitmap
-import androidx.compose.ui.graphics.ImageBitmapConfig
-import androidx.compose.ui.graphics.Paint
 import androidx.compose.ui.graphics.asAndroidBitmap
 import androidx.compose.ui.graphics.asImageBitmap
 import com.example.cypher_vault.controller.data.DatabaseController
+import com.example.cypher_vault.controller.navigation.NavController
 import com.example.cypher_vault.controller.session.SessionController
 import kotlinx.coroutines.runBlocking
-import java.io.ByteArrayOutputStream
-import java.io.File
-import java.io.FileOutputStream
 import java.io.OutputStream
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -123,14 +116,12 @@ class GalleryManager {
         }
     }
 
-
     fun deleteAccount(userId: String, callback: (Boolean) -> Unit) {
         databaseController.deleteImageGalleryAndUser(userId, callback)
     }
 
-
-    fun closeSession(context: Context) {
-        SessionController.logout(context)
+    fun closeSession(context: Context, navController: NavController) {
+        SessionController.logout(context,navController)
     }
 
 }

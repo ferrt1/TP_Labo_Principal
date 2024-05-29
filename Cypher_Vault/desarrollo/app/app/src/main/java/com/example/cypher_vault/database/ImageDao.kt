@@ -1,8 +1,11 @@
 package com.example.cypher_vault.database
 
 import androidx.room.Dao
+import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.Query
+import androidx.room.Update
+
 @Dao
 interface ImageDao {
     @Insert
@@ -14,4 +17,14 @@ interface ImageDao {
     // Otros métodos según sea necesario
     @Query("DELETE FROM images WHERE user_id = :userId")
     fun deleteImagesForUser(userId: String)
+
+    @Query("SELECT * FROM Images WHERE id = :imageId")
+    fun getImageById(imageId: Long): Images?
+
+    @Update
+    fun updateImage(image: Images)
+
+    @Delete
+    fun deleteImage(image: Images)
+
 }

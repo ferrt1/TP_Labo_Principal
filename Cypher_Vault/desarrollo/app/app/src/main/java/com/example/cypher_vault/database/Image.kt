@@ -15,7 +15,7 @@ import androidx.room.PrimaryKey
 )
 data class Images(
     @PrimaryKey(autoGenerate = true) val id: Long = 0,
-    val imageData: ByteArray,
+    var imageData: ByteArray,
     val user_id: String
 ) {
     override fun equals(other: Any?): Boolean {

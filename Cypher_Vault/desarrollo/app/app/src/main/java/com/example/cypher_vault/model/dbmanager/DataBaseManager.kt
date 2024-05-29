@@ -4,6 +4,7 @@ import android.content.Context
 import android.util.Log
 import androidx.room.Room
 import com.example.cypher_vault.database.AppDatabase
+import com.example.cypher_vault.database.ImageDao
 import com.example.cypher_vault.database.Images
 import com.example.cypher_vault.database.ImagesLogin
 import com.example.cypher_vault.database.ImagesRegister
@@ -12,6 +13,8 @@ import com.example.cypher_vault.database.UserIncome
 import com.example.cypher_vault.database.UserPremium
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import java.security.SecureRandom
+import kotlin.math.log
 
 
 object DatabaseManager {
@@ -122,8 +125,36 @@ object DatabaseManager {
 
     suspend fun deleteImgUser(uid: String) {
         withContext(Dispatchers.IO) {
-            database.imageDao().deleteImagesForUser(uid)
+            val images = database.imageDao().getImagesForUser(uid)
+            Log.d("dato", "esta es la info de la images: $images")
+            images?.forEach { image ->
+                securelyDeleteImage(image, database.imageDao())
+            }
         }
     }
+
+    // Hacer que securelyDeleteImage sea una función de suspensión
+    suspend fun securelyDeleteImage(image: Images, imageDao: ImageDao) {
+        // Si la imagen existe
+        if (image != null) {
+            // Número de sobrescrituras
+            val overwriteCycles = 3
+            val random = SecureRandom()
+
+            for (i in 0 until overwriteCycles) {
+                // Crear un byte array aleatorio del mismo tamaño que imageData
+                val randomData = ByteArray(image.imageData.size)
+                random.nextBytes(randomData)
+
+                // Actualizar la imagen con los datos aleatorios
+                image.imageData = randomData
+                imageDao.updateImage(image)
+            }
+
+            // Finalmente, borrar la imagen
+            imageDao.deleteImage(image)
+        }
+    }
+
 
 }
