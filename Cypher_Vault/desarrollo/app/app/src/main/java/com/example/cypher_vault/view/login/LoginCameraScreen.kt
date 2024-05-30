@@ -74,8 +74,7 @@ fun LoginCamera(navController: NavController, userId: String) {
 
     val eyesOpens = remember { mutableIntStateOf(3) }
 
-    val silhouetteError = painterResource(id = R.drawable.siluetaerror)
-    val silhouette = painterResource(id = R.drawable.siluetabien)
+    val eyesOpenedAfterBlink = remember { mutableStateOf(false) }
 
     imageAnalysis.setAnalyzer(ContextCompat.getMainExecutor(context)) { imageProxy ->
         val mediaImage = imageProxy.image
@@ -125,19 +124,40 @@ fun LoginCamera(navController: NavController, userId: String) {
                             faceOverlayView.updateInside()
                             faceOverlayView.invalidate()
 
-                            // Mostrar solo el mensaje de acercarse/alejarse si está presente
+                            Log.d("faceOverlay", "${faceOverlayView.isBoundingBoxInsideTarget()}")
+
                             if (faceOverlayView.message == null) {
-                                if (hasLeftEye == true && hasRightEye == true && hasNose == true && hasMouth && faceOverlayView.isBoundingBoxInsideTarget()) {
+                                if (hasLeftEye == true && hasRightEye == true && hasNose == true && hasMouth) {
                                     when (currentOrientation.value) {
                                         "smile" -> if (smilingProb > 0.7f) {
-                                            currentOrientation.value = "eyes"
+                                            currentOrientation.value = "blink1"
                                         }
 
-                                        "eyes" -> if (leftEyeOpenProbability < 0.5f && rightEyeOpenProbability < 0.5f) {
-                                            if (eyesOpens.intValue > 0) {
-                                                currentOrientation.value = "front"
-                                            } else {
-                                                eyesOpens.intValue--
+                                        "blink1" -> {
+                                            if (leftEyeOpenProbability < 0.5f && rightEyeOpenProbability < 0.5f) {
+                                                if (eyesOpens.intValue == 2 && eyesOpenedAfterBlink.value) {
+                                                    currentOrientation.value = "blink2"
+                                                    eyesOpenedAfterBlink.value = false
+                                                } else {
+                                                    eyesOpens.intValue = 2
+                                                    eyesOpenedAfterBlink.value = false
+                                                }
+                                            } else if (leftEyeOpenProbability > 0.5f && rightEyeOpenProbability > 0.5f) {
+                                                eyesOpenedAfterBlink.value = true
+                                            }
+                                        }
+
+                                        "blink2" -> {
+                                            if (leftEyeOpenProbability < 0.5f && rightEyeOpenProbability < 0.5f) {
+                                                if (eyesOpens.intValue == 1 && eyesOpenedAfterBlink.value) {
+                                                    currentOrientation.value = "front"
+                                                    eyesOpenedAfterBlink.value = false
+                                                } else {
+                                                    eyesOpens.intValue = 1
+                                                    eyesOpenedAfterBlink.value = false
+                                                }
+                                            } else if (leftEyeOpenProbability > 0.5f && rightEyeOpenProbability > 0.5f) {
+                                                eyesOpenedAfterBlink.value = true
                                             }
                                         }
 
@@ -146,7 +166,10 @@ fun LoginCamera(navController: NavController, userId: String) {
                                                 timer,
                                                 timerStarted,
                                                 timerFinished,
-                                                coroutineScope
+                                                coroutineScope,
+                                                shouldResetTimer = {
+                                                    !faceOverlayView.isBoundingBoxInsideTarget()
+                                                }
                                             )
                                         }
                                     }

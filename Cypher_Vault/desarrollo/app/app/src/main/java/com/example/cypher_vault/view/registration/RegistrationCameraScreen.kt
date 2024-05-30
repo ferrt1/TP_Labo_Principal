@@ -155,7 +155,10 @@ fun RegistrationCameraScreen(navController: NavController, userId: String) {
                                                 timer,
                                                 timerStarted,
                                                 timerFinished,
-                                                coroutineScope
+                                                coroutineScope,
+                                                shouldResetTimer = {
+                                                    !faceOverlayView.isBoundingBoxInsideTarget()
+                                                }
                                             )
                                         }
                                     }

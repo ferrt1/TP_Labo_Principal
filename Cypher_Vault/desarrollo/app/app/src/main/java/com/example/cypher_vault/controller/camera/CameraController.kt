@@ -35,15 +35,20 @@ class CameraController(
         timer: MutableIntState,
         timerStarted: MutableState<Boolean>,
         timerFinished: MutableState<Boolean>,
-        coroutineScope: CoroutineScope
+        coroutineScope: CoroutineScope,
+        shouldResetTimer: () -> Boolean
     ) {
-        if (!timerStarted.value) {
+        if (!timerStarted.value || shouldResetTimer()) {
             timerStarted.value = true
             timer.intValue = 3
             coroutineScope.launch {
                 while (timer.intValue > 0) {
                     delay(1000)
-                    timer.intValue--
+                    if (shouldResetTimer()) {
+                        timer.intValue = 3
+                    } else {
+                        timer.intValue--
+                    }
                 }
                 timerFinished.value = true
             }

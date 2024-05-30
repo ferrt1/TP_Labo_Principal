@@ -39,17 +39,35 @@ class FaceOverlayView(context: Context) : View(context) {
                     drawTextCentered(
                         canvas,
                         "Por favor sonría",
-                        canvas.width / 2f,
-                        canvas.height * 0.9f
+                        width / 2f,
+                        height * 0.9f
                     )
                 }
 
-                "eyes" -> {
+                "blink1" -> {
                     drawTextCentered(
                         canvas,
                         "Por favor, pestañee. Restantes $eyesOpens",
-                        canvas.width / 2f,
-                        canvas.height * 0.9f
+                        width / 2f,
+                        height * 0.9f
+                    )
+                }
+
+                "blink2" -> {
+                    drawTextCentered(
+                        canvas,
+                        "Por favor, pestañee. Restantes $eyesOpens",
+                        width / 2f,
+                        height * 0.9f
+                    )
+                }
+
+                "blink3" -> {
+                    drawTextCentered(
+                        canvas,
+                        "Por favor, pestañee. Restantes $eyesOpens",
+                        width / 2f,
+                        height * 0.9f
                     )
                 }
 
@@ -58,14 +76,14 @@ class FaceOverlayView(context: Context) : View(context) {
                         drawTextCentered(
                             canvas,
                             "$timerValue",
-                            canvas.width / 2f,
-                            canvas.height * 0.85f
+                            width / 2f,
+                            height * 0.85f
                         )
                         drawTextCentered(
                             canvas,
                             "Mire hacia la cámara.",
-                            canvas.width / 2f,
-                            canvas.height * 0.9f
+                            width / 2f,
+                            height * 0.9f
                         )
                     }
                 }
@@ -74,10 +92,10 @@ class FaceOverlayView(context: Context) : View(context) {
 
 
     // Define el tamaño mínimo y máximo del targetBox
-        val minBoxWidth = width * 5 / 8 + 100  // Aumento del ancho del minTargetBox
-        val minBoxHeight = height * 3 / 8 + 250  // Aumento de la altura del minTargetBox
-        val maxBoxWidth = width * 3 / 4 + 100  // Aumento del ancho del maxTargetBox
-        val maxBoxHeight = height * 1 / 2 + 250  // Aumento de la altura del maxTargetBox
+        val minBoxWidth = width * 5 / 8 + 100
+        val minBoxHeight = height * 3 / 8 + 250
+        val maxBoxWidth = width * 3 / 4 + 100
+        val maxBoxHeight = height * 1 / 2 + 250
 
         // Calcula las posiciones del targetBox mínimo y máximo
         minTargetBox = Rect(
@@ -159,12 +177,12 @@ private fun drawTextCentered(canvas: Canvas, text: String, x: Float, y: Float) {
 }
 
 // Methods to update state
-fun updateState(orientation: String, timer: Int = 0, eyesOpen: Int = 0) {
-    currentOrientation = orientation
-    timerValue = timer
-    eyesOpens = eyesOpen
-    invalidate()
-}
+    fun updateState(orientation: String, timer: Int = 0, eyesOpen: Int = 0) {
+        currentOrientation = orientation
+        timerValue = timer
+        eyesOpens = eyesOpen
+        invalidate()
+    }
 
     fun isBoundingBoxInsideTarget(): Boolean {
         val transformedBoundingBox = boundingBox?.let { transformBoundingBox(it) }
@@ -203,4 +221,8 @@ fun updateState(orientation: String, timer: Int = 0, eyesOpen: Int = 0) {
         }
         invalidate()
     }
+
+
+
+
 }
