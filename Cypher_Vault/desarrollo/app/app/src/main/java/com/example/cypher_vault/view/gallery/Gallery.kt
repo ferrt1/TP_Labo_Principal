@@ -32,6 +32,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
@@ -73,6 +74,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asAndroidBitmap
@@ -120,7 +122,9 @@ import com.example.cypher_vault.view.registration.LimitedTextBox
 import com.example.cypher_vault.view.registration.findAncestorActivity
 import com.example.cypher_vault.view.resources.redColor
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.io.ByteArrayOutputStream
 
 //Variables de entorno/////////////////////////////
@@ -231,7 +235,15 @@ fun Gallery(navController: NavController, userId: String, galleryController: Gal
         email = usuarioTemp?.email.toString()
         contrasena = usuarioTemp?.password.toString()
     }
-
+    var userImage by remember { mutableStateOf<ByteArray?>(null) }
+    LaunchedEffect(key1 = userId) {
+        withContext(Dispatchers.IO) {
+            val userImageList = dbc.getImageRegistersForUser(userId)
+            if (userImageList.isNotEmpty()) {
+                userImage = userImageList.first().imageData
+            }
+        }
+    }
     //Acceso a la galeria/imagenes del celular///////////////////////
     if (ContextCompat.checkSelfPermission(
             context,
@@ -342,27 +354,22 @@ fun Gallery(navController: NavController, userId: String, galleryController: Gal
                                         onTextLayout = { /* No se necesita hacer nada aquí */ }
                                     )
                                 }
+                                Spacer(modifier = Modifier.height(20.dp))
                                 Row(
                                     horizontalArrangement = Arrangement.Absolute.Center
                                 ) {
+
                                     Box(
                                         modifier = Modifier
                                             .height(height = 100.dp)
                                             .fillMaxSize(),
                                         contentAlignment = Alignment.Center
                                     ) {
-
                                         IconButton(
                                             onClick = { /* Acción de la imagen */ },
-                                            modifier = Modifier
-                                                .size(100.dp)
+                                            modifier = Modifier.size(100.dp)
                                         ) {
-                                            Icon(
-                                                modifier = Modifier.fillMaxSize(),
-                                                tint = firstColor,
-                                                imageVector = Icons.Filled.Person,
-                                                contentDescription = "Perfil de Usuario"
-                                            )
+                                            CircularImage(byteArray = userImage)
                                         }
                                     }
                                 }
@@ -555,15 +562,11 @@ fun Gallery(navController: NavController, userId: String, galleryController: Gal
                         }
                     },
                     actions = {
+                        Spacer(modifier = Modifier.height(20.dp))
                         IconButton(onClick = { abrirPanel(scope, drawerState) }) {
-                            Icon(
-                                modifier = Modifier
-                                    .height(100.dp)
-                                    .width(30.dp),
-                                tint = firstColor,
-                                imageVector = Icons.Filled.Person,
-                                contentDescription = "Perfil de Usuario"
-                            )
+                            CircularImage(byteArray = userImage,  modifier = Modifier
+                                .height(100.dp)
+                                .width(100.dp))
                         }
                     },
                     scrollBehavior = scrollBehavior,
@@ -1235,4 +1238,36 @@ fun LimitedTextBox(text: String, maxWidth: Dp) {
             fontWeight = FontWeight.Bold
         )
     }
+}
+
+// Imagen circular ///////////////////////////////////////////////////////////////////////////////////
+@Composable
+fun CircularImage(byteArray: ByteArray?, modifier: Modifier = Modifier) {
+    val bitmap : Bitmap? = byteArrayToBitmap(byteArray)
+    Log.d("galeria", "CircularImage: $bitmap")
+    if (bitmap != null) {
+        Spacer(modifier = Modifier.height(8.dp))
+        Image(
+            bitmap = bitmap.asImageBitmap(),
+            contentDescription = "User Profile Image",
+            modifier = modifier
+                .size(100.dp)
+                .clip(CircleShape)
+        )
+    }else{
+        Icon(
+            modifier = Modifier.fillMaxSize(),
+            tint = firstColor,
+            imageVector = Icons.Filled.Person,
+            contentDescription = "Perfil de Usuario"
+        )
+    }
+}
+
+// Funcion de ByteArray a bitmap ////////////////////////////////////////////////////////////////////////
+fun byteArrayToBitmap(byteArray: ByteArray?): Bitmap? {
+    if (byteArray != null) {
+        return BitmapFactory.decodeByteArray(byteArray, 0, byteArray.size)
+    }
+    return null
 }

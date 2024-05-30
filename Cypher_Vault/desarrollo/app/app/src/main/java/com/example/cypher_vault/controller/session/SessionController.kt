@@ -8,7 +8,8 @@ import com.example.cypher_vault.controller.navigation.NavController
 object SessionController {
 
     fun logout(context: Context, navController: NavController) {
-        restartApplication(context)
+        navController.navigateToListLogin()
+        //restartApplication(context)
     }
 
     private fun restartApplication(context: Context) {
