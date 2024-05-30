@@ -78,18 +78,24 @@ class CameraController(
                     // Convierte los bytes de la imagen en un Bitmap
                     val imgBitmap = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.size)
 
+                    // Rota el Bitmap
                     val rotatedBitmap = rotateBitmap(imgBitmap, -90f)
 
+                    // Convierte el Bitmap rotado a escala de grises
+                    val grayscaleBitmap = convertToGrayscale(rotatedBitmap)
+
+                    val reductionAmount = 200
+
                     val boundingBoxInImageCoordinates = Rect(
-                        faceOverlayView.boundingBox!!.left * imgBitmap.width / faceOverlayView.imageWidth,
+                        faceOverlayView.boundingBox!!.left * imgBitmap.width / faceOverlayView.imageWidth + reductionAmount,
                         faceOverlayView.boundingBox!!.top * imgBitmap.height / faceOverlayView.imageHeight,
-                        faceOverlayView.boundingBox!!.right * imgBitmap.width / faceOverlayView.imageWidth,
+                        faceOverlayView.boundingBox!!.right * imgBitmap.width / faceOverlayView.imageWidth - reductionAmount,
                         faceOverlayView.boundingBox!!.bottom * imgBitmap.height / faceOverlayView.imageHeight
                     )
 
                     // Recorta el Bitmap para que tenga el mismo tamaño que el boundingBox
                     val croppedBitmap = Bitmap.createBitmap(
-                        rotatedBitmap,
+                        grayscaleBitmap,
                         boundingBoxInImageCoordinates.left,
                         boundingBoxInImageCoordinates.top,
                         boundingBoxInImageCoordinates.width(),
@@ -154,11 +160,26 @@ class CameraController(
                     }
                 }
 
-
                 override fun onError(exception: ImageCaptureException) {
                     Log.d("Imagen", "entro aca y tiro error$exception")
                 }
             })
+    }
+
+    fun convertToGrayscale(source: Bitmap): Bitmap {
+        val width = source.width
+        val height = source.height
+        val grayscaleBitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
+
+        val canvas = Canvas(grayscaleBitmap)
+        val paint = android.graphics.Paint()
+        val colorMatrix = android.graphics.ColorMatrix()
+        colorMatrix.setSaturation(0f)
+        val colorMatrixFilter = android.graphics.ColorMatrixColorFilter(colorMatrix)
+        paint.colorFilter = colorMatrixFilter
+        canvas.drawBitmap(source, 0f, 0f, paint)
+
+        return grayscaleBitmap
     }
 
 

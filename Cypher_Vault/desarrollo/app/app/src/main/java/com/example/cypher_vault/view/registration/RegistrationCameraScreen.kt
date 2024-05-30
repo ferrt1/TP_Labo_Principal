@@ -82,9 +82,9 @@ fun RegistrationCameraScreen(navController: NavController, userId: String) {
     val faceOverlayView = remember { FaceOverlayView(context) }
 
     val eyesOpens = remember { mutableIntStateOf(3) }
+    val eyesOpenedAfterBlink = remember { mutableStateOf(false) }
 
-    val silhouetteError = painterResource(id = R.drawable.siluetaerror)
-    val silhouette = painterResource(id = R.drawable.siluetabien)
+
 
     imageAnalysis.setAnalyzer(ContextCompat.getMainExecutor(context)) { imageProxy ->
         val mediaImage = imageProxy.image
@@ -139,14 +139,34 @@ fun RegistrationCameraScreen(navController: NavController, userId: String) {
                                 if (hasLeftEye == true && hasRightEye == true && hasNose == true && hasMouth && faceOverlayView.isBoundingBoxInsideTarget()) {
                                     when (currentOrientation.value) {
                                         "smile" -> if (smilingProb > 0.7f) {
-                                            currentOrientation.value = "eyes"
+                                            currentOrientation.value = "blink1"
                                         }
 
-                                        "eyes" -> if (leftEyeOpenProbability < 0.5f && rightEyeOpenProbability < 0.5f) {
-                                            if (eyesOpens.intValue > 0) {
-                                                currentOrientation.value = "front"
-                                            } else {
-                                                eyesOpens.intValue--
+                                        "blink1" -> {
+                                            if (leftEyeOpenProbability < 0.5f && rightEyeOpenProbability < 0.5f) {
+                                                if (eyesOpens.intValue == 2 && eyesOpenedAfterBlink.value) {
+                                                    currentOrientation.value = "blink2"
+                                                    eyesOpenedAfterBlink.value = false
+                                                } else {
+                                                    eyesOpens.intValue = 2
+                                                    eyesOpenedAfterBlink.value = false
+                                                }
+                                            } else if (leftEyeOpenProbability > 0.5f && rightEyeOpenProbability > 0.5f) {
+                                                eyesOpenedAfterBlink.value = true
+                                            }
+                                        }
+
+                                        "blink2" -> {
+                                            if (leftEyeOpenProbability < 0.5f && rightEyeOpenProbability < 0.5f) {
+                                                if (eyesOpens.intValue == 1 && eyesOpenedAfterBlink.value) {
+                                                    currentOrientation.value = "front"
+                                                    eyesOpenedAfterBlink.value = false
+                                                } else {
+                                                    eyesOpens.intValue = 1
+                                                    eyesOpenedAfterBlink.value = false
+                                                }
+                                            } else if (leftEyeOpenProbability > 0.5f && rightEyeOpenProbability > 0.5f) {
+                                                eyesOpenedAfterBlink.value = true
                                             }
                                         }
 
@@ -162,6 +182,7 @@ fun RegistrationCameraScreen(navController: NavController, userId: String) {
                                             )
                                         }
                                     }
+
                                     faceOverlayView.updateState(currentOrientation.value, timer.intValue, eyesOpens.intValue)
                                     if (timer.intValue == 0 && !isImageCaptured.value) {
                                         cameraController.captureImage(

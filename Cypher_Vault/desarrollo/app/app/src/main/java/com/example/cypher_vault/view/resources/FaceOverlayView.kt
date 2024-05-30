@@ -16,18 +16,18 @@ class FaceOverlayView(context: Context) : View(context) {
     var imageWidth: Int = 1
     var imageHeight: Int = 1
 
-    var minTargetBox: Rect? = null
-    var maxTargetBox: Rect? = null
+    private var minTargetBox: Rect? = null
+    private var maxTargetBox: Rect? = null
     var message: String? = null
 
-    var inside: Boolean = false
+    private var inside: Boolean = false
 
     private val silhouette: Bitmap = BitmapFactory.decodeResource(resources, R.drawable.siluetabien)
     private val silhouetteError: Bitmap = BitmapFactory.decodeResource(resources, R.drawable.siluetaerror)
 
-    var currentOrientation: String = ""
-    var timerValue: Int = 0
-    var eyesOpens: Int = 0
+    private var currentOrientation: String = ""
+    private var timerValue: Int = 0
+    private var eyesOpens: Int = 0
 
     @SuppressLint("DrawAllocation")
     override fun onDraw(canvas: Canvas) {
@@ -141,7 +141,7 @@ class FaceOverlayView(context: Context) : View(context) {
             val right = width - it.left * width.toFloat() / imageHeight
             val bottom = it.bottom * height.toFloat() / imageWidth
 
-            //canvas.drawRect(left, top, right, bottom, paint)
+            canvas.drawRect(left, top, right, bottom, paint)
         }
 
         // Dibuja la silueta correcta dependiendo del estado
@@ -152,7 +152,6 @@ class FaceOverlayView(context: Context) : View(context) {
         val left = (width - silhouetteWidth) / 2
         val top = 0
         val right = left + silhouetteWidth
-        val bottom = silhouetteHeight
 
         canvas.drawBitmap(silhouetteBitmap, null, Rect(left, top, right, bottom), null)
 
@@ -167,14 +166,14 @@ class FaceOverlayView(context: Context) : View(context) {
     }
 
 
-private fun drawTextCentered(canvas: Canvas, text: String, x: Float, y: Float) {
-    val textPaint = Paint().apply {
-        color = Color.WHITE
-        textSize = 64f
-        textAlign = Paint.Align.CENTER
+    private fun drawTextCentered(canvas: Canvas, text: String, x: Float, y: Float) {
+        val textPaint = Paint().apply {
+            color = Color.WHITE
+            textSize = 64f
+            textAlign = Paint.Align.CENTER
+        }
+        canvas.drawText(text, x, y, textPaint)
     }
-    canvas.drawText(text, x, y, textPaint)
-}
 
 // Methods to update state
     fun updateState(orientation: String, timer: Int = 0, eyesOpen: Int = 0) {
