@@ -37,8 +37,10 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Send
 import androidx.compose.material.icons.filled.Visibility
@@ -95,7 +97,7 @@ fun LoginText(){
         style = textStyle,
         modifier = Modifier
             .padding(top = 70.dp)
-            .offset(x = -(50.dp)),
+            .offset(x = -(30.dp)),
     )
 
 }
@@ -127,6 +129,7 @@ fun NavigationLogin(navController: NavController) {
 
     Box(
         modifier = Modifier
+            .verticalScroll(rememberScrollState())
             .fillMaxSize()
             .clickable { showConnectionOption = false }
     ) {
@@ -261,12 +264,6 @@ fun NavigationLogin(navController: NavController) {
                     }
                 }
             }
-        }
-
-        Box(
-            modifier = Modifier.fillMaxSize(),
-            contentAlignment = Alignment.BottomCenter
-        ) {
             OutlinedButton(
                 onClick = { navController.navigateToRegister() },
                 border = BorderStroke(2.dp, Color.White),
@@ -275,6 +272,9 @@ fun NavigationLogin(navController: NavController) {
                 Text("Registrarse", style = buttonTextStyle)
             }
         }
+
+
+
     }
     if (showConnectionOption) {
         Box(
