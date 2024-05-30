@@ -478,7 +478,7 @@ fun Gallery(navController: NavController, userId: String, galleryController: Gal
         //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         Scaffold(
             modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
-
+            ///BARRA SUPERIOR ////////////////////////////////////////////////////////////////////////////////////////////////
             topBar = {
                 CenterAlignedTopAppBar(
                     colors = TopAppBarDefaults.topAppBarColors(
@@ -486,8 +486,8 @@ fun Gallery(navController: NavController, userId: String, galleryController: Gal
                         titleContentColor = thirdColor,
                     ),
                     title = {
-                        Column(horizontalAlignment = Alignment.Start) {
-                            Row(horizontalArrangement = Arrangement.Absolute.Left) {
+                        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                            Row(horizontalArrangement = Arrangement.Absolute.Center) {
                                 Text(
                                     text = "C",
                                     color = firstColor,
@@ -514,7 +514,7 @@ fun Gallery(navController: NavController, userId: String, galleryController: Gal
                                 )
 
                             }
-                            Row(horizontalArrangement = Arrangement.Absolute.Left) {
+                            Row(horizontalArrangement = Arrangement.Absolute.Center) {
                                 Text(
                                     text = "G",
                                     color = firstColor,
@@ -545,7 +545,7 @@ fun Gallery(navController: NavController, userId: String, galleryController: Gal
 
                     },
                     navigationIcon = {
-                        IconButton(onClick = { navController.navigateToListLogin() }) {
+                        IconButton(onClick = { alertCloseSession = true }) {
                             Icon(
                                 modifier = Modifier.width(30.dp),
                                 tint = firstColor,
@@ -754,6 +754,8 @@ fun Gallery(navController: NavController, userId: String, galleryController: Gal
                         containerColor = premiumBackgroundColor,
                         onDismissRequest = {
                             showPasswordPanel = false
+                            actualPasswordState.value = TextFieldValue("")
+                            passwordState.value = TextFieldValue("")
                         },
                         sheetState = sheetPasswordState
                     ) {
@@ -994,7 +996,7 @@ fun Gallery(navController: NavController, userId: String, galleryController: Gal
                                             actualPasswordState.value = TextFieldValue("")
                                             Toast.makeText(
                                                 context,
-                                                "Contraseña actulizada",Toast.LENGTH_SHORT).show()
+                                                "Contraseña actualizada",Toast.LENGTH_SHORT).show()
                                         }
                                     },
                                     modifier = Modifier.padding(top = 16.dp, bottom = 100.dp),
@@ -1037,6 +1039,7 @@ fun Gallery(navController: NavController, userId: String, galleryController: Gal
                         containerColor = premiumBackgroundColor,
                         onDismissRequest = {
                             showDeletePanel = false
+                            deletePasswordState.value = TextFieldValue("")
                         },
                         sheetState = sheetDeleteState
                     ) {
@@ -1153,10 +1156,6 @@ fun Gallery(navController: NavController, userId: String, galleryController: Gal
                                     onClick = {
                                         if (contrasena != deletePasswordState.value.text) {
                                             showError = true
-                                            Toast.makeText(
-                                                context,
-                                                "La contraseña es incorrecta", Toast.LENGTH_SHORT
-                                            ).show()
                                         } else {
                                             galleryController.deleteAccount(userId) { success ->
                                                 if (success) {

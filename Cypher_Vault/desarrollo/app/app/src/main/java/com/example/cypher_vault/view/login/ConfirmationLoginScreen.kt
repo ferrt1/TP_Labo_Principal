@@ -45,10 +45,7 @@ fun ConfirmationLoginScreen(navController: NavController, userId: String) {
     //Se agrega ingreso de usuario
     val userAccessManager = UserAccessManager()
     val userAccessController = UserAccessController(userAccessManager)
-    //Ingreso de usuario
-    LaunchedEffect(userId) {
-        userAccessController.insertUserIncome(userId)
-    }
+
 
     // Utiliza LaunchedEffect para asegurar que la autenticación se ejecute una vez
     LaunchedEffect(userId) {
@@ -77,6 +74,10 @@ fun ConfirmationLoginScreen(navController: NavController, userId: String) {
                 )
             }
             true -> {
+                //Ingreso de usuario
+                LaunchedEffect(userId) {
+                    userAccessController.insertUserIncome(userId)
+                }
                 Text(
                     "¡Bienvenido de nuevo!",
                     fontSize = 20.sp,
