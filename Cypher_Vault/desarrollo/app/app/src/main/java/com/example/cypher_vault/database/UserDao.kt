@@ -30,4 +30,5 @@ interface UserDao {
     suspend fun updatePassword(uid: String, newPassword: String)
     @Query("DELETE FROM user WHERE uid = :userId")
     fun deleteUserById(userId: String)
+
 }

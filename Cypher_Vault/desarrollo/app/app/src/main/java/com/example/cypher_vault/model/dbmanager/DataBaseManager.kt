@@ -44,6 +44,7 @@ object DatabaseManager {
         database.userDao().delete(user)
     }
 
+
     // Métodos relacionados con la tabla de imágenes
     fun insertImage(image: Images) {
         database.imageDao().insertImage(image)

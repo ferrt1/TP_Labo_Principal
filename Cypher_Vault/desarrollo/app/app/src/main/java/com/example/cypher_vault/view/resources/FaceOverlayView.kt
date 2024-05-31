@@ -141,7 +141,7 @@ class FaceOverlayView(context: Context) : View(context) {
             val right = width - it.left * width.toFloat() / imageHeight
             val bottom = it.bottom * height.toFloat() / imageWidth
 
-            canvas.drawRect(left, top, right, bottom, paint)
+           // canvas.drawRect(left, top, right, bottom, paint)
         }
 
         // Dibuja la silueta correcta dependiendo del estado

@@ -256,12 +256,12 @@ fun Gallery(navController: NavController, userId: String, galleryController: Gal
             200
         )
     }
+    val images = galleryController.images.value
 
     //Carga de imagenes del usuario en la galeria//////////////////////
-    LaunchedEffect(key1 = userId) {
+    LaunchedEffect(Unit) {
         galleryController.loadImagesForUser(userId)
     }
-    val images = galleryController.images.value
     val imageUris = remember { mutableStateOf<List<Uri>>(listOf()) }
     LaunchedEffect(key1 = imageUris.value) {
         galleryController.loadImagesForUser(userId)

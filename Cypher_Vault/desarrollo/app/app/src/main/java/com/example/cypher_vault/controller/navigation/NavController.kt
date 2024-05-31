@@ -1,15 +1,20 @@
 package com.example.cypher_vault.controller.navigation
+import android.os.Build
+import android.util.Log
+import androidx.annotation.RequiresApi
 import androidx.compose.runtime.MutableState
 import androidx.navigation.NavController
 import com.example.cypher_vault.controller.messages.getMessageError
 import com.example.cypher_vault.controller.messages.registrationValidation
 import com.example.cypher_vault.database.User
 import com.example.cypher_vault.model.dbmanager.DatabaseManager
+import com.example.cypher_vault.model.encrypt.EncryptionService
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import java.util.Base64
 import java.util.UUID
 
 class NavController(private val navController: NavController) {
@@ -61,23 +66,27 @@ class NavController(private val navController: NavController) {
         navController.navigate("profile/$uid")
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
     fun registerUser(
         email: String,
         name: String,
         password: String,
         errorMessage: MutableState<String>,
-    ): UUID?
-    {
+    ): UUID? {
         val uid = UUID.randomUUID()
         if (registrationValidation(email, name, password)) {
+
             CoroutineScope(Dispatchers.IO).launch {
+                val encryptionService = EncryptionService()
+                val salt = encryptionService.generateSalt()
                 val user = User(
                     uid = uid.toString(),
                     firstName = name,
                     email = email,
                     entryDate = System.currentTimeMillis(),
                     password = password,
-                    authentication= false
+                    authentication = false,
+                    encryptionSalt = Base64.getEncoder().encodeToString(salt)
                 )
                 DatabaseManager.insertUser(user)
             }
