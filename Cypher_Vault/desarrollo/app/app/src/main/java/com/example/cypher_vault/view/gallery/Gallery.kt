@@ -935,15 +935,13 @@ fun Gallery(navController: NavController, userId: String, galleryController: Gal
                                             horizontalAlignment = Alignment.CenterHorizontally
                                         ) {
                                             Row(verticalAlignment = Alignment.CenterVertically) {
-                                                (if (!getvalidatePasswordCharacters(passwordState.value.text) || !getvalidatePasswordsSecialcharacters(passwordState.value.text)
+                                                (if (!getvalidatePasswordCharacters(passwordState.value.text)|| !getvalidatePasswordsSecialcharacters(passwordState.value.text)
                                                     ||!getvalidatePasswordLength(passwordState.value.text)
                                                     || !getvalidatePasswordLengthMax(passwordState.value.text) || !getvalidatePasswordNotContainNumber(passwordState.value.text)
-                                                    || !getvalidateAlphabeticCharacter(passwordState.value.text)
-                                                ){
+                                                    || !getvalidateAlphabeticCharacter(passwordState.value.text)){
                                                     R.drawable.iconwarning
-                                                } else if (getvalidatePasswordNotContainUserName(passwordState.value.text,nameState)
-                                                    || getvalidatePasswordSpecialCharacters(passwordState.value.text)
-                                                ) {
+                                                } else if (getvalidatePasswordNotContainUserName(passwordState.value.text,nombre)
+                                                    || getvalidatePasswordSpecialCharacters(passwordState.value.text)) {
                                                     R.drawable.icoerror
                                                 } else {
                                                     null
@@ -961,9 +959,9 @@ fun Gallery(navController: NavController, userId: String, galleryController: Gal
 
                                                 Spacer(modifier = Modifier.width(8.dp)) // Espacio entre la imagen y el texto
                                                 Row(verticalAlignment = Alignment.CenterVertically) {
-                                                    if (getfullpasswordfield(passwordState.value.text, nameState) != "null") {
+                                                    if (getfullpasswordfield(passwordState.value.text, nombre) != "null") {
                                                         LimitedTextBox(
-                                                            text = getfullpasswordfield(passwordState.value.text, nameState),
+                                                            text = getfullpasswordfield(passwordState.value.text, nombre),
                                                             maxWidth = 250.dp // Ajusta este valor según tus necesidades
                                                         )
                                                     }

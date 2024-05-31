@@ -42,52 +42,14 @@ class GalleryController() {
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
-    fun saveImage(imageData: ByteArray, userId: String): Deferred<Unit> {
-        return CoroutineScope(Dispatchers.IO).async {
-            try {
-                val user = DatabaseManager.getUserById(userId)
-                if (user?.encryptionSalt != null) {
-                    val salt = Base64.getDecoder().decode(user.encryptionSalt)
-                    val password = user.password ?: throw IllegalArgumentException("Password missing for user $userId")
-                    val encryptionService = EncryptionService()
-                    val encryptedImageData = encryptionService.encrypt(password, imageData, salt)
-                    val image = Images(imageData = encryptedImageData, user_id = userId)
-                    DatabaseManager.insertImage(image)
+    fun saveImage(imageData: ByteArray, userId: String) {
+        galleryManager.saveImage(imageData, userId)
 
-                    loadImagesForUser(userId)
-                    Log.d("EncryptionServiceGallery", "Image saved successfully for user $userId")
-                } else {
-                    Log.e("EncryptionServiceGallery", "User not found or salt missing for user $userId")
-                }
-            } catch (e: Exception) {
-                Log.e("EncryptionServiceGallery", "Error saving image for user $userId", e)
-            }
-        }
     }
-
-
-
-    val images = mutableStateOf<List<Images>>(listOf())
 
     @RequiresApi(Build.VERSION_CODES.O)
     suspend fun loadImagesForUser(userId: String) {
-        Log.d("EncryptionServiceGallery", "entrando a loadImages")
-        images.value = withContext(Dispatchers.IO) {
-            val encryptedImages = DatabaseManager.getImagesForUser(userId)
-            val user = DatabaseManager.getUserById(userId)
-            if (user?.encryptionSalt != null) {
-                val salt = Base64.getDecoder().decode(user.encryptionSalt)
-                val password = user.password ?: throw IllegalArgumentException("Password missing for user $userId")
-                val encryptionService = EncryptionService()
-                encryptedImages.map { image ->
-                    val decryptedImageData = encryptionService.decrypt(password, image.imageData, salt)
-                    image.copy(imageData = decryptedImageData)
-                }
-            } else {
-                Log.e("EncryptionServiceGallery", "User not found or salt missing for user $userId")
-                emptyList()
-            }
-        }
+        galleryManager.loadImagesForUser(userId)
     }
 
     fun capitalizarPrimeraLetra(palabra: String): String{

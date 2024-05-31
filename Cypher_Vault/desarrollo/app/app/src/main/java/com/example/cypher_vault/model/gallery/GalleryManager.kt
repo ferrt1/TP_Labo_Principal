@@ -7,16 +7,27 @@ import android.net.Uri
 import android.os.Build
 import android.os.Environment
 import android.provider.MediaStore
+import android.util.Log
 import androidx.annotation.RequiresApi
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.asAndroidBitmap
 import androidx.compose.ui.graphics.asImageBitmap
 import com.example.cypher_vault.controller.data.DatabaseController
 import com.example.cypher_vault.controller.navigation.NavController
 import com.example.cypher_vault.controller.session.SessionController
+import com.example.cypher_vault.database.Images
+import com.example.cypher_vault.model.dbmanager.DatabaseManager
+import com.example.cypher_vault.model.encrypt.EncryptionService
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Deferred
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
 import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withContext
 import java.io.OutputStream
 import java.text.SimpleDateFormat
+import java.util.Base64
 import java.util.Date
 import java.util.Locale
 
@@ -122,6 +133,52 @@ class GalleryManager {
 
     fun closeSession(context: Context, navController: NavController) {
         SessionController.logout(context,navController)
+    }
+
+    val images = mutableStateOf<List<Images>>(listOf())
+    @RequiresApi(Build.VERSION_CODES.O)
+    suspend fun loadImagesForUser(userId: String) {
+        Log.d("EncryptionServiceGallery", "entrando a loadImages")
+        images.value = withContext(Dispatchers.IO) {
+            val encryptedImages = DatabaseManager.getImagesForUser(userId)
+            val user = DatabaseManager.getUserById(userId)
+            if (user?.encryptionSalt != null) {
+                val salt = Base64.getDecoder().decode(user.encryptionSalt)
+                val password = user.password ?: throw IllegalArgumentException("Password missing for user $userId")
+                val encryptionService = EncryptionService()
+                encryptedImages.map { image ->
+                    val decryptedImageData = encryptionService.decrypt(password, image.imageData, salt)
+                    image.copy(imageData = decryptedImageData)
+                }
+            } else {
+                Log.e("EncryptionServiceGallery", "User not found or salt missing for user $userId")
+                emptyList()
+            }
+        }
+    }
+
+    @RequiresApi(Build.VERSION_CODES.O)
+    fun saveImage(imageData: ByteArray, userId: String): Deferred<Int> {
+        return CoroutineScope(Dispatchers.IO).async {
+            try {
+                val user = DatabaseManager.getUserById(userId)
+                if (user?.encryptionSalt != null) {
+                    val salt = Base64.getDecoder().decode(user.encryptionSalt)
+                    val password = user.password ?: throw IllegalArgumentException("Password missing for user $userId")
+                    val encryptionService = EncryptionService()
+                    val encryptedImageData = encryptionService.encrypt(password, imageData, salt)
+                    val image = Images(imageData = encryptedImageData, user_id = userId)
+                    DatabaseManager.insertImage(image)
+
+                    loadImagesForUser(userId)
+                    Log.d("EncryptionServiceGallery", "Image saved successfully for user $userId")
+                } else {
+                    Log.e("EncryptionServiceGallery", "User not found or salt missing for user $userId")
+                }
+            } catch (e: Exception) {
+                Log.e("EncryptionServiceGallery", "Error saving image for user $userId", e)
+            }
+        }
     }
 
 }
