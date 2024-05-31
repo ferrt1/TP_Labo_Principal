@@ -53,6 +53,8 @@ class GalleryController() {
                     val encryptedImageData = encryptionService.encrypt(password, imageData, salt)
                     val image = Images(imageData = encryptedImageData, user_id = userId)
                     DatabaseManager.insertImage(image)
+
+                    loadImagesForUser(userId)
                     Log.d("EncryptionServiceGallery", "Image saved successfully for user $userId")
                 } else {
                     Log.e("EncryptionServiceGallery", "User not found or salt missing for user $userId")
