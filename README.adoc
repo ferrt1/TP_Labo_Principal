@@ -123,8 +123,8 @@ Posteriormente el ingreso del usuario se realizará comparando la foto tomada co
 ** Aplicación para dispositivos Android (Tablets).
 ** Registro por reconocimiento facial.
 ** Login por reconocimiento fácil.
-** Almacenamiento de imágenes en el dispositivo.
-** Registro Alternativo
+** Almacenamiento de imágenes en el dispositivo. (imagenes formato tipo: jpg, png, jpeg, gif, bmp y webp)
+** Registro Alternativo (Password, Codigo enviado a traves del mail y pregunta por última conexión)
 
 * *Fuera del alcance:*
 
