@@ -191,4 +191,10 @@ class GalleryManager {
         }
     }
 
+    fun saveSecondAuth(userId: String, b: Boolean): Deferred<Unit> {
+        return CoroutineScope(Dispatchers.IO).async {
+            databaseController.saveSecondAuth(userId, b)
+        }
+    }
+
 }

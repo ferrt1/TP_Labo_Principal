@@ -105,4 +105,8 @@ class GalleryController() {
         return galleryManager.getGalleryImages()
     }
 
+    fun saveSecondAuth(userId: String, b: Boolean) {
+        galleryManager.saveSecondAuth(userId, b)
+    }
+
 }
