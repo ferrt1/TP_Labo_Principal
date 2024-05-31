@@ -161,5 +161,11 @@ object DatabaseManager {
         }
     }
 
+    suspend fun saveSecondAuth(userId: String, b: Boolean) {
+        withContext(Dispatchers.IO) {
+            database.userDao().saveSecondAuth(userId, b)
+        }
+    }
+
 
 }

@@ -40,6 +40,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowBackIosNew
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
@@ -59,6 +60,9 @@ import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.ModalDrawerSheet
 import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Switch
+import androidx.compose.material3.SwitchColors
+import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
@@ -168,6 +172,7 @@ val textStyleTittle2 = TextStyle(
 @Composable
 fun Gallery(navController: NavController, userId: String, galleryController: GalleryController) {
 
+    var dbc = DatabaseController()
     // implementacion para el movimiento de los menesajes (deuda tecnica)
     var currentMessage by remember { mutableStateOf("") }
     val messageController = MessageController()
@@ -175,6 +180,15 @@ fun Gallery(navController: NavController, userId: String, galleryController: Gal
         val messageChannel = messageController.getMessageChannel()
         for (message in messageChannel) {
             currentMessage = message
+        }
+    }
+
+    //Variable de la 2 verificacion
+    var checkedSecondAuth : Boolean? by remember { mutableStateOf(false) }
+    LaunchedEffect(key1 = Unit) { // Key can be anything to trigger on recomposition
+        val usuarioTemp = dbc.getUserById(userId)
+        if (usuarioTemp != null) {
+            checkedSecondAuth = usuarioTemp.authentication
         }
     }
 
@@ -229,7 +243,6 @@ fun Gallery(navController: NavController, userId: String, galleryController: Gal
     var nombre by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
     var contrasena by remember { mutableStateOf("") }
-    var dbc = DatabaseController()
     LaunchedEffect(key1 = Unit) { // Key can be anything to trigger on recomposition
         val usuarioTemp = dbc.getUserById(userId)
         usuario = usuarioTemp
@@ -406,6 +419,56 @@ fun Gallery(navController: NavController, userId: String, galleryController: Gal
                             style = textStyleTittle2
                         )
                         Spacer(modifier = Modifier.height(16.dp))
+                        // Habilitar segunda verificacion ///////////////////////////////////////////////////////////////
+                        Button(
+                            onClick = {
+                                checkedSecondAuth = !checkedSecondAuth!!
+                                galleryController.saveSecondAuth(userId,
+                                    checkedSecondAuth!!
+                                )
+                            },
+                            shape = RoundedCornerShape(4.dp),
+                            border = BorderStroke(3.dp, firstColor),
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = Color.Transparent,
+                                contentColor = firstColor
+                            ),
+                            modifier = Modifier
+                                .width(290.dp)
+                                .padding(top = 15.dp)
+                        ) {
+                            // Center the elements using a Row
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.SpaceBetween,
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Text(text = "2da Verificacion")
+
+                                checkedSecondAuth?.let {
+                                    Switch(
+                                        colors = SwitchDefaults.colors(checkedThumbColor = thirdColor,checkedIconColor = thirdColor, checkedTrackColor= firstColor),
+                                        checked = it,
+                                        onCheckedChange = {
+                                            checkedSecondAuth = it
+                                        },
+                                        thumbContent = if (checkedSecondAuth == true) {
+                                            {
+                                                Icon(
+                                                    imageVector = Icons.Filled.Check,
+                                                    contentDescription = null,
+                                                    modifier = Modifier.size(SwitchDefaults.IconSize),
+                                                    tint = firstColor
+                                                )
+                                            }
+                                        } else {
+                                            null
+                                        }
+                                    )
+                                }
+                            }
+                        }
+                        Spacer(modifier = Modifier.height(8.dp))
                         // Boton para cambiar contraseña ////////////////////////////////////////////////////////////////////
                         Button(
                             onClick = {

@@ -132,4 +132,10 @@ class DatabaseController(){
         }
     }
 
+    suspend fun saveSecondAuth(userId: String, b: Boolean) {
+        withContext(Dispatchers.IO){
+            DatabaseManager.saveSecondAuth(userId,b)
+        }
+    }
+
 }
