@@ -30,5 +30,6 @@ interface UserDao {
     suspend fun updatePassword(uid: String, newPassword: String)
     @Query("DELETE FROM user WHERE uid = :userId")
     fun deleteUserById(userId: String)
-
+    @Query("UPDATE user SET profile_picture = :newImage WHERE uid = :uid")
+    suspend fun updateProfileImage(uid: String, newImage: ByteArray)
 }

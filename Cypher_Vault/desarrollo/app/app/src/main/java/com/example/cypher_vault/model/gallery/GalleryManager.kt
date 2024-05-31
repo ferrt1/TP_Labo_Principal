@@ -70,6 +70,12 @@ class GalleryManager {
         return reducedBitmap.asImageBitmap()
     }
 
+    suspend fun updateProfileImage(userId: String, newImage: ByteArray) {
+        withContext(Dispatchers.IO) {
+            DatabaseManager.updateUserImage(userId, newImage)
+        }
+    }
+
     private fun reduceImage(bitmap: ImageBitmap, maxMegapixels: Float): Bitmap {
         val megapixels = (bitmap.width * bitmap.height) / 1000000f
 

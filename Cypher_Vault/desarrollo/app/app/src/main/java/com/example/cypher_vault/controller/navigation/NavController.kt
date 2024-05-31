@@ -1,9 +1,14 @@
 package com.example.cypher_vault.controller.navigation
+import android.content.Context
+import android.graphics.Bitmap
+import android.graphics.drawable.BitmapDrawable
 import android.os.Build
 import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.compose.runtime.MutableState
+import androidx.core.content.res.ResourcesCompat
 import androidx.navigation.NavController
+import com.example.cypher_vault.R
 import com.example.cypher_vault.controller.messages.getMessageError
 import com.example.cypher_vault.controller.messages.registrationValidation
 import com.example.cypher_vault.database.User
@@ -14,6 +19,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import java.io.ByteArrayOutputStream
 import java.util.Base64
 import java.util.UUID
 
@@ -72,6 +78,7 @@ class NavController(private val navController: NavController) {
         name: String,
         password: String,
         errorMessage: MutableState<String>,
+        context: Context
     ): UUID? {
         val uid = UUID.randomUUID()
         if (registrationValidation(email, name, password)) {
@@ -79,6 +86,11 @@ class NavController(private val navController: NavController) {
             CoroutineScope(Dispatchers.IO).launch {
                 val encryptionService = EncryptionService()
                 val salt = encryptionService.generateSalt()
+
+                // Convertir la imagen predeterminada a un ByteArray
+                val defaultImageBitmap = getBitmapFromDrawable(context, R.drawable.logo)
+                val profileImageByteArray = convertBitmapToByteArray(defaultImageBitmap)
+
                 val user = User(
                     uid = uid.toString(),
                     firstName = name,
@@ -86,15 +98,29 @@ class NavController(private val navController: NavController) {
                     entryDate = System.currentTimeMillis(),
                     password = password,
                     authentication = false,
-                    encryptionSalt = Base64.getEncoder().encodeToString(salt)
+                    encryptionSalt = Base64.getEncoder().encodeToString(salt),
+                    profile_picture = profileImageByteArray
                 )
                 DatabaseManager.insertUser(user)
             }
             navigateToCamera(uid.toString())
             return uid
         } else {
+
             errorMessage.value = getMessageError(email, name, password)
             return null
         }
     }
+
+    private fun getBitmapFromDrawable(context: Context, drawableId: Int): Bitmap {
+        val drawable = ResourcesCompat.getDrawable(context.resources, drawableId, null)!!
+        return (drawable as BitmapDrawable).bitmap
+    }
+
+    private fun convertBitmapToByteArray(bitmap: Bitmap): ByteArray {
+        val stream = ByteArrayOutputStream()
+        bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream)
+        return stream.toByteArray()
+    }
+
 }

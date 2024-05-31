@@ -43,6 +43,11 @@ object DatabaseManager {
         database.userDao().delete(user)
     }
 
+    suspend fun updateUserImage(userId: String, newImage: ByteArray) {
+        withContext(Dispatchers.IO) {
+            database.userDao().updateProfileImage(userId, newImage)
+        }
+    }
 
     // Métodos relacionados con la tabla de imágenes
     fun insertImage(image: Images) {

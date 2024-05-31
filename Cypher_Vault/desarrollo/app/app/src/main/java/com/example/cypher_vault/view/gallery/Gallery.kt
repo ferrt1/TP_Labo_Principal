@@ -240,12 +240,11 @@ fun Gallery(navController: NavController, userId: String, galleryController: Gal
     var userImage by remember { mutableStateOf<ByteArray?>(null) }
     LaunchedEffect(key1 = userId) {
         withContext(Dispatchers.IO) {
-            val userImageList = dbc.getImageRegistersForUser(userId)
-            if (userImageList.isNotEmpty()) {
-                userImage = userImageList.first().imageData
-            }
+            val user = dbc.getUserById(userId) // Nueva función para obtener el usuario por ID
+            userImage = user?.profile_picture // Asigna la imagen de perfil del usuario
         }
     }
+
     //Acceso a la galeria/imagenes del celular///////////////////////
     if (ContextCompat.checkSelfPermission(
             context,
@@ -288,6 +287,7 @@ fun Gallery(navController: NavController, userId: String, galleryController: Gal
                 val compressedImageData = byteArrayOutputStream.toByteArray()
                 //Test Imagen bajo compresion
                 //galleryController.saveByteArrayToFile(context, compressedImageData, "compressed_image.png")
+
                 galleryController.saveImage(compressedImageData, userId)
                 imageUris.value += it
             }
@@ -306,6 +306,34 @@ fun Gallery(navController: NavController, userId: String, galleryController: Gal
     }
     Log.e("galeria", "LISTA DE INGRESOS : $listaDeIngresos")
 
+    val launcherProfile = rememberLauncherForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
+        uri?.let {
+            val inputStream = context.contentResolver.openInputStream(it)
+            val bitmapOriginal = BitmapFactory.decodeStream(inputStream)
+            val bitmapResize = galleryController.reduceImageSize(
+                bitmapOriginal.asImageBitmap(),
+                1.0f // Ajusta este valor según sea necesario
+            )
+            val byteArrayOutputStream = ByteArrayOutputStream()
+            bitmapResize.asAndroidBitmap()
+                .compress(Bitmap.CompressFormat.PNG, 60, byteArrayOutputStream)
+            val compressedImageData = byteArrayOutputStream.toByteArray()
+            scope.launch {
+                withContext(Dispatchers.IO) {
+                    galleryController.updateProfileImage(userId, compressedImageData)
+                }
+                // Actualiza la imagen en la UI
+                userImage = compressedImageData
+            }
+        }
+    }
+
+
+    val onImageClick = {
+        launcherProfile.launch("image/*")
+    }
+
+
     //Panel del usuario//////////////////////////////////////////////////////////////////////////////////////////////
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     ModalNavigationDrawer(
@@ -319,12 +347,13 @@ fun Gallery(navController: NavController, userId: String, galleryController: Gal
                 content = {
                     Column(
                         modifier = Modifier
-                            .fillMaxSize().verticalScroll(rememberScrollState())
+                            .fillMaxSize()
+                            .verticalScroll(rememberScrollState())
                             .padding(16.dp),
                         horizontalAlignment = Alignment.CenterHorizontally,
                         verticalArrangement = Arrangement.Center
                     ) {
-                        // Informacion de usuario en el panel ///////////////////////////////////////////////////////
+                        // Información de usuario en el panel
                         Box(modifier = Modifier.fillMaxWidth()) {
                             Column(
                                 modifier = Modifier
@@ -339,39 +368,33 @@ fun Gallery(navController: NavController, userId: String, galleryController: Gal
                                     Text(
                                         text = "Panel de ",
                                         color = mainBackgroundColor,
-                                        style = textStyleTittle2,
-                                        onTextLayout = { /* No se necesita hacer nada aquí */ }
+                                        style = textStyleTittle2
                                     )
                                     Text(
                                         text = galleryController.capitalizarPrimeraLetra(nombre),
                                         color = firstColor,
-                                        style = textStyleTittle2,
-                                        onTextLayout = { /* No se necesita hacer nada aquí */ }
+                                        style = textStyleTittle2
                                     )
                                     Text(
                                         text = galleryController.procesarString(nombre),
                                         color = mainBackgroundColor,
-                                        style = textStyleTittle2,
-                                        onTextLayout = { /* No se necesita hacer nada aquí */ }
+                                        style = textStyleTittle2
                                     )
                                 }
                                 Spacer(modifier = Modifier.height(20.dp))
                                 Row(
                                     horizontalArrangement = Arrangement.Absolute.Center
                                 ) {
-
                                     Box(
                                         modifier = Modifier
-                                            .height(height = 100.dp)
+                                            .height(100.dp)
                                             .fillMaxSize(),
                                         contentAlignment = Alignment.Center
                                     ) {
-                                        IconButton(
-                                            onClick = { /* Acción de la imagen */ },
-                                            modifier = Modifier.size(100.dp)
-                                        ) {
-                                            CircularImage(byteArray = userImage)
-                                        }
+                                        CircularImage(
+                                            byteArray = userImage,
+                                            onClick = { onImageClick() }
+                                        )
                                     }
                                 }
                             }
@@ -380,8 +403,7 @@ fun Gallery(navController: NavController, userId: String, galleryController: Gal
                         Text(
                             text = email,
                             color = mainBackgroundColor,
-                            style = textStyleTittle2,
-                            onTextLayout = { /* No se necesita hacer nada aquí */ }
+                            style = textStyleTittle2
                         )
                         Spacer(modifier = Modifier.height(16.dp))
                         // Boton para cambiar contraseña ////////////////////////////////////////////////////////////////////
@@ -565,7 +587,8 @@ fun Gallery(navController: NavController, userId: String, galleryController: Gal
                     actions = {
                         Spacer(modifier = Modifier.height(20.dp))
                         IconButton(onClick = { abrirPanel(scope, drawerState) }) {
-                            CircularImage(byteArray = userImage,  modifier = Modifier
+                            CircularImage(byteArray = userImage,
+                                modifier = Modifier
                                 .height(100.dp)
                                 .width(100.dp))
                         }
@@ -1241,8 +1264,8 @@ fun LimitedTextBox(text: String, maxWidth: Dp) {
 
 // Imagen circular ///////////////////////////////////////////////////////////////////////////////////
 @Composable
-fun CircularImage(byteArray: ByteArray?, modifier: Modifier = Modifier) {
-    val bitmap : Bitmap? = byteArrayToBitmap(byteArray)
+fun CircularImage(byteArray: ByteArray?, onClick:(() -> Unit)? = null, modifier: Modifier = Modifier) {
+    val bitmap: Bitmap? = byteArrayToBitmap(byteArray)
     Log.d("galeria", "CircularImage: $bitmap")
     if (bitmap != null) {
         Spacer(modifier = Modifier.height(8.dp))
@@ -1252,10 +1275,25 @@ fun CircularImage(byteArray: ByteArray?, modifier: Modifier = Modifier) {
             modifier = modifier
                 .size(100.dp)
                 .clip(CircleShape)
+                .let {
+                    if (onClick != null) {
+                        it.clickable(onClick = onClick)
+                    } else {
+                        it
+                    }
+                }
         )
-    }else{
+    } else {
         Icon(
-            modifier = Modifier.fillMaxSize(),
+            modifier = Modifier
+                .fillMaxSize()
+                .let {
+                    if (onClick != null) {
+                        it.clickable(onClick = onClick)
+                    } else {
+                        it
+                    }
+                },
             tint = firstColor,
             imageVector = Icons.Filled.Person,
             contentDescription = "Perfil de Usuario"
@@ -1263,10 +1301,9 @@ fun CircularImage(byteArray: ByteArray?, modifier: Modifier = Modifier) {
     }
 }
 
-// Funcion de ByteArray a bitmap ////////////////////////////////////////////////////////////////////////
+// Función de ByteArray a Bitmap
 fun byteArrayToBitmap(byteArray: ByteArray?): Bitmap? {
-    if (byteArray != null) {
-        return BitmapFactory.decodeByteArray(byteArray, 0, byteArray.size)
+    return byteArray?.let {
+        BitmapFactory.decodeByteArray(it, 0, it.size)
     }
-    return null
 }

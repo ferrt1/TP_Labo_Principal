@@ -57,6 +57,11 @@ class GalleryController() {
         galleryManager.loadImagesForUser(userId)
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
+    suspend fun updateProfileImage(userId: String, newImage: ByteArray) {
+        galleryManager.updateProfileImage(userId, newImage)
+    }
+
     fun capitalizarPrimeraLetra(palabra: String): String{
         return galleryManager.capitalizarPrimeraLetra(palabra)
     }

@@ -5,7 +5,9 @@ import android.app.Activity
 import android.content.Context
 import android.content.ContextWrapper
 import android.content.pm.PackageManager
+import android.os.Build
 import android.util.Log
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
@@ -86,6 +88,7 @@ fun RegisterText(){
 
 }
 
+@RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun InitialScreen(navController: NavController) {
@@ -445,7 +448,7 @@ fun InitialScreen(navController: NavController) {
 
             Button(
                 onClick = {
-                    navController.registerUser(emailState.value.text, nameState.value.text, passwordState.value.text,errorMessage)
+                    navController.registerUser(emailState.value.text, nameState.value.text, passwordState.value.text,errorMessage, context)
                           },
                 shape = RoundedCornerShape(4.dp),
                 border = BorderStroke(3.dp, firstColor),
