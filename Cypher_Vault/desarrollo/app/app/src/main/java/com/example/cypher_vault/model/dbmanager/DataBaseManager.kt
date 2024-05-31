@@ -14,7 +14,6 @@ import com.example.cypher_vault.database.UserPremium
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.security.SecureRandom
-import kotlin.math.log
 
 
 object DatabaseManager {
@@ -102,8 +101,8 @@ object DatabaseManager {
         return database.userIncomeDao().getAllIncomes(userId)
     }
 
-    suspend fun getLastTenIncomes(userId: String): List<UserIncome?> {
-        return database.userIncomeDao().getLastTenIncomes(userId)
+    suspend fun getLastFiveIncomes(userId: String): List<UserIncome?> {
+        return database.userIncomeDao().getLastFiveIncomes(userId)
     }
 
     suspend fun insertPremiumActiveAccount(userPremium: UserPremium) {

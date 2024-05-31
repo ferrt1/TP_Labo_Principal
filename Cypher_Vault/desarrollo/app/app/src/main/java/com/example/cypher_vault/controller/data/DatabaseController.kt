@@ -10,8 +10,6 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
@@ -97,7 +95,7 @@ class DatabaseController(){
 
     suspend fun getLastTenIncomes(userId: String): List<UserIncome?> {
         return withContext(Dispatchers.IO) {
-            DatabaseManager.getLastTenIncomes(userId)
+            DatabaseManager.getLastFiveIncomes(userId)
         }
     }
 

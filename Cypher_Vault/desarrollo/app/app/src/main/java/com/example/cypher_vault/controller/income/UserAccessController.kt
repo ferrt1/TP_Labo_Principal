@@ -38,7 +38,8 @@ class UserAccessController(private val userAccessManager: UserAccessManager) {
         userIncomes.value = userAccessManager.getAllIncomes(userId) as List<UserIncome>
     }
 
-    suspend fun loadLastTenIncomes(userId: String) {
-        userIncomes.value = userAccessManager.getLastTenIncomes(userId) as List<UserIncome>
+    suspend fun loadLastFiveIncomes(userId: String) {
+        userIncomes.value = userAccessManager.getLastFiveIncomes(userId) as List<UserIncome>
     }
+
 }

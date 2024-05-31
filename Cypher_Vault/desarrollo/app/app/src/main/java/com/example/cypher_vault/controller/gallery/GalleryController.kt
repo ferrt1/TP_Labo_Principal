@@ -41,6 +41,11 @@ class GalleryController() {
         return userAccessController.userIncomes
     }
 
+    suspend fun loadFiveIncomes(userId: String): MutableState<List<UserIncome>> {
+        userAccessController.loadLastFiveIncomes(userId)
+        return userAccessController.userIncomes
+    }
+
     @RequiresApi(Build.VERSION_CODES.O)
     fun saveImage(imageData: ByteArray, userId: String) {
         galleryManager.saveImage(imageData, userId)
@@ -91,6 +96,8 @@ class GalleryController() {
         galleryManager.deleteAccount(userId, onComplete)
     }
 
-
+    fun getGalleryImages(): List<Images> {
+        return galleryManager.getGalleryImages()
+    }
 
 }

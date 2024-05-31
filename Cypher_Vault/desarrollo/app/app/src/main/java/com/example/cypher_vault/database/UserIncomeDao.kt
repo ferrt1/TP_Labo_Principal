@@ -19,6 +19,6 @@ interface UserIncomeDao {
     @Query("SELECT * FROM user_income WHERE user_id = :userId ORDER BY income DESC")
     suspend fun getAllIncomes(userId: String): List<UserIncome?>
 
-    @Query("SELECT * FROM user_income WHERE user_id = :userId ORDER BY income DESC LIMIT 10")
-    suspend fun getLastTenIncomes(userId: String): List<UserIncome?>
+    @Query("SELECT * FROM user_income WHERE user_id = :userId ORDER BY income DESC LIMIT 5")
+    suspend fun getLastFiveIncomes(userId: String): List<UserIncome?>
 }

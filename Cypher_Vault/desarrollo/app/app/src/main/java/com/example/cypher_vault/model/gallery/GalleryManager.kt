@@ -136,6 +136,10 @@ class GalleryManager {
     }
 
     val images = mutableStateOf<List<Images>>(listOf())
+
+    fun getGalleryImages(): List<Images> {
+        return images.value
+    }
     @RequiresApi(Build.VERSION_CODES.O)
     suspend fun loadImagesForUser(userId: String) {
         Log.d("EncryptionServiceGallery", "entrando a loadImages")

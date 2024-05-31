@@ -260,7 +260,7 @@ fun Gallery(navController: NavController, userId: String, galleryController: Gal
     LaunchedEffect(key1 = userId) {
         galleryController.loadImagesForUser(userId)
     }
-    val images = galleryController.images.value
+    val images = galleryController.getGalleryImages()
     val imageUris = remember { mutableStateOf<List<Uri>>(listOf()) }
     LaunchedEffect(key1 = imageUris.value) {
         galleryController.loadImagesForUser(userId)
@@ -300,7 +300,7 @@ fun Gallery(navController: NavController, userId: String, galleryController: Gal
     var showIncomes by remember { mutableStateOf(false) }
     LaunchedEffect(userId) {
         // Cargar todos los ingresos del usuario//////////////////////////
-        listaDeIngresos = galleryController.loadAllIncomes(userId).value
+        listaDeIngresos = galleryController.loadFiveIncomes(userId).value
     }
     Log.e("galeria", "LISTA DE INGRESOS : $listaDeIngresos")
 

@@ -31,9 +31,9 @@ class UserAccessManager {
         }
     }
 
-    suspend fun getLastTenIncomes(userId: String): List<UserIncome?> {
+    suspend fun getLastFiveIncomes(userId: String): List<UserIncome?> {
         return withContext(Dispatchers.IO) {
-            DatabaseManager.getLastTenIncomes(userId)
+            DatabaseManager.getLastFiveIncomes(userId)
         }
     }
 }
