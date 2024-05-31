@@ -84,13 +84,14 @@ class CameraController(
                     // Convierte el Bitmap rotado a escala de grises
                     val grayscaleBitmap = convertToGrayscale(rotatedBitmap)
 
-                    val reductionAmount = 200
+                    val reductionAmountX = 220
+                    val reductionAmountY = 180
 
                     val boundingBoxInImageCoordinates = Rect(
-                        faceOverlayView.boundingBox!!.left * imgBitmap.width / faceOverlayView.imageWidth + reductionAmount,
-                        faceOverlayView.boundingBox!!.top * imgBitmap.height / faceOverlayView.imageHeight,
-                        faceOverlayView.boundingBox!!.right * imgBitmap.width / faceOverlayView.imageWidth - reductionAmount,
-                        faceOverlayView.boundingBox!!.bottom * imgBitmap.height / faceOverlayView.imageHeight
+                        faceOverlayView.boundingBox!!.left * imgBitmap.width / faceOverlayView.imageWidth + reductionAmountX,
+                        faceOverlayView.boundingBox!!.top * imgBitmap.height / faceOverlayView.imageHeight + reductionAmountY,
+                        faceOverlayView.boundingBox!!.right * imgBitmap.width / faceOverlayView.imageWidth - reductionAmountX,
+                        faceOverlayView.boundingBox!!.bottom * imgBitmap.height / faceOverlayView.imageHeight - reductionAmountY
                     )
 
                     // Recorta el Bitmap para que tenga el mismo tamaño que el boundingBox
