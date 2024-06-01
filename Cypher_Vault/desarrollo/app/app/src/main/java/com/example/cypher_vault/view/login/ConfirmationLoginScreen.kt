@@ -148,6 +148,7 @@ fun ConfirmationLoginScreen(navController: NavController, userId: String) {
         //Elementos de la 2da Authentificacion//////////////////////////////////////////
         ///////////////////////////////////////////////////////////////////////////////
         Text(
+
             "----Prototipo----",
             fontSize = 20.sp,
             fontWeight = FontWeight.Bold,
@@ -174,6 +175,29 @@ fun ConfirmationLoginScreen(navController: NavController, userId: String) {
                     fontSize = 20.sp,
                     fontWeight = FontWeight.Bold,
                 )
+
+            "----La que va amiwi----",
+            fontSize = 20.sp,
+            fontWeight = FontWeight.Bold,
+        )
+        //ImageWithLandmarks(imagePrintRegister)
+        //ImageWithLandmarks(imagePrintLogin)
+        if(imagePrintRegister.value == null && imagePrintLogin.value == null){
+            if (isSecondAuth == true) {
+                /// SIN IMAGENES Y CON SEGUNDA ACTIVADA ////////////////////////
+                Text(
+                    "sin imagenes, pero con segunda activada",
+                    fontSize = 20.sp,
+                    fontWeight = FontWeight.Bold,
+                )
+            }else{
+                /// SIN IMAGENES Y SIN SEGUNDA ACTIVADA ////////////////////////
+                Text(
+                    "sin imagenes, pero sin segunda activada",
+                    fontSize = 20.sp,
+                    fontWeight = FontWeight.Bold,
+                )
+
                 /////Ingreso de usuario
                 LaunchedEffect(userId) {
                     userAccessController.insertUserIncome(userId)
@@ -203,6 +227,7 @@ fun ConfirmationLoginScreen(navController: NavController, userId: String) {
                     )
                 }
             }
+
         } else {
             /// CON IMAGENES Y CON SEGUNDA ACTIVADA ////////////////////////
             if (isSecondAuth == true) {
@@ -212,6 +237,17 @@ fun ConfirmationLoginScreen(navController: NavController, userId: String) {
                     ElevatedCardExample(context, navController, secondAuthController, userId, isInternetAvailable)
                 }
             } else {
+
+        }else{
+            /// CON IMAGENES Y CON SEGUNDA ACTIVADA ////////////////////////
+            if (isSecondAuth == true) {
+                Text(
+                    "con imagenes, pero con segunda activada",
+                    fontSize = 20.sp,
+                    fontWeight = FontWeight.Bold,
+                )
+
+            }else{
                 /// CON IMAGENES Y CON SEGUNDA DESACTIVADA ////////////////////////
                 ImageWithLandmarks(imagePrintRegister)
                 ImageWithLandmarks(imagePrintLogin)
@@ -229,7 +265,9 @@ fun ConfirmationLoginScreen(navController: NavController, userId: String) {
                         /////Ingreso de usuario
                         LaunchedEffect(userId) {
                             userAccessController.insertUserIncome(userId)
+
                             Log.d("auth","Ingreso de usuario2")
+
                         }
                         ///////////////////////
                         Text(
@@ -267,8 +305,9 @@ fun ConfirmationLoginScreen(navController: NavController, userId: String) {
             }
 
         }
-        //Boton de me vuelta al logueo
+
         Spacer(modifier = Modifier.weight(1f)) // Push the button to the bottom
+
         OutlinedButton(
             onClick = { navController.navigateToListLogin() },
             shape = RoundedCornerShape(15.dp),
@@ -286,6 +325,7 @@ fun ConfirmationLoginScreen(navController: NavController, userId: String) {
                 fontWeight = FontWeight.Bold
             )
         }
+
     }
 }
 
@@ -486,6 +526,7 @@ fun ElevatedCardExample(context: Context, navController: NavController, secondAu
             }
 
         }
+
     }
 }
 
