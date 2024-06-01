@@ -95,7 +95,7 @@ class DatabaseController(){
         }
     }
 
-    suspend fun getLastTenIncomes(userId: String): List<UserIncome?> {
+    suspend fun getLastFiveIncomes(userId: String): List<UserIncome?> {
         return withContext(Dispatchers.IO) {
             DatabaseManager.getLastFiveIncomes(userId)
         }
@@ -145,5 +145,4 @@ class DatabaseController(){
             DatabaseManager.deleteImgs(selectedImageIds)
         }
     }
-
 }
