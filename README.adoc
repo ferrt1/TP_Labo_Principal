@@ -266,6 +266,11 @@ Los pesos se clasifican en base a:
 | 2.5 | Gestión de cuenta | Gestión para la cuenta del usuario | Desarrollo | Equipo de desarrollo | 3
 | 2.5.1 | Crear perfil de usuario | Crear perfil para el usuario | Desarrollo | Equipo de desarrollo | 3
 | 2.5.2 | Ver horas de ingreso | Ver horas de ingreso del usuario en su perfil | Desarrollo | Equipo de desarrollo | 3
+| 2.5.3 | Cerrar sesión | El usuario puede cerrar sesión | Desarrollo | Equipo de desarrollo | 3
+| 2.5.4 | Eliminar cuenta | El usuario puede eliminar su cuenta de manera segura | Desarrollo | Equipo de desarrollo | 3
+| 2.5.5 | Cambio de contraseña | El usuario puede cambiar su contraseña | Desarrollo | Equipo de desarrollo | 3
+| 2.5.6 | Agregar foto de perfil | El usuario posee una foto de perfil (Misma de registro) | Desarrollo | Equipo de desarrollo | 3
+| 2.6 | Premium | El usuario posee funcionalidades de paquete premium | Desarrollo | Equipo de desarrollo | 3
 | 3 | Desarrollo backend | Desarrollar la lógica de la aplicación | Desarrollo | Equipo de desarrollo | 3 
 | 3.1 | Capacitación del equipo de desarrollo | Capacitar al equipo de desarrollo con las tecnologías a utilizar | Capacitación | Equipo de desarrollo | 2 
 | 3.2 | Almacenamiento de imágenes | Almacenar las imágenes en el dispositivo del usuario | Desarrollo | Equipo de desarrollo | 2 
@@ -276,9 +281,13 @@ Los pesos se clasifican en base a:
 | 3.2.2.2.1 | Ver imagenes | Ver imagenes en la galeria | Desarrollo | Equipo de desarrollo | 3
 | 3.2.2.2.2 | Agregar imagenes | Agregar imagenes para la galeria | Desarrollo | Equipo de desarrollo | 3
 | 3.2.2.2.3 | Encriptar imagenes | Encriptar imagenes de la galeria | Desarrollo | Equipo de desarrollo | 3
+| 3.2.2.2.4 | Capacidad galeria | Limitar la capacidad de la galeria | Desarrollo | Equipo de desarrollo | 3
+| 3.2.2.2.5 | Redimencionar imágenes | Redimencionar las imagenes de la galeria | Desarrollo | Equipo de desarrollo | 3
 | 3.3 | Crear algoritmo reconocimiento facial | Implementación de lógica de reconocimiento facial | Desarrollo | Equipo de desarrollo | 3 
+| 3.3.1 | Mejoras reconocimiento | Implementación de mejoras en el reconocimiento facial | Desarrollo | Equipo de desarrollo | 3 
 | 3.4 | Desarrollo parte Vault | Implementar aplicación de galería privada | Desarrollo | Equipo de desarrollo | 3 
 | 3.5 | Test Unitarios | Desarrollar test unitarios | Desarrollo | Equipo de testing | 3 
+| 3.5.6 | Bloqueo de botones del sistema | Bloquear los botones del sistema android | Desarrollo | Equipo de testing | 3 
 | 4 | Implementación | Puesta en servicio de la aplicación | Implementación | Capacitador y Prueba de Usuario, Equipo de desarrollo | 2 
 | 4.1 | Exportar apk | Compilación del proyecto a formato de dispositivo android | Implementación | Equipo de desarrollo | 2 
 | 4.2 | Capacitar usuario | Capacitar a usuario final | Capacitación | Capacitador y Prueba de Usuario | 2 
