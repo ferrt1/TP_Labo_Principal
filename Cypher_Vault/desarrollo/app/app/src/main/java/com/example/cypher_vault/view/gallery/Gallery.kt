@@ -432,6 +432,7 @@ fun Gallery(navController: NavController, userId: String, galleryController: Gal
                                 galleryController.saveSecondAuth(userId,
                                     checkedSecondAuth!!
                                 )
+                                Log.d("galeria", "checkedSecondAuth: $checkedSecondAuth")
                             },
                             shape = RoundedCornerShape(4.dp),
                             border = BorderStroke(3.dp, firstColor),
@@ -457,6 +458,9 @@ fun Gallery(navController: NavController, userId: String, galleryController: Gal
                                         checked = it,
                                         onCheckedChange = {
                                             checkedSecondAuth = it
+                                            Log.d("galeria", "checkedSecondAuth: $checkedSecondAuth")
+                                            galleryController.saveSecondAuth(userId,
+                                                checkedSecondAuth!!)
                                         },
                                         thumbContent = if (checkedSecondAuth == true) {
                                             {

@@ -111,7 +111,10 @@ fun ConfirmationLoginScreen(navController: NavController, userId: String) {
     val userAccessController = UserAccessController(userAccessManager)
 
     //Variables de la 2da Authentificacion
+
     var isSecondAuth: Boolean? by remember { mutableStateOf(false) }
+
+    var isSecondAuth : Boolean? by remember { mutableStateOf(false) }
     LaunchedEffect(Unit) { // Key can be anything to trigger on recomposition
         val usuarioTemp = dbc.getUserById(userId)
         if (usuarioTemp != null) {
