@@ -1,5 +1,7 @@
 package com.example.cypher_vault.controller.data
 
+import android.util.Log
+import androidx.compose.runtime.MutableState
 import com.example.cypher_vault.database.ImagesLogin
 import com.example.cypher_vault.database.ImagesRegister
 import com.example.cypher_vault.database.User
@@ -135,6 +137,12 @@ class DatabaseController(){
     suspend fun saveSecondAuth(userId: String, b: Boolean) {
         withContext(Dispatchers.IO){
             DatabaseManager.saveSecondAuth(userId,b)
+        }
+    }
+
+    fun deletaImgs(selectedImageIds: MutableState<List<Long>>){
+        CoroutineScope(Dispatchers.IO).launch {
+            DatabaseManager.deleteImgs(selectedImageIds)
         }
     }
 

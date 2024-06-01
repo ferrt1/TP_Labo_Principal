@@ -2,6 +2,7 @@ package com.example.cypher_vault.model.dbmanager
 
 import android.content.Context
 import android.util.Log
+import androidx.compose.runtime.MutableState
 import androidx.room.Room
 import com.example.cypher_vault.database.AppDatabase
 import com.example.cypher_vault.database.ImageDao
@@ -143,7 +144,7 @@ object DatabaseManager {
         // Si la imagen existe
         if (image != null) {
             // Número de sobrescrituras
-            val overwriteCycles = 3
+            val overwriteCycles = 1
             val random = SecureRandom()
 
             for (i in 0 until overwriteCycles) {
@@ -164,6 +165,22 @@ object DatabaseManager {
     suspend fun saveSecondAuth(userId: String, b: Boolean) {
         withContext(Dispatchers.IO) {
             database.userDao().saveSecondAuth(userId, b)
+        }
+    }
+
+    suspend fun deleteImgs(selectedImageIds: MutableState<List<Long>>) {
+        withContext(Dispatchers.IO) {
+            for (id in selectedImageIds.value) {
+                val image = database.imageDao().getImageById(id)
+                image?.let {
+                    val random = SecureRandom()
+                    val randomData = ByteArray(it.imageData.size)
+                    random.nextBytes(randomData)  // Para llenar randomData con datos aleatorios
+                    it.imageData = randomData
+                    database.imageDao().updateImage(it)
+                    database.imageDao().deleteImage(it)
+                }
+            }
         }
     }
 

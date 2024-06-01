@@ -9,6 +9,7 @@ import android.os.Environment
 import android.provider.MediaStore
 import android.util.Log
 import androidx.annotation.RequiresApi
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.asAndroidBitmap
@@ -195,6 +196,10 @@ class GalleryManager {
         return CoroutineScope(Dispatchers.IO).async {
             databaseController.saveSecondAuth(userId, b)
         }
+    }
+
+    fun deletaImgs(selectedImageIds: MutableState<List<Long>>) {
+        databaseController.deletaImgs(selectedImageIds)
     }
 
 }

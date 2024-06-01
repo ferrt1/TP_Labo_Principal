@@ -12,10 +12,12 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -48,6 +50,8 @@ import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Checkbox
+import androidx.compose.material3.CheckboxDefaults
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.DrawerState
 import androidx.compose.material3.DrawerValue
@@ -74,6 +78,7 @@ import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -135,8 +140,8 @@ import java.io.ByteArrayOutputStream
 
 //Variables de entorno/////////////////////////////
 val pixelesDeRedimensionamiento = 1f
-val maximoImagenesPremium = 5 //860
-val maximoImagenesModoPobre = 2 //42
+val maximoImagenesPremium = 10 //860
+val maximoImagenesModoPobre = 5 //42
 var isPremium: Boolean? = false
 var userPremiumSince = ""
 
@@ -168,20 +173,22 @@ val textStyleTittle2 = TextStyle(
 
 
 @RequiresApi(Build.VERSION_CODES.Q)
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
 fun Gallery(navController: NavController, userId: String, galleryController: GalleryController) {
 
     var dbc = DatabaseController()
-    // implementacion para el movimiento de los menesajes (deuda tecnica)
+
+    // implementacion para selecionar las imagenes para eliminar
+    val selectedImageIds = remember { mutableStateOf<List<Long>>(listOf()) }
+    var longClickPerformed by remember { mutableStateOf(false) }
+    val selectedImages = remember { mutableStateMapOf<Long, Boolean>() }
+
+    //----------------------------------------------------------------//
+
     var currentMessage by remember { mutableStateOf("") }
     val messageController = MessageController()
-    LaunchedEffect(Unit) {
-        val messageChannel = messageController.getMessageChannel()
-        for (message in messageChannel) {
-            currentMessage = message
-        }
-    }
+
 
     //Variable de la 2 verificacion
     var checkedSecondAuth : Boolean? by remember { mutableStateOf(false) }
@@ -659,18 +666,105 @@ fun Gallery(navController: NavController, userId: String, galleryController: Gal
                     scrollBehavior = scrollBehavior,
                 )
             },
+
+            //Zocalo de mensajes que se encuentra abajo de galeria tambien el boton de eliminar y cancelar
+
             bottomBar = {
                 BottomAppBar(
                     containerColor = thirdColor,
-                    contentColor = firstColor,
+                    contentColor = firstColor, // Mantener estos colores
                 ) {
-                    Text(
-                        text = currentMessage,
+
+                    Box(
                         modifier = Modifier
-                            .fillMaxWidth(),
-                        textAlign = TextAlign.Center,
-                        onTextLayout = { /* No se necesita hacer nada aquí */ }
-                    )
+                            .fillMaxWidth()
+                            .clip(RoundedCornerShape(16.dp)) // Bordes redondeados
+                            .background(Color.White) // Fondo blanco para el Box
+                            .border(2.dp, thirdColor, RoundedCornerShape(16.dp)) // Borde con color y forma redondeada
+                    ) {
+                        if (longClickPerformed) {
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(8.dp),
+                                horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterHorizontally),
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Button(
+                                    onClick = {
+                                        galleryController.deleteImg(selectedImageIds)
+                                        longClickPerformed = false // Restablecer el estado de longClickPerformed
+                                        navController.navigateToListLogin()
+                                    },
+                                    shape = RoundedCornerShape(4.dp),
+                                    border = BorderStroke(3.dp,firstColor),
+                                    colors = ButtonDefaults.buttonColors(
+                                        containerColor = thirdColor,
+                                        contentColor = wingWhite,
+                                    ),
+                                    modifier = Modifier.align(Alignment.CenterVertically)
+                                ) {
+                                    Text(
+                                        text = "Eliminar",
+                                        color = mainBackgroundColor,
+                                        style = textStyleTittle2,
+                                        onTextLayout = { /* No se necesita hacer nada aquí */ }
+                                    )
+                                }
+                                Button(
+                                    onClick = {
+                                        // Lógica para cancelar
+                                        longClickPerformed = false // Restablecer el estado de longClickPerformed
+                                        selectedImageIds.value = emptyList()
+                                        selectedImages.keys.forEach { key ->
+                                            selectedImages[key] = false
+                                        }
+                                    },
+                                    shape = RoundedCornerShape(4.dp),
+                                    border = BorderStroke(3.dp,firstColor),
+                                    colors = ButtonDefaults.buttonColors(
+                                        containerColor = thirdColor,
+                                        contentColor = wingWhite,
+                                    ),
+                                    modifier = Modifier.align(Alignment.CenterVertically)
+                                ) {
+                                    Text(
+                                        text = "Cancelar",
+                                        color = mainBackgroundColor,
+                                        style = textStyleTittle2,
+                                        onTextLayout = { /* No se necesita hacer nada aquí */ }
+                                    )
+                                }
+                            }
+                        }
+                        else {
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(horizontal = 16.dp, vertical = 8.dp),
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.SpaceBetween,
+                            ) {
+                                // Columna de imagen
+                                Image(
+                                    painter = painterResource(id = R.drawable.iconclarificatio),
+                                    contentDescription = null, // Añade una descripción adecuada
+                                    modifier = Modifier.size(24.dp)
+                                )
+                                // Columna de texto
+                                Text(
+                                    text = currentMessage,
+                                    fontFamily = com.example.cypher_vault.view.resources.fontFamily,
+                                    fontWeight = FontWeight.Bold,
+                                    modifier = Modifier
+                                        .weight(1f)
+                                        .padding(end = 8.dp),
+                                    textAlign = TextAlign.Center
+                                )
+
+                            }
+                        }
+                    }
                 }
             },
             //Agregar imagen a la galeria de imagenes//////////////////////////////////////////////////////////////////
@@ -721,6 +815,7 @@ fun Gallery(navController: NavController, userId: String, galleryController: Gal
                     ) {
                         items(images.size) { index ->
                             val image = images[index]
+                            val isSelected = selectedImages[image.id] ?: false
                             val bitmap =
                                 BitmapFactory.decodeByteArray(
                                     image.imageData,
@@ -735,16 +830,54 @@ fun Gallery(navController: NavController, userId: String, galleryController: Gal
                                         .size(100.dp)
                                         .padding(4.dp)
                                         .border(2.dp, Color.Black)
-                                        .clickable {
-                                            selectedImageBitmap.value =
-                                                BitmapFactory.decodeByteArray(
-                                                    image.imageData,
-                                                    0,
-                                                    image.imageData.size
-                                                )
-                                        }
+                                        .combinedClickable(
+                                            onClick = {
+                                                //para ver las imagenes (zoom)
+                                                if (!longClickPerformed) {
+                                                    selectedImageBitmap.value = BitmapFactory.decodeByteArray(image.imageData, 0, image.imageData.size)
+                                                }
+                                                //El caso que el usuario quiera borrar las imagenes
+                                                else{
+                                                    if (!selectedImageIds.value.contains(image.id)) {
+                                                        selectedImages[image.id] = !isSelected
+                                                        selectedImageIds.value = selectedImageIds.value + image.id
+                                                    }
+                                                    else if  (selectedImageIds.value.contains(image.id)) {
+                                                        selectedImages[image.id] = !isSelected
+                                                        val updatedList = selectedImageIds.value.filter { it != image.id }
+                                                        selectedImageIds.value = updatedList
+
+                                                    }
+                                                }
+                                                // Restablece el indicador de clic largo
+
+                                            },
+                                            onLongClick = {
+                                                selectedImageIds.value = selectedImageIds.value + image.id
+                                                longClickPerformed = true
+                                                selectedImages[image.id] = !isSelected
+                                            }
+                                        )
                                 )
+                                if (isSelected && longClickPerformed) {
+                                    Checkbox(
+                                        checked = true,
+                                        onCheckedChange = null, // No interaction here
+                                        colors = CheckboxDefaults.colors(
+                                            checkedColor = Color.Cyan, // El color del checkbox cuando está marcado
+                                            checkmarkColor = Color.White // El color del checkmark dentro del checkbox
+                                        ),
+                                        modifier = Modifier
+                                            .padding(4.dp)
+                                    )
+                                }
                             }
+                        }
+                    }
+                    LaunchedEffect(Unit) {
+                        val messageChannel = messageController.getMessageChannel()
+                        for (message in messageChannel) {
+                            currentMessage = message
                         }
                     }
                 }

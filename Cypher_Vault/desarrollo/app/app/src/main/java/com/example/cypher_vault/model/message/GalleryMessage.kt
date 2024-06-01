@@ -12,8 +12,9 @@ import java.util.TimerTask
 
 
 fun message1(): String {
-    return "La galería acepta todo tipo de formatos de imagen."
+    return "La galería acepta formato de tipo JPG, PNG, JPEG, GIF, BMP, WEBP."
 }
+
 
 fun message2(): String {
     return "Puede revisar el historial de su sesión en la sección de perfil."

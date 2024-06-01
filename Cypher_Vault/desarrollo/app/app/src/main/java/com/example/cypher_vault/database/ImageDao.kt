@@ -24,6 +24,10 @@ interface ImageDao {
     @Update
     fun updateImage(image: Images)
 
+    @Query("SELECT * FROM Images WHERE id = :imageId")
+    fun getIId(imageId: Long): Images?
+
+
     @Delete
     fun deleteImage(image: Images)
 
