@@ -692,9 +692,12 @@ fun Gallery(navController: NavController, userId: String, galleryController: Gal
                             ) {
                                 Button(
                                     onClick = {
-                                        galleryController.deleteImg(selectedImageIds)
+                                        scope.launch {
+                                            withContext(Dispatchers.IO) {
+                                                galleryController.deleteImg(userId, selectedImageIds)
+                                            }
+                                        }
                                         longClickPerformed = false // Restablecer el estado de longClickPerformed
-                                        navController.navigateToListLogin()
                                     },
                                     shape = RoundedCornerShape(4.dp),
                                     border = BorderStroke(3.dp,firstColor),

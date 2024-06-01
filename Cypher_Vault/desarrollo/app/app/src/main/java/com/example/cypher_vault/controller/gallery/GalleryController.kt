@@ -109,8 +109,9 @@ class GalleryController() {
         galleryManager.saveSecondAuth(userId, b)
     }
 
-    fun deleteImg(selectedImageIds: MutableState<List<Long>>) {
-        galleryManager.deletaImgs(selectedImageIds)
+    @RequiresApi(Build.VERSION_CODES.O)
+    suspend fun deleteImg(userId: String, selectedImageIds: MutableState<List<Long>>) {
+        galleryManager.deleteImgs(userId, selectedImageIds)
     }
 
 

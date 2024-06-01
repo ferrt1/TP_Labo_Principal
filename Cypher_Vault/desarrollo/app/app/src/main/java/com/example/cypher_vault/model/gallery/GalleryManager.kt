@@ -198,8 +198,10 @@ class GalleryManager {
         }
     }
 
-    fun deletaImgs(selectedImageIds: MutableState<List<Long>>) {
-        databaseController.deletaImgs(selectedImageIds)
+    @RequiresApi(Build.VERSION_CODES.O)
+    suspend fun deleteImgs(userId: String, selectedImageIds: MutableState<List<Long>>) {
+        DatabaseManager.deleteImgs(selectedImageIds)
+        loadImagesForUser(userId)
     }
 
 }
