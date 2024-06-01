@@ -252,11 +252,14 @@ Los pesos se clasifican en base a:
 | 2.2.1 | Formulario | Creación del formulario | Desarrollo | Equipo de desarrollo | 2 
 | 2.2.1.1 | Registro alternativo | Creación del registro alternativo | Desarrollo | Equipo de desarrollo | 2 
 | 2.2.2 | Capturar imagenes con la cámara | Implementar cámara en interfaz | Desarrollo | Equipo de desarrollo | 2 
+| 2.2.3 | Mejoras interfaz registro | Implementar mejoras en la interfaz de registro | Desarrollo | Equipo de desarrollo | 2 
 | 2.3 | Login | Implementar interfaz de autentificación | Desarrollo | Equipo de desarrollo | 2 
 | 2.3.1 | Formulario | Creación de formulario de autentificación | Desarrollo | Equipo de desarrollo | 2 
 | 2.3.2 | Autentificación | Método de autentificación | Desarrollo | Equipo de desarrollo | 2 
 | 2.3.3 | Buscador de usuario | Creación de barra de busqueda de usuario | Desarrollo | Equipo de desarrollo | 2 
 | 2.3.4 | Login alternativo | Creación del login alternativo | Desarrollo | Equipo de desarrollo | 2
+| 2.3.5 | Mejorar interfaz login | Implementar mejoras en la interfaz de login | Desarrollo | Equipo de desarrollo | 2
+| 2.3.6 | Comprobación humano vivo | Comprobar que la persona que se logea sea un humano vivo | Desarrollo | Equipo de desarrollo | 2
 | 2.4 | Mensaje del sistema | Mensajes del sistema para el usuario | Desarrollo | Equipo de desarrollo | 3
 | 2.4.1 | Mensaje de registro | Mensajes del sistema para el registro | Desarrollo | Equipo de desarrollo | 3
 | 2.4.2 | Mensaje de logueo | Mensajes del sistema para el logueo | Desarrollo | Equipo de desarrollo | 3
@@ -271,6 +274,8 @@ Los pesos se clasifican en base a:
 | 2.5.5 | Cambio de contraseña | El usuario puede cambiar su contraseña | Desarrollo | Equipo de desarrollo | 3
 | 2.5.6 | Agregar foto de perfil | El usuario posee una foto de perfil (Misma de registro) | Desarrollo | Equipo de desarrollo | 3
 | 2.6 | Premium | El usuario posee funcionalidades de paquete premium | Desarrollo | Equipo de desarrollo | 3
+| 2.6.1 | Interfaz opción premium| Preparar la interfaz del paquete premium | Desarrollo | Equipo de desarrollo | 3
+| 2.6.2 | Aumentar capacidad de galeria | El usuario tendra mas espacio con el paquete premium | Desarrollo | Equipo de desarrollo | 3
 | 3 | Desarrollo backend | Desarrollar la lógica de la aplicación | Desarrollo | Equipo de desarrollo | 3 
 | 3.1 | Capacitación del equipo de desarrollo | Capacitar al equipo de desarrollo con las tecnologías a utilizar | Capacitación | Equipo de desarrollo | 2 
 | 3.2 | Almacenamiento de imágenes | Almacenar las imágenes en el dispositivo del usuario | Desarrollo | Equipo de desarrollo | 2 
@@ -287,7 +292,24 @@ Los pesos se clasifican en base a:
 | 3.3.1 | Mejoras reconocimiento | Implementación de mejoras en el reconocimiento facial | Desarrollo | Equipo de desarrollo | 3 
 | 3.4 | Desarrollo parte Vault | Implementar aplicación de galería privada | Desarrollo | Equipo de desarrollo | 3 
 | 3.5 | Test Unitarios | Desarrollar test unitarios | Desarrollo | Equipo de testing | 3 
-| 3.5.6 | Bloqueo de botones del sistema | Bloquear los botones del sistema android | Desarrollo | Equipo de testing | 3 
+| 3.6 | Bloqueo de botones del sistema | Bloquear los botones del sistema android | Desarrollo | Equipo de testing | 3 
+| 3.7 | Compartir imagen | El usuario podra compartir imagenes con otras personas | Desarrollo | Equipo de testing | 3 
+| 3.7.1 | Generar QR | Crear QR para que el usuario pueda escanearlo y ver la imagen  | Desarrollo | Equipo de testing | 3 
+| 3.7.2 | Crear servidor | Crear servidor donde se alojaran los datos necesarios | Desarrollo | Equipo de testing | 3 
+| 3.7.3 | Emparejar usuario | Emparejar la cuenta del usuario al servidor | Desarrollo | Equipo de testing | 3 
+| 3.7.4 | Crear la página de visualización | Crear la página donde la persona podra ver la imagen compartida | Desarrollo | Equipo de testing | 3 
+| 3.7.5 | Lógica de la página de visualización | Crear la lógica para la página de visualización de la imagen | Desarrollo | Equipo de testing | 3 
+| 3.7.6 | Hosteo de página | Hostearla página para la visualización de la imagen compartida | Desarrollo | Equipo de testing | 3 
+| 3.8 |  |  | Desarrollo | Equipo de testing | 3 
+| 3.8.1 |  |  | Desarrollo | Equipo de testing | 3 
+| 3.8.2 |  |  | Desarrollo | Equipo de testing | 3 
+| 3.8.3 |  |  | Desarrollo | Equipo de testing | 3 
+| 3.8.4 |  |  | Desarrollo | Equipo de testing | 3 
+| 3.8.5 |  |  | Desarrollo | Equipo de testing | 3 
+| 3.8.6 |  |  | Desarrollo | Equipo de testing | 3 
+| 3.8.7 |  |  | Desarrollo | Equipo de testing | 3 
+| 3.8.8 |  |  | Desarrollo | Equipo de testing | 3 
+| 3.8.9 |  |  | Desarrollo | Equipo de testing | 3 
 | 4 | Implementación | Puesta en servicio de la aplicación | Implementación | Capacitador y Prueba de Usuario, Equipo de desarrollo | 2 
 | 4.1 | Exportar apk | Compilación del proyecto a formato de dispositivo android | Implementación | Equipo de desarrollo | 2 
 | 4.2 | Capacitar usuario | Capacitar a usuario final | Capacitación | Capacitador y Prueba de Usuario | 2 
