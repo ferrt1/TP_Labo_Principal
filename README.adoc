@@ -300,16 +300,16 @@ Los pesos se clasifican en base a:
 | 3.7.4 | Crear la página de visualización | Crear la página donde la persona podra ver la imagen compartida | Desarrollo | Equipo de testing | 3 
 | 3.7.5 | Lógica de la página de visualización | Crear la lógica para la página de visualización de la imagen | Desarrollo | Equipo de testing | 3 
 | 3.7.6 | Hosteo de página | Hostearla página para la visualización de la imagen compartida | Desarrollo | Equipo de testing | 3 
-| 3.8 |  |  | Desarrollo | Equipo de testing | 3 
-| 3.8.1 |  |  | Desarrollo | Equipo de testing | 3 
-| 3.8.2 |  |  | Desarrollo | Equipo de testing | 3 
-| 3.8.3 |  |  | Desarrollo | Equipo de testing | 3 
-| 3.8.4 |  |  | Desarrollo | Equipo de testing | 3 
-| 3.8.5 |  |  | Desarrollo | Equipo de testing | 3 
-| 3.8.6 |  |  | Desarrollo | Equipo de testing | 3 
-| 3.8.7 |  |  | Desarrollo | Equipo de testing | 3 
-| 3.8.8 |  |  | Desarrollo | Equipo de testing | 3 
-| 3.8.9 |  |  | Desarrollo | Equipo de testing | 3 
+| 3.8 | Doble autenticación | El sistema cuenta con doble autenticación para mas seguridad | Desarrollo | Equipo de testing | 3 
+| 3.8.1 | Interfaz doble autenticación | Crear la interfaz para la doble autenticación | Desarrollo | Equipo de testing | 3 
+| 3.8.2 | Integración doble autenticación | Integrar la doble autenticación al sistema | Desarrollo | Equipo de testing | 3 
+| 3.8.3 | Generación de código | Generar un código se seguridad para el ingreso a la aplicación | Desarrollo | Equipo de testing | 3 
+| 3.8.4 | Envio de mail | Enviar un mail con el código generado | Desarrollo | Equipo de testing | 3 
+| 3.8.5 | Ingreso de código | Crear la funcionalidad para ingresar el código y poder loguearse | Desarrollo | Equipo de testing | 3 
+| 3.8.6 | Interfaz código | Crear la interfaz para ingresar el código | Desarrollo | Equipo de testing | 3 
+| 3.8.7 | Interfaz rango horario | Crear la interfaz para los botones de rango horario | Desarrollo | Equipo de testing | 3 
+| 3.8.8 | Funcionalidad botones rango horario | Crear la funcionalidad para ingresar por el rango horario | Desarrollo | Equipo de testing | 3 
+| 3.8.9 | Habiulitar/Deshabilitar doble autenticación | Crear la funcionalidad para habilitar o deshabilitar la doble autenticación | Desarrollo | Equipo de testing | 3 
 | 4 | Implementación | Puesta en servicio de la aplicación | Implementación | Capacitador y Prueba de Usuario, Equipo de desarrollo | 2 
 | 4.1 | Exportar apk | Compilación del proyecto a formato de dispositivo android | Implementación | Equipo de desarrollo | 2 
 | 4.2 | Capacitar usuario | Capacitar a usuario final | Capacitación | Capacitador y Prueba de Usuario | 2 
