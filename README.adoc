@@ -581,16 +581,34 @@ image::Recursos/Sprint 3/Evolucion de la prueba sprint 3.PNG[700,700]
 
 image::Recursos/Sprint 3/Burndown chart sprint 3.PNG[700,700]
 
+* Funcionalidad Completa Sprint 4
+
+PONER IMAGEN FUNCIONALIDAD COMPLETA 4
+
+* Nivel de Calidad Sprint 4
+
+PONER IMAGEN NIVEL DE CALIDAD SPRINT 4
+
+* Evolución de la Prueba Sprint 4
+
+PONER IMAGEN EVOLUCION DE LA PRUEBA SPRINT 4
+
+* Burndown Chart Sprint 4
+
+PONER IMANGEN BURNDOWN CHART SPRINT 4
+
 
 === Indicadores Acumulados
 
 * Evolución de la Prueba Acumulado
 
 image::Recursos/Sprint 3/Evolucion de la prueba acumulado.PNG[700,700]
+PONER IMAGEN EVOLUCION DE LA PRUEBA ACUMULADO
 
 * Burndown Chart Acumulado
 
 image::Recursos/Sprint 3/Burndown cgart acumulado.PNG[700,700]
+PONER IMAGEN BURNDOWN CHART ACUMULADO
 
 === Problemas encontrados
 
