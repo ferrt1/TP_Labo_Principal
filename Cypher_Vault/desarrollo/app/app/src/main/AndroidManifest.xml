@@ -12,6 +12,9 @@
     <!-- Dispositivos con Android 13 (API nivel 33) o superior -->
     <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
     <uses-permission android:name="android.permission.READ_MEDIA_VIDEO" />
+    <!-- Permisos para acceder a el servicio de estado de la red   -->
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE"/>
 
     <application
         android:networkSecurityConfig="@xml/network_security_config"

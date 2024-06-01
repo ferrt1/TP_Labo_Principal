@@ -1,6 +1,5 @@
 package com.example.cypher_vault.view.login
 
-import android.annotation.SuppressLint
 import android.graphics.Bitmap
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
@@ -11,7 +10,13 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -23,12 +28,14 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.cypher_vault.R
 import com.example.cypher_vault.controller.authentication.AuthenticationController
+import com.example.cypher_vault.controller.data.DatabaseController
 import com.example.cypher_vault.controller.income.UserAccessController
 import com.example.cypher_vault.controller.navigation.NavController
+import com.example.cypher_vault.controller.service.ServiceController
 import com.example.cypher_vault.model.income.UserAccessManager
 import com.example.cypher_vault.view.resources.fontFamily
 import com.example.cypher_vault.view.resources.thirdColor
-import kotlinx.coroutines.launch
+import com.example.cypher_vault.model.service.ServiceManager
 
 private val firstColor = Color(0xFF02a6c3)
 
@@ -36,7 +43,9 @@ private val firstColor = Color(0xFF02a6c3)
 fun ConfirmationLoginScreen(navController: NavController, userId: String) {
     val context = LocalContext.current
     val authenticationController = AuthenticationController(context)
+    var dbc = DatabaseController()
 
+    //Prototipado de la pantalla para logueo con camara
     val imagePrintRegister = remember { mutableStateOf<Bitmap?>(null) }
     val imagePrintLogin = remember { mutableStateOf<Bitmap?>(null) }
     val result = remember { mutableStateOf<Boolean?>(null) }
@@ -45,6 +54,23 @@ fun ConfirmationLoginScreen(navController: NavController, userId: String) {
     // Se agrega ingreso de usuario
     val userAccessManager = UserAccessManager()
     val userAccessController = UserAccessController(userAccessManager)
+
+    //Variables de la 2da Authentificacion
+    var isSecondAuth : Boolean? by remember { mutableStateOf(false) }
+    LaunchedEffect(key1 = Unit) { // Key can be anything to trigger on recomposition
+        val usuarioTemp = dbc.getUserById(userId)
+        if (usuarioTemp != null) {
+            isSecondAuth = usuarioTemp.authentication
+        }
+    }
+
+    //Variables de conexion a la red de internet
+    val serviceManager = remember { ServiceManager(context) }
+    val serviceController = remember { ServiceController(serviceManager) }
+    var isInternetAvailable by remember { mutableStateOf(false) }
+    LaunchedEffect(Unit) {
+        isInternetAvailable = serviceController.isInternetAvailable()
+    }
 
     // Utiliza LaunchedEffect para asegurar que la autenticación se ejecute una vez
     LaunchedEffect(userId) {
@@ -168,6 +194,43 @@ fun ConfirmationLoginScreen(navController: NavController, userId: String) {
             if (showImage) {
                 ImageWithLandmarks(imagePrintRegister)
                 ImageWithLandmarks(imagePrintLogin)
+            }
+        }
+        Text(
+            "-----------------La que va amiwi-------------------",
+            fontSize = 20.sp,
+            fontWeight = FontWeight.Bold,
+        )
+        //Elementos de la 2da Authentificacion
+        ImageWithLandmarks(imagePrintRegister)
+        ImageWithLandmarks(imagePrintLogin)
+        if(imagePrintRegister.value == null && imagePrintLogin.value == null){
+            if (isSecondAuth == true) {
+                Text(
+                    "sin imagenes, pero con segunda activada",
+                    fontSize = 20.sp,
+                    fontWeight = FontWeight.Bold,
+                )
+            }else{
+                Text(
+                    "sin imagenes, pero sin segunda activada",
+                    fontSize = 20.sp,
+                    fontWeight = FontWeight.Bold,
+                )
+            }
+        }else{
+            if (isSecondAuth == true) {
+                Text(
+                    "con imagenes, pero con segunda activada",
+                    fontSize = 20.sp,
+                    fontWeight = FontWeight.Bold,
+                )
+            }else{
+                Text(
+                    "con imagenes, pero sin segunda activada",
+                    fontSize = 20.sp,
+                    fontWeight = FontWeight.Bold,
+                )
             }
         }
     }

@@ -221,11 +221,9 @@ fun Gallery(navController: NavController, userId: String, galleryController: Gal
     val passwordVisible = remember { mutableStateOf(false) }
     var isContentVisiblpasswordState by remember { mutableStateOf(false) }
 
-
     //Variables de usuario Premium/Panel
     val premiumManager = PremiumManager()
     val premiumController = PremiumController(premiumManager)
-
     var usuarioPremium = premiumController.getPremiumUser(userId)
     isPremium = if (usuarioPremium != null) {
         usuarioPremium.premium_account
@@ -243,7 +241,6 @@ fun Gallery(navController: NavController, userId: String, galleryController: Gal
     //Variables necesarias/////////////////////////
     val context = LocalContext.current
     val activity = context.findAncestorActivity()
-
 
     //Carga datos para el perfil y para el socalo de nombre/////////////////////
     var usuario by remember { mutableStateOf<User?>(null) }
@@ -277,6 +274,7 @@ fun Gallery(navController: NavController, userId: String, galleryController: Gal
             200
         )
     }
+
     //Carga de imagenes del usuario en la galeria//////////////////////
     LaunchedEffect(key1 = userId) {
         galleryController.loadImagesForUser(userId)
@@ -316,6 +314,7 @@ fun Gallery(navController: NavController, userId: String, galleryController: Gal
 
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(rememberTopAppBarState())
 
+    // Variables de Ingresos de usuario
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
     var listaDeIngresos by remember { mutableStateOf<List<UserIncome>>(emptyList()) }
