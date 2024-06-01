@@ -176,6 +176,7 @@ Una vez explicado las clasificación de requerimientos funcionales,  se hará a 
 *** El sistema debe mostrar un mensaje de "Acceso Permitido" o "Acceso Denegado" en la pantalla de la Tablet en función del resultado de la autenticación.
 *** El sistema deberá registrar un log con los datos de ingresos (Hora, ID de persona, etc.)
 *** El sistema deberá permitir una alternativa manual de ingreso ante posibles desconexiones (sin Wifi o datos).
+*** El sistema deberá permitir una doble autenticación para el ingreso.
     
 ** Perfil de usuario
 
@@ -185,7 +186,7 @@ Una vez explicado las clasificación de requerimientos funcionales,  se hará a 
 ** Galeria
 
 *** Ver imagenes de la tablet en la aplicación.
-*** Agregar imagenes de la galeria de la tablet a la galeria de la aplicación.
+*** Agregar imagenes de la galeria de la tablet a la galeria de la aplicación. (imagenes formato tipo: jpg, png, jpeg, gif, bmp y webp)
 *** Las imagenes de la aplicación no se ven dentro de la galeria de la tablet
 
 ** Deseables
@@ -210,7 +211,7 @@ Una vez explicado las clasificación de requerimientos funcionales,  se hará a 
 === WBS
 
 image::Recursos/Sprint 3/WBS (1).jpg[700,700]
-
+PONER IMAGEN DE LA WBS
 
 === Diccionario
 
@@ -365,9 +366,9 @@ Se entregará un prototipo de la interfaz funcional para el registro, la autenti
 
 === Estimaciones Sprint 5
 
-* *Scrum Master:* 40hs
-* *Desarrollador:* 145hs en total
-* *Tester:* 78hs en total
+* *Scrum Master:* 25hs
+* *Desarrollador:* 95hs en total
+* *Tester:* 49hs en total
 
 === Horas empleadas Sprint 1
 
@@ -394,10 +395,20 @@ image::Recursos/Sprint 2/HORAS.PNG[700,700]
 
 image::Recursos/Sprint 3/horas sprint 3.PNG[700,700]
 
+=== Horas empleadas Sprint 4
+
+* *Srum Master:* 29hs
+* *Desarrollo:* 120hs en total
+* *Testing:* 40hs por tester.
+
+PONER IMAGEN HORAS SPRINT 4
+
 === Horas empleadas Acumuladas
 
 
 image::Recursos/Sprint 3/horas acumuladas.PNG[700,700]
+
+PONER IMAGEN HORAS ACUMULADAS
 
 === Riesgos
 
@@ -442,6 +453,10 @@ image::Recursos/Sprint 2/indice de mit grafico.PNG[700,700]
 ** Plan de mitigación sprint 3
 
 image::Recursos/Sprint 3/Indice de mitigacion grafico.PNG[700,700]
+
+** Plan de mitigación sprint 4
+
+PONER IMAGEN PLAN DE MITIGACION SPRINT 4
  
 === Entregables
 
@@ -476,6 +491,14 @@ En los hitos restantes se presentará al cliente los avances en el producto.
 * Implementar mensajes de perfil de usuario y galeria
 * Cifrar imagenes
 
+** Entregables para el proximo sprint del dia 14/06:
+* Compartir imágenes
+* 
+* 
+* 
+* 
+* 
+
 === Administración en el Manejo de Bugs
 
 Ejecutar una gestión eficaz de errores y pruebas es un componente esencial en un sistema de software. Estas tareas son vitales para asegurar que el sistema opere de forma fiable, eficiente y satisfaga las necesidades de los usuarios.
@@ -490,6 +513,8 @@ Los bugs, se identificaron a través de la ejecución de pruebas. Dichas pruebas
 image::Recursos/Sprint 3/Pruebas sprint 3.PNG[700,700]
 
 image::Recursos/Sprint 2/Tabla de equivalencia - inicio de sesion.png[700,700]
+
+PONER TABLA DE EQUIVALENCIA
 
 === Administración de Cambios
 
