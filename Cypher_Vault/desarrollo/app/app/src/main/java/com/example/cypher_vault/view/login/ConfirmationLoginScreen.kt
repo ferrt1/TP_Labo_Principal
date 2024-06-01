@@ -3,7 +3,9 @@ package com.example.cypher_vault.view.login
 import android.content.Context
 import android.graphics.Bitmap
 import android.util.Log
+
 import android.widget.Toast
+
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -21,17 +23,29 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
+
 import androidx.compose.material.icons.filled.Wifi
 import androidx.compose.material.icons.filled.WifiOff
 import androidx.compose.material.icons.outlined.Check
 import androidx.compose.material.icons.outlined.Nightlight
 import androidx.compose.material.icons.outlined.WbSunny
 import androidx.compose.material.icons.outlined.WbTwilight
+
+import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.icons.filled.Wifi
+import androidx.compose.material.icons.filled.WifiOff
+import androidx.compose.material.icons.outlined.Nightlight
+import androidx.compose.material.icons.outlined.WbSunny
+import androidx.compose.material.icons.outlined.WbTwilight
+import androidx.compose.material.icons.outlined.WifiOff
+
 import androidx.compose.material3.AssistChip
 import androidx.compose.material3.AssistChipDefaults
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CardDefaults
+
+import androidx.compose.material3.ChipColors
+
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedButton
@@ -52,6 +66,7 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.cypher_vault.R
@@ -68,6 +83,12 @@ import com.example.cypher_vault.view.gallery.firstColor
 import com.example.cypher_vault.view.gallery.textStyleTittle2
 import com.example.cypher_vault.view.gallery.thirdColor
 
+
+
+import com.google.androidgamesdk.gametextinput.Settings
+
+
+>>>>>>> 372df4f (Armando Quilombo de la Ferrere, tiene moquillo y patitas cortas, no radio y ..)
 //Colores de la ui, tipo de letra, etc.///////////////////////
 val firstColor = Color(0xFF02a6c3)
 val secondColor = Color(0xFF01243a)
@@ -112,9 +133,13 @@ fun ConfirmationLoginScreen(navController: NavController, userId: String) {
 
     //Variables de la 2da Authentificacion
 
+
     var isSecondAuth: Boolean? by remember { mutableStateOf(false) }
 
     var isSecondAuth : Boolean? by remember { mutableStateOf(false) }
+
+    var isSecondAuth: Boolean? by remember { mutableStateOf(false) }
+
     LaunchedEffect(Unit) { // Key can be anything to trigger on recomposition
         val usuarioTemp = dbc.getUserById(userId)
         if (usuarioTemp != null) {
@@ -157,6 +182,7 @@ fun ConfirmationLoginScreen(navController: NavController, userId: String) {
         ImageWithLandmarks(imagePrintLogin)
         Text(
             "----Opitotorp----",
+
             fontSize = 20.sp,
             fontWeight = FontWeight.Bold,
         )
@@ -177,20 +203,19 @@ fun ConfirmationLoginScreen(navController: NavController, userId: String) {
                 )
 
             "----La que va amiwi----",
+
             fontSize = 20.sp,
             fontWeight = FontWeight.Bold,
         )
-        //ImageWithLandmarks(imagePrintRegister)
-        //ImageWithLandmarks(imagePrintLogin)
-        if(imagePrintRegister.value == null && imagePrintLogin.value == null){
+        if (imagePrintRegister.value == null && imagePrintLogin.value == null) {
             if (isSecondAuth == true) {
                 /// SIN IMAGENES Y CON SEGUNDA ACTIVADA ////////////////////////
-                Text(
-                    "sin imagenes, pero con segunda activada",
-                    fontSize = 20.sp,
-                    fontWeight = FontWeight.Bold,
-                )
-            }else{
+                if (isInternetAvailable) {
+                    ElevatedCardExample(navController, isInternetAvailable)
+                } else {
+                    ElevatedCardExample(navController, isInternetAvailable)
+                }
+            } else {
                 /// SIN IMAGENES Y SIN SEGUNDA ACTIVADA ////////////////////////
                 Text(
                     "sin imagenes, pero sin segunda activada",
@@ -228,6 +253,7 @@ fun ConfirmationLoginScreen(navController: NavController, userId: String) {
                 }
             }
 
+
         } else {
             /// CON IMAGENES Y CON SEGUNDA ACTIVADA ////////////////////////
             if (isSecondAuth == true) {
@@ -239,15 +265,15 @@ fun ConfirmationLoginScreen(navController: NavController, userId: String) {
             } else {
 
         }else{
+
             /// CON IMAGENES Y CON SEGUNDA ACTIVADA ////////////////////////
             if (isSecondAuth == true) {
-                Text(
-                    "con imagenes, pero con segunda activada",
-                    fontSize = 20.sp,
-                    fontWeight = FontWeight.Bold,
-                )
-
-            }else{
+                if (isInternetAvailable) {
+                    ElevatedCardExample(navController, isInternetAvailable)
+                } else {
+                    ElevatedCardExample(navController, isInternetAvailable)
+                }
+            } else {
                 /// CON IMAGENES Y CON SEGUNDA DESACTIVADA ////////////////////////
                 ImageWithLandmarks(imagePrintRegister)
                 ImageWithLandmarks(imagePrintLogin)
@@ -306,6 +332,11 @@ fun ConfirmationLoginScreen(navController: NavController, userId: String) {
 
         }
 
+
+        Spacer(modifier = Modifier.weight(1f)) // Push the button to the bottom
+
+
+        //Boton de me vuelta al logueo
         Spacer(modifier = Modifier.weight(1f)) // Push the button to the bottom
 
         OutlinedButton(
@@ -530,6 +561,185 @@ fun ElevatedCardExample(context: Context, navController: NavController, secondAu
     }
 }
 
+
+/// TARJETA DE LA 2DA AUTHENTICACION
+@Composable
+fun ElevatedCardExample(navController: NavController, isInternetAvailable: Boolean) {
+    var dayPart by remember { mutableStateOf(DayPart.MORNING) }
+    ElevatedCard(
+        elevation = CardDefaults.cardElevation(
+            defaultElevation = 6.dp
+        ),
+        modifier = Modifier
+            .padding(16.dp)
+            .background(mainBackgroundColor)
+            .fillMaxHeight(),
+    ) {
+        Column(
+            modifier = Modifier
+                .padding(16.dp)
+                .background(wingWhite),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
+        ) {
+            Row {
+                AssistChip(
+                    shape = RoundedCornerShape(4.dp),
+                    border = BorderStroke(3.dp, firstColor),
+                    onClick = { Log.d("Assist chip", "WbTwilight world") },
+                    label = {
+                        if (isInternetAvailable) {
+                            Text(
+                                text = "con conexion",
+                                color = firstColor,
+                                style = textStyleTittle2,
+                                onTextLayout = { /* No se necesita hacer nada aquí */ })
+                        }else{
+                            Text(
+                                text = "sin conexion",
+                                color = firstColor,
+                                style = textStyleTittle2,
+                                onTextLayout = { /* No se necesita hacer nada aquí */ })
+                        }
+                            },
+                    leadingIcon = {
+                        if (isInternetAvailable) {
+                            Icon(
+                                Icons.Filled.Wifi,
+                                contentDescription = "Localized description",
+                                Modifier.size(AssistChipDefaults.IconSize),
+                                        tint = firstColor
+                            )
+
+                        } else {
+                            Icon(
+                                Icons.Filled.WifiOff,
+                                contentDescription = "Localized description",
+                                Modifier.size(AssistChipDefaults.IconSize),
+                                tint = firstColor
+                            )
+                        }
+                    }
+                )
+            }
+            Row {
+                Text(
+                    text = "¿Cuando fue la ultima vez que la pusiste?",
+                    color = firstColor,
+                    style = textStyleTittle2,
+                    onTextLayout = { /* No se necesita hacer nada aquí */ },
+                    modifier = Modifier.padding(horizontal = 16.dp)
+                )
+            }
+            Spacer(modifier = Modifier.height(20.dp))
+            Row(
+                horizontalArrangement = Arrangement.Absolute.Center
+            ) {
+                AssistChip(
+                    shape = RoundedCornerShape(4.dp),
+                    border = BorderStroke(3.dp, firstColor),
+                    colors = AssistChipDefaults.assistChipColors(
+                        containerColor = Color.Transparent,
+                        labelColor = firstColor,
+                    ),
+                    modifier = Modifier
+                        .width(290.dp)
+                        .padding(top = 15.dp),
+                    onClick = { dayPart = DayPart.MORNING },
+                    label = { Text("Mañana(7:00AM-15:00PM)") },
+                    leadingIcon = {
+                        Icon(
+                            Icons.Outlined.WbTwilight,
+                            contentDescription = "Localized description",
+                            Modifier.size(AssistChipDefaults.IconSize),
+                            tint = firstColor
+                        )
+                    }
+                )
+            }
+            Spacer(modifier = Modifier.height(8.dp))
+            Row(
+                horizontalArrangement = Arrangement.Absolute.Center
+            ) {
+                AssistChip(
+                    shape = RoundedCornerShape(4.dp),
+                    border = BorderStroke(3.dp, firstColor),
+                    colors = AssistChipDefaults.assistChipColors(
+                        containerColor = Color.Transparent,
+                        labelColor = firstColor,
+                    ),
+                    modifier = Modifier
+                        .width(290.dp)
+                        .padding(top = 15.dp),
+                    onClick = { dayPart = DayPart.AFTERNOON },
+                    label = { Text("Tarde(15:00PM-23:00PM)") },
+                    leadingIcon = {
+                        Icon(
+                            Icons.Outlined.WbSunny,
+                            contentDescription = "Localized description",
+                            Modifier.size(AssistChipDefaults.IconSize),
+                            tint = firstColor
+                        )
+                    }
+                )
+            }
+            Spacer(modifier = Modifier.height(8.dp))
+            Row(
+                horizontalArrangement = Arrangement.Absolute.Center
+            ) {
+                AssistChip(
+                    shape = RoundedCornerShape(4.dp),
+                    border = BorderStroke(3.dp, firstColor),
+                    colors = AssistChipDefaults.assistChipColors(
+                        containerColor = Color.Transparent,
+                        labelColor = firstColor,
+                    ),
+                    modifier = Modifier
+                        .width(290.dp)
+                        .padding(top = 15.dp),
+                    onClick = { dayPart = DayPart.EVENING },
+                    label = { Text("Noche(23:00PM-7:00AM)") },
+                    leadingIcon = {
+                        Icon(
+                            Icons.Outlined.Nightlight,
+                            contentDescription = "Localized description",
+                            Modifier.size(AssistChipDefaults.IconSize),
+                            tint = firstColor
+                        )
+                    }
+                )
+            }
+            Spacer(modifier = Modifier.height(8.dp))
+            Row {
+                OutlinedButton(
+                    onClick = { navController.navigateToListLogin() },
+                    shape = RoundedCornerShape(15.dp),
+                    border = BorderStroke(3.dp, Color.Gray),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = thirdColor,
+                        contentColor = wingWhite
+                    ),
+                    modifier = Modifier
+                        .width(200.dp)
+                        .padding(vertical = 30.dp)
+                ) {
+                    Text(
+                        "Comprobar",
+                        fontWeight = FontWeight.Bold
+                    )
+                }
+            }
+
+        }
+    }
+}
+
+//DEFINO LOS ENUM DE PARTES DEL DIA
+enum class DayPart {
+    MORNING,
+    AFTERNOON,
+    EVENING
+}
 
 @Composable
 fun ImageWithLandmarks(bitmapState: MutableState<Bitmap?>) {

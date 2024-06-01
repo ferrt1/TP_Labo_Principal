@@ -12,7 +12,7 @@ android {
 
     defaultConfig {
         applicationId = "com.example.cypher_vault"
-        minSdk = 24
+        minSdk = 25
         targetSdk = 34
         versionCode = 1
         versionName = "1.0"
@@ -59,6 +59,8 @@ dependencies {
     implementation("androidx.room:room-runtime:2.6.1")
     implementation("androidx.room:room-ktx:2.6.1")
     implementation(libs.androidx.material3.android)
+    implementation(libs.androidx.games.activity)
+    implementation(libs.androidx.compose.material)
     annotationProcessor("androidx.room:room-compiler:2.6.1")
     kapt("androidx.room:room-compiler:2.6.1")
     //////////////////////////////////////////////
