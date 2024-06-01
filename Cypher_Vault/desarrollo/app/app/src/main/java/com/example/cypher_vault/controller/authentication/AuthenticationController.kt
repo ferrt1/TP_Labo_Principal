@@ -6,13 +6,15 @@ import android.graphics.BitmapFactory
 import com.example.cypher_vault.model.authentication.FaceRecognitionModel
 import com.example.cypher_vault.controller.data.DatabaseController
 import com.example.cypher_vault.controller.navigation.NavController
+import com.example.cypher_vault.model.authentication.MobileFaceNet
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 class AuthenticationController(context: Context) {
     private val databaseController = DatabaseController()
-    private val model = FaceRecognitionModel(context.assets, "mobilefacenet.tflite")
+    private val model = FaceRecognitionModel(context.assets, "MobileFaceNetv2.tflite")
+    private val assetManager = context.assets // AssetManager
     private val threshold = 0.6f
 
     fun authenticate(userId: String, callback: (Boolean, Bitmap?, Bitmap?) -> Unit) {
@@ -30,19 +32,14 @@ class AuthenticationController(context: Context) {
             val registerBitmap = BitmapFactory.decodeByteArray(registerImage.imageData, 0, registerImage.imageData.size)
             val loginBitmap = BitmapFactory.decodeByteArray(loginImage.imageData, 0, loginImage.imageData.size)
 
-            val registerFeatures = model.extractFeatures(registerBitmap)
-            val loginFeatures = model.extractFeatures(loginBitmap)
+            val mobileFaceNet = MobileFaceNet(assetManager)
+            val result = mobileFaceNet.compare(registerBitmap, loginBitmap)
 
-            val result = model.compareFaceFeatures(registerFeatures, loginFeatures)
-
-            if (result < threshold) {
-                databaseController.deleteImageLogin(userId)
-                callback(true, registerBitmap, loginBitmap)
-            } else {
-                databaseController.deleteImageLogin(userId)
-                callback(false, registerBitmap, loginBitmap)
-            }
+            val isAuthenticated = result >= MobileFaceNet.THRESHOLD
+            databaseController.deleteImageLogin(userId)
+            callback(isAuthenticated, registerBitmap, loginBitmap)
         }
     }
+
 
 }
