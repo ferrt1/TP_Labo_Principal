@@ -75,10 +75,8 @@ class CameraController(
                 override fun onImageSaved(outputFileResults: ImageCapture.OutputFileResults) {
                     val imageBytes = tempFile.readBytes()
 
-                    // Convierte los bytes de la imagen en un Bitmap
                     val imgBitmap = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.size)
 
-                    // Rota el Bitmap
                     val rotatedBitmap = rotateBitmap(imgBitmap, -90f)
 
                     // Convierte el Bitmap rotado a escala de grises
@@ -156,13 +154,15 @@ class CameraController(
                         if (isRegister) {
                             navController.navigateToConfirmationLogin(userId)
                         } else {
-                            navController.navigateToConfirmation(userId)
+                            navController.navigateToConfirmation(userId, true)
                         }
                     }
                 }
 
                 override fun onError(exception: ImageCaptureException) {
                     Log.d("Imagen", "entro aca y tiro error$exception")
+                    if (!isRegister)
+                    navController.navigateToConfirmation(userId, false)
                 }
             })
     }
