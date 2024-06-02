@@ -399,7 +399,7 @@ fun ElevatedCardMailConfirmation(
         sendingMail = true
         LaunchedEffect(Unit) {
             if (sendingMail) {
-                emailManager.generateAndSendCode(context, userId)
+                //emailManager.generateAndSendCode(context, userId)
                 mailCode = emailManager.getMailCode()
             }
         }
@@ -833,6 +833,15 @@ fun ElevatedCardMailConfirmation(
                         fontWeight = FontWeight.Bold
                     )
                 }
+            }
+            Row {
+                Text(
+                    text = "El codigo que se envia es : $mailCode",
+                    color = firstColor,
+                    style = textStyleTittle2,
+                    onTextLayout = { /* No se necesita hacer nada aquí */ },
+                    modifier = Modifier.padding(horizontal = 16.dp)
+                )
             }
         }
     }

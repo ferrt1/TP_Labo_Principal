@@ -25,6 +25,9 @@ class ServiceManager(private val context: Context) {
 
     private var mailCode: String = ""
     fun getMailCode(): String {
+        if(mailCode==""){
+            generateRandomCode()
+        }
         return mailCode
     }
     fun generateAndSendCode(context: Context, userId: String) {
