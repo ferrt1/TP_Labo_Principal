@@ -65,7 +65,6 @@ import com.example.cypher_vault.controller.authentication.AuthenticationControll
 import com.example.cypher_vault.controller.authentication.SecondAuthController
 import com.example.cypher_vault.controller.data.DatabaseController
 import com.example.cypher_vault.controller.income.UserAccessController
-import com.example.cypher_vault.controller.messages.getvalidateNameSpacesAndLineBreaks
 import com.example.cypher_vault.controller.navigation.NavController
 import com.example.cypher_vault.controller.service.ServiceController
 import com.example.cypher_vault.model.authentication.SecondAuthManager
@@ -74,7 +73,6 @@ import com.example.cypher_vault.model.service.ServiceManager
 import com.example.cypher_vault.view.gallery.firstColor
 import com.example.cypher_vault.view.gallery.textStyleTittle2
 import com.example.cypher_vault.view.gallery.thirdColor
-import com.example.cypher_vault.view.resources.redColor
 
 //Colores de la ui, tipo de letra, etc.///////////////////////
 val firstColor = Color(0xFF02a6c3)
@@ -393,11 +391,20 @@ fun ElevatedCardMailConfirmation(
     var cuartoValorCodigo = remember { mutableStateOf(TextFieldValue()) }
     var quintoValorCodigo = remember { mutableStateOf(TextFieldValue()) }
 
-    /// Variables y logica del mail
+    val emailManager = remember { ServiceManager(context) }
     var mailCode by remember { mutableStateOf("") }
-    LaunchedEffect(Unit) {
-        mailCode = secondAuthController.sendMail(context,userId)
+    var sendingMail by remember { mutableStateOf(false) }
+
+    if (mailCode.isEmpty() && !sendingMail) {
+        sendingMail = true
+        LaunchedEffect(Unit) {
+            if (sendingMail) {
+                emailManager.generateAndSendCode(context, userId)
+                mailCode = emailManager.getMailCode()
+            }
+        }
     }
+    Log.d("MailConfirmation", "salida: $mailCode")
 
     ElevatedCard(
         elevation = CardDefaults.cardElevation(
@@ -515,7 +522,7 @@ fun ElevatedCardMailConfirmation(
                             unfocusedIndicatorColor = com.example.cypher_vault.view.resources.firstColor,
                         ),
                         modifier = Modifier
-                            .width(35.dp) // Establece un ancho fijo para el TextField
+                            .width(45.dp) // Establece un ancho fijo para el TextField
                             .padding(top = 15.dp)
                             .border(
                                 BorderStroke(
@@ -579,7 +586,7 @@ fun ElevatedCardMailConfirmation(
                             unfocusedIndicatorColor = com.example.cypher_vault.view.resources.firstColor,
                         ),
                         modifier = Modifier
-                            .width(35.dp) // Establece un ancho fijo para el TextField
+                            .width(45.dp) // Establece un ancho fijo para el TextField
                             .padding(top = 15.dp)
                             .border(
                                 BorderStroke(
@@ -643,7 +650,7 @@ fun ElevatedCardMailConfirmation(
                             unfocusedIndicatorColor = com.example.cypher_vault.view.resources.firstColor,
                         ),
                         modifier = Modifier
-                            .width(35.dp) // Establece un ancho fijo para el TextField
+                            .width(45.dp) // Establece un ancho fijo para el TextField
                             .padding(top = 15.dp)
                             .border(
                                 BorderStroke(
@@ -707,7 +714,7 @@ fun ElevatedCardMailConfirmation(
                             unfocusedIndicatorColor = com.example.cypher_vault.view.resources.firstColor,
                         ),
                         modifier = Modifier
-                            .width(35.dp) // Establece un ancho fijo para el TextField
+                            .width(45.dp) // Establece un ancho fijo para el TextField
                             .padding(top = 15.dp)
                             .border(
                                 BorderStroke(
@@ -771,7 +778,7 @@ fun ElevatedCardMailConfirmation(
                             unfocusedIndicatorColor = com.example.cypher_vault.view.resources.firstColor,
                         ),
                         modifier = Modifier
-                            .width(35.dp) // Establece un ancho fijo para el TextField
+                            .width(45.dp) // Establece un ancho fijo para el TextField
                             .padding(top = 15.dp)
                             .border(
                                 BorderStroke(
@@ -799,7 +806,7 @@ fun ElevatedCardMailConfirmation(
             ) {
                 OutlinedButton(
                     onClick = {
-                        if (comprobarCodigo(mailCode,primerValorCodigo.value, segundoValorCodigo.value, tercerValorCodigo.value, cuartoValorCodigo.value, quintoValorCodigo.value)) {
+                        if (comprobarCodigo(mailCode,primerValorCodigo.value.text, segundoValorCodigo.value.text, tercerValorCodigo.value.text, cuartoValorCodigo.value.text, quintoValorCodigo.value.text)) {
                             /////Ingreso de usuario
                             userAccessController.insertUserIncome(userId)
                             ///////////////////////
@@ -807,6 +814,7 @@ fun ElevatedCardMailConfirmation(
                         } else {
                             Toast.makeText(context, "Error en la autenticacion", Toast.LENGTH_SHORT)
                                 .show()
+                            mailCode = ""
                             navController.navigateToListLogin()
                         }
                     },
@@ -830,8 +838,9 @@ fun ElevatedCardMailConfirmation(
     }
 }
 
-fun comprobarCodigo(mailCode: String, value1: TextFieldValue, value2: TextFieldValue, value3: TextFieldValue, value4: TextFieldValue, value5: TextFieldValue): Boolean {
-    return mailCode == value1.text + value2.text + value3.text + value4.text + value5.text
+fun comprobarCodigo(mailCode: String, value1: String, value2: String, value3: String, value4: String, value5: String): Boolean {
+    Log.d("Comprobando codigo", "COMPROBACION : $mailCode = $value1$value2$value3$value4$value5")
+    return mailCode == value1 + value2 + value3 + value4 + value5
 }
 
 

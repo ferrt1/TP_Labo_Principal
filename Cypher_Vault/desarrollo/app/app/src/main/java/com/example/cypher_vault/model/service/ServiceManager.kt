@@ -6,10 +6,15 @@ import android.content.Intent
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import android.net.Uri
-import androidx.core.content.ContextCompat.startActivity
-import java.util.Properties
+import android.util.Log
+import com.example.cypher_vault.controller.data.DatabaseController
+import kotlinx.coroutines.Deferred
+import kotlinx.coroutines.runBlocking
 
 class ServiceManager(private val context: Context) {
+
+    var db = DatabaseController()
+
     fun hasInternetConnection(): Boolean {
         val connectivityManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
         val network = connectivityManager.activeNetwork ?: return false
@@ -18,24 +23,33 @@ class ServiceManager(private val context: Context) {
         return networkCapabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
     }
 
-    fun generateAndSendCode(context: Context, recipient: String): String {
-        val code = generateRandomCode()
+    private var mailCode: String = ""
+    fun getMailCode(): String {
+        return mailCode
+    }
+    fun generateAndSendCode(context: Context, userId: String) {
+        var recipient = ""
+        runBlocking {
+            val usuario = db.getUserById(userId)
+            recipient = usuario?.email.toString()
+        }
+        if(mailCode==""){
+            generateRandomCode()
+        }
         val subject = "Tu código de verificación de CypherVault"
         val body = """
         Estimado Usuario,
 
-        Su código de verificación para CypherVault es: $code
+        Su código de verificación para CypherVault es: $mailCode
 
         Por favor, ingrese este código en la aplicación para continuar.
 
         Atentamente,
         El equipo de CypherVault
     """.trimIndent()
-
         sendEmail(context, recipient, subject, body)
-
-        return code
     }
+
     fun sendEmail(context: Context, recipient: String, subject: String, body: String, attachmentUri: Uri? = null) {
         val emailSelectorIntent = Intent(Intent.ACTION_SENDTO).apply {
             data = Uri.parse("mailto:")
@@ -62,8 +76,13 @@ class ServiceManager(private val context: Context) {
         }
     }
 
-    fun generateRandomCode(): String {
-        val random = (10000..99999).random()
-        return random.toString()
+    fun generateRandomCode() {
+        if(mailCode==""){
+            val random = (10000..99999).random()
+            mailCode = random.toString()
+            Log.d("Random Code", "random CODE: " + random.toString())
+        }else{
+            mailCode = mailCode
+        }
     }
 }
