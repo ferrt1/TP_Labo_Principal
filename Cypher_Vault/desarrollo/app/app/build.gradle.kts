@@ -1,3 +1,4 @@
+
 plugins {
     alias(libs.plugins.androidApplication)
     alias(libs.plugins.jetbrainsKotlinAndroid)
@@ -47,9 +48,11 @@ android {
     }
     packaging {
         resources {
-            excludes += "/META-INF/{AL2.0,LGPL2.1}"
+            excludes += "/META-INF/{AL2.0,LGPL2.1,NOTICE.md,LICENSE.md}"
         }
+
     }
+
 }
 
 dependencies {
@@ -137,7 +140,8 @@ dependencies {
     implementation("androidx.camera:camera-extensions:${camerax_version}")
 
     // Mail ///////////////////////
-
+    implementation("com.sun.mail:android-mail:1.6.6")
+    implementation("com.sun.mail:android-activation:1.6.7")
     //////////////////////////////////////////////
 }
 

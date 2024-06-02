@@ -483,7 +483,7 @@ fun ElevatedCardMailConfirmation(
         sendingMail = true
         LaunchedEffect(Unit) {
             if (sendingMail) {
-                //emailManager.generateAndSendCode(context, userId)
+                secondAuthController.sendMail(context, userId)
                 mailCode = emailManager.getMailCode()
             }
         }
