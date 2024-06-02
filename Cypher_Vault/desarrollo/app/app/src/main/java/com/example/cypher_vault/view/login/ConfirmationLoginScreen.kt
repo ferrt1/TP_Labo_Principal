@@ -23,6 +23,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.Wifi
 import androidx.compose.material.icons.filled.WifiOff
 import androidx.compose.material.icons.outlined.Check
@@ -147,7 +148,7 @@ fun ConfirmationLoginScreen(navController: NavController, userId: String) {
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(30.dp)
+            .padding(20.dp)
             .verticalScroll(rememberScrollState()),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
@@ -422,6 +423,42 @@ fun ElevatedCardMailConfirmation(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
+            /// TITULO //////////////////////////////////////////////////////////////////
+            Spacer(modifier = Modifier.height(15.dp))
+            Row(
+                horizontalArrangement = Arrangement.Absolute.Center
+            ) {
+                Icon(
+                    Icons.Filled.Lock,
+                    contentDescription = "Localized description",
+                    Modifier.size(150.dp),
+                    tint = secondColor
+                )
+            }
+            Spacer(modifier = Modifier.height(15.dp))
+            Row(
+                horizontalArrangement = Arrangement.Absolute.Center
+            ) {
+                Text(
+                    text = "Segunda",
+                    fontSize = 20.sp,
+                    color = secondColor,
+                    style = textStyleTittle2,
+                    onTextLayout = { /* No se necesita hacer nada aquí */ }
+                )
+            }
+            Spacer(modifier = Modifier.height(8.dp))
+            Row(
+                horizontalArrangement = Arrangement.Absolute.Center
+            ) {
+                Text(
+                    text = "Autentificacion",
+                    fontSize = 20.sp,
+                    color = secondColor,
+                    style = textStyleTittle2,
+                    onTextLayout = { /* No se necesita hacer nada aquí */ }
+                )
+            }
             /// Informacion de RED///////////////////////////////
             Row {
                 AssistChip(
@@ -463,6 +500,7 @@ fun ElevatedCardMailConfirmation(
                     }
                 )
             }
+            Spacer(modifier = Modifier.height(20.dp))
             //// Texto de la 2da Authentificacion por mail ////////////////////////////
             Row {
                 Text(
@@ -473,7 +511,7 @@ fun ElevatedCardMailConfirmation(
                     modifier = Modifier.padding(horizontal = 16.dp)
                 )
             }
-            Spacer(modifier = Modifier.height(20.dp))
+            Spacer(modifier = Modifier.height(10.dp))
             //// Formularios ingreso de codigo ////////////////////////////
             Row(
                 horizontalArrangement = Arrangement.Absolute.Center
@@ -881,6 +919,43 @@ fun ElevatedCardDayPart(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
+            /// TITULO //////////////////////////////////////////////////////////////////
+            Spacer(modifier = Modifier.height(15.dp))
+            Row(
+                horizontalArrangement = Arrangement.Absolute.Center
+            ) {
+                Icon(
+                    Icons.Filled.Lock,
+                    contentDescription = "Localized description",
+                    Modifier.size(150.dp),
+                    tint = secondColor
+                )
+            }
+            Spacer(modifier = Modifier.height(15.dp))
+            Row(
+                horizontalArrangement = Arrangement.Absolute.Center
+            ) {
+                Text(
+                    text = "Segunda",
+                    fontSize = 20.sp,
+                    color = secondColor,
+                    style = textStyleTittle2,
+                    onTextLayout = { /* No se necesita hacer nada aquí */ }
+                )
+            }
+            Spacer(modifier = Modifier.height(8.dp))
+            Row(
+                horizontalArrangement = Arrangement.Absolute.Center
+            ) {
+                Text(
+                    text = "Autentificacion",
+                    fontSize = 20.sp,
+                    color = secondColor,
+                    style = textStyleTittle2,
+                    onTextLayout = { /* No se necesita hacer nada aquí */ }
+                )
+            }
+            /// Informacion de RED///////////////////////////////
             Row {
                 AssistChip(
                     shape = RoundedCornerShape(4.dp),
@@ -921,6 +996,8 @@ fun ElevatedCardDayPart(
                     }
                 )
             }
+            Spacer(modifier = Modifier.height(20.dp))
+            /// TEXTO DE LA CARD //////////////////////////////////////////////////////////////////
             Row {
                 Text(
                     text = "¿En que momento del dia te conectaste la ultima vez?",
