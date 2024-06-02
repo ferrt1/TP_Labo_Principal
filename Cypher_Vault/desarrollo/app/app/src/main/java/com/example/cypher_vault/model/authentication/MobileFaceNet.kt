@@ -5,8 +5,6 @@ import android.util.Log
 import org.tensorflow.lite.Interpreter
 import java.io.FileInputStream
 import java.nio.MappedByteBuffer
-import java.nio.ByteBuffer
-import java.nio.ByteOrder
 import java.nio.channels.FileChannel
 import kotlin.math.pow
 import kotlin.math.sqrt
@@ -18,6 +16,7 @@ class MobileFaceNet(assetManager: AssetManager, modelPath: String = "MobileFaceN
     }
 
     private val interpreter: Interpreter
+    private var lastDistance: Float = 0.0f
 
     init {
         val options = Interpreter.Options()
@@ -88,6 +87,12 @@ class MobileFaceNet(assetManager: AssetManager, modelPath: String = "MobileFaceN
     private fun evaluate(embeddings: Array<FloatArray>): Float {
         val dist = embeddings[0].zip(embeddings[1]) { a, b -> (a - b).pow(2) }.sum()
         Log.d("Image", "$dist")
+        lastDistance = dist
         return if (dist < THRESHOLD) 1.0f else 0.0f
     }
+
+    fun getLastDistance(): Float {
+        return lastDistance
+    }
+
 }

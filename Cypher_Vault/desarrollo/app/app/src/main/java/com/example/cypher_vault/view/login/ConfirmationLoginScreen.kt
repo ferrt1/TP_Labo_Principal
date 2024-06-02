@@ -122,6 +122,9 @@ fun ConfirmationLoginScreen(navController: NavController, userId: String) {
     val userAccessManager = UserAccessManager()
     val userAccessController = UserAccessController(userAccessManager)
 
+    val distance = remember { mutableStateOf<Float?>(null) }
+    var showData by remember { mutableStateOf(false) }
+
     //Variables de la 2da Authentificacion
     var isSecondAuth: Boolean? by remember { mutableStateOf(false) }
     LaunchedEffect(Unit) { // Key can be anything to trigger on recomposition
@@ -139,14 +142,15 @@ fun ConfirmationLoginScreen(navController: NavController, userId: String) {
         isInternetAvailable = serviceController.isInternetAvailable()
     }
 
-    // Utiliza LaunchedEffect para asegurar que la autenticación se ejecute una vez
     LaunchedEffect(userId) {
-        authenticationController.authenticate(userId) { isSuccess, registerBitmap, loginBitmap ->
+        authenticationController.authenticate(userId) { isSuccess, registerBitmap, loginBitmap, dist ->
             result.value = isSuccess
             imagePrintRegister.value = registerBitmap
             imagePrintLogin.value = loginBitmap
+            distance.value = dist
         }
     }
+
 
     Column(
         modifier = Modifier
@@ -307,6 +311,34 @@ fun ConfirmationLoginScreen(navController: NavController, userId: String) {
                             modifier = Modifier.padding(top = 16.dp)
                         )
                         OutlinedButton(
+                            onClick = { showData = !showData },
+                            shape = RoundedCornerShape(15.dp),
+                            border = BorderStroke(3.dp, firstColor),
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = Color.Transparent,
+                                contentColor = thirdColor
+                            ),
+                            modifier = Modifier
+                                .width(200.dp)
+                                .padding(top = 16.dp)
+                        ) {
+                            Text(
+                                if (showData) "Ocultar datos" else "Ver datos",
+                                fontFamily = fontFamily,
+                                color = thirdColor,
+                                fontWeight = FontWeight.Bold
+                            )
+                        }
+                        if (showData && distance.value != null) {
+                            Text(
+                                "Distancia calculada: ${distance.value}",
+                                fontFamily = fontFamily,
+                                fontWeight = FontWeight.Bold,
+                                color = thirdColor,
+                                modifier = Modifier.padding(top = 16.dp)
+                            )
+                        }
+                        OutlinedButton(
                             onClick = { navController.navigateToListLogin() },
                             shape = RoundedCornerShape(15.dp),
                             border = BorderStroke(3.dp, firstColor),
@@ -346,6 +378,34 @@ fun ConfirmationLoginScreen(navController: NavController, userId: String) {
                             fontFamily = fontFamily,
                             color = thirdColor,
                             fontWeight = FontWeight.Bold
+                        )
+                    }
+                    OutlinedButton(
+                        onClick = { showData = !showData },
+                        shape = RoundedCornerShape(15.dp),
+                        border = BorderStroke(3.dp, firstColor),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = Color.Transparent,
+                            contentColor = thirdColor
+                        ),
+                        modifier = Modifier
+                            .width(200.dp)
+                            .padding(top = 16.dp)
+                    ) {
+                        Text(
+                            if (showData) "Ocultar datos" else "Ver datos",
+                            fontFamily = fontFamily,
+                            color = thirdColor,
+                            fontWeight = FontWeight.Bold
+                        )
+                    }
+                    if (showData && distance.value != null) {
+                        Text(
+                            "Distancia calculada: ${distance.value}",
+                            fontFamily = fontFamily,
+                            fontWeight = FontWeight.Bold,
+                            color = thirdColor,
+                            modifier = Modifier.padding(top = 16.dp)
                         )
                     }
                     if (showImage) {

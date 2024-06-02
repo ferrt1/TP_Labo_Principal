@@ -17,13 +17,13 @@ class AuthenticationController(context: Context) {
     private val assetManager = context.assets // AssetManager
     private val threshold = 0.6f
 
-    fun authenticate(userId: String, callback: (Boolean, Bitmap?, Bitmap?) -> Unit) {
+    fun authenticate(userId: String, callback: (Boolean, Bitmap?, Bitmap?, Float) -> Unit) {
         CoroutineScope(Dispatchers.IO).launch {
             val imageLogin = databaseController.getImageLoginForUser(userId)
             val imageRegister = databaseController.getImageRegistersForUser(userId)
 
-            if (imageLogin.isNullOrEmpty() || imageRegister.isNullOrEmpty()) {
-                callback(false, null, null)
+            if (imageLogin.isEmpty() || imageRegister.isEmpty()) {
+                callback(false, null, null, 0.0f)
                 return@launch
             }
             val registerImage = imageRegister[0]
@@ -34,10 +34,11 @@ class AuthenticationController(context: Context) {
 
             val mobileFaceNet = MobileFaceNet(assetManager)
             val result = mobileFaceNet.compare(registerBitmap, loginBitmap)
+            val distance = mobileFaceNet.getLastDistance()
 
             val isAuthenticated = result >= MobileFaceNet.THRESHOLD
             databaseController.deleteImageLogin(userId)
-            callback(isAuthenticated, registerBitmap, loginBitmap)
+            callback(isAuthenticated, registerBitmap, loginBitmap, distance)
         }
     }
 
