@@ -7,6 +7,7 @@ import android.widget.Toast
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -36,6 +37,8 @@ import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
@@ -45,6 +48,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.platform.LocalContext
@@ -53,6 +57,7 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.cypher_vault.R
@@ -60,6 +65,7 @@ import com.example.cypher_vault.controller.authentication.AuthenticationControll
 import com.example.cypher_vault.controller.authentication.SecondAuthController
 import com.example.cypher_vault.controller.data.DatabaseController
 import com.example.cypher_vault.controller.income.UserAccessController
+import com.example.cypher_vault.controller.messages.getvalidateNameSpacesAndLineBreaks
 import com.example.cypher_vault.controller.navigation.NavController
 import com.example.cypher_vault.controller.service.ServiceController
 import com.example.cypher_vault.model.authentication.SecondAuthManager
@@ -68,6 +74,7 @@ import com.example.cypher_vault.model.service.ServiceManager
 import com.example.cypher_vault.view.gallery.firstColor
 import com.example.cypher_vault.view.gallery.textStyleTittle2
 import com.example.cypher_vault.view.gallery.thirdColor
+import com.example.cypher_vault.view.resources.redColor
 
 //Colores de la ui, tipo de letra, etc.///////////////////////
 val firstColor = Color(0xFF02a6c3)
@@ -94,6 +101,7 @@ val textStyleTittle2 = TextStyle(
     fontFamily = com.example.cypher_vault.view.resources.fontFamily,
     letterSpacing = 1.sp
 )
+
 @Composable
 fun ConfirmationLoginScreen(navController: NavController, userId: String) {
     val context = LocalContext.current
@@ -140,7 +148,8 @@ fun ConfirmationLoginScreen(navController: NavController, userId: String) {
 
     Column(
         modifier = Modifier
-            .fillMaxSize().padding(30.dp)
+            .fillMaxSize()
+            .padding(30.dp)
             .verticalScroll(rememberScrollState()),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
@@ -150,35 +159,50 @@ fun ConfirmationLoginScreen(navController: NavController, userId: String) {
             if (isSecondAuth == true) {
                 /// SIN IMAGENES Y CON SEGUNDA ACTIVADA ////////////////////////
                 if (isInternetAvailable) {
-                    ElevatedCardExample(context, navController, secondAuthController,userAccessController, userId, isInternetAvailable)
+                    ElevatedCardMailConfirmation(
+                        context,
+                        navController,
+                        secondAuthController,
+                        userAccessController,
+                        userId,
+                        isInternetAvailable
+                    )
                 } else {
-                    ElevatedCardExample(context, navController, secondAuthController,userAccessController, userId, isInternetAvailable)
+                    ElevatedCardDayPart(
+                        context,
+                        navController,
+                        secondAuthController,
+                        userAccessController,
+                        userId,
+                        isInternetAvailable
+                    )
                 }
             } else {
                 /// SIN IMAGENES Y SIN SEGUNDA ACTIVADA ////////////////////////
-                Text(
-                    "sin imagenes, pero sin segunda activada",
-                    fontSize = 20.sp,
-                    fontWeight = FontWeight.Bold,
-                )
-                /////Ingreso de usuario
+                // Ingreso de usuario
                 LaunchedEffect(userId) {
                     userAccessController.insertUserIncome(userId)
-                    Log.d("auth","Ingreso de usuario1")
                 }
-                ///////////////////////
+                Image(
+                    painter = painterResource(id = R.drawable.successful),
+                    contentDescription = "Bienvenido!",
+                    modifier = Modifier.size(128.dp)
+                )
                 Text(
-                    "¡Bienvenido!",
+                    "¡Bienvenido de nuevo!",
                     fontSize = 20.sp,
-                    fontWeight = FontWeight.Bold,
+                    fontFamily = fontFamily,
+                    color = thirdColor,
+                    fontWeight = FontWeight.ExtraBold,
+                    modifier = Modifier.padding(top = 16.dp)
                 )
                 OutlinedButton(
                     onClick = { navController.navigateToGallery(userId) },
                     shape = RoundedCornerShape(15.dp),
-                    border = BorderStroke(3.dp, Color.Gray),
+                    border = BorderStroke(3.dp, firstColor),
                     colors = ButtonDefaults.buttonColors(
                         containerColor = Color.Transparent,
-                        contentColor = Color.Gray
+                        contentColor = thirdColor
                     ),
                     modifier = Modifier
                         .width(200.dp)
@@ -186,6 +210,8 @@ fun ConfirmationLoginScreen(navController: NavController, userId: String) {
                 ) {
                     Text(
                         "Ir a la galería",
+                        fontFamily = fontFamily,
+                        color = thirdColor,
                         fontWeight = FontWeight.Bold
                     )
                 }
@@ -194,9 +220,24 @@ fun ConfirmationLoginScreen(navController: NavController, userId: String) {
             /// CON IMAGENES Y CON SEGUNDA ACTIVADA ////////////////////////
             if (isSecondAuth == true) {
                 if (isInternetAvailable) {
-                    ElevatedCardExample(context, navController, secondAuthController, userAccessController, userId, isInternetAvailable)
+                    ElevatedCardMailConfirmation(
+                        context,
+                        navController,
+                        secondAuthController,
+                        userAccessController,
+                        userId,
+                        isInternetAvailable
+                    )
+
                 } else {
-                    ElevatedCardExample(context, navController, secondAuthController, userAccessController, userId, isInternetAvailable)
+                    ElevatedCardDayPart(
+                        context,
+                        navController,
+                        secondAuthController,
+                        userAccessController,
+                        userId,
+                        isInternetAvailable
+                    )
                 }
             } else {
                 /// CON IMAGENES Y CON SEGUNDA DESACTIVADA ////////////////////////
@@ -209,6 +250,7 @@ fun ConfirmationLoginScreen(navController: NavController, userId: String) {
                             fontWeight = FontWeight.Bold,
                         )
                     }
+
                     true -> {
                         // Ingreso de usuario
                         LaunchedEffect(userId) {
@@ -247,6 +289,7 @@ fun ConfirmationLoginScreen(navController: NavController, userId: String) {
                             )
                         }
                     }
+
                     false -> {
                         Image(
                             painter = painterResource(id = R.drawable.failure),
@@ -311,7 +354,7 @@ fun ConfirmationLoginScreen(navController: NavController, userId: String) {
             }
 
         }
-        //Boton de me vuelta al logueo
+        //Boton vuelta al logueo
         Spacer(modifier = Modifier.weight(1f)) // Push the button to the bottom
         OutlinedButton(
             onClick = { navController.navigateToListLogin() },
@@ -333,9 +376,472 @@ fun ConfirmationLoginScreen(navController: NavController, userId: String) {
     }
 }
 
-/// TARJETA DE LA 2DA AUTHENTICACION
+/// TARJETA DE LA 2DA AUTHENTICACION PARTE DEL MAIL ////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 @Composable
-fun ElevatedCardExample(context: Context, navController: NavController, secondAuthController: SecondAuthController, userAccessController: UserAccessController, userId: String, isInternetAvailable: Boolean) {
+fun ElevatedCardMailConfirmation(
+    context: Context,
+    navController: NavController,
+    secondAuthController: SecondAuthController,
+    userAccessController: UserAccessController,
+    userId: String,
+    internetAvailable: Boolean
+) {
+    var primerValorCodigo = remember { mutableStateOf(TextFieldValue()) }
+    var segundoValorCodigo = remember { mutableStateOf(TextFieldValue()) }
+    var tercerValorCodigo = remember { mutableStateOf(TextFieldValue()) }
+    var cuartoValorCodigo = remember { mutableStateOf(TextFieldValue()) }
+    var quintoValorCodigo = remember { mutableStateOf(TextFieldValue()) }
+
+    /// Variables y logica del mail
+    var mailCode by remember { mutableStateOf("") }
+    LaunchedEffect(Unit) {
+        mailCode = secondAuthController.sendMail(userId)
+    }
+
+    ElevatedCard(
+        elevation = CardDefaults.cardElevation(
+            defaultElevation = 6.dp
+        ),
+        modifier = Modifier
+            .padding(16.dp)
+            .background(mainBackgroundColor)
+            .fillMaxHeight(),
+    ) {
+        Column(
+            modifier = Modifier
+                .padding(16.dp)
+                .background(wingWhite),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
+        ) {
+            /// Informacion de RED///////////////////////////////
+            Row {
+                AssistChip(
+                    shape = RoundedCornerShape(4.dp),
+                    border = BorderStroke(3.dp, firstColor),
+                    onClick = { Log.d("Assist chip", "WbTwilight world") },
+                    label = {
+                        if (internetAvailable) {
+                            Text(
+                                text = "con conexion",
+                                color = firstColor,
+                                style = textStyleTittle2,
+                                onTextLayout = { /* No se necesita hacer nada aquí */ })
+                        } else {
+                            Text(
+                                text = "sin conexion",
+                                color = firstColor,
+                                style = textStyleTittle2,
+                                onTextLayout = { /* No se necesita hacer nada aquí */ })
+                        }
+                    },
+                    leadingIcon = {
+                        if (internetAvailable) {
+                            Icon(
+                                Icons.Filled.Wifi,
+                                contentDescription = "Localized description",
+                                Modifier.size(AssistChipDefaults.IconSize),
+                                tint = firstColor
+                            )
+
+                        } else {
+                            Icon(
+                                Icons.Filled.WifiOff,
+                                contentDescription = "Localized description",
+                                Modifier.size(AssistChipDefaults.IconSize),
+                                tint = firstColor
+                            )
+                        }
+                    }
+                )
+            }
+            //// Texto de la 2da Authentificacion por mail ////////////////////////////
+            Row {
+                Text(
+                    text = "Ingresa el codigo que acabamos de enviar a tu correo",
+                    color = firstColor,
+                    style = textStyleTittle2,
+                    onTextLayout = { /* No se necesita hacer nada aquí */ },
+                    modifier = Modifier.padding(horizontal = 16.dp)
+                )
+            }
+            Spacer(modifier = Modifier.height(20.dp))
+            //// Formularios ingreso de codigo ////////////////////////////
+            Row(
+                horizontalArrangement = Arrangement.Absolute.Center
+            ) {
+                /// VALOR DIGITO 1 ///////////////////////////////////////////////
+                Spacer(modifier = Modifier.width(8.dp))
+                Column {
+                    TextField(
+                        value = primerValorCodigo.value,
+                        onValueChange = {
+                            primerValorCodigo.value = it
+                        },
+                        textStyle = TextStyle(
+                            color = firstColor,
+                            fontSize = 16.sp,
+                            fontFamily = com.example.cypher_vault.view.resources.fontFamily,
+                            fontWeight = FontWeight.Bold
+                        ),
+                        placeholder = {
+                            Text(
+                                "",
+                                style = TextStyle(
+                                    color = Color.Gray,
+                                    fontSize = 16.sp,
+                                    fontFamily = com.example.cypher_vault.view.resources.fontFamily
+                                )
+                            )
+                        },
+                        label = {
+                            Text(
+                                "",
+                                fontSize = 20.sp,
+                                fontFamily = com.example.cypher_vault.view.resources.fontFamily,
+                                color = com.example.cypher_vault.view.resources.thirdColor,
+                                fontWeight = FontWeight.Bold,
+                            )
+                        },
+                        singleLine = true,
+                        shape = RoundedCornerShape(4.dp),
+                        colors = TextFieldDefaults.colors(
+                            focusedContainerColor = Color.Transparent,
+                            unfocusedContainerColor = Color.Transparent,
+                            disabledContainerColor = Color.Transparent,
+                            cursorColor = com.example.cypher_vault.view.resources.thirdColor,
+                            focusedIndicatorColor = com.example.cypher_vault.view.resources.firstColor,
+                            unfocusedIndicatorColor = com.example.cypher_vault.view.resources.firstColor,
+                        ),
+                        modifier = Modifier
+                            .width(35.dp) // Establece un ancho fijo para el TextField
+                            .padding(top = 15.dp)
+                            .border(
+                                BorderStroke(
+                                    3.dp,
+                                    com.example.cypher_vault.view.resources.firstColor
+                                ),
+                                shape = RoundedCornerShape(4.dp),
+                            )
+                            .onFocusChanged { focusState ->
+                                if (focusState.isFocused) {
+                                    // El campo de entrada de texto tiene el foco
+                                    //isContentVisiblemail = true
+                                } else {
+                                    // El campo de entrada de texto perdió el foco
+                                    //isContentVisiblemail = false
+                                }
+                            }
+                    )
+                }
+                /// VALOR DIGITO 2 ///////////////////////////////////////////////
+                Spacer(modifier = Modifier.width(8.dp))
+                Column {
+                    TextField(
+                        value = segundoValorCodigo.value,
+                        onValueChange = {
+                            segundoValorCodigo.value = it
+                        },
+                        textStyle = TextStyle(
+                            color = firstColor,
+                            fontSize = 16.sp,
+                            fontFamily = com.example.cypher_vault.view.resources.fontFamily,
+                            fontWeight = FontWeight.Bold
+                        ),
+                        placeholder = {
+                            Text(
+                                "",
+                                style = TextStyle(
+                                    color = Color.Gray,
+                                    fontSize = 16.sp,
+                                    fontFamily = com.example.cypher_vault.view.resources.fontFamily
+                                )
+                            )
+                        },
+                        label = {
+                            Text(
+                                "",
+                                fontSize = 20.sp,
+                                fontFamily = com.example.cypher_vault.view.resources.fontFamily,
+                                color = com.example.cypher_vault.view.resources.thirdColor,
+                                fontWeight = FontWeight.Bold,
+                            )
+                        },
+                        singleLine = true,
+                        shape = RoundedCornerShape(4.dp),
+                        colors = TextFieldDefaults.colors(
+                            focusedContainerColor = Color.Transparent,
+                            unfocusedContainerColor = Color.Transparent,
+                            disabledContainerColor = Color.Transparent,
+                            cursorColor = com.example.cypher_vault.view.resources.thirdColor,
+                            focusedIndicatorColor = com.example.cypher_vault.view.resources.firstColor,
+                            unfocusedIndicatorColor = com.example.cypher_vault.view.resources.firstColor,
+                        ),
+                        modifier = Modifier
+                            .width(35.dp) // Establece un ancho fijo para el TextField
+                            .padding(top = 15.dp)
+                            .border(
+                                BorderStroke(
+                                    3.dp,
+                                    com.example.cypher_vault.view.resources.firstColor
+                                ),
+                                shape = RoundedCornerShape(4.dp),
+                            )
+                            .onFocusChanged { focusState ->
+                                if (focusState.isFocused) {
+                                    // El campo de entrada de texto tiene el foco
+                                    //isContentVisiblemail = true
+                                } else {
+                                    // El campo de entrada de texto perdió el foco
+                                    //isContentVisiblemail = false
+                                }
+                            }
+                    )
+                }
+                /// VALOR DIGITO 3 ///////////////////////////////////////////////
+                Spacer(modifier = Modifier.width(8.dp))
+                Column {
+                    TextField(
+                        value = tercerValorCodigo.value,
+                        onValueChange = {
+                            tercerValorCodigo.value = it
+                        },
+                        textStyle = TextStyle(
+                            color = firstColor,
+                            fontSize = 16.sp,
+                            fontFamily = com.example.cypher_vault.view.resources.fontFamily,
+                            fontWeight = FontWeight.Bold
+                        ),
+                        placeholder = {
+                            Text(
+                                "",
+                                style = TextStyle(
+                                    color = Color.Gray,
+                                    fontSize = 16.sp,
+                                    fontFamily = com.example.cypher_vault.view.resources.fontFamily
+                                )
+                            )
+                        },
+                        label = {
+                            Text(
+                                "",
+                                fontSize = 20.sp,
+                                fontFamily = com.example.cypher_vault.view.resources.fontFamily,
+                                color = com.example.cypher_vault.view.resources.thirdColor,
+                                fontWeight = FontWeight.Bold,
+                            )
+                        },
+                        singleLine = true,
+                        shape = RoundedCornerShape(4.dp),
+                        colors = TextFieldDefaults.colors(
+                            focusedContainerColor = Color.Transparent,
+                            unfocusedContainerColor = Color.Transparent,
+                            disabledContainerColor = Color.Transparent,
+                            cursorColor = com.example.cypher_vault.view.resources.thirdColor,
+                            focusedIndicatorColor = com.example.cypher_vault.view.resources.firstColor,
+                            unfocusedIndicatorColor = com.example.cypher_vault.view.resources.firstColor,
+                        ),
+                        modifier = Modifier
+                            .width(35.dp) // Establece un ancho fijo para el TextField
+                            .padding(top = 15.dp)
+                            .border(
+                                BorderStroke(
+                                    3.dp,
+                                    com.example.cypher_vault.view.resources.firstColor
+                                ),
+                                shape = RoundedCornerShape(4.dp),
+                            )
+                            .onFocusChanged { focusState ->
+                                if (focusState.isFocused) {
+                                    // El campo de entrada de texto tiene el foco
+                                    //isContentVisiblemail = true
+                                } else {
+                                    // El campo de entrada de texto perdió el foco
+                                    //isContentVisiblemail = false
+                                }
+                            }
+                    )
+                }
+                /// VALOR DIGITO 4 ///////////////////////////////////////////////
+                Spacer(modifier = Modifier.width(8.dp))
+                Column {
+                    TextField(
+                        value = cuartoValorCodigo.value,
+                        onValueChange = {
+                            cuartoValorCodigo.value = it
+                        },
+                        textStyle = TextStyle(
+                            color = firstColor,
+                            fontSize = 16.sp,
+                            fontFamily = com.example.cypher_vault.view.resources.fontFamily,
+                            fontWeight = FontWeight.Bold
+                        ),
+                        placeholder = {
+                            Text(
+                                "",
+                                style = TextStyle(
+                                    color = Color.Gray,
+                                    fontSize = 16.sp,
+                                    fontFamily = com.example.cypher_vault.view.resources.fontFamily
+                                )
+                            )
+                        },
+                        label = {
+                            Text(
+                                "",
+                                fontSize = 20.sp,
+                                fontFamily = com.example.cypher_vault.view.resources.fontFamily,
+                                color = com.example.cypher_vault.view.resources.thirdColor,
+                                fontWeight = FontWeight.Bold,
+                            )
+                        },
+                        singleLine = true,
+                        shape = RoundedCornerShape(4.dp),
+                        colors = TextFieldDefaults.colors(
+                            focusedContainerColor = Color.Transparent,
+                            unfocusedContainerColor = Color.Transparent,
+                            disabledContainerColor = Color.Transparent,
+                            cursorColor = com.example.cypher_vault.view.resources.thirdColor,
+                            focusedIndicatorColor = com.example.cypher_vault.view.resources.firstColor,
+                            unfocusedIndicatorColor = com.example.cypher_vault.view.resources.firstColor,
+                        ),
+                        modifier = Modifier
+                            .width(35.dp) // Establece un ancho fijo para el TextField
+                            .padding(top = 15.dp)
+                            .border(
+                                BorderStroke(
+                                    3.dp,
+                                    com.example.cypher_vault.view.resources.firstColor
+                                ),
+                                shape = RoundedCornerShape(4.dp),
+                            )
+                            .onFocusChanged { focusState ->
+                                if (focusState.isFocused) {
+                                    // El campo de entrada de texto tiene el foco
+                                    //isContentVisiblemail = true
+                                } else {
+                                    // El campo de entrada de texto perdió el foco
+                                    //isContentVisiblemail = false
+                                }
+                            }
+                    )
+                }
+                /// VALOR DIGITO 5 ///////////////////////////////////////////////
+                Spacer(modifier = Modifier.width(8.dp))
+                Column {
+                    TextField(
+                        value = quintoValorCodigo.value,
+                        onValueChange = {
+                            quintoValorCodigo.value = it
+                        },
+                        textStyle = TextStyle(
+                            color = firstColor,
+                            fontSize = 16.sp,
+                            fontFamily = com.example.cypher_vault.view.resources.fontFamily,
+                            fontWeight = FontWeight.Bold
+                        ),
+                        placeholder = {
+                            Text(
+                                "",
+                                style = TextStyle(
+                                    color = Color.Gray,
+                                    fontSize = 16.sp,
+                                    fontFamily = com.example.cypher_vault.view.resources.fontFamily
+                                )
+                            )
+                        },
+                        label = {
+                            Text(
+                                "",
+                                fontSize = 20.sp,
+                                fontFamily = com.example.cypher_vault.view.resources.fontFamily,
+                                color = com.example.cypher_vault.view.resources.thirdColor,
+                                fontWeight = FontWeight.Bold,
+                            )
+                        },
+                        singleLine = true,
+                        shape = RoundedCornerShape(4.dp),
+                        colors = TextFieldDefaults.colors(
+                            focusedContainerColor = Color.Transparent,
+                            unfocusedContainerColor = Color.Transparent,
+                            disabledContainerColor = Color.Transparent,
+                            cursorColor = com.example.cypher_vault.view.resources.thirdColor,
+                            focusedIndicatorColor = com.example.cypher_vault.view.resources.firstColor,
+                            unfocusedIndicatorColor = com.example.cypher_vault.view.resources.firstColor,
+                        ),
+                        modifier = Modifier
+                            .width(35.dp) // Establece un ancho fijo para el TextField
+                            .padding(top = 15.dp)
+                            .border(
+                                BorderStroke(
+                                    3.dp,
+                                    com.example.cypher_vault.view.resources.firstColor
+                                ),
+                                shape = RoundedCornerShape(4.dp),
+                            )
+                            .onFocusChanged { focusState ->
+                                if (focusState.isFocused) {
+                                    // El campo de entrada de texto tiene el foco
+                                    //isContentVisiblemail = true
+                                } else {
+                                    // El campo de entrada de texto perdió el foco
+                                    //isContentVisiblemail = false
+                                }
+                            }
+                    )
+                }
+            }
+            //// Boton del formulario ////////////////////////////
+            Spacer(modifier = Modifier.height(8.dp))
+            Row(
+                horizontalArrangement = Arrangement.Absolute.Center
+            ) {
+                OutlinedButton(
+                    onClick = {
+                        if (true) {
+                            /////Ingreso de usuario
+                            userAccessController.insertUserIncome(userId)
+                            ///////////////////////
+                            navController.navigateToGallery(userId)
+                        } else {
+                            Toast.makeText(context, "Error en la autenticacion", Toast.LENGTH_SHORT)
+                                .show()
+                            navController.navigateToListLogin()
+                        }
+                    },
+                    shape = RoundedCornerShape(15.dp),
+                    border = BorderStroke(3.dp, Color.Gray),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = thirdColor,
+                        contentColor = wingWhite
+                    ),
+                    modifier = Modifier
+                        .width(200.dp)
+                        .padding(vertical = 30.dp)
+                ) {
+                    Text(
+                        "Comprobar",
+                        fontWeight = FontWeight.Bold
+                    )
+                }
+            }
+        }
+    }
+}
+
+
+/// TARJETA DE LA 2DA AUTHENTICACION PARTE DEL DIA ////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+@Composable
+fun ElevatedCardDayPart(
+    context: Context,
+    navController: NavController,
+    secondAuthController: SecondAuthController,
+    userAccessController: UserAccessController,
+    userId: String,
+    isInternetAvailable: Boolean
+) {
     var dayPart by remember { mutableStateOf(SecondAuthManager.DayPart.MORNING) }
     ElevatedCard(
         elevation = CardDefaults.cardElevation(
@@ -365,7 +871,7 @@ fun ElevatedCardExample(context: Context, navController: NavController, secondAu
                                 color = firstColor,
                                 style = textStyleTittle2,
                                 onTextLayout = { /* No se necesita hacer nada aquí */ })
-                        }else{
+                        } else {
                             Text(
                                 text = "sin conexion",
                                 color = firstColor,
@@ -395,7 +901,7 @@ fun ElevatedCardExample(context: Context, navController: NavController, secondAu
             }
             Row {
                 Text(
-                    text = "¿Cuando fue la ultima vez que la pusiste?",
+                    text = "¿En que momento del dia te conectaste la ultima vez?",
                     color = firstColor,
                     style = textStyleTittle2,
                     onTextLayout = { /* No se necesita hacer nada aquí */ },
@@ -414,23 +920,25 @@ fun ElevatedCardExample(context: Context, navController: NavController, secondAu
                         labelColor = firstColor,
                     ),
                     modifier = Modifier
-                        .width(290.dp)
+                        .width(250.dp)
                         .padding(top = 15.dp),
                     onClick = { dayPart = SecondAuthManager.DayPart.MORNING },
                     label = { Text("Mañana(7:00AM-15:00PM)") },
                     leadingIcon = {
-                        if(dayPart == SecondAuthManager.DayPart.MORNING){
+                        if (dayPart == SecondAuthManager.DayPart.MORNING) {
                             Icon(
                                 Icons.Outlined.Check,
                                 contentDescription = "Localized description",
                                 Modifier.size(AssistChipDefaults.IconSize),
-                                tint = firstColor)
-                        }else{
+                                tint = firstColor
+                            )
+                        } else {
                             Icon(
                                 Icons.Outlined.WbTwilight,
                                 contentDescription = "Localized description",
                                 Modifier.size(AssistChipDefaults.IconSize),
-                                tint = firstColor)
+                                tint = firstColor
+                            )
                         }
                     }
                 )
@@ -447,18 +955,19 @@ fun ElevatedCardExample(context: Context, navController: NavController, secondAu
                         labelColor = firstColor,
                     ),
                     modifier = Modifier
-                        .width(290.dp)
+                        .width(250.dp)
                         .padding(top = 15.dp),
                     onClick = { dayPart = SecondAuthManager.DayPart.AFTERNOON },
                     label = { Text("Tarde(15:00PM-23:00PM)") },
                     leadingIcon = {
-                        if(dayPart == SecondAuthManager.DayPart.AFTERNOON){
+                        if (dayPart == SecondAuthManager.DayPart.AFTERNOON) {
                             Icon(
                                 Icons.Outlined.Check,
                                 contentDescription = "Localized description",
                                 Modifier.size(AssistChipDefaults.IconSize),
-                                tint = firstColor)
-                        }else{
+                                tint = firstColor
+                            )
+                        } else {
                             Icon(
                                 Icons.Outlined.WbSunny,
                                 contentDescription = "Localized description",
@@ -481,18 +990,19 @@ fun ElevatedCardExample(context: Context, navController: NavController, secondAu
                         labelColor = firstColor,
                     ),
                     modifier = Modifier
-                        .width(290.dp)
+                        .width(250.dp)
                         .padding(top = 15.dp),
                     onClick = { dayPart = SecondAuthManager.DayPart.EVENING },
                     label = { Text("Noche(23:00PM-7:00AM)") },
                     leadingIcon = {
-                        if(dayPart == SecondAuthManager.DayPart.EVENING){
+                        if (dayPart == SecondAuthManager.DayPart.EVENING) {
                             Icon(
                                 Icons.Outlined.Check,
                                 contentDescription = "Localized description",
                                 Modifier.size(AssistChipDefaults.IconSize),
-                                tint = firstColor)
-                        }else{
+                                tint = firstColor
+                            )
+                        } else {
                             Icon(
                                 Icons.Outlined.Nightlight,
                                 contentDescription = "Localized description",
@@ -506,15 +1016,18 @@ fun ElevatedCardExample(context: Context, navController: NavController, secondAu
             Spacer(modifier = Modifier.height(8.dp))
             Row {
                 OutlinedButton(
-                    onClick = { if(secondAuthController.authenticateWOConection(userId,dayPart)){
-                        /////Ingreso de usuario
-                        userAccessController.insertUserIncome(userId)
-                        ///////////////////////
-                        navController.navigateToGallery(userId)
-                    }else{
-                        Toast.makeText(context, "Error en la autenticacion", Toast.LENGTH_SHORT).show()
-                        navController.navigateToListLogin()
-                    } },
+                    onClick = {
+                        if (secondAuthController.authenticateWOConection(userId, dayPart)) {
+                            /////Ingreso de usuario
+                            userAccessController.insertUserIncome(userId)
+                            ///////////////////////
+                            navController.navigateToGallery(userId)
+                        } else {
+                            Toast.makeText(context, "Error en la autenticacion", Toast.LENGTH_SHORT)
+                                .show()
+                            navController.navigateToListLogin()
+                        }
+                    },
                     shape = RoundedCornerShape(15.dp),
                     border = BorderStroke(3.dp, Color.Gray),
                     colors = ButtonDefaults.buttonColors(

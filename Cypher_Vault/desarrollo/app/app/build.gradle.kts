@@ -136,8 +136,9 @@ dependencies {
     // If you want to additionally use the CameraX Extensions library
     implementation("androidx.camera:camera-extensions:${camerax_version}")
 
-    // BASE DE DATOS ///////////////////////
-
+    // Mail ///////////////////////
+    implementation ("com.sun.mail:android-mail:1.6.7")
+    implementation ("com.sun.mail:android-activation:1.6.7")
     //////////////////////////////////////////////
 }
 

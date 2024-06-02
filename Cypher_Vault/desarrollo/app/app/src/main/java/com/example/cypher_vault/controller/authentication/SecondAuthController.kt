@@ -11,4 +11,8 @@ class SecondAuthController(manager: SecondAuthManager) {
         return manager.authenticateWOConection(userId,dayPart)
     }
 
+    fun sendMail(userId: String): String {
+        return manager.sendMail(userId)
+    }
+
 }

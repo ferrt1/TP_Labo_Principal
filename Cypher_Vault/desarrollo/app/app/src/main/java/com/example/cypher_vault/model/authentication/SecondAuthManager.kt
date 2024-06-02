@@ -41,6 +41,12 @@ class SecondAuthManager {
         }
     }
 
+    fun sendMail(userId: String): String {
+
+
+        return ""
+    }
+
     //DEFINO LOS ENUM DE PARTES DEL DIA
     enum class DayPart {
         MORNING,
