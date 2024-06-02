@@ -1,6 +1,7 @@
 package com.example.cypher_vault.model.authentication
 import android.content.res.AssetManager
 import android.graphics.Bitmap
+import android.util.Log
 import org.tensorflow.lite.Interpreter
 import java.io.FileInputStream
 import java.nio.MappedByteBuffer
@@ -13,7 +14,7 @@ import kotlin.math.sqrt
 class MobileFaceNet(assetManager: AssetManager, modelPath: String = "MobileFaceNetv2.tflite") {
     companion object {
         const val INPUT_IMAGE_SIZE = 112
-        const val THRESHOLD = 0.8f
+        const val THRESHOLD = 0.6f
     }
 
     private val interpreter: Interpreter
@@ -86,6 +87,7 @@ class MobileFaceNet(assetManager: AssetManager, modelPath: String = "MobileFaceN
 
     private fun evaluate(embeddings: Array<FloatArray>): Float {
         val dist = embeddings[0].zip(embeddings[1]) { a, b -> (a - b).pow(2) }.sum()
+        Log.d("Image", "$dist")
         return if (dist < THRESHOLD) 1.0f else 0.0f
     }
 }

@@ -254,7 +254,7 @@ fun ConfirmationLoginScreen(navController: NavController, userId: String) {
                             modifier = Modifier.size(128.dp)
                         )
                         Text(
-                            "No son la misma persona.",
+                            "Acceso denegado.",
                             fontSize = 20.sp,
                             fontFamily = fontFamily,
                             color = Color.Red,

@@ -66,106 +66,100 @@ class CameraController(
         isRegister: Boolean
     ) {
         Log.d("Imagen", "entra aca")
-        val tempFile = File.createTempFile("tempImage", ".jpg", context.cacheDir)
-        val outputFileOptions = ImageCapture.OutputFileOptions.Builder(tempFile).build()
-        imageCapture.takePicture(
-            outputFileOptions,
-            ContextCompat.getMainExecutor(context),
-            object : ImageCapture.OnImageSavedCallback {
-                override fun onImageSaved(outputFileResults: ImageCapture.OutputFileResults) {
-                    val imageBytes = tempFile.readBytes()
+        try {
+            val tempFile = File.createTempFile("tempImage", ".jpg", context.cacheDir)
+            val outputFileOptions = ImageCapture.OutputFileOptions.Builder(tempFile).build()
+            imageCapture.takePicture(
+                outputFileOptions,
+                ContextCompat.getMainExecutor(context),
+                object : ImageCapture.OnImageSavedCallback {
+                    override fun onImageSaved(outputFileResults: ImageCapture.OutputFileResults) {
+                        try {
+                            val imageBytes = tempFile.readBytes()
+                            val imgBitmap = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.size)
+                            val rotatedBitmap = rotateBitmap(imgBitmap, -90f)
+                            val grayscaleBitmap = convertToGrayscale(rotatedBitmap)
+                            val reductionAmountX = 220
+                            val reductionAmountY = 180
 
-                    val imgBitmap = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.size)
+                            val boundingBoxInImageCoordinates = Rect(
+                                faceOverlayView.boundingBox!!.left * imgBitmap.width / faceOverlayView.imageWidth + reductionAmountX,
+                                faceOverlayView.boundingBox!!.top * imgBitmap.height / faceOverlayView.imageHeight + reductionAmountY,
+                                faceOverlayView.boundingBox!!.right * imgBitmap.width / faceOverlayView.imageWidth - reductionAmountX,
+                                faceOverlayView.boundingBox!!.bottom * imgBitmap.height / faceOverlayView.imageHeight - reductionAmountY
+                            )
 
-                    val rotatedBitmap = rotateBitmap(imgBitmap, -90f)
+                            val croppedBitmap = Bitmap.createBitmap(
+                                grayscaleBitmap,
+                                boundingBoxInImageCoordinates.left,
+                                boundingBoxInImageCoordinates.top,
+                                boundingBoxInImageCoordinates.width(),
+                                boundingBoxInImageCoordinates.height()
+                            )
 
-                    // Convierte el Bitmap rotado a escala de grises
-                    val grayscaleBitmap = convertToGrayscale(rotatedBitmap)
+                            val aspectRatio = boundingBoxInImageCoordinates.width().toFloat() / boundingBoxInImageCoordinates.height().toFloat()
+                            val targetWidth: Int
+                            val targetHeight: Int
 
-                    val reductionAmountX = 220
-                    val reductionAmountY = 180
+                            if (boundingBoxInImageCoordinates.width() > boundingBoxInImageCoordinates.height()) {
+                                targetWidth = 112
+                                targetHeight = Math.round(targetWidth / aspectRatio)
+                            } else {
+                                targetHeight = 112
+                                targetWidth = Math.round(targetHeight * aspectRatio)
+                            }
 
-                    val boundingBoxInImageCoordinates = Rect(
-                        faceOverlayView.boundingBox!!.left * imgBitmap.width / faceOverlayView.imageWidth + reductionAmountX,
-                        faceOverlayView.boundingBox!!.top * imgBitmap.height / faceOverlayView.imageHeight + reductionAmountY,
-                        faceOverlayView.boundingBox!!.right * imgBitmap.width / faceOverlayView.imageWidth - reductionAmountX,
-                        faceOverlayView.boundingBox!!.bottom * imgBitmap.height / faceOverlayView.imageHeight - reductionAmountY
-                    )
+                            val resizedBitmap = Bitmap.createScaledBitmap(croppedBitmap, targetWidth, targetHeight, false)
+                            val finalBitmap = Bitmap.createBitmap(112, 112, Bitmap.Config.ARGB_8888)
+                            val canvas = Canvas(finalBitmap)
+                            canvas.drawColor(Color.BLACK)
 
-                    // Recorta el Bitmap para que tenga el mismo tamaño que el boundingBox
-                    val croppedBitmap = Bitmap.createBitmap(
-                        grayscaleBitmap,
-                        boundingBoxInImageCoordinates.left,
-                        boundingBoxInImageCoordinates.top,
-                        boundingBoxInImageCoordinates.width(),
-                        boundingBoxInImageCoordinates.height()
-                    )
+                            val left = (finalBitmap.width - resizedBitmap.width) / 2f
+                            val top = (finalBitmap.height - resizedBitmap.height) / 2f
+                            canvas.drawBitmap(resizedBitmap, left, top, null)
 
-                    val aspectRatio = boundingBoxInImageCoordinates.width()
-                        .toFloat() / boundingBoxInImageCoordinates.height().toFloat()
+                            val stream = ByteArrayOutputStream()
+                            finalBitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream)
+                            val finalImageBytes = stream.toByteArray()
 
-                    val targetWidth: Int
-                    val targetHeight: Int
+                            val saveImageDeferred = if (isRegister) {
+                                databaseController.saveImageLogin(finalImageBytes, userId)
+                            } else {
+                                databaseController.saveImage(finalImageBytes, userId)
+                            }
 
-                    if (boundingBoxInImageCoordinates.width() > boundingBoxInImageCoordinates.height()) {
-                        // El bounding box es más ancho que alto
-                        targetWidth = 112
-                        targetHeight = Math.round(targetWidth / aspectRatio)
-                    } else {
-                        // El bounding box es más alto que ancho
-                        targetHeight = 112
-                        targetWidth = Math.round(targetHeight * aspectRatio)
-                    }
-
-                    val resizedBitmap =
-                        Bitmap.createScaledBitmap(croppedBitmap, targetWidth, targetHeight, false)
-
-                    // Crea un Bitmap final de 112x112 con un color de fondo
-                    val finalBitmap = Bitmap.createBitmap(112, 112, Bitmap.Config.ARGB_8888)
-
-                    // Rellena el Bitmap final con el color de fondo
-                    val canvas = Canvas(finalBitmap)
-                    canvas.drawColor(Color.BLACK)
-
-                    // Calcula la posición donde se debe dibujar el Bitmap redimensionado en el Bitmap final
-                    val left = (finalBitmap.width - resizedBitmap.width) / 2f
-                    val top = (finalBitmap.height - resizedBitmap.height) / 2f
-
-                    // Dibuja el Bitmap redimensionado en el Bitmap final
-                    canvas.drawBitmap(resizedBitmap, left, top, null)
-
-                    // Convierte el Bitmap final de nuevo a un array de bytes
-                    val stream = ByteArrayOutputStream()
-                    finalBitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream)
-                    val finalImageBytes = stream.toByteArray()
-
-                    val saveImageDeferred = if (isRegister) {
-                        databaseController.saveImageLogin(finalImageBytes, userId)
-                    } else {
-                        databaseController.saveImage(finalImageBytes, userId)
-                    }
-
-                    coroutineScope.launch {
-                        saveImageDeferred.await()
-                        state.value = true
-                        state.value = false
-                        tempFile.delete()
-                        cameraProvider.unbindAll()
-                        if (isRegister) {
-                            navController.navigateToConfirmationLogin(userId)
-                        } else {
-                            navController.navigateToConfirmation(userId, true)
+                            coroutineScope.launch {
+                                saveImageDeferred.await()
+                                state.value = true
+                                state.value = false
+                                tempFile.delete()
+                                cameraProvider.unbindAll()
+                                if (isRegister) {
+                                    navController.navigateToConfirmationLogin(userId)
+                                } else {
+                                    navController.navigateToConfirmation(userId, true)
+                                }
+                            }
+                        } catch (e: Exception) {
+                            Log.e("Imagen", "Error al procesar la imagen", e)
+                            if (!isRegister)
+                                navController.navigateToConfirmation(userId, false)
                         }
                     }
-                }
 
-                override fun onError(exception: ImageCaptureException) {
-                    Log.d("Imagen", "entro aca y tiro error$exception")
-                    if (!isRegister)
-                    navController.navigateToConfirmation(userId, false)
-                }
-            })
+                    override fun onError(exception: ImageCaptureException) {
+                        Log.e("Imagen", "Error al capturar la imagen", exception)
+                        if (!isRegister)
+                            navController.navigateToConfirmation(userId, false)
+                    }
+                })
+        } catch (e: Exception) {
+            Log.e("Imagen", "Error al iniciar la captura de imagen", e)
+            if (!isRegister)
+                navController.navigateToConfirmation(userId, false)
+        }
     }
+
 
     fun convertToGrayscale(source: Bitmap): Bitmap {
         val width = source.width
