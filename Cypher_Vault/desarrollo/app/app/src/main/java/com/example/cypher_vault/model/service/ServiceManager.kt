@@ -61,20 +61,21 @@ class ServiceManager(private val context: Context) {
         buttonSendEmail(recipient, subject, body)
     }
 
-    private val emailUsername = "e7fc17113f8442"
-    private val emailPassword = "894e458f6395d1"
+    private val emailUsername = "moras.alejandro@hotmail.com"
+    private val emailPassword = "soyelalfayelomega85"
 
     fun buttonSendEmail(receiverEmail: String, subjects: String, body: String) {
         val stringSenderEmail = emailUsername
         val stringReceiverEmail =receiverEmail
         val stringPasswordSenderEmail = emailPassword
-        val stringHost = "sandbox.smtp.mailtrap.io"
+        val stringHost = "smtp.office365.com"
 
         val properties = Properties().apply {
             put("mail.smtp.host", stringHost)
-            put("mail.smtp.port", "587")
-            put("mail.smtp.starttls.enable", "true");
+            put("mail.smtp.port", "465")
+            put("mail.smtp.ssl.enable", "true")
             put("mail.smtp.auth", "true")
+            //put("mail.smtp.starttls.enable", "true")
         }
 
         val session = Session.getInstance(properties, object : Authenticator() {
