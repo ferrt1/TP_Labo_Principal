@@ -1,12 +1,13 @@
 package com.example.cypher_vault.model.service
 
+import android.content.ActivityNotFoundException
 import android.content.Context
+import android.content.Intent
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
+import android.net.Uri
+import androidx.core.content.ContextCompat.startActivity
 import java.util.Properties
-import javax.mail.*
-import javax.mail.internet.InternetAddress
-import javax.mail.internet.MimeMessage
 
 class ServiceManager(private val context: Context) {
     fun hasInternetConnection(): Boolean {
@@ -17,53 +18,47 @@ class ServiceManager(private val context: Context) {
         return networkCapabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
     }
 
-    fun generateAndSendCode(to: String): String {
+    fun generateAndSendCode(context: Context, recipient: String): String {
         val code = generateRandomCode()
-        val subject = "Your CypherVault Verification Code"
-        val message = """
-        Dear User,
+        val subject = "Tu código de verificación de CypherVault"
+        val body = """
+        Estimado Usuario,
 
-        Your verification code for CypherVault is: $code
+        Su código de verificación para CypherVault es: $code
 
-        Please enter this code in the application to proceed.
+        Por favor, ingrese este código en la aplicación para continuar.
 
-        Best regards,
-        The CypherVault Team
+        Atentamente,
+        El equipo de CypherVault
     """.trimIndent()
 
-        if (sendEmail(to, subject, message)) {
-            return code
-        } else {
-            throw Exception("Failed to send email")
-        }
+        sendEmail(context, recipient, subject, body)
+
+        return code
     }
-
-    fun sendEmail(to: String, subject: String, message: String): Boolean {
-        val props = Properties().apply {
-            put("mail.smtp.host", "smtp.gmail.com")
-            put("mail.smtp.port", "587")
-            put("mail.smtp.auth", "true")
-            put("mail.smtp.starttls.enable", "true")
+    fun sendEmail(context: Context, recipient: String, subject: String, body: String, attachmentUri: Uri? = null) {
+        val emailSelectorIntent = Intent(Intent.ACTION_SENDTO).apply {
+            data = Uri.parse("mailto:")
         }
 
-        val session = Session.getInstance(props, object : Authenticator() {
-            override fun getPasswordAuthentication(): PasswordAuthentication {
-                return PasswordAuthentication("your-email@gmail.com", "your-email-password")
-            }
-        })
+        val emailIntent = Intent(Intent.ACTION_SEND).apply {
+            putExtra(Intent.EXTRA_EMAIL, arrayOf(recipient))
+            putExtra(Intent.EXTRA_SUBJECT, subject)
+            putExtra(Intent.EXTRA_TEXT, body)
+            addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+            addFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION)
+            setSelector(emailSelectorIntent)
+        }
 
-        return try {
-            val mimeMessage = MimeMessage(session).apply {
-                setFrom(InternetAddress("your-email@gmail.com"))
-                setRecipients(Message.RecipientType.TO, InternetAddress.parse(to))
-                setSubject(subject)
-                setText(message)
-            }
-            Transport.send(mimeMessage)
-            true
-        } catch (e: MessagingException) {
+        attachmentUri?.let {
+            emailIntent.putExtra(Intent.EXTRA_STREAM, it)
+        }
+
+        try {
+            context.startActivity(emailIntent)
+        } catch (e: ActivityNotFoundException) {
+            // Manejar el caso en que no hay aplicaciones de correo electrónico disponibles
             e.printStackTrace()
-            false
         }
     }
 
@@ -71,6 +66,4 @@ class ServiceManager(private val context: Context) {
         val random = (10000..99999).random()
         return random.toString()
     }
-
-
 }

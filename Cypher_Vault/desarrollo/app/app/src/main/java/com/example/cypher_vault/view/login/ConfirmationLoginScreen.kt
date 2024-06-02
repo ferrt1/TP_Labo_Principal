@@ -396,7 +396,7 @@ fun ElevatedCardMailConfirmation(
     /// Variables y logica del mail
     var mailCode by remember { mutableStateOf("") }
     LaunchedEffect(Unit) {
-        mailCode = secondAuthController.sendMail(userId)
+        mailCode = secondAuthController.sendMail(context,userId)
     }
 
     ElevatedCard(
@@ -792,14 +792,14 @@ fun ElevatedCardMailConfirmation(
                     )
                 }
             }
-            //// Boton del formulario ////////////////////////////
+            //// Boton del formulario //////////////////////////////////////////////////////////////////////////
             Spacer(modifier = Modifier.height(8.dp))
             Row(
                 horizontalArrangement = Arrangement.Absolute.Center
             ) {
                 OutlinedButton(
                     onClick = {
-                        if (true) {
+                        if (comprobarCodigo(mailCode,primerValorCodigo.value, segundoValorCodigo.value, tercerValorCodigo.value, cuartoValorCodigo.value, quintoValorCodigo.value)) {
                             /////Ingreso de usuario
                             userAccessController.insertUserIncome(userId)
                             ///////////////////////
@@ -828,6 +828,10 @@ fun ElevatedCardMailConfirmation(
             }
         }
     }
+}
+
+fun comprobarCodigo(mailCode: String, value1: TextFieldValue, value2: TextFieldValue, value3: TextFieldValue, value4: TextFieldValue, value5: TextFieldValue): Boolean {
+    return mailCode == value1.text + value2.text + value3.text + value4.text + value5.text
 }
 
 

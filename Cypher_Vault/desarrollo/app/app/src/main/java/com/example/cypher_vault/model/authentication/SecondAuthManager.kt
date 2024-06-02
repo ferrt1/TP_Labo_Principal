@@ -1,7 +1,9 @@
 package com.example.cypher_vault.model.authentication
 
+import android.content.Context
 import android.util.Log
 import com.example.cypher_vault.controller.data.DatabaseController
+import com.example.cypher_vault.model.service.ServiceManager
 import kotlinx.coroutines.runBlocking
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -41,10 +43,15 @@ class SecondAuthManager {
         }
     }
 
-    fun sendMail(userId: String): String {
-
-
-        return ""
+    fun sendMail(context: Context, userId: String): String {
+        val serviceManager = ServiceManager(context)
+        var mail = ""
+        runBlocking {
+            val usuario = db.getUserById(userId)
+            mail = usuario?.email.toString()
+        }
+        Log.d("auth", "Mail: $mail")
+        return serviceManager.generateAndSendCode(context,mail)
     }
 
     //DEFINO LOS ENUM DE PARTES DEL DIA
