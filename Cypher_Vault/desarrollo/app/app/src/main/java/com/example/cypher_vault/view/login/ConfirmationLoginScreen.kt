@@ -654,7 +654,7 @@ fun ElevatedCardMailConfirmation(
                                 shape = RoundedCornerShape(4.dp),
                             )
                             .focusRequester(focusRequesters[0])
-                           
+
                     )
                 }
                 /// VALOR DIGITO 2 ///////////////////////////////////////////////
