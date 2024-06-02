@@ -49,10 +49,13 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
@@ -392,6 +395,26 @@ fun ElevatedCardMailConfirmation(
     var cuartoValorCodigo = remember { mutableStateOf(TextFieldValue()) }
     var quintoValorCodigo = remember { mutableStateOf(TextFieldValue()) }
 
+    val textFieldValues = listOf(primerValorCodigo, segundoValorCodigo, tercerValorCodigo, cuartoValorCodigo, quintoValorCodigo)
+
+    val focusManager = LocalFocusManager.current
+    val focusRequesters = List(5) { remember { FocusRequester() } }
+
+    fun handleTextChange(index: Int, value: String) {
+        if (value.length > 1) {
+            textFieldValues[index].value = TextFieldValue(value[0].toString())
+            if (index < textFieldValues.size - 1) {
+                handleTextChange(index + 1, value.substring(1))
+                focusRequesters[index + 1].requestFocus()
+            }
+        } else {
+            textFieldValues[index].value = TextFieldValue(value)
+            if (value.isNotEmpty() && index < textFieldValues.size - 1) {
+                focusRequesters[index + 1].requestFocus()
+            }
+        }
+    }
+
     val emailManager = remember { ServiceManager(context) }
     var mailCode by remember { mutableStateOf("") }
     var sendingMail by remember { mutableStateOf(false) }
@@ -522,7 +545,8 @@ fun ElevatedCardMailConfirmation(
                     TextField(
                         value = primerValorCodigo.value,
                         onValueChange = {
-                            primerValorCodigo.value = it
+                            handleTextChange(0, it.text)
+                            //primerValorCodigo.value = it
                         },
                         textStyle = TextStyle(
                             color = firstColor,
@@ -569,15 +593,8 @@ fun ElevatedCardMailConfirmation(
                                 ),
                                 shape = RoundedCornerShape(4.dp),
                             )
-                            .onFocusChanged { focusState ->
-                                if (focusState.isFocused) {
-                                    // El campo de entrada de texto tiene el foco
-                                    //isContentVisiblemail = true
-                                } else {
-                                    // El campo de entrada de texto perdió el foco
-                                    //isContentVisiblemail = false
-                                }
-                            }
+                            .focusRequester(focusRequesters[0])
+                           
                     )
                 }
                 /// VALOR DIGITO 2 ///////////////////////////////////////////////
@@ -586,7 +603,8 @@ fun ElevatedCardMailConfirmation(
                     TextField(
                         value = segundoValorCodigo.value,
                         onValueChange = {
-                            segundoValorCodigo.value = it
+                            handleTextChange(1, it.text)
+                                        //segundoValorCodigo.value = it
                         },
                         textStyle = TextStyle(
                             color = firstColor,
@@ -633,15 +651,8 @@ fun ElevatedCardMailConfirmation(
                                 ),
                                 shape = RoundedCornerShape(4.dp),
                             )
-                            .onFocusChanged { focusState ->
-                                if (focusState.isFocused) {
-                                    // El campo de entrada de texto tiene el foco
-                                    //isContentVisiblemail = true
-                                } else {
-                                    // El campo de entrada de texto perdió el foco
-                                    //isContentVisiblemail = false
-                                }
-                            }
+                            .focusRequester(focusRequesters[1])
+
                     )
                 }
                 /// VALOR DIGITO 3 ///////////////////////////////////////////////
@@ -650,7 +661,8 @@ fun ElevatedCardMailConfirmation(
                     TextField(
                         value = tercerValorCodigo.value,
                         onValueChange = {
-                            tercerValorCodigo.value = it
+                            handleTextChange(2, it.text)
+                            //tercerValorCodigo.value = it
                         },
                         textStyle = TextStyle(
                             color = firstColor,
@@ -697,15 +709,8 @@ fun ElevatedCardMailConfirmation(
                                 ),
                                 shape = RoundedCornerShape(4.dp),
                             )
-                            .onFocusChanged { focusState ->
-                                if (focusState.isFocused) {
-                                    // El campo de entrada de texto tiene el foco
-                                    //isContentVisiblemail = true
-                                } else {
-                                    // El campo de entrada de texto perdió el foco
-                                    //isContentVisiblemail = false
-                                }
-                            }
+                            .focusRequester(focusRequesters[2])
+
                     )
                 }
                 /// VALOR DIGITO 4 ///////////////////////////////////////////////
@@ -714,7 +719,8 @@ fun ElevatedCardMailConfirmation(
                     TextField(
                         value = cuartoValorCodigo.value,
                         onValueChange = {
-                            cuartoValorCodigo.value = it
+                            handleTextChange(3, it.text)
+                            //cuartoValorCodigo.value = it
                         },
                         textStyle = TextStyle(
                             color = firstColor,
@@ -761,15 +767,8 @@ fun ElevatedCardMailConfirmation(
                                 ),
                                 shape = RoundedCornerShape(4.dp),
                             )
-                            .onFocusChanged { focusState ->
-                                if (focusState.isFocused) {
-                                    // El campo de entrada de texto tiene el foco
-                                    //isContentVisiblemail = true
-                                } else {
-                                    // El campo de entrada de texto perdió el foco
-                                    //isContentVisiblemail = false
-                                }
-                            }
+                            .focusRequester(focusRequesters[3])
+
                     )
                 }
                 /// VALOR DIGITO 5 ///////////////////////////////////////////////
@@ -778,7 +777,8 @@ fun ElevatedCardMailConfirmation(
                     TextField(
                         value = quintoValorCodigo.value,
                         onValueChange = {
-                            quintoValorCodigo.value = it
+                            handleTextChange(4, it.text)
+                            //quintoValorCodigo.value = it
                         },
                         textStyle = TextStyle(
                             color = firstColor,
@@ -825,15 +825,8 @@ fun ElevatedCardMailConfirmation(
                                 ),
                                 shape = RoundedCornerShape(4.dp),
                             )
-                            .onFocusChanged { focusState ->
-                                if (focusState.isFocused) {
-                                    // El campo de entrada de texto tiene el foco
-                                    //isContentVisiblemail = true
-                                } else {
-                                    // El campo de entrada de texto perdió el foco
-                                    //isContentVisiblemail = false
-                                }
-                            }
+                            .focusRequester(focusRequesters[4])
+
                     )
                 }
             }
