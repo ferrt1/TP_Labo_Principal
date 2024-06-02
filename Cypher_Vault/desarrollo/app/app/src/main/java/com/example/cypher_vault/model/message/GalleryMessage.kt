@@ -28,6 +28,14 @@ fun message4(): String {
     return "Puede cambiar la contraseña en la sección de perfil."
 }
 
+fun message5(): String {
+    return "Puede cambiar la foto de perfil dentro del panel de usuario."
+}
+
+fun message6(): String {
+    return "Puedes comprar el paquete premium y obtener más capacidad de almacenamiento."
+}
+
 fun messageLimitModePrueba(): String{
     return "Has llegado al límite del modo prueba. Por favor, compré el paquete premium para obtener más almacenamiento."
 }
@@ -37,7 +45,7 @@ fun messageLimitModePremium(): String{
 }
 
 fun startMessageChannel(): Channel<String> {
-    val messages = listOf(::message1, ::message2, ::message3, ::message4)
+    val messages = listOf(::message1, ::message2, ::message3, ::message4, ::message5, ::message6)
     val channel = Channel<String>(Channel.CONFLATED)
     var index = 0
 
