@@ -1,6 +1,7 @@
 package com.example.cypher_vault.view.gallery
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
@@ -134,6 +135,8 @@ import com.example.cypher_vault.view.registration.findAncestorActivity
 import com.example.cypher_vault.view.resources.redColor
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.channels.ticker
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.ByteArrayOutputStream
@@ -172,6 +175,7 @@ val textStyleTittle2 = TextStyle(
 )
 
 
+@SuppressLint("CoroutineCreationDuringComposition")
 @RequiresApi(Build.VERSION_CODES.Q)
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
@@ -179,15 +183,17 @@ fun Gallery(navController: NavController, userId: String, galleryController: Gal
 
     var dbc = DatabaseController()
 
-    // implementacion para selecionar las imagenes para eliminar
+    // variable para selecionar las imagenes para eliminar
     val selectedImageIds = remember { mutableStateOf<List<Long>>(listOf()) }
     var longClickPerformed by remember { mutableStateOf(false) }
     val selectedImages = remember { mutableStateMapOf<Long, Boolean>() }
 
-    //----------------------------------------------------------------//
 
+
+    //Variables para el mensaje de gallery
     var currentMessage by remember { mutableStateOf("") }
     val messageController = MessageController()
+    var  MessageModeStatus by remember { mutableStateOf(false) }
 
 
     //Variable de la 2 verificacion
@@ -751,13 +757,19 @@ fun Gallery(navController: NavController, userId: String, galleryController: Gal
                                 verticalAlignment = Alignment.CenterVertically,
                                 horizontalArrangement = Arrangement.SpaceBetween,
                             ) {
-                                // Columna de imagen
-                                Image(
-                                    painter = painterResource(id = R.drawable.iconclarificatio),
-                                    contentDescription = null, // Añade una descripción adecuada
-                                    modifier = Modifier.size(24.dp)
-                                )
-                                // Columna de texto
+                                val icon = if (MessageModeStatus) {
+                                    R.drawable.icoerror
+                                } else {
+                                    R.drawable.iconclarificatio
+                                }
+                                painterResource(id = icon)?.let {
+                                    Image(
+                                        painter = it,
+                                        contentDescription = "",
+                                        modifier = Modifier.size(24.dp)
+                                    )
+                                }
+
                                 Text(
                                     text = currentMessage,
                                     fontFamily = com.example.cypher_vault.view.resources.fontFamily,
@@ -767,7 +779,6 @@ fun Gallery(navController: NavController, userId: String, galleryController: Gal
                                         .padding(end = 8.dp),
                                     textAlign = TextAlign.Center
                                 )
-
                             }
                         }
                     }
@@ -780,21 +791,16 @@ fun Gallery(navController: NavController, userId: String, galleryController: Gal
                         if(images.size < maximoImagenesPremium) {
                             launcher.launch("image/*")
                         } else {
-                            Toast.makeText(
-                                context,
-                                "Ja! no tenes mas espacio, No sos pobre pero te zarpaste con las fotos",
-                                Toast.LENGTH_SHORT
-                            ).show()
+                            MessageModeStatus=true
+                            currentMessage=messageController.getmessageLimitModePremium()
+
                         }
                     } else {
                         if (images.size < maximoImagenesModoPobre) {
                             launcher.launch("image/*")
                         } else {
-                            Toast.makeText(
-                                context,
-                                "Ja! no tenes mas espacio, Pobre! comprate un paquete premium",
-                                Toast.LENGTH_SHORT
-                            ).show()
+                            MessageModeStatus=true
+                            currentMessage=messageController.getmessageLimitModePrueba()
                         }
                     }
                 }) {
@@ -840,17 +846,23 @@ fun Gallery(navController: NavController, userId: String, galleryController: Gal
                                             onClick = {
                                                 //para ver las imagenes (zoom)
                                                 if (!longClickPerformed) {
-                                                    selectedImageBitmap.value = BitmapFactory.decodeByteArray(image.imageData, 0, image.imageData.size)
+                                                    selectedImageBitmap.value =
+                                                        BitmapFactory.decodeByteArray(
+                                                            image.imageData,
+                                                            0,
+                                                            image.imageData.size
+                                                        )
                                                 }
                                                 //El caso que el usuario quiera borrar las imagenes
-                                                else{
+                                                else {
                                                     if (!selectedImageIds.value.contains(image.id)) {
                                                         selectedImages[image.id] = !isSelected
-                                                        selectedImageIds.value = selectedImageIds.value + image.id
-                                                    }
-                                                    else if  (selectedImageIds.value.contains(image.id)) {
+                                                        selectedImageIds.value =
+                                                            selectedImageIds.value + image.id
+                                                    } else if (selectedImageIds.value.contains(image.id)) {
                                                         selectedImages[image.id] = !isSelected
-                                                        val updatedList = selectedImageIds.value.filter { it != image.id }
+                                                        val updatedList =
+                                                            selectedImageIds.value.filter { it != image.id }
                                                         selectedImageIds.value = updatedList
 
                                                     }
@@ -859,7 +871,8 @@ fun Gallery(navController: NavController, userId: String, galleryController: Gal
 
                                             },
                                             onLongClick = {
-                                                selectedImageIds.value = selectedImageIds.value + image.id
+                                                selectedImageIds.value =
+                                                    selectedImageIds.value + image.id
                                                 longClickPerformed = true
                                                 selectedImages[image.id] = !isSelected
                                             }
@@ -880,13 +893,23 @@ fun Gallery(navController: NavController, userId: String, galleryController: Gal
                             }
                         }
                     }
-                    LaunchedEffect(Unit) {
-                        val messageChannel = messageController.getMessageChannel()
-                        for (message in messageChannel) {
-                            currentMessage = message
+                    if (!MessageModeStatus) {
+                        Log.e("proceso","entro a los mensajes")
+                        LaunchedEffect(Unit) {
+                            val messageChannel = messageController.getMessageChannel()
+                            for (message in messageChannel) {
+                                currentMessage = message
+                            }
                         }
-                    }
+                        } else {
+                        CoroutineScope(Dispatchers.Default).launch {
+                            delay(5000) // Espera 5 segundos reales
+                            MessageModeStatus = false // Establece MessageModeStatus a false después de 5 segundos
+                        }
+                            }
+
                 }
+
                 // Mostrar la imagen seleccionada en un diálogo/////////////////////////////////////////////////////////////////
                 if (selectedImageBitmap.value != null) {
                     Dialog(onDismissRequest = { selectedImageBitmap.value = null }) {

@@ -146,4 +146,13 @@ class MessageController {
     fun getMessageChannel(): Channel<String> {
         return startMessageChannel()
     }
+
+    fun getmessageLimitModePrueba(): String {
+        return messageLimitModePrueba()
+    }
+
+    fun getmessageLimitModePremium(): String {
+        return messageLimitModePremium()
+    }
+
 }
