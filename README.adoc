@@ -211,8 +211,8 @@ Una vez explicado las clasificación de requerimientos funcionales,  se hará a 
 
 === WBS
 
-image::Recursos/Sprint 3/WBS (1).jpg[700,700]
-PONER IMAGEN DE LA WBS
+image::Recursos/Sprint 4/WBS (1).jpg[700,700]
+
 
 === Diccionario
 
@@ -457,7 +457,7 @@ image::Recursos/Sprint 3/Indice de mitigacion grafico.PNG[700,700]
 
 ** Plan de mitigación sprint 4
 
-PONER IMAGEN PLAN DE MITIGACION SPRINT 4
+image::Recursos/Sprint 4/Indice de mitigacion sprint 4.PNG[700,700]
  
 === Entregables
 
@@ -584,32 +584,34 @@ image::Recursos/Sprint 3/Burndown chart sprint 3.PNG[700,700]
 
 * Funcionalidad Completa Sprint 4
 
-PONER IMAGEN FUNCIONALIDAD COMPLETA 4
+image::Recursos/Sprint 4/tabla funcionalidad 1.PNG[700,700]
+
+image::Recursos/Sprint 4/tabla funcionalidad 2.PNG[700,700]
 
 * Nivel de Calidad Sprint 4
 
-PONER IMAGEN NIVEL DE CALIDAD SPRINT 4
+image::Recursos/Sprint 4/Nivel de calidad sprint 4.PNG[700,700]
 
 * Evolución de la Prueba Sprint 4
 
-PONER IMAGEN EVOLUCION DE LA PRUEBA SPRINT 4
+image::Recursos/Sprint 4/Evolucion de la prueba sprint 4.PNG[700,700]
 
 * Burndown Chart Sprint 4
 
-PONER IMANGEN BURNDOWN CHART SPRINT 4
+image::Recursos/Sprint 4/Burndown chart sprint 4.PNG[700,700]
 
 
 === Indicadores Acumulados
 
 * Evolución de la Prueba Acumulado
 
-image::Recursos/Sprint 3/Evolucion de la prueba acumulado.PNG[700,700]
-PONER IMAGEN EVOLUCION DE LA PRUEBA ACUMULADO
+image::Recursos/Sprint 4/Evolucion de la prueba acumulado sprint 4.PNG[700,700]
+
 
 * Burndown Chart Acumulado
 
-image::Recursos/Sprint 3/Burndown cgart acumulado.PNG[700,700]
-PONER IMAGEN BURNDOWN CHART ACUMULADO
+image::Recursos/Sprint 4/Burndown char acumulado.PNG[700,700]
+
 
 === Problemas encontrados
 
@@ -1125,6 +1127,7 @@ image:Recursos/gallery/AgredadoDeIImagen.JPG[]
 ** En la parte inferior de la pantalla, aparecerán dos botones: "Cancelar" y "Eliminar", si se seleciona boton eliminar se borrara todas las imagenes selecionado, de lo contrario el usuario tiene la opcion de cancelar. 
 
 image:Recursos/gallery/EliminadoDeImagenes.JPG[]
+
 
 
 * *Dentro de la aplicacion:*
