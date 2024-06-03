@@ -290,6 +290,7 @@ Los pesos se clasifican en base a:
 | 3.2.2.2.3 | Encriptar imagenes | Encriptar imagenes de la galeria | Desarrollo | Equipo de desarrollo | 3
 | 3.2.2.2.4 | Capacidad galeria | Limitar la capacidad de la galeria | Desarrollo | Equipo de desarrollo | 3
 | 3.2.2.2.5 | Redimencionar imágenes | Redimencionar las imagenes de la galeria | Desarrollo | Equipo de desarrollo | 3
+| 3.2.2.2.6 | Eliminar imagen | Eliminar las imagenes de la galeria | Desarrollo | Equipo de desarrollo | 3
 | 3.3 | Crear algoritmo reconocimiento facial | Implementación de lógica de reconocimiento facial | Desarrollo | Equipo de desarrollo | 3 
 | 3.3.1 | Mejoras reconocimiento | Implementación de mejoras en el reconocimiento facial | Desarrollo | Equipo de desarrollo | 3 
 | 3.4 | Desarrollo parte Vault | Implementar aplicación de galería privada | Desarrollo | Equipo de desarrollo | 3 
