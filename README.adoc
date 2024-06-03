@@ -290,8 +290,7 @@ Los pesos se clasifican en base a:
 | 3.2.2.2.3 | Encriptar imagenes | Encriptar imagenes de la galeria | Desarrollo | Equipo de desarrollo | 3
 | 3.2.2.2.4 | Capacidad galeria | Limitar la capacidad de la galeria | Desarrollo | Equipo de desarrollo | 3
 | 3.2.2.2.5 | Redimencionar imágenes | Redimencionar las imagenes de la galeria | Desarrollo | Equipo de desarrollo | 3
-| 3.2.2.2.6 | Eliminar imagen | Eliminar las imagenes de la galeria | Desarrollo | Equipo de desarrollo | 3
-| 3.3 | Crear algoritmo reconocimiento facial | Implementación de lógica de reconocimiento facial | Desarrollo | Equipo de desarrollo | 3
+| 3.3 | Crear algoritmo reconocimiento facial | Implementación de lógica de reconocimiento facial | Desarrollo | Equipo de desarrollo | 3 
 | 3.3.1 | Mejoras reconocimiento | Implementación de mejoras en el reconocimiento facial | Desarrollo | Equipo de desarrollo | 3 
 | 3.4 | Desarrollo parte Vault | Implementar aplicación de galería privada | Desarrollo | Equipo de desarrollo | 3 
 | 3.5 | Test Unitarios | Desarrollar test unitarios | Desarrollo | Equipo de testing | 3 
@@ -1120,15 +1119,6 @@ image:Recursos/Pantallas-de-galeria.png[Imagen en galeria,700,700,align="center"
 * *Imagen en la aplicacion:*
 ** visualizacion de la imagen seleccionada dentro de la aplicacion
 
-image:Recursos/gallery/AgredadoDeIImagen.JPG[]
-
-* *Eliminado de imagenes*:
-** Se seleciona la imagen o las imagenes que se quiere borrar.
-** En la parte inferior de la pantalla, aparecerán dos botones: "Cancelar" y "Eliminar", si se seleciona boton eliminar se borrara todas las imagenes selecionado, de lo contrario el usuario tiene la opcion de cancelar. 
-
-image:Recursos/gallery/EliminadoDeImagenes.JPG[]
-
-
 * *Dentro de la aplicacion:*
 
 ** Para esta implementacion se creo una vista llamada Gallery dentro del paquete de vistas y en paralelo se implementa el controlador GalleryController:
@@ -1136,6 +1126,7 @@ image:Recursos/gallery/EliminadoDeImagenes.JPG[]
 *** *Gallery:* dentro de la misma se encuentra toda la declaracion de los elementos visuales, con los cuales el usuario interactua.
 
 *** *GalleryController:* tiene los accesos a la base de datos, es decir, la vista no interactua con la base de datos directamente sino que pasa por el controlador. Tanto para la carga de imagenes al inicio de la galeria como cuando se almacenan nuevas imagenes 
+
 
 
 === Almacenamiento
