@@ -515,7 +515,7 @@ image::Recursos/Sprint 3/Pruebas sprint 3.PNG[700,700]
 
 image::Recursos/Sprint 2/Tabla de equivalencia - inicio de sesion.png[700,700]
 
-PONER TABLA DE EQUIVALENCIA
+image::Recursos/Sprint 4/Tabla equivalencia sprint4.PNG[700,700]
 
 === Administración de Cambios
 
