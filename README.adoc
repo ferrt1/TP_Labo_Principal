@@ -966,6 +966,34 @@ image::Recursos/login/MnesajeNoExisteElUsuario.JPG[]
 
 ** En caso de que el usuario ingrese un nombre que no esté registrado en nuestra aplicación, se mostrará un mensaje indicando que no se encuentra en nuestra base de datos
 
+==== Mensaje de Galeria
+
+image::Recursos/gallery/mensajes.JPG[]
+
+
+** En la sección de galería, se podrán apreciar diferentes tipos de mensajes para guiar al usuario sobre las diversas herramientas disponibles. Los tipos de mensajes incluyen:
+
+*** Formato de imágenes: Nuestra aplicación acepta varios formatos de imagen, incluyendo JPG, PNG, JPEG, GIF, BMP y WEBP.
+
+*** Agregar imagen: Se guiará al usuario sobre qué botón seleccionar para agregar una imagen.
+
+*** Cambio de contraseña: Se indicará al usuario en qué parte del panel de usuario se encuentra el botón para cambiar la contraseña.
+
+*** Recomendación de paquete premium: Se sugerirá al usuario adquirir el paquete premium para obtener más capacidad de almacenamiento. Esta recomendación estará dentro del panel de usuario.
+
+*** Cambio de foto: El usuario podrá cambiar su foto de perfil dentro del panel de usuario haciendo clic en su imagen.
+
+*** Historial: El usuario podrá ver la cantidad de inicios de sesión realizados.
+
+*** Límite de capacidad en modo prueba: Se mostrará un mensaje con un icono de error indicando que se ha alcanzado el espacio disponible en modo prueba.
+
+*** Límite de capacidad en modo premium: Similar al modo prueba, se indicará al usuario que ha alcanzado el límite de capacidad en modo premium.
+
+** Como se puede apreciar en esta imagen, este es el panel de usuario donde podrá personalizar su cuenta.
+
+image::Recursos/gallery/PanelDeUsuario.jpg[]
+
+
 ==== Vista, controlador y modelo:
 
 ** Respetando el patrón de diseño MVC, se ha separado la vista, el controlador y el modelo de los zocalos de mensajes, a contunuacion se indicara las responasabilidades de cada paquete y se explicara cual es el objetivo de cada uno.
@@ -993,6 +1021,8 @@ image::Recursos/MVC/model.JPG[]
 === Galeria de Imagenes
 
 *En esta interfaz se visualizan las imagenes privadas el usuario que ya se encuentran cifradas, en la misma el usuario puede agregar sus imagenes mediante un boton, aparte tiene acceso a su perfil en el cual puede visualizar sus datos personales y actualizar su contraseña.*
+
+
 
 ==== Diseño
 
