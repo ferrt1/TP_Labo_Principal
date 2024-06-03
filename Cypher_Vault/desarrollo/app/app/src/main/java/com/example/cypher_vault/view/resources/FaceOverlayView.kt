@@ -158,7 +158,7 @@ class FaceOverlayView(context: Context) : View(context) {
         message?.let {
             val textPaint = Paint().apply {
                 color = Color.WHITE
-                textSize = 64f
+                textSize = 50f
                 textAlign = Paint.Align.CENTER
             }
             canvas.drawText(it, (width / 2).toFloat(), (height * 0.9).toFloat(), textPaint)
@@ -169,7 +169,7 @@ class FaceOverlayView(context: Context) : View(context) {
     private fun drawTextCentered(canvas: Canvas, text: String, x: Float, y: Float) {
         val textPaint = Paint().apply {
             color = Color.WHITE
-            textSize = 64f
+            textSize = 50f
             textAlign = Paint.Align.CENTER
         }
         canvas.drawText(text, x, y, textPaint)
