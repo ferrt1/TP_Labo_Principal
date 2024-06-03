@@ -1118,6 +1118,14 @@ image:Recursos/Pantallas-de-galeria.png[Imagen en galeria,700,700,align="center"
 
 * *Imagen en la aplicacion:*
 ** visualizacion de la imagen seleccionada dentro de la aplicacion
+image:Recursos/gallery/AgredadoDeIImagen.JPG[]
+
+* *Eliminado de imagenes*:
+** Se seleciona la imagen o las imagenes que se quiere borrar.
+** En la parte inferior de la pantalla, aparecerán dos botones: "Cancelar" y "Eliminar", si se seleciona boton eliminar se borrara todas las imagenes selecionado, de lo contrario el usuario tiene la opcion de cancelar. 
+
+image:Recursos/gallery/EliminadoDeImagenes.JPG[]
+
 
 * *Dentro de la aplicacion:*
 
