@@ -17,7 +17,7 @@ fun message1(): String {
 
 
 fun message2(): String {
-    return "Puede revisar el historial de su sesión en la sección de perfil."
+    return "Puedes revisar el historial de su sesión en la sección de perfil."
 }
 
 fun message3(): String {
@@ -25,11 +25,11 @@ fun message3(): String {
 }
 
 fun message4(): String {
-    return "Puede cambiar la contraseña en la sección de perfil."
+    return "Puedes cambiar la contraseña en la sección de perfil."
 }
 
 fun message5(): String {
-    return "Puede cambiar la foto de perfil dentro del panel de usuario."
+    return "Puedes cambiar la foto de perfil dentro del panel de usuario."
 }
 
 fun message6(): String {
@@ -37,7 +37,7 @@ fun message6(): String {
 }
 
 fun messageLimitModePrueba(): String{
-    return "Has llegado al límite del modo prueba. Por favor, compré el paquete premium para obtener más almacenamiento."
+    return "Has llegado al límite del modo prueba. Por favor, compre el paquete premium para obtener más almacenamiento."
 }
 
 fun messageLimitModePremium(): String{
