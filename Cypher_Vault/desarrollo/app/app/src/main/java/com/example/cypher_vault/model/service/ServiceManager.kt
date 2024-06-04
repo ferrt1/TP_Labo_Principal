@@ -47,7 +47,7 @@ class ServiceManager(private val context: Context) {
         if(mailCode==""){
             generateRandomCode()
         }
-        val subject = "Tu código de verificación de CypherVault"
+        val subject = "Tu código de verificación es $mailCode"
         val body = """
         Estimado Usuario,
 
@@ -61,21 +61,21 @@ class ServiceManager(private val context: Context) {
         buttonSendEmail(recipient, subject, body)
     }
 
-    private val emailUsername = "moras.alejandro@hotmail.com"
-    private val emailPassword = "soyelalfayelomega85"
+    private val emailUsername = "cyphervaultapp@hotmail.com"
+    private val emailPassword = "11111111111111a$"
 
     fun buttonSendEmail(receiverEmail: String, subjects: String, body: String) {
         val stringSenderEmail = emailUsername
-        val stringReceiverEmail =receiverEmail
+        val stringReceiverEmail = receiverEmail
         val stringPasswordSenderEmail = emailPassword
-        val stringHost = "smtp.office365.com"
+        val stringHost = "smtp-mail.outlook.com"
 
         val properties = Properties().apply {
+            put("mail.transport.protocol", "smtp")
             put("mail.smtp.host", stringHost)
-            put("mail.smtp.port", "465")
-            put("mail.smtp.ssl.enable", "true")
+            put("mail.smtp.port", "587")
             put("mail.smtp.auth", "true")
-            //put("mail.smtp.starttls.enable", "true")
+            put("mail.smtp.starttls.enable", "true")
         }
 
         val session = Session.getInstance(properties, object : Authenticator() {
@@ -86,6 +86,7 @@ class ServiceManager(private val context: Context) {
 
         try {
             val mimeMessage = MimeMessage(session).apply {
+                setFrom(InternetAddress(stringSenderEmail))
                 addRecipient(Message.RecipientType.TO, InternetAddress(stringReceiverEmail))
                 subject = subjects
                 setText(body)
@@ -105,6 +106,7 @@ class ServiceManager(private val context: Context) {
             Log.e("SendEmail", "Error al enviar el correo electrónico: ${e.message}")
         }
     }
+
 
     fun sendEmail(context: Context, recipient: String, subject: String, body: String, attachmentUri: Uri? = null) {
         val emailSelectorIntent = Intent(Intent.ACTION_SENDTO).apply {
