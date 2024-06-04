@@ -628,6 +628,8 @@ Durante la ejecución del sprint 3, uno de los miembros del equipo estuvo ausent
 * Falta de servicio de luz:
 Durante la ejecución del proyecto, nos enfrentamos a contratiempos relacionados con la interrupción del suministro eléctrico. En varios días, algunos miembros del equipo se vieron imposibilitados de avanzar en sus tareas debido a la falta de energía eléctrica.
 
+* Falta de servicio de Internet: Durante la ejecución del sprint, nos enfrentamos a un contratiempo relacionado con la interrupción del suministro de internet. Esto retraso un par de horas la finalización de una de las actividades, sin embargo, se logró terminar para la fecha acordada de entrega.
+
 === Lecciones aprendidas:
 
 * Planificación y gestión de proyecto:
