@@ -403,14 +403,13 @@ image::Recursos/Sprint 3/horas sprint 3.PNG[700,700]
 * *Desarrollo:* 120hs en total
 * *Testing:* 40hs por tester.
 
-PONER IMAGEN HORAS SPRINT 4
+image::Recursos/Sprint 4/horas sprint 4.PNG[700,700]
 
 === Horas empleadas Acumuladas
 
 
-image::Recursos/Sprint 3/horas acumuladas.PNG[700,700]
 
-PONER IMAGEN HORAS ACUMULADAS
+image::Recursos/Sprint 4/horas acumuladas.PNG[700,700]
 
 === Riesgos
 
@@ -446,7 +445,7 @@ image::imagenAdoc/riesgos_para_informe.PNG[700,700]
 * R7 = Falicitar la tranferencia de conocimiento mediante la colaboracion de un miembro mas experimentado
 * R8 = Adaptar las tareas según el ritmo de trabajo y conocimiento de cada miembro del equipo
 
-image::Recursos/Sprint 2/indice de mitigacion tabla.PNG[700,700]
+image::Recursos/Sprint 4/riesgos.PNG[700,700]
 
 ** Plan de mitigación sprint 2
 
