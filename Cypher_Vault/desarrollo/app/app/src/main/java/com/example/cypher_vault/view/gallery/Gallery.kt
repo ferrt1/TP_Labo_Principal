@@ -19,6 +19,8 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
+import androidx.compose.foundation.gestures.detectTapGestures
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -92,6 +94,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asAndroidBitmap
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
@@ -141,9 +144,10 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.ByteArrayOutputStream
 
+
 //Variables de entorno/////////////////////////////
 val pixelesDeRedimensionamiento = 1f
-val maximoImagenesPremium = 10 //860
+val maximoImagenesPremium = 30 //860
 val maximoImagenesModoPobre = 5 //42
 var isPremium: Boolean? = false
 var userPremiumSince = ""
@@ -586,16 +590,37 @@ fun Gallery(navController: NavController, userId: String, galleryController: Gal
         //Pantalla principal de la galeria///////////////////////////////////////////////////////////////////////////////
         //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         Scaffold(
+
             modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
+
+
             ///BARRA SUPERIOR ////////////////////////////////////////////////////////////////////////////////////////////////
             topBar = {
+
                 CenterAlignedTopAppBar(
+                    modifier = Modifier,
+
                     colors = TopAppBarDefaults.topAppBarColors(
                         containerColor = thirdColor,
                         titleContentColor = thirdColor,
                     ),
                     title = {
-                        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+
+                        Column(
+                            modifier = Modifier
+                                .clickable(
+                                    onClick = {
+                                        longClickPerformed = false // Restablecer el estado de longClickPerformed
+                                        selectedImageIds.value = emptyList()
+                                        selectedImages.keys.forEach { key ->
+                                            selectedImages[key] = false
+                                        }
+                                    },
+                                    indication = null,  // Desactivar la indicación visual del clic
+                                    interactionSource = remember { MutableInteractionSource() }
+                                ),
+
+                            horizontalAlignment = Alignment.CenterHorizontally) {
                             Row(horizontalArrangement = Arrangement.Absolute.Center) {
                                 Text(
                                     text = "C",
@@ -686,6 +711,17 @@ fun Gallery(navController: NavController, userId: String, galleryController: Gal
 
                     Box(
                         modifier = Modifier
+                            .clickable(
+                                onClick = {
+                                    longClickPerformed = false // Restablecer el estado de longClickPerformed
+                                    selectedImageIds.value = emptyList()
+                                    selectedImages.keys.forEach { key ->
+                                        selectedImages[key] = false
+                                    }
+                                },
+                                indication = null,  // Desactivar la indicación visual del clic
+                                interactionSource = remember { MutableInteractionSource() }
+                            )
                             .fillMaxWidth()
                             .clip(RoundedCornerShape(16.dp)) // Bordes redondeados
                             .background(Color.White) // Fondo blanco para el Box
@@ -817,6 +853,17 @@ fun Gallery(navController: NavController, userId: String, galleryController: Gal
             content = { innerPadding ->
                 Column(
                     modifier = Modifier
+                        .clickable(
+                            onClick = {
+                                longClickPerformed = false // Restablecer el estado de longClickPerformed
+                                selectedImageIds.value = emptyList()
+                                selectedImages.keys.forEach { key ->
+                                    selectedImages[key] = false
+                                }
+                            },
+                            indication = null,  // Desactivar la indicación visual del clic
+                            interactionSource = remember { MutableInteractionSource() }
+                        )
                         .padding(innerPadding),
                     verticalArrangement = Arrangement.spacedBy(16.dp),
                 ) {
@@ -894,7 +941,6 @@ fun Gallery(navController: NavController, userId: String, galleryController: Gal
                         }
                     }
                     if (!MessageModeStatus) {
-                        Log.e("proceso","entro a los mensajes")
                         LaunchedEffect(Unit) {
                             val messageChannel = messageController.getMessageChannel()
                             for (message in messageChannel) {
