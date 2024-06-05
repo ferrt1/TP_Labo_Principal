@@ -43,7 +43,7 @@ class SecondAuthManager {
         }
     }
 
-    fun sendMail(context: Context, userId: String){
+    fun sendMail(context: Context, userId: String): String {
         val serviceManager = ServiceManager(context)
         var mail = ""
         runBlocking {

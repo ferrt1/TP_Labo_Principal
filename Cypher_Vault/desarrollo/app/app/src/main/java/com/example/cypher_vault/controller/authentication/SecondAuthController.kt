@@ -13,7 +13,7 @@ class SecondAuthController(manager: SecondAuthManager) {
         return manager.authenticateWOConection(userId,dayPart)
     }
 
-    fun sendMail(context: Context, userId: String) {
+    fun sendMail(context: Context, userId: String): String {
         Log.e("MailConfirmation", "Ingreso al mail")
         return manager.sendMail(context, userId)
     }

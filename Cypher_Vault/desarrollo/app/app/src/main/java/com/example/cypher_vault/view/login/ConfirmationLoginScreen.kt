@@ -77,6 +77,9 @@ import com.example.cypher_vault.model.service.ServiceManager
 import com.example.cypher_vault.view.gallery.firstColor
 import com.example.cypher_vault.view.gallery.textStyleTittle2
 import com.example.cypher_vault.view.gallery.thirdColor
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 //Colores de la ui, tipo de letra, etc.///////////////////////
 val firstColor = Color(0xFF02a6c3)
@@ -482,10 +485,12 @@ fun ElevatedCardMailConfirmation(
     if (mailCode.isEmpty() && !sendingMail) {
         sendingMail = true
         LaunchedEffect(Unit) {
-            if (sendingMail) {
-                secondAuthController.sendMail(context, userId)
-                mailCode = emailManager.getMailCode()
+            val job = CoroutineScope(Dispatchers.Main).launch {
+                if (sendingMail) {
+                    mailCode = secondAuthController.sendMail(context, userId)
+                }
             }
+            job.join() // Espera hasta que la coroutina termine
         }
     }
     Log.d("MailConfirmation", "salida: $mailCode")

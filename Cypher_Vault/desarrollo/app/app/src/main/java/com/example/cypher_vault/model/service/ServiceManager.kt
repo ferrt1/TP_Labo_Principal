@@ -11,6 +11,8 @@ import com.example.cypher_vault.controller.data.DatabaseController
 import kotlinx.coroutines.runBlocking
 import android.os.Bundle;
 import android.view.View;
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import java.util.Properties;
 import javax.mail.Authenticator;
 import javax.mail.Message;
@@ -35,17 +37,22 @@ class ServiceManager(private val context: Context) {
     }
 
     private var mailCode: String = ""
-    fun getMailCode(): String {
-        if(mailCode==""){
-            generateRandomCode()
+    private val mutex = Mutex()
+    fun getMailCode(): Unit = runBlocking {
+        mutex.withLock {
+            if (mailCode.isEmpty()) {
+                generateRandomCode()
+            }
+            mailCode
         }
-        return mailCode
     }
 
-    fun generateAndSendCode(context: Context, mail: String) {
+    fun generateAndSendCode(context: Context, mail: String): String {
         var recipient = mail
         if(mailCode==""){
-            generateRandomCode()
+            runBlocking {
+                generateRandomCode()
+            }
         }
         val subject = "Tu código de verificación es $mailCode"
         val body = """
@@ -59,6 +66,7 @@ class ServiceManager(private val context: Context) {
         El equipo de CypherVault
     """.trimIndent()
         buttonSendEmail(recipient, subject, body)
+        return mailCode
     }
 
     private val emailUsername = "cyphervaultapp@hotmail.com"
@@ -135,12 +143,13 @@ class ServiceManager(private val context: Context) {
     }
 
     fun generateRandomCode() {
-        if(mailCode==""){
-            val random = (10000..99999).random()
-            mailCode = random.toString()
-            Log.d("Random Code", "random CODE: " + random.toString())
-        }else{
-            mailCode = mailCode
+        // Utilizar runBlocking para mantener el contexto de coroutinas si es necesario
+        runBlocking {
+            if (mailCode.isEmpty()) {
+                val random = (10000..99999).random()
+                mailCode = random.toString()
+                Log.d("Random Code", "random CODE: $mailCode")
+            }
         }
     }
 }
