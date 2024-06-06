@@ -114,12 +114,13 @@ dependencies {
     implementation("org.tensorflow:tensorflow-lite-gpu:0.0.0-nightly-SNAPSHOT")
     implementation("org.tensorflow:tensorflow-lite-support:0.0.0-nightly-SNAPSHOT")
 
-
+    implementation("com.google.zxing:core:3.4.1")
 
     //RETROFIT
 
     implementation("com.squareup.retrofit2:retrofit:2.9.0")
     implementation("com.squareup.retrofit2:converter-gson:2.9.0")
+    implementation("com.squareup.okhttp3:logging-interceptor:4.9.0")
     implementation(libs.okhttp)
 
 

@@ -3,6 +3,7 @@ package com.example.cypher_vault.view.gallery
 import android.Manifest
 import android.annotation.SuppressLint
 import android.app.Activity
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
@@ -42,6 +43,7 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.ClickableText
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
@@ -100,6 +102,7 @@ import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
@@ -139,13 +142,27 @@ import com.example.cypher_vault.model.session.SessionState
 import com.example.cypher_vault.view.registration.LimitedTextBox
 import com.example.cypher_vault.view.registration.findAncestorActivity
 import com.example.cypher_vault.view.resources.redColor
+import com.google.zxing.BarcodeFormat
+import com.google.zxing.EncodeHintType
+import com.google.zxing.MultiFormatWriter
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.ticker
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.MultipartBody
+import okhttp3.MultipartBody.Part.Companion.createFormData
+import okhttp3.RequestBody.Companion.asRequestBody
+import retrofit2.Call
+import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
+import retrofit2.http.Multipart
+import retrofit2.http.POST
+import retrofit2.http.Part
 import java.io.ByteArrayOutputStream
+import java.io.File
 
 
 //Variables de entorno/////////////////////////////
@@ -189,21 +206,21 @@ val textStyleTittle2 = TextStyle(
 fun Gallery(navController: NavController, userId: String, galleryController: GalleryController) {
 
 
-    //-----"CODIGO PARA QUE SE VEA EN NEGRO LA GALERIA SI QUIERE SACAR FOTOCAPTURA-----//
-    val block = LocalContext.current
-    // Usar DisposableEffect para configurar y limpiar la bandera FLAG_SECURE
-    DisposableEffect(Unit) {
-        // Configurar la bandera FLAG_SECURE
-        val activity = block as? Activity
-        activity?.window?.setFlags(
-            WindowManager.LayoutParams.FLAG_SECURE,
-            WindowManager.LayoutParams.FLAG_SECURE
-        )
-        // Limpiar la bandera FLAG_SECURE cuando el Composable se desecha
-        onDispose {
-            activity?.window?.clearFlags(WindowManager.LayoutParams.FLAG_SECURE)
-        }
-    }
+//    //-----"CODIGO PARA QUE SE VEA EN NEGRO LA GALERIA SI QUIERE SACAR FOTOCAPTURA-----//
+//    val block = LocalContext.current
+//    // Usar DisposableEffect para configurar y limpiar la bandera FLAG_SECURE
+//    DisposableEffect(Unit) {
+//        // Configurar la bandera FLAG_SECURE
+//        val activity = block as? Activity
+//        activity?.window?.setFlags(
+//            WindowManager.LayoutParams.FLAG_SECURE,
+//            WindowManager.LayoutParams.FLAG_SECURE
+//        )
+//        // Limpiar la bandera FLAG_SECURE cuando el Composable se desecha
+//        onDispose {
+//            activity?.window?.clearFlags(WindowManager.LayoutParams.FLAG_SECURE)
+//        }
+//    }
     //----------------------------------------------------------------------------------//
 
     var dbc = DatabaseController()
@@ -384,6 +401,40 @@ fun Gallery(navController: NavController, userId: String, galleryController: Gal
     val onImageClick = {
         launcherProfile.launch("image/*")
     }
+
+    //var qrBitmap by remember { mutableStateOf<Bitmap?>(null) }
+    val showDialog = remember { mutableStateOf(false) }
+    val qrCodeBitmap = remember { mutableStateOf<Bitmap?>(null) }
+    val imageUrlText = remember { mutableStateOf<String?>(null) }
+
+    val onShareButtonClick: () -> Unit = {
+        Log.d("GalleryScreen", "Apretando")
+        scope.launch {
+            selectedImageBitmap.value?.let { bitmap ->
+                val byteArrayOutputStream = ByteArrayOutputStream()
+                bitmap.compress(Bitmap.CompressFormat.PNG, 100, byteArrayOutputStream)
+                val imageData = byteArrayOutputStream.toByteArray()
+
+                Log.d("GalleryScreen", "Sending image to server...")
+                val imageUrl = galleryController.sendImageToServer(imageData)
+                imageUrlText.value = imageUrl
+
+                if (imageUrl != null) {
+                    Log.d("GalleryScreen", "Image uploaded successfully. Generating QR code...")
+                    // Generar el código QR con la URL de la imagen en el servidor
+                    val qrBitmap = galleryController.generateQRCode(imageUrl)
+                    qrCodeBitmap.value = qrBitmap
+
+                    // Mostrar el QR en un diálogo
+                    showDialog.value = true
+                } else {
+                    // Manejar error en el envío
+                    Log.e("GalleryScreen", "Error uploading image")
+                }
+            }
+        }
+    }
+
 
 
     //Panel del usuario//////////////////////////////////////////////////////////////////////////////////////////////
@@ -765,7 +816,7 @@ fun Gallery(navController: NavController, userId: String, galleryController: Gal
                                                 galleryController.deleteImg(userId, selectedImageIds)
                                             }
                                         }
-                                        longClickPerformed = false // Restablecer el estado de longClickPerformed
+                                        longClickPerformed = false
                                     },
                                     shape = RoundedCornerShape(4.dp),
                                     border = BorderStroke(3.dp,firstColor),
@@ -982,11 +1033,60 @@ fun Gallery(navController: NavController, userId: String, galleryController: Gal
                 // Mostrar la imagen seleccionada en un diálogo/////////////////////////////////////////////////////////////////
                 if (selectedImageBitmap.value != null) {
                     Dialog(onDismissRequest = { selectedImageBitmap.value = null }) {
-                        Image(
-                            bitmap = selectedImageBitmap.value!!.asImageBitmap(),
-                            contentDescription = null,
-                            modifier = Modifier.fillMaxWidth()
-                        )
+                        Column(
+                            modifier = Modifier.padding(16.dp)
+                        ) {
+                            Image(
+                                bitmap = selectedImageBitmap.value!!.asImageBitmap(),
+                                contentDescription = null,
+                                modifier = Modifier.fillMaxWidth()
+                            )
+                            Button(
+                                onClick = onShareButtonClick,
+                                shape = RoundedCornerShape(4.dp),
+                                border = BorderStroke(3.dp, firstColor),
+                                colors = ButtonDefaults.buttonColors(
+                                    containerColor = thirdColor,
+                                    contentColor = wingWhite,
+                                ),
+                                modifier = Modifier
+                                    .padding(8.dp) // Agrega un poco de espacio alrededor del botón
+                            ) {
+                                Text(
+                                    text = "Compartir",
+                                    color = mainBackgroundColor,
+                                    style = textStyleTittle2,
+                                    onTextLayout = { /* No se necesita hacer nada aquí */ }
+                                )
+                            }
+                        }
+                    }
+                }
+                if (showDialog.value) {
+                    Dialog(onDismissRequest = { showDialog.value = false }) {
+                        qrCodeBitmap.value?.let {
+                            Column(
+                                modifier = Modifier.padding(16.dp)
+                            ) {
+                                Image(
+                                    bitmap = it.asImageBitmap(),
+                                    contentDescription = "QR Code",
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(bottom = 16.dp)
+                                )
+                                ClickableText(
+                                    text = AnnotatedString("Enlace: ${imageUrlText.value}"),
+                                    style = TextStyle(color = Color.Red),
+                                    onClick = { offset ->
+                                        // Aquí abres el enlace en el navegador del dispositivo
+                                        val uri = Uri.parse(imageUrlText.value) // Suponiendo que imageUrlText contiene el enlace generado
+                                        val intent = Intent(Intent.ACTION_VIEW, uri)
+                                        context.startActivity(intent)
+                                    }
+                                )
+                            }
+                        }
                     }
                 }
                 // Mostrar el panel de premium ////////////////////////////////////////////////////////////////////////////////////
@@ -1625,4 +1725,27 @@ fun IndeterminateCircularIndicator() {
     )
 }
 */
+
+@Composable
+fun ShowQRCodeDialog(bitmap: Bitmap, onDismiss: () -> Unit) {
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = {
+            Text(text = "Código QR")
+        },
+        text = {
+            Image(
+                bitmap = bitmap.asImageBitmap(),
+                contentDescription = "Código QR"
+            )
+        },
+        confirmButton = {
+            Button(
+                onClick = onDismiss
+            ) {
+                Text("Cerrar")
+            }
+        }
+    )
+}
 

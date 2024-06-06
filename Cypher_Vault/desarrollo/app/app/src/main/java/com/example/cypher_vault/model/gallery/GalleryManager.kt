@@ -2,6 +2,7 @@ package com.example.cypher_vault.model.gallery
 import android.content.ContentValues
 import android.content.Context
 import android.graphics.Bitmap
+import android.graphics.Color
 import android.graphics.Matrix
 import android.net.Uri
 import android.os.Build
@@ -20,21 +21,83 @@ import com.example.cypher_vault.controller.session.SessionController
 import com.example.cypher_vault.database.Images
 import com.example.cypher_vault.model.dbmanager.DatabaseManager
 import com.example.cypher_vault.model.encrypt.EncryptionService
+import com.google.zxing.BarcodeFormat
+import com.google.zxing.WriterException
+import com.google.zxing.qrcode.QRCodeWriter
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
+import okhttp3.MediaType
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.MultipartBody
+import okhttp3.RequestBody
+import okhttp3.RequestBody.Companion.toRequestBody
+import retrofit2.Call
 import java.io.OutputStream
 import java.text.SimpleDateFormat
 import java.util.Base64
 import java.util.Date
 import java.util.Locale
 
+
+import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
+import retrofit2.http.Multipart
+import retrofit2.http.POST
+import retrofit2.http.Part
+
+
+data class QrResult(val result: Boolean)
+interface ImageQRAPI {
+    @Multipart
+    @POST("/compare_faces")
+    fun uploadImage(
+        @Part image: MultipartBody.Part,
+    ): Call<QrResult>
+}
+
+
+val retrofit = Retrofit.Builder()
+    .baseUrl("http://<your-server-ip>:5000/")
+    .addConverterFactory(GsonConverterFactory.create())
+    .build()
+
+val api = retrofit.create(ImageQRAPI::class.java)
+
+data class ImageResponse(val imageUrl: String)
 class GalleryManager {
 
     val databaseController = DatabaseController()
+
+
+    @RequiresApi(Build.VERSION_CODES.O)
+    fun generateQRCodeForSelectedImages(imageUrls: List<String>): Bitmap {
+        val writer = QRCodeWriter()
+        val combinedUrls = imageUrls.joinToString(separator = "\n")
+        try {
+            val bitMatrix = writer.encode(combinedUrls, BarcodeFormat.QR_CODE, 512, 512)
+            val width = bitMatrix.width
+            val height = bitMatrix.height
+            val bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.RGB_565)
+            for (x in 0 until width) {
+                for (y in 0 until height) {
+                    bitmap.setPixel(x, y, if (bitMatrix[x, y]) Color.BLACK else Color.WHITE)
+                }
+            }
+            return bitmap
+        } catch (e: WriterException) {
+            e.printStackTrace()
+        }
+        throw RuntimeException("Error generating QR code")
+    }
+
+    fun getImageById(imageId: Long): Images? {
+        return images.value.find { it.id == imageId }
+    }
+
 
     fun capitalizarPrimeraLetra(palabra: String): String {
         if (palabra.isEmpty()) {
