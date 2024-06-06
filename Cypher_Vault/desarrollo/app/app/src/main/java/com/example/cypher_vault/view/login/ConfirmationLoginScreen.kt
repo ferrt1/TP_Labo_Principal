@@ -431,7 +431,7 @@ fun ConfirmationLoginScreen(navController: NavController, userId: String) {
             ),
             modifier = Modifier
                 .width(200.dp)
-                .padding(vertical = 50.dp)
+                .padding(bottom = 30.dp)
         ) {
             Text(
                 "Volver",
@@ -457,43 +457,49 @@ fun ElevatedCardMailConfirmation(
     var tercerValorCodigo = remember { mutableStateOf(TextFieldValue()) }
     var cuartoValorCodigo = remember { mutableStateOf(TextFieldValue()) }
     var quintoValorCodigo = remember { mutableStateOf(TextFieldValue()) }
+    var mailCode : String = remember { secondAuthController.sendMail(context, userId) }
+    Log.d("MailConfirmation", "salida: $mailCode")
 
+    //Variables y logica del campo de rellenado
     val textFieldValues = listOf(primerValorCodigo, segundoValorCodigo, tercerValorCodigo, cuartoValorCodigo, quintoValorCodigo)
-
-    val focusManager = LocalFocusManager.current
     val focusRequesters = List(5) { remember { FocusRequester() } }
+    val focusManager = LocalFocusManager.current
+    var focusedFieldIndex by remember { mutableStateOf(-1) }
 
     fun handleTextChange(index: Int, value: String) {
-        if (value.length > 1) {
-            textFieldValues[index].value = TextFieldValue(value[0].toString())
-            if (index < textFieldValues.size - 1) {
-                handleTextChange(index + 1, value.substring(1))
-                focusRequesters[index + 1].requestFocus()
-            }
-        } else {
-            textFieldValues[index].value = TextFieldValue(value)
-            if (value.isNotEmpty() && index < textFieldValues.size - 1) {
-                focusRequesters[index + 1].requestFocus()
-            }
+        if ( index == 4 && textFieldValues.size > 1) {
+            focusManager.clearFocus()
         }
-    }
-
-    val emailManager = remember { ServiceManager(context) }
-    var mailCode by remember { mutableStateOf("") }
-    var sendingMail by remember { mutableStateOf(false) }
-
-    if (mailCode.isEmpty() && !sendingMail) {
-        sendingMail = true
-        LaunchedEffect(Unit) {
-            val job = CoroutineScope(Dispatchers.Main).launch {
-                if (sendingMail) {
-                    mailCode = secondAuthController.sendMail(context, userId)
+        if( index == 0 && primerValorCodigo.value.text.isNotEmpty() && segundoValorCodigo.value.text.isNotEmpty() && tercerValorCodigo.value.text.isNotEmpty() && cuartoValorCodigo.value.text.isNotEmpty() && quintoValorCodigo.value.text.isNotEmpty()){
+            focusManager.clearFocus()
+            primerValorCodigo.value = TextFieldValue("")
+            segundoValorCodigo.value = TextFieldValue("")
+            tercerValorCodigo.value = TextFieldValue("")
+            cuartoValorCodigo.value = TextFieldValue("")
+            quintoValorCodigo.value = TextFieldValue("")
+        }else{
+            if (value.length > 1) {
+                textFieldValues[index].value = TextFieldValue(value[0].toString())
+                if (index < textFieldValues.size - 1) {
+                    handleTextChange(index + 1, value.substring(1))
+                    if (index < 4) {
+                        focusRequesters[index + 1].requestFocus()
+                    }
+                }
+            } else {
+                textFieldValues[index].value = TextFieldValue(value)
+                if (value.isNotEmpty() && index < textFieldValues.size - 1) {
+                    if (index < 4) {
+                        focusRequesters[index + 1].requestFocus()
+                    }
                 }
             }
-            job.join() // Espera hasta que la coroutina termine
         }
     }
-    Log.d("MailConfirmation", "salida: $mailCode")
+
+    fun handleFocusChange(index: Int, isFocused: Boolean) {
+        focusedFieldIndex = index
+    }
 
     ElevatedCard(
         elevation = CardDefaults.cardElevation(
@@ -658,8 +664,9 @@ fun ElevatedCardMailConfirmation(
                                 ),
                                 shape = RoundedCornerShape(4.dp),
                             )
-                            .focusRequester(focusRequesters[0])
-
+                            .focusRequester(focusRequesters[0]).onFocusChanged { focusState ->
+                                handleFocusChange(0, focusState.isFocused)
+                            }
                     )
                 }
                 /// VALOR DIGITO 2 ///////////////////////////////////////////////
@@ -717,66 +724,70 @@ fun ElevatedCardMailConfirmation(
                                 shape = RoundedCornerShape(4.dp),
                             )
                             .focusRequester(focusRequesters[1])
-
+                            .onFocusChanged { focusState ->
+                                handleFocusChange(1, focusState.isFocused)
+                            }
                     )
                 }
                 /// VALOR DIGITO 3 ///////////////////////////////////////////////
                 Spacer(modifier = Modifier.width(8.dp))
                 Column {
-                    TextField(
-                        value = tercerValorCodigo.value,
-                        onValueChange = {
-                            handleTextChange(2, it.text)
-                            //tercerValorCodigo.value = it
-                        },
-                        textStyle = TextStyle(
-                            color = firstColor,
-                            fontSize = 16.sp,
-                            fontFamily = com.example.cypher_vault.view.resources.fontFamily,
-                            fontWeight = FontWeight.Bold
-                        ),
-                        placeholder = {
-                            Text(
-                                "",
-                                style = TextStyle(
-                                    color = Color.Gray,
-                                    fontSize = 16.sp,
-                                    fontFamily = com.example.cypher_vault.view.resources.fontFamily
-                                )
-                            )
-                        },
-                        label = {
-                            Text(
-                                "",
-                                fontSize = 20.sp,
+                        TextField(
+                            value = tercerValorCodigo.value,
+                            onValueChange = {
+                                handleTextChange(2, it.text)
+                                //tercerValorCodigo.value = it
+                            },
+                            textStyle = TextStyle(
+                                color = firstColor,
+                                fontSize = 16.sp,
                                 fontFamily = com.example.cypher_vault.view.resources.fontFamily,
-                                color = com.example.cypher_vault.view.resources.thirdColor,
-                                fontWeight = FontWeight.Bold,
-                            )
-                        },
-                        singleLine = true,
-                        shape = RoundedCornerShape(4.dp),
-                        colors = TextFieldDefaults.colors(
-                            focusedContainerColor = Color.Transparent,
-                            unfocusedContainerColor = Color.Transparent,
-                            disabledContainerColor = Color.Transparent,
-                            cursorColor = com.example.cypher_vault.view.resources.thirdColor,
-                            focusedIndicatorColor = com.example.cypher_vault.view.resources.firstColor,
-                            unfocusedIndicatorColor = com.example.cypher_vault.view.resources.firstColor,
-                        ),
-                        modifier = Modifier
-                            .width(45.dp) // Establece un ancho fijo para el TextField
-                            .padding(top = 15.dp)
-                            .border(
-                                BorderStroke(
-                                    3.dp,
-                                    com.example.cypher_vault.view.resources.firstColor
-                                ),
-                                shape = RoundedCornerShape(4.dp),
-                            )
-                            .focusRequester(focusRequesters[2])
-
-                    )
+                                fontWeight = FontWeight.Bold
+                            ),
+                            placeholder = {
+                                Text(
+                                    "",
+                                    style = TextStyle(
+                                        color = Color.Gray,
+                                        fontSize = 16.sp,
+                                        fontFamily = com.example.cypher_vault.view.resources.fontFamily
+                                    )
+                                )
+                            },
+                            label = {
+                                Text(
+                                    "",
+                                    fontSize = 20.sp,
+                                    fontFamily = com.example.cypher_vault.view.resources.fontFamily,
+                                    color = com.example.cypher_vault.view.resources.thirdColor,
+                                    fontWeight = FontWeight.Bold,
+                                )
+                            },
+                            singleLine = true,
+                            shape = RoundedCornerShape(4.dp),
+                            colors = TextFieldDefaults.colors(
+                                focusedContainerColor = Color.Transparent,
+                                unfocusedContainerColor = Color.Transparent,
+                                disabledContainerColor = Color.Transparent,
+                                cursorColor = com.example.cypher_vault.view.resources.thirdColor,
+                                focusedIndicatorColor = com.example.cypher_vault.view.resources.firstColor,
+                                unfocusedIndicatorColor = com.example.cypher_vault.view.resources.firstColor,
+                            ),
+                            modifier = Modifier
+                                .width(45.dp) // Establece un ancho fijo para el TextField
+                                .padding(top = 15.dp)
+                                .border(
+                                    BorderStroke(
+                                        3.dp,
+                                        com.example.cypher_vault.view.resources.firstColor
+                                    ),
+                                    shape = RoundedCornerShape(4.dp),
+                                )
+                                .focusRequester(focusRequesters[2])
+                                .onFocusChanged { focusState ->
+                                    handleFocusChange(2, focusState.isFocused)
+                                }
+                        )
                 }
                 /// VALOR DIGITO 4 ///////////////////////////////////////////////
                 Spacer(modifier = Modifier.width(8.dp))
@@ -833,7 +844,9 @@ fun ElevatedCardMailConfirmation(
                                 shape = RoundedCornerShape(4.dp),
                             )
                             .focusRequester(focusRequesters[3])
-
+                            .onFocusChanged { focusState ->
+                                handleFocusChange(3, focusState.isFocused)
+                            }
                     )
                 }
                 /// VALOR DIGITO 5 ///////////////////////////////////////////////
@@ -891,53 +904,92 @@ fun ElevatedCardMailConfirmation(
                                 shape = RoundedCornerShape(4.dp),
                             )
                             .focusRequester(focusRequesters[4])
-
+                            .onFocusChanged { focusState ->
+                                handleFocusChange(4, focusState.isFocused)
+                            }
                     )
                 }
             }
-            //// Boton del formulario //////////////////////////////////////////////////////////////////////////
+            //// Botones del formulario //////////////////////////////////////////////////////////////////////////
             Spacer(modifier = Modifier.height(8.dp))
             Row(
                 horizontalArrangement = Arrangement.Absolute.Center
             ) {
-                OutlinedButton(
-                    onClick = {
-                        if (comprobarCodigo(mailCode,primerValorCodigo.value.text, segundoValorCodigo.value.text, tercerValorCodigo.value.text, cuartoValorCodigo.value.text, quintoValorCodigo.value.text)) {
-                            /////Ingreso de usuario
-                            userAccessController.insertUserIncome(userId)
-                            ///////////////////////
-                            navController.navigateToGallery(userId)
-                        } else {
-                            Toast.makeText(context, "Error en la autenticacion", Toast.LENGTH_SHORT)
-                                .show()
-                            mailCode = ""
-                            navController.navigateToListLogin()
+                /// BOTON LIMPIAR
+                Column {
+                    Row(
+                        horizontalArrangement = Arrangement.Absolute.Center
+                    ) {
+                    OutlinedButton(
+                        onClick = {
+                            focusManager.clearFocus(force = true)
+                            primerValorCodigo.value = TextFieldValue("")
+                            segundoValorCodigo.value = TextFieldValue("")
+                            tercerValorCodigo.value = TextFieldValue("")
+                            cuartoValorCodigo.value = TextFieldValue("")
+                            quintoValorCodigo.value = TextFieldValue("")
+                        },
+                        shape = RoundedCornerShape(15.dp),
+                        border = BorderStroke(3.dp, Color.Gray),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = thirdColor,
+                            contentColor = wingWhite
+                        ),
+                        modifier = Modifier
+                            .width(200.dp)
+                    ) {
+                        Text(
+                            "Limpiar campos",
+                            fontWeight = FontWeight.Bold
+                        )
+                    }
                         }
-                    },
-                    shape = RoundedCornerShape(15.dp),
-                    border = BorderStroke(3.dp, Color.Gray),
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = thirdColor,
-                        contentColor = wingWhite
-                    ),
-                    modifier = Modifier
-                        .width(200.dp)
-                        .padding(vertical = 30.dp)
-                ) {
-                    Text(
-                        "Comprobar",
-                        fontWeight = FontWeight.Bold
-                    )
+                    Row(
+                        horizontalArrangement = Arrangement.Absolute.Center
+                    ) {
+                        OutlinedButton(
+                            onClick = {
+                                if (comprobarCodigo(
+                                        mailCode,
+                                        primerValorCodigo.value.text,
+                                        segundoValorCodigo.value.text,
+                                        tercerValorCodigo.value.text,
+                                        cuartoValorCodigo.value.text,
+                                        quintoValorCodigo.value.text
+                                    )
+                                ) {
+                                    /////Ingreso de usuario
+                                    userAccessController.insertUserIncome(userId)
+                                    ///////////////////////
+                                    navController.navigateToGallery(userId)
+                                } else {
+                                    Toast.makeText(
+                                        context,
+                                        "Error en la autenticacion",
+                                        Toast.LENGTH_SHORT
+                                    )
+                                        .show()
+                                    mailCode = ""
+                                    navController.navigateToListLogin()
+                                }
+                            },
+                            shape = RoundedCornerShape(15.dp),
+                            border = BorderStroke(3.dp, Color.Gray),
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = thirdColor,
+                                contentColor = wingWhite
+                            ),
+                            modifier = Modifier
+                                .width(200.dp)
+                                .padding(vertical = 30.dp)
+                        ) {
+                            Text(
+                                "Comprobar",
+                                fontWeight = FontWeight.Bold
+                            )
+                        }
+                    }
                 }
-            }
-            Row {
-                Text(
-                    text = "El codigo que se envia es : $mailCode",
-                    color = firstColor,
-                    style = textStyleTittle2,
-                    onTextLayout = { /* No se necesita hacer nada aquí */ },
-                    modifier = Modifier.padding(horizontal = 16.dp)
-                )
             }
         }
     }
@@ -1218,3 +1270,4 @@ fun ImageWithLandmarks(bitmapState: MutableState<Bitmap?>) {
         )
     }
 }
+
