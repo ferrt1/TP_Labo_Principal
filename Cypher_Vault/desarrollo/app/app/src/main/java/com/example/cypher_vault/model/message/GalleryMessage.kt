@@ -37,7 +37,7 @@ fun message6(): String {
 }
 
 fun message7(): String {
-    return "Podrás eliminar varias imágenes manteniendo presionada la imagen que deseas eliminar y seleccionando las demás."
+    return "Podrás eliminar varias imágenes manteniendo presionada la imagen que deseas eliminar."
 }
 
 fun messageLimitModePrueba(): String{

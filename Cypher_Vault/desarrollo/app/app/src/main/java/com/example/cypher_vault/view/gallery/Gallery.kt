@@ -9,6 +9,7 @@ import android.graphics.BitmapFactory
 import android.net.Uri
 import android.os.Build
 import android.util.Log
+import android.view.WindowManager
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -80,6 +81,7 @@ import androidx.compose.material3.rememberDrawerState
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateMapOf
@@ -186,7 +188,7 @@ val textStyleTittle2 = TextStyle(
 @Composable
 fun Gallery(navController: NavController, userId: String, galleryController: GalleryController) {
 
-    /*
+
     //-----"CODIGO PARA QUE SE VEA EN NEGRO LA GALERIA SI QUIERE SACAR FOTOCAPTURA-----//
     val block = LocalContext.current
     // Usar DisposableEffect para configurar y limpiar la bandera FLAG_SECURE
@@ -203,7 +205,7 @@ fun Gallery(navController: NavController, userId: String, galleryController: Gal
         }
     }
     //----------------------------------------------------------------------------------//
-*/
+
     var dbc = DatabaseController()
 
     // variable para selecionar las imagenes para eliminar
@@ -316,27 +318,29 @@ fun Gallery(navController: NavController, userId: String, galleryController: Gal
 
     //Seleccion de imagenes de la galeria del celular y almacenamiento////////////////
     val launcher =
-        rememberLauncherForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
-            uri?.let {
-                val inputStream = context.contentResolver.openInputStream(it)
-                val bitmapOriginal = BitmapFactory.decodeStream(inputStream)
-                //Test Imagen Original
-                //galleryController.saveBitmapToFile(context, bitmapOriginal, "original_image.png")
-                val bitmapResize = galleryController.reduceImageSize(
-                    bitmapOriginal.asImageBitmap(),
-                    pixelesDeRedimensionamiento
-                )
-                //Test Imagen Redim
-                //galleryController.saveBitmapToFile(context, bitmapResize.asAndroidBitmap(), "resized_image.png")
-                val byteArrayOutputStream = ByteArrayOutputStream()
-                bitmapResize.asAndroidBitmap()
-                    .compress(Bitmap.CompressFormat.PNG, 60, byteArrayOutputStream)
-                val compressedImageData = byteArrayOutputStream.toByteArray()
-                //Test Imagen bajo compresion
-                //galleryController.saveByteArrayToFile(context, compressedImageData, "compressed_image.png")
+        rememberLauncherForActivityResult(ActivityResultContracts.GetMultipleContents()) { uris: List<Uri>? ->
+            uris?.forEach { uri ->
+                uri?.let {
+                    val inputStream = context.contentResolver.openInputStream(it)
+                    val bitmapOriginal = BitmapFactory.decodeStream(inputStream)
+                    //Test Imagen Original
+                    //galleryController.saveBitmapToFile(context, bitmapOriginal, "original_image.png")
+                    val bitmapResize = galleryController.reduceImageSize(
+                        bitmapOriginal.asImageBitmap(),
+                        pixelesDeRedimensionamiento
+                    )
+                    //Test Imagen Redim
+                    //galleryController.saveBitmapToFile(context, bitmapResize.asAndroidBitmap(), "resized_image.png")
+                    val byteArrayOutputStream = ByteArrayOutputStream()
+                    bitmapResize.asAndroidBitmap()
+                        .compress(Bitmap.CompressFormat.PNG, 60, byteArrayOutputStream)
+                    val compressedImageData = byteArrayOutputStream.toByteArray()
+                    //Test Imagen bajo compresion
+                    //galleryController.saveByteArrayToFile(context, compressedImageData, "compressed_image.png")
 
-                galleryController.saveImage(compressedImageData, userId)
-                imageUris.value += it
+                    galleryController.saveImage(compressedImageData, userId)
+                    imageUris.value += it
+                }
             }
         }
     val selectedImageBitmap = remember { mutableStateOf<Bitmap?>(null) }
