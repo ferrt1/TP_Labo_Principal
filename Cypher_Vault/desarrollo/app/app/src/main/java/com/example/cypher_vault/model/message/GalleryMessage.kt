@@ -36,6 +36,10 @@ fun message6(): String {
     return "Puedes comprar el paquete premium y obtener más capacidad de almacenamiento."
 }
 
+fun message7(): String {
+    return "Podrás eliminar varias imágenes manteniendo presionada la imagen que deseas eliminar y seleccionando las demás."
+}
+
 fun messageLimitModePrueba(): String{
     return "Has llegado al límite del modo prueba. Por favor, compre el paquete premium para obtener más almacenamiento."
 }
@@ -45,7 +49,7 @@ fun messageLimitModePremium(): String{
 }
 
 fun startMessageChannel(): Channel<String> {
-    val messages = listOf(::message1, ::message2, ::message3, ::message4, ::message5, ::message6)
+    val messages = listOf(::message1, ::message2, ::message3, ::message4, ::message5, ::message6, ::message7)
     val channel = Channel<String>(Channel.CONFLATED)
     var index = 0
 

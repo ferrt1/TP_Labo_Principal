@@ -2,6 +2,7 @@ package com.example.cypher_vault.view.gallery
 
 import android.Manifest
 import android.annotation.SuppressLint
+import android.app.Activity
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
@@ -185,6 +186,24 @@ val textStyleTittle2 = TextStyle(
 @Composable
 fun Gallery(navController: NavController, userId: String, galleryController: GalleryController) {
 
+    /*
+    //-----"CODIGO PARA QUE SE VEA EN NEGRO LA GALERIA SI QUIERE SACAR FOTOCAPTURA-----//
+    val block = LocalContext.current
+    // Usar DisposableEffect para configurar y limpiar la bandera FLAG_SECURE
+    DisposableEffect(Unit) {
+        // Configurar la bandera FLAG_SECURE
+        val activity = block as? Activity
+        activity?.window?.setFlags(
+            WindowManager.LayoutParams.FLAG_SECURE,
+            WindowManager.LayoutParams.FLAG_SECURE
+        )
+        // Limpiar la bandera FLAG_SECURE cuando el Composable se desecha
+        onDispose {
+            activity?.window?.clearFlags(WindowManager.LayoutParams.FLAG_SECURE)
+        }
+    }
+    //----------------------------------------------------------------------------------//
+*/
     var dbc = DatabaseController()
 
     // variable para selecionar las imagenes para eliminar
@@ -1578,3 +1597,28 @@ fun byteArrayToBitmap(byteArray: ByteArray?): Bitmap? {
         BitmapFactory.decodeByteArray(it, 0, it.size)
     }
 }
+
+
+//------------Barra de carga circular
+/*
+@Composable
+fun IndeterminateCircularIndicator() {
+    var loading by remember { mutableStateOf(false) }
+
+    Button(onClick = { loading = true }, enabled = !loading) {
+        Text("Start loading")
+    }
+    Button(onClick = { loading = false }, enabled = loading) {
+        Text("stop")
+    }
+
+    if (!loading) return
+
+    CircularProgressIndicator(
+        modifier = Modifier.width(64.dp),
+        indicatorColor=Color.Green,
+        strokeWidth = 4.dp, // Specify the strokeWidth if needed
+    )
+}
+*/
+
