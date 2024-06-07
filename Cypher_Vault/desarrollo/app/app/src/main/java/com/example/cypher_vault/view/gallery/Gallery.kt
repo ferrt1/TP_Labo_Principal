@@ -667,7 +667,10 @@ fun Gallery(navController: NavController, userId: String, galleryController: Gal
                         // Boton para eliminar cuenta ///////////////////////////////////////////////////////////////////////////
                         Spacer(modifier = Modifier.weight(1f)) // Push the button to the bottom
                         Button(
-                            onClick = { showDeletePanel = true },
+                            onClick = {
+                                showDeletePanel = true
+                                deletePasswordState.value = TextFieldValue("")
+                                      },
                             shape = RoundedCornerShape(4.dp),
                             border = BorderStroke(3.dp, firstColor),
                             colors = ButtonDefaults.buttonColors(
