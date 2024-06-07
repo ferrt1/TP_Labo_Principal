@@ -41,6 +41,7 @@ private val databaseController = DatabaseController()
 @Composable
 fun LoginCamera(navController: NavController, userId: String) {
     val context = LocalContext.current
+    val assetManager = context.assets // Obtener el AssetManager
     val cameraProviderFuture = remember { ProcessCameraProvider.getInstance(context) }
     val lifecycleOwner = LocalLifecycleOwner.current
     val isCameraOpen = remember { mutableStateOf(true) }
@@ -48,7 +49,7 @@ fun LoginCamera(navController: NavController, userId: String) {
         .requireLensFacing(CameraSelector.LENS_FACING_FRONT)
         .build()
 
-    val cameraController = CameraController(context, navController, userId, databaseController)
+    val cameraController = CameraController(userId, databaseController)
 
     val cameraProvider = cameraProviderFuture.get()
     val preview = Preview.Builder().build()
@@ -182,8 +183,8 @@ fun LoginCamera(navController: NavController, userId: String) {
                                             isImageCaptured,
                                             coroutineScope,
                                             navController,
-                                            faceOverlayView,
-                                            true
+                                            true,
+                                            //assetManager
                                         )
                                         timer.intValue = 3
                                         timerStarted.value = false

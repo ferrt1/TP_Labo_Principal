@@ -34,7 +34,7 @@ private val firstColor = Color(0xFF02a6c3)
 
 @SuppressLint("CoroutineCreationDuringComposition")
 @Composable
-fun ConfirmationScreen(navController: NavController, userId: String, registerSuccessful: Boolean) {
+fun ConfirmationScreen(navController: NavController, userId: String, registerSuccessful: Boolean, messageError: String) {
     var showImage by remember { mutableStateOf(false) }
     val coroutineScope = rememberCoroutineScope()
     val imageRegisters = remember { mutableStateOf<List<ImagesRegister>?>(null) }

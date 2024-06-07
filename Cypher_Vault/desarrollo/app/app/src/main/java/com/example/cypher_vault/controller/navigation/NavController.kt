@@ -42,8 +42,8 @@ class NavController(private val navController: NavController) {
         navController.navigate("camera/$uid")
     }
 
-    fun navigateToConfirmation(uid: String, registerSuccessful: Boolean) {
-        navController.navigate("confirmation/$uid/$registerSuccessful")
+    fun navigateToConfirmation(uid: String, registerSuccessful: Boolean, messageError: String) {
+        navController.navigate("confirmation/$uid/$registerSuccessful/$messageError")
     }
 
     fun navigateToListLogin(){

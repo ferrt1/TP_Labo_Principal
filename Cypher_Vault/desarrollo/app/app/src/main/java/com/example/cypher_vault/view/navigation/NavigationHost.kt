@@ -55,15 +55,18 @@ fun NavigationHost() {
 
             }
         }
-        composable("confirmation/{userId}/{registerSuccessfull}") { backStackEntry ->
+        composable("confirmation/{userId}/{registerSuccessfull}/{messageError}") { backStackEntry ->
             BackHandler(true) {
                 Log.i("LOG_TAG", "Clicked back")
             }
             val userId = backStackEntry.arguments?.getString("userId")
+            val messageError = backStackEntry.arguments?.getString("messageError")
             val registerSuccessfulString = backStackEntry.arguments?.getString("registerSuccessfull")
             val registerSuccessful = registerSuccessfulString.toBoolean()
             if (userId != null) {
-                ConfirmationScreen(navigationController, userId, registerSuccessful)
+                if (messageError != null) {
+                    ConfirmationScreen(navigationController, userId, registerSuccessful, messageError)
+                }
             }
         }
 

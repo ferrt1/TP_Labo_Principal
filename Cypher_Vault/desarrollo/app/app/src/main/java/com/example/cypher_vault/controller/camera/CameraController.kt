@@ -1,6 +1,7 @@
 package com.example.cypher_vault.controller.camera
 
 import android.content.Context
+import android.content.res.AssetManager
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Canvas
@@ -16,20 +17,22 @@ import androidx.compose.runtime.MutableState
 import androidx.core.content.ContextCompat
 import com.example.cypher_vault.controller.navigation.NavController
 import com.example.cypher_vault.controller.data.DatabaseController
+import com.example.cypher_vault.model.mtcnn.MTCNN
 import com.example.cypher_vault.view.resources.FaceOverlayView
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.io.ByteArrayOutputStream
 import java.io.File
+import androidx.exifinterface.media.ExifInterface
+import com.google.mlkit.vision.common.InputImage
+import com.google.mlkit.vision.face.FaceDetection
+import com.google.mlkit.vision.face.FaceDetectorOptions
 
 class CameraController(
-    private val context: Context,
-    private val navController: NavController,
     private val userId: String,
     private val databaseController: DatabaseController
 ) {
-
 
     fun startTimer(
         timer: MutableIntState,
@@ -62,7 +65,6 @@ class CameraController(
         state: MutableState<Boolean>,
         coroutineScope: CoroutineScope,
         navController: NavController,
-        faceOverlayView: FaceOverlayView,
         isRegister: Boolean
     ) {
         Log.d("Imagen", "entra aca")
@@ -76,90 +78,149 @@ class CameraController(
                     override fun onImageSaved(outputFileResults: ImageCapture.OutputFileResults) {
                         try {
                             val imageBytes = tempFile.readBytes()
-                            val imgBitmap = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.size)
-                            val rotatedBitmap = rotateBitmap(imgBitmap, -90f)
-                            val grayscaleBitmap = convertToGrayscale(rotatedBitmap)
-                            val reductionAmountX = 220
-                            val reductionAmountY = 180
+                            var imgBitmap = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.size)
 
-                            val boundingBoxInImageCoordinates = Rect(
-                                faceOverlayView.boundingBox!!.left * imgBitmap.width / faceOverlayView.imageWidth + reductionAmountX,
-                                faceOverlayView.boundingBox!!.top * imgBitmap.height / faceOverlayView.imageHeight + reductionAmountY,
-                                faceOverlayView.boundingBox!!.right * imgBitmap.width / faceOverlayView.imageWidth - reductionAmountX,
-                                faceOverlayView.boundingBox!!.bottom * imgBitmap.height / faceOverlayView.imageHeight - reductionAmountY
-                            )
+                            // Rotar la imagen si es necesario
+                            val rotationDegrees = getRotationDegrees(tempFile)
+                            imgBitmap = rotateBitmap(imgBitmap, rotationDegrees)
 
-                            val croppedBitmap = Bitmap.createBitmap(
-                                grayscaleBitmap,
-                                boundingBoxInImageCoordinates.left,
-                                boundingBoxInImageCoordinates.top,
-                                boundingBoxInImageCoordinates.width(),
-                                boundingBoxInImageCoordinates.height()
-                            )
+                            // Crear InputImage para ML Kit
+                            val inputImage = InputImage.fromBitmap(imgBitmap, 0)
 
-                            val aspectRatio = boundingBoxInImageCoordinates.width().toFloat() / boundingBoxInImageCoordinates.height().toFloat()
-                            val targetWidth: Int
-                            val targetHeight: Int
+                            // Configurar el detector de rostros
+                            val realTimeOpts = FaceDetectorOptions.Builder()
+                                .setContourMode(FaceDetectorOptions.CONTOUR_MODE_ALL)
+                                .setPerformanceMode(FaceDetectorOptions.PERFORMANCE_MODE_FAST)
+                                .setClassificationMode(FaceDetectorOptions.CLASSIFICATION_MODE_ALL)
+                                .enableTracking()
+                                .build()
 
-                            if (boundingBoxInImageCoordinates.width() > boundingBoxInImageCoordinates.height()) {
-                                targetWidth = 112
-                                targetHeight = Math.round(targetWidth / aspectRatio)
-                            } else {
-                                targetHeight = 112
-                                targetWidth = Math.round(targetHeight * aspectRatio)
-                            }
+                            val detector = FaceDetection.getClient(realTimeOpts)
+                            detector.process(inputImage)
+                                .addOnSuccessListener { faces ->
+                                    if (faces.isNotEmpty()) {
+                                        // Suponemos que solo hay una cara y tomamos la primera
+                                        val face = faces[0]
+                                        val boundingBox = face.boundingBox
 
-                            val resizedBitmap = Bitmap.createScaledBitmap(croppedBitmap, targetWidth, targetHeight, false)
-                            val finalBitmap = Bitmap.createBitmap(112, 112, Bitmap.Config.ARGB_8888)
-                            val canvas = Canvas(finalBitmap)
-                            canvas.drawColor(Color.BLACK)
+                                        // Reducir el tamaño del bounding box para que sea solo la cara
+                                        val reductionAmountX = 220
+                                        val reductionAmountY = 180
+                                        val adjustedBoundingBox = Rect(
+                                            boundingBox.left + reductionAmountX,
+                                            boundingBox.top + reductionAmountY,
+                                            boundingBox.right - reductionAmountX,
+                                            boundingBox.bottom - reductionAmountY
+                                        )
 
-                            val left = (finalBitmap.width - resizedBitmap.width) / 2f
-                            val top = (finalBitmap.height - resizedBitmap.height) / 2f
-                            canvas.drawBitmap(resizedBitmap, left, top, null)
+                                        // Recortar la imagen para obtener solo la cara
+                                        val faceBitmap = Bitmap.createBitmap(
+                                            imgBitmap,
+                                            adjustedBoundingBox.left,
+                                            adjustedBoundingBox.top,
+                                            adjustedBoundingBox.width(),
+                                            adjustedBoundingBox.height()
+                                        )
 
-                            val stream = ByteArrayOutputStream()
-                            finalBitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream)
-                            val finalImageBytes = stream.toByteArray()
+                                        // Convertir la imagen a escala de grises
+                                        val grayscaleBitmap = convertToGrayscale(faceBitmap)
 
-                            val saveImageDeferred = if (isRegister) {
-                                databaseController.saveImageLogin(finalImageBytes, userId)
-                            } else {
-                                databaseController.saveImage(finalImageBytes, userId)
-                            }
+                                        // Calcular las nuevas dimensiones manteniendo el aspecto original
+                                        val aspectRatio = grayscaleBitmap.width.toFloat() / grayscaleBitmap.height.toFloat()
+                                        val targetWidth: Int
+                                        val targetHeight: Int
 
-                            coroutineScope.launch {
-                                saveImageDeferred.await()
-                                state.value = true
-                                state.value = false
-                                tempFile.delete()
-                                cameraProvider.unbindAll()
-                                if (isRegister) {
-                                    navController.navigateToConfirmationLogin(userId)
-                                } else {
-                                    navController.navigateToConfirmation(userId, true)
+                                        if (aspectRatio > 1) {
+                                            targetWidth = 112
+                                            targetHeight = (112 / aspectRatio).toInt()
+                                        } else {
+                                            targetHeight = 112
+                                            targetWidth = (112 * aspectRatio).toInt()
+                                        }
+
+                                        // Redimensionar la imagen manteniendo el aspecto original
+                                        val resizedBitmap = Bitmap.createScaledBitmap(grayscaleBitmap, targetWidth, targetHeight, false)
+
+                                        // Crear una nueva imagen de 112x112 píxeles y dibujar la imagen redimensionada en el centro
+                                        val finalBitmap = Bitmap.createBitmap(112, 112, Bitmap.Config.ARGB_8888)
+                                        val canvas = Canvas(finalBitmap)
+                                        canvas.drawColor(Color.BLACK) // Rellenar el fondo con negro
+
+                                        val left = (finalBitmap.width - resizedBitmap.width) / 2f
+                                        val top = (finalBitmap.height - resizedBitmap.height) / 2f
+                                        canvas.drawBitmap(resizedBitmap, left, top, null)
+
+                                        // Guardar la imagen final
+                                        val stream = ByteArrayOutputStream()
+                                        finalBitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream)
+                                        val finalImageBytes = stream.toByteArray()
+
+                                        val saveImageDeferred = if (isRegister) {
+                                            databaseController.saveImageLogin(finalImageBytes, userId)
+                                        } else {
+                                            databaseController.saveImage(finalImageBytes, userId)
+                                        }
+
+                                        coroutineScope.launch {
+                                            saveImageDeferred.await()
+                                            state.value = true
+                                            state.value = false
+                                            tempFile.delete()
+                                            cameraProvider.unbindAll()
+                                            if (isRegister) {
+                                                navController.navigateToConfirmationLogin(userId)
+                                            } else {
+                                                navController.navigateToConfirmation(userId, true, "bien")
+                                            }
+                                        }
+                                    } else {
+                                        Log.e("Imagen", "No se detectaron caras")
+                                        if (!isRegister)
+                                            navController.navigateToConfirmation(userId, false, "No se detectaron caras")
+                                    }
                                 }
-                            }
+                                .addOnFailureListener { e ->
+                                    Log.e("Imagen", "Error al procesar la imagen", e)
+                                    if (!isRegister)
+                                        navController.navigateToConfirmation(userId, false, "Error al procesar la imagen")
+                                }
                         } catch (e: Exception) {
                             Log.e("Imagen", "Error al procesar la imagen", e)
                             if (!isRegister)
-                                navController.navigateToConfirmation(userId, false)
+                                navController.navigateToConfirmation(userId, false, "Error al procesar la imagen")
                         }
                     }
 
                     override fun onError(exception: ImageCaptureException) {
                         Log.e("Imagen", "Error al capturar la imagen", exception)
                         if (!isRegister)
-                            navController.navigateToConfirmation(userId, false)
+                            navController.navigateToConfirmation(userId, false, "Error al capturar la imagen")
                     }
                 })
         } catch (e: Exception) {
             Log.e("Imagen", "Error al iniciar la captura de imagen", e)
             if (!isRegister)
-                navController.navigateToConfirmation(userId, false)
+                navController.navigateToConfirmation(userId, false, "Error al iniciar la captura de imagen")
         }
     }
 
+
+
+    fun rotateBitmap(bitmap: Bitmap, rotationDegrees: Int): Bitmap {
+        val matrix = Matrix()
+        matrix.postRotate(rotationDegrees.toFloat())
+        return Bitmap.createBitmap(bitmap, 0, 0, bitmap.width, bitmap.height, matrix, true)
+    }
+
+    fun getRotationDegrees(tempFile: File): Int {
+        val exif = ExifInterface(tempFile.absolutePath)
+        return when (exif.getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_NORMAL)) {
+            ExifInterface.ORIENTATION_ROTATE_90 -> 90
+            ExifInterface.ORIENTATION_ROTATE_180 -> 180
+            ExifInterface.ORIENTATION_ROTATE_270 -> 270
+            else -> 0
+        }
+    }
 
     fun convertToGrayscale(source: Bitmap): Bitmap {
         val width = source.width
@@ -178,11 +239,6 @@ class CameraController(
     }
 
 
-    fun rotateBitmap(source: Bitmap, angle: Float): Bitmap {
-        val matrix = Matrix()
-        matrix.postRotate(angle)
-        return Bitmap.createBitmap(source, 0, 0, source.width, source.height, matrix, true)
-    }
 }
 
 
