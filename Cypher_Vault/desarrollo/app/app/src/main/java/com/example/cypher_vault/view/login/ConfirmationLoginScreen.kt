@@ -115,27 +115,28 @@ fun ConfirmationLoginScreen(navController: NavController, userId: String) {
     var secondAuthManager = SecondAuthManager()
     var secondAuthController = SecondAuthController(secondAuthManager)
     var showImage by remember { mutableStateOf(false) }
+    var showConfirmationLoguin by remember { mutableStateOf(false) }
+    var showDenyAccess by remember { mutableStateOf(false) }
 
     //Prototipado de la pantalla para logueo con camara
     val imagePrintRegister = remember { mutableStateOf<Bitmap?>(null) }
     val imagePrintLogin = remember { mutableStateOf<Bitmap?>(null) }
     val result = remember { mutableStateOf<Boolean?>(null) }
+    val distance = remember { mutableStateOf<Float?>(null) }
+    var showData by remember { mutableStateOf(false) }
 
     //Se agrega ingreso de usuario
     val userAccessManager = UserAccessManager()
     val userAccessController = UserAccessController(userAccessManager)
 
-    val distance = remember { mutableStateOf<Float?>(null) }
-    var showData by remember { mutableStateOf(false) }
-
     //Variables de la 2da Authentificacion
-    var isSecondAuth: Boolean? by remember { mutableStateOf(false) }
-    LaunchedEffect(Unit) { // Key can be anything to trigger on recomposition
-        val usuarioTemp = dbc.getUserById(userId)
-        if (usuarioTemp != null) {
-            isSecondAuth = usuarioTemp.authentication
+    var isSecondAuth by remember { mutableStateOf<Boolean?>(null) }
+    LaunchedEffect(userId) {
+        launch {
+            isSecondAuth = dbc.getUserById(userId)?.authentication
         }
     }
+    var isAuthenticaed by remember { mutableStateOf(false) }
 
     //Variables de conexion a la red de internet
     val serviceManager = remember { ServiceManager(context) }
@@ -153,585 +154,306 @@ fun ConfirmationLoginScreen(navController: NavController, userId: String) {
             distance.value = dist
         }
     }
-
-
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(20.dp)
-            .verticalScroll(rememberScrollState()),
-        horizontalAlignment = Alignment.CenterHorizontally
+    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    //// SE INSERTA ESO ACA POR EL SCOPE DE VARIABLES //////////////////////////////////////////////////////////////
+    /// TARJETA DE LA 2DA AUTHENTICACION PARTE DEL MAIL ////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    @Composable
+    fun ElevatedCardMailConfirmation(
+        context: Context,
+        navController: NavController,
+        secondAuthController: SecondAuthController,
+        userAccessController: UserAccessController,
+        userId: String,
+        internetAvailable: Boolean
     ) {
-        //Elementos de la 2da Authentificacion//////////////////////////////////////////
-        ///////////////////////////////////////////////////////////////////////////////
-        if (imagePrintRegister.value == null && imagePrintLogin.value == null) {
-            if (isSecondAuth == true) {
-                /// SIN IMAGENES Y CON SEGUNDA ACTIVADA ////////////////////////
-                if (isInternetAvailable) {
-                    ElevatedCardMailConfirmation(
-                        context,
-                        navController,
-                        secondAuthController,
-                        userAccessController,
-                        userId,
-                        isInternetAvailable
-                    )
-                } else {
-                    ElevatedCardDayPart(
-                        context,
-                        navController,
-                        secondAuthController,
-                        userAccessController,
-                        userId,
-                        isInternetAvailable
-                    )
-                }
-            } else {
-                /// SIN IMAGENES Y SIN SEGUNDA ACTIVADA ////////////////////////
-                // Ingreso de usuario
-                LaunchedEffect(userId) {
-                    userAccessController.insertUserIncome(userId)
-                }
-                Image(
-                    painter = painterResource(id = R.drawable.successful),
-                    contentDescription = "Bienvenido!",
-                    modifier = Modifier.size(128.dp)
-                )
-                Text(
-                    "¡Bienvenido de nuevo!",
-                    fontSize = 20.sp,
-                    fontFamily = fontFamily,
-                    color = thirdColor,
-                    fontWeight = FontWeight.ExtraBold,
-                    modifier = Modifier.padding(top = 16.dp)
-                )
-                OutlinedButton(
-                    onClick = { navController.navigateToGallery(userId) },
-                    shape = RoundedCornerShape(15.dp),
-                    border = BorderStroke(3.dp, firstColor),
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = Color.Transparent,
-                        contentColor = thirdColor
-                    ),
-                    modifier = Modifier
-                        .width(200.dp)
-                        .padding(top = 30.dp)
-                ) {
-                    Text(
-                        "Ir a la galería",
-                        fontFamily = fontFamily,
-                        color = thirdColor,
-                        fontWeight = FontWeight.Bold
-                    )
-                }
+        var primerValorCodigo = remember { mutableStateOf(TextFieldValue()) }
+        var segundoValorCodigo = remember { mutableStateOf(TextFieldValue()) }
+        var tercerValorCodigo = remember { mutableStateOf(TextFieldValue()) }
+        var cuartoValorCodigo = remember { mutableStateOf(TextFieldValue()) }
+        var quintoValorCodigo = remember { mutableStateOf(TextFieldValue()) }
+        var mailCode: String = remember { secondAuthController.sendMail(context, userId) }
+        Log.d("MailConfirmation", "salida: $mailCode")
+
+        //Variables y logica del campo de rellenado
+        val textFieldValues = listOf(
+            primerValorCodigo,
+            segundoValorCodigo,
+            tercerValorCodigo,
+            cuartoValorCodigo,
+            quintoValorCodigo
+        )
+        val focusRequesters = List(5) { remember { FocusRequester() } }
+        val focusManager = LocalFocusManager.current
+        var focusedFieldIndex by remember { mutableStateOf(-1) }
+
+        fun handleTextChange(index: Int, value: String) {
+            if (index == 4 && textFieldValues.size > 1) {
+                focusManager.clearFocus()
             }
-        } else {
-            /// CON IMAGENES Y CON SEGUNDA ACTIVADA ////////////////////////
-            if (isSecondAuth == true) {
-                if (isInternetAvailable) {
-                    ElevatedCardMailConfirmation(
-                        context,
-                        navController,
-                        secondAuthController,
-                        userAccessController,
-                        userId,
-                        isInternetAvailable
-                    )
-
-                } else {
-                    ElevatedCardDayPart(
-                        context,
-                        navController,
-                        secondAuthController,
-                        userAccessController,
-                        userId,
-                        isInternetAvailable
-                    )
-                }
+            if (index == 0 && primerValorCodigo.value.text.isNotEmpty() && segundoValorCodigo.value.text.isNotEmpty() && tercerValorCodigo.value.text.isNotEmpty() && cuartoValorCodigo.value.text.isNotEmpty() && quintoValorCodigo.value.text.isNotEmpty()) {
+                focusManager.clearFocus()
+                primerValorCodigo.value = TextFieldValue("")
+                segundoValorCodigo.value = TextFieldValue("")
+                tercerValorCodigo.value = TextFieldValue("")
+                cuartoValorCodigo.value = TextFieldValue("")
+                quintoValorCodigo.value = TextFieldValue("")
             } else {
-                /// CON IMAGENES Y CON SEGUNDA DESACTIVADA ////////////////////////
-
-                when (result.value) {
-                    null -> {
-                        Text(
-                            "Esperando...",
-                            fontSize = 20.sp,
-                            fontWeight = FontWeight.Bold,
-                        )
-                    }
-
-                    true -> {
-                        // Ingreso de usuario
-                        LaunchedEffect(userId) {
-                            userAccessController.insertUserIncome(userId)
-                        }
-                        Image(
-                            painter = painterResource(id = R.drawable.successful),
-                            contentDescription = "Bienvenido!",
-                            modifier = Modifier.size(128.dp)
-                        )
-                        Text(
-                            "¡Bienvenido de nuevo!",
-                            fontSize = 20.sp,
-                            fontFamily = fontFamily,
-                            color = thirdColor,
-                            fontWeight = FontWeight.ExtraBold,
-                            modifier = Modifier.padding(top = 16.dp)
-                        )
-                        OutlinedButton(
-                            onClick = { navController.navigateToGallery(userId) },
-                            shape = RoundedCornerShape(15.dp),
-                            border = BorderStroke(3.dp, firstColor),
-                            colors = ButtonDefaults.buttonColors(
-                                containerColor = Color.Transparent,
-                                contentColor = thirdColor
-                            ),
-                            modifier = Modifier
-                                .width(200.dp)
-                                .padding(top = 30.dp)
-                        ) {
-                            Text(
-                                "Ir a la galería",
-                                fontFamily = fontFamily,
-                                color = thirdColor,
-                                fontWeight = FontWeight.Bold
-                            )
+                if (value.length > 1) {
+                    textFieldValues[index].value = TextFieldValue(value[0].toString())
+                    if (index < textFieldValues.size - 1) {
+                        handleTextChange(index + 1, value.substring(1))
+                        if (index < 4) {
+                            focusRequesters[index + 1].requestFocus()
                         }
                     }
-
-                    false -> {
-                        Image(
-                            painter = painterResource(id = R.drawable.failure),
-                            contentDescription = "No son la misma persona",
-                            modifier = Modifier.size(128.dp)
-                        )
-                        Text(
-                            "Acceso denegado.",
-                            fontSize = 20.sp,
-                            fontFamily = fontFamily,
-                            color = Color.Red,
-                            fontWeight = FontWeight.ExtraBold,
-                            modifier = Modifier.padding(top = 16.dp)
-                        )
-                        OutlinedButton(
-                            onClick = { showData = !showData },
-                            shape = RoundedCornerShape(15.dp),
-                            border = BorderStroke(3.dp, firstColor),
-                            colors = ButtonDefaults.buttonColors(
-                                containerColor = Color.Transparent,
-                                contentColor = thirdColor
-                            ),
-                            modifier = Modifier
-                                .width(200.dp)
-                                .padding(top = 16.dp)
-                        ) {
-                            Text(
-                                if (showData) "Ocultar datos" else "Ver datos",
-                                fontFamily = fontFamily,
-                                color = thirdColor,
-                                fontWeight = FontWeight.Bold
-                            )
+                } else {
+                    textFieldValues[index].value = TextFieldValue(value)
+                    if (value.isNotEmpty() && index < textFieldValues.size - 1) {
+                        if (index < 4) {
+                            focusRequesters[index + 1].requestFocus()
                         }
-                        if (showData && distance.value != null) {
-                            Text(
-                                "Distancia calculada: ${distance.value}",
-                                fontFamily = fontFamily,
-                                fontWeight = FontWeight.Bold,
-                                color = thirdColor,
-                                modifier = Modifier.padding(top = 16.dp)
-                            )
-                        }
-                        OutlinedButton(
-                            onClick = { navController.navigateToListLogin() },
-                            shape = RoundedCornerShape(15.dp),
-                            border = BorderStroke(3.dp, firstColor),
-                            colors = ButtonDefaults.buttonColors(
-                                containerColor = Color.Transparent,
-                                contentColor = thirdColor
-                            ),
-                            modifier = Modifier
-                                .width(200.dp)
-                                .padding(top = 30.dp)
-                        ) {
-                            Text(
-                                "Iniciar sesión",
-                                fontFamily = fontFamily,
-                                color = thirdColor,
-                                fontWeight = FontWeight.Bold
-                            )
-                        }
-                    }
-                }
-
-                if (result.value == true) {
-                    OutlinedButton(
-                        onClick = { showImage = !showImage },
-                        shape = RoundedCornerShape(15.dp),
-                        border = BorderStroke(3.dp, firstColor),
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = Color.Transparent,
-                            contentColor = thirdColor
-                        ),
-                        modifier = Modifier
-                            .width(200.dp)
-                            .padding(top = 16.dp)
-                    ) {
-                        Text(
-                            if (showImage) "Ocultar imágenes" else "Ver imágenes",
-                            fontFamily = fontFamily,
-                            color = thirdColor,
-                            fontWeight = FontWeight.Bold
-                        )
-                    }
-                    OutlinedButton(
-                        onClick = { showData = !showData },
-                        shape = RoundedCornerShape(15.dp),
-                        border = BorderStroke(3.dp, firstColor),
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = Color.Transparent,
-                            contentColor = thirdColor
-                        ),
-                        modifier = Modifier
-                            .width(200.dp)
-                            .padding(top = 16.dp)
-                    ) {
-                        Text(
-                            if (showData) "Ocultar datos" else "Ver datos",
-                            fontFamily = fontFamily,
-                            color = thirdColor,
-                            fontWeight = FontWeight.Bold
-                        )
-                    }
-                    if (showData && distance.value != null) {
-                        Text(
-                            "Distancia calculada: ${distance.value}",
-                            fontFamily = fontFamily,
-                            fontWeight = FontWeight.Bold,
-                            color = thirdColor,
-                            modifier = Modifier.padding(top = 16.dp)
-                        )
-                    }
-                    if (showImage) {
-                        ImageWithLandmarks(imagePrintRegister)
-                        ImageWithLandmarks(imagePrintLogin)
                     }
                 }
             }
-
         }
-        //Boton vuelta al logueo
-        Spacer(modifier = Modifier.weight(1f)) // Push the button to the bottom
-        OutlinedButton(
-            onClick = { navController.navigateToListLogin() },
-            shape = RoundedCornerShape(15.dp),
-            border = BorderStroke(3.dp, Color.Gray),
-            colors = ButtonDefaults.buttonColors(
-                containerColor = Color.Transparent,
-                contentColor = Color.Gray
+
+        fun handleFocusChange(index: Int, isFocused: Boolean) {
+            focusedFieldIndex = index
+        }
+
+        ElevatedCard(
+            elevation = CardDefaults.cardElevation(
+                defaultElevation = 6.dp
             ),
             modifier = Modifier
-                .width(200.dp)
-                .padding(bottom = 30.dp)
-        ) {
-            Text(
-                "Volver",
-                fontWeight = FontWeight.Bold
-            )
-        }
-    }
-}
-
-/// TARJETA DE LA 2DA AUTHENTICACION PARTE DEL MAIL ////////////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-@Composable
-fun ElevatedCardMailConfirmation(
-    context: Context,
-    navController: NavController,
-    secondAuthController: SecondAuthController,
-    userAccessController: UserAccessController,
-    userId: String,
-    internetAvailable: Boolean
-) {
-    var primerValorCodigo = remember { mutableStateOf(TextFieldValue()) }
-    var segundoValorCodigo = remember { mutableStateOf(TextFieldValue()) }
-    var tercerValorCodigo = remember { mutableStateOf(TextFieldValue()) }
-    var cuartoValorCodigo = remember { mutableStateOf(TextFieldValue()) }
-    var quintoValorCodigo = remember { mutableStateOf(TextFieldValue()) }
-    var mailCode : String = remember { secondAuthController.sendMail(context, userId) }
-    Log.d("MailConfirmation", "salida: $mailCode")
-
-    //Variables y logica del campo de rellenado
-    val textFieldValues = listOf(primerValorCodigo, segundoValorCodigo, tercerValorCodigo, cuartoValorCodigo, quintoValorCodigo)
-    val focusRequesters = List(5) { remember { FocusRequester() } }
-    val focusManager = LocalFocusManager.current
-    var focusedFieldIndex by remember { mutableStateOf(-1) }
-
-    fun handleTextChange(index: Int, value: String) {
-        if ( index == 4 && textFieldValues.size > 1) {
-            focusManager.clearFocus()
-        }
-        if( index == 0 && primerValorCodigo.value.text.isNotEmpty() && segundoValorCodigo.value.text.isNotEmpty() && tercerValorCodigo.value.text.isNotEmpty() && cuartoValorCodigo.value.text.isNotEmpty() && quintoValorCodigo.value.text.isNotEmpty()){
-            focusManager.clearFocus()
-            primerValorCodigo.value = TextFieldValue("")
-            segundoValorCodigo.value = TextFieldValue("")
-            tercerValorCodigo.value = TextFieldValue("")
-            cuartoValorCodigo.value = TextFieldValue("")
-            quintoValorCodigo.value = TextFieldValue("")
-        }else{
-            if (value.length > 1) {
-                textFieldValues[index].value = TextFieldValue(value[0].toString())
-                if (index < textFieldValues.size - 1) {
-                    handleTextChange(index + 1, value.substring(1))
-                    if (index < 4) {
-                        focusRequesters[index + 1].requestFocus()
-                    }
-                }
-            } else {
-                textFieldValues[index].value = TextFieldValue(value)
-                if (value.isNotEmpty() && index < textFieldValues.size - 1) {
-                    if (index < 4) {
-                        focusRequesters[index + 1].requestFocus()
-                    }
-                }
-            }
-        }
-    }
-
-    fun handleFocusChange(index: Int, isFocused: Boolean) {
-        focusedFieldIndex = index
-    }
-
-    ElevatedCard(
-        elevation = CardDefaults.cardElevation(
-            defaultElevation = 6.dp
-        ),
-        modifier = Modifier
-            .padding(16.dp)
-            .background(mainBackgroundColor)
-            .fillMaxHeight(),
-    ) {
-        Column(
-            modifier = Modifier
                 .padding(16.dp)
-                .background(wingWhite),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
+                .background(mainBackgroundColor)
+                .fillMaxHeight(),
         ) {
-            /// TITULO //////////////////////////////////////////////////////////////////
-            Spacer(modifier = Modifier.height(15.dp))
-            Row(
-                horizontalArrangement = Arrangement.Absolute.Center
+            Column(
+                modifier = Modifier
+                    .padding(16.dp)
+                    .background(wingWhite),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center
             ) {
-                Icon(
-                    Icons.Filled.Lock,
-                    contentDescription = "Localized description",
-                    Modifier.size(150.dp),
-                    tint = secondColor
-                )
-            }
-            Spacer(modifier = Modifier.height(15.dp))
-            Row(
-                horizontalArrangement = Arrangement.Absolute.Center
-            ) {
-                Text(
-                    text = "Segunda",
-                    fontSize = 20.sp,
-                    color = secondColor,
-                    style = textStyleTittle2,
-                    onTextLayout = { /* No se necesita hacer nada aquí */ }
-                )
-            }
-            Spacer(modifier = Modifier.height(8.dp))
-            Row(
-                horizontalArrangement = Arrangement.Absolute.Center
-            ) {
-                Text(
-                    text = "Autentificacion",
-                    fontSize = 20.sp,
-                    color = secondColor,
-                    style = textStyleTittle2,
-                    onTextLayout = { /* No se necesita hacer nada aquí */ }
-                )
-            }
-            /// Informacion de RED///////////////////////////////
-            Row {
-                AssistChip(
-                    shape = RoundedCornerShape(4.dp),
-                    border = BorderStroke(3.dp, firstColor),
-                    onClick = { Log.d("Assist chip", "WbTwilight world") },
-                    label = {
-                        if (internetAvailable) {
-                            Text(
-                                text = "con conexion",
-                                color = firstColor,
-                                style = textStyleTittle2,
-                                onTextLayout = { /* No se necesita hacer nada aquí */ })
-                        } else {
-                            Text(
-                                text = "sin conexion",
-                                color = firstColor,
-                                style = textStyleTittle2,
-                                onTextLayout = { /* No se necesita hacer nada aquí */ })
-                        }
-                    },
-                    leadingIcon = {
-                        if (internetAvailable) {
-                            Icon(
-                                Icons.Filled.Wifi,
-                                contentDescription = "Localized description",
-                                Modifier.size(AssistChipDefaults.IconSize),
-                                tint = firstColor
-                            )
+                /// TITULO //////////////////////////////////////////////////////////////////
+                Spacer(modifier = Modifier.height(15.dp))
+                Row(
+                    horizontalArrangement = Arrangement.Absolute.Center
+                ) {
+                    Icon(
+                        Icons.Filled.Lock,
+                        contentDescription = "Localized description",
+                        Modifier.size(150.dp),
+                        tint = secondColor
+                    )
+                }
+                Spacer(modifier = Modifier.height(15.dp))
+                Row(
+                    horizontalArrangement = Arrangement.Absolute.Center
+                ) {
+                    Text(
+                        text = "Segunda",
+                        fontSize = 20.sp,
+                        color = secondColor,
+                        style = textStyleTittle2,
+                        onTextLayout = { /* No se necesita hacer nada aquí */ }
+                    )
+                }
+                Spacer(modifier = Modifier.height(8.dp))
+                Row(
+                    horizontalArrangement = Arrangement.Absolute.Center
+                ) {
+                    Text(
+                        text = "Autentificacion",
+                        fontSize = 20.sp,
+                        color = secondColor,
+                        style = textStyleTittle2,
+                        onTextLayout = { /* No se necesita hacer nada aquí */ }
+                    )
+                }
+                /// Informacion de RED///////////////////////////////
+                Row {
+                    AssistChip(
+                        shape = RoundedCornerShape(4.dp),
+                        border = BorderStroke(3.dp, firstColor),
+                        onClick = { Log.d("Assist chip", "WbTwilight world") },
+                        label = {
+                            if (internetAvailable) {
+                                Text(
+                                    text = "con conexion",
+                                    color = firstColor,
+                                    style = textStyleTittle2,
+                                    onTextLayout = { /* No se necesita hacer nada aquí */ })
+                            } else {
+                                Text(
+                                    text = "sin conexion",
+                                    color = firstColor,
+                                    style = textStyleTittle2,
+                                    onTextLayout = { /* No se necesita hacer nada aquí */ })
+                            }
+                        },
+                        leadingIcon = {
+                            if (internetAvailable) {
+                                Icon(
+                                    Icons.Filled.Wifi,
+                                    contentDescription = "Localized description",
+                                    Modifier.size(AssistChipDefaults.IconSize),
+                                    tint = firstColor
+                                )
 
-                        } else {
-                            Icon(
-                                Icons.Filled.WifiOff,
-                                contentDescription = "Localized description",
-                                Modifier.size(AssistChipDefaults.IconSize),
-                                tint = firstColor
-                            )
+                            } else {
+                                Icon(
+                                    Icons.Filled.WifiOff,
+                                    contentDescription = "Localized description",
+                                    Modifier.size(AssistChipDefaults.IconSize),
+                                    tint = firstColor
+                                )
+                            }
                         }
+                    )
+                }
+                Spacer(modifier = Modifier.height(20.dp))
+                //// Texto de la 2da Authentificacion por mail ////////////////////////////
+                Row {
+                    Text(
+                        text = "Ingresa el codigo que acabamos de enviar a tu correo",
+                        color = firstColor,
+                        style = textStyleTittle2,
+                        onTextLayout = { /* No se necesita hacer nada aquí */ },
+                        modifier = Modifier.padding(horizontal = 16.dp)
+                    )
+                }
+                Spacer(modifier = Modifier.height(10.dp))
+                //// Formularios ingreso de codigo ////////////////////////////
+                Row(
+                    horizontalArrangement = Arrangement.Absolute.Center
+                ) {
+                    /// VALOR DIGITO 1 ///////////////////////////////////////////////
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Column {
+                        TextField(
+                            value = primerValorCodigo.value,
+                            onValueChange = {
+                                handleTextChange(0, it.text)
+                                //primerValorCodigo.value = it
+                            },
+                            textStyle = TextStyle(
+                                color = firstColor,
+                                fontSize = 16.sp,
+                                fontFamily = com.example.cypher_vault.view.resources.fontFamily,
+                                fontWeight = FontWeight.Bold
+                            ),
+                            placeholder = {
+                                Text(
+                                    "",
+                                    style = TextStyle(
+                                        color = Color.Gray,
+                                        fontSize = 16.sp,
+                                        fontFamily = com.example.cypher_vault.view.resources.fontFamily
+                                    )
+                                )
+                            },
+                            label = {
+                                Text(
+                                    "",
+                                    fontSize = 20.sp,
+                                    fontFamily = com.example.cypher_vault.view.resources.fontFamily,
+                                    color = com.example.cypher_vault.view.resources.thirdColor,
+                                    fontWeight = FontWeight.Bold,
+                                )
+                            },
+                            singleLine = true,
+                            shape = RoundedCornerShape(4.dp),
+                            colors = TextFieldDefaults.colors(
+                                focusedContainerColor = Color.Transparent,
+                                unfocusedContainerColor = Color.Transparent,
+                                disabledContainerColor = Color.Transparent,
+                                cursorColor = com.example.cypher_vault.view.resources.thirdColor,
+                                focusedIndicatorColor = com.example.cypher_vault.view.resources.firstColor,
+                                unfocusedIndicatorColor = com.example.cypher_vault.view.resources.firstColor,
+                            ),
+                            modifier = Modifier
+                                .width(45.dp) // Establece un ancho fijo para el TextField
+                                .padding(top = 15.dp)
+                                .border(
+                                    BorderStroke(
+                                        3.dp,
+                                        com.example.cypher_vault.view.resources.firstColor
+                                    ),
+                                    shape = RoundedCornerShape(4.dp),
+                                )
+                                .focusRequester(focusRequesters[0])
+                                .onFocusChanged { focusState ->
+                                    handleFocusChange(0, focusState.isFocused)
+                                }
+                        )
                     }
-                )
-            }
-            Spacer(modifier = Modifier.height(20.dp))
-            //// Texto de la 2da Authentificacion por mail ////////////////////////////
-            Row {
-                Text(
-                    text = "Ingresa el codigo que acabamos de enviar a tu correo",
-                    color = firstColor,
-                    style = textStyleTittle2,
-                    onTextLayout = { /* No se necesita hacer nada aquí */ },
-                    modifier = Modifier.padding(horizontal = 16.dp)
-                )
-            }
-            Spacer(modifier = Modifier.height(10.dp))
-            //// Formularios ingreso de codigo ////////////////////////////
-            Row(
-                horizontalArrangement = Arrangement.Absolute.Center
-            ) {
-                /// VALOR DIGITO 1 ///////////////////////////////////////////////
-                Spacer(modifier = Modifier.width(8.dp))
-                Column {
-                    TextField(
-                        value = primerValorCodigo.value,
-                        onValueChange = {
-                            handleTextChange(0, it.text)
-                            //primerValorCodigo.value = it
-                        },
-                        textStyle = TextStyle(
-                            color = firstColor,
-                            fontSize = 16.sp,
-                            fontFamily = com.example.cypher_vault.view.resources.fontFamily,
-                            fontWeight = FontWeight.Bold
-                        ),
-                        placeholder = {
-                            Text(
-                                "",
-                                style = TextStyle(
-                                    color = Color.Gray,
-                                    fontSize = 16.sp,
-                                    fontFamily = com.example.cypher_vault.view.resources.fontFamily
-                                )
-                            )
-                        },
-                        label = {
-                            Text(
-                                "",
-                                fontSize = 20.sp,
+                    /// VALOR DIGITO 2 ///////////////////////////////////////////////
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Column {
+                        TextField(
+                            value = segundoValorCodigo.value,
+                            onValueChange = {
+                                handleTextChange(1, it.text)
+                                //segundoValorCodigo.value = it
+                            },
+                            textStyle = TextStyle(
+                                color = firstColor,
+                                fontSize = 16.sp,
                                 fontFamily = com.example.cypher_vault.view.resources.fontFamily,
-                                color = com.example.cypher_vault.view.resources.thirdColor,
-                                fontWeight = FontWeight.Bold,
-                            )
-                        },
-                        singleLine = true,
-                        shape = RoundedCornerShape(4.dp),
-                        colors = TextFieldDefaults.colors(
-                            focusedContainerColor = Color.Transparent,
-                            unfocusedContainerColor = Color.Transparent,
-                            disabledContainerColor = Color.Transparent,
-                            cursorColor = com.example.cypher_vault.view.resources.thirdColor,
-                            focusedIndicatorColor = com.example.cypher_vault.view.resources.firstColor,
-                            unfocusedIndicatorColor = com.example.cypher_vault.view.resources.firstColor,
-                        ),
-                        modifier = Modifier
-                            .width(45.dp) // Establece un ancho fijo para el TextField
-                            .padding(top = 15.dp)
-                            .border(
-                                BorderStroke(
-                                    3.dp,
-                                    com.example.cypher_vault.view.resources.firstColor
-                                ),
-                                shape = RoundedCornerShape(4.dp),
-                            )
-                            .focusRequester(focusRequesters[0]).onFocusChanged { focusState ->
-                                handleFocusChange(0, focusState.isFocused)
-                            }
-                    )
-                }
-                /// VALOR DIGITO 2 ///////////////////////////////////////////////
-                Spacer(modifier = Modifier.width(8.dp))
-                Column {
-                    TextField(
-                        value = segundoValorCodigo.value,
-                        onValueChange = {
-                            handleTextChange(1, it.text)
-                                        //segundoValorCodigo.value = it
-                        },
-                        textStyle = TextStyle(
-                            color = firstColor,
-                            fontSize = 16.sp,
-                            fontFamily = com.example.cypher_vault.view.resources.fontFamily,
-                            fontWeight = FontWeight.Bold
-                        ),
-                        placeholder = {
-                            Text(
-                                "",
-                                style = TextStyle(
-                                    color = Color.Gray,
-                                    fontSize = 16.sp,
-                                    fontFamily = com.example.cypher_vault.view.resources.fontFamily
+                                fontWeight = FontWeight.Bold
+                            ),
+                            placeholder = {
+                                Text(
+                                    "",
+                                    style = TextStyle(
+                                        color = Color.Gray,
+                                        fontSize = 16.sp,
+                                        fontFamily = com.example.cypher_vault.view.resources.fontFamily
+                                    )
                                 )
-                            )
-                        },
-                        label = {
-                            Text(
-                                "",
-                                fontSize = 20.sp,
-                                fontFamily = com.example.cypher_vault.view.resources.fontFamily,
-                                color = com.example.cypher_vault.view.resources.thirdColor,
-                                fontWeight = FontWeight.Bold,
-                            )
-                        },
-                        singleLine = true,
-                        shape = RoundedCornerShape(4.dp),
-                        colors = TextFieldDefaults.colors(
-                            focusedContainerColor = Color.Transparent,
-                            unfocusedContainerColor = Color.Transparent,
-                            disabledContainerColor = Color.Transparent,
-                            cursorColor = com.example.cypher_vault.view.resources.thirdColor,
-                            focusedIndicatorColor = com.example.cypher_vault.view.resources.firstColor,
-                            unfocusedIndicatorColor = com.example.cypher_vault.view.resources.firstColor,
-                        ),
-                        modifier = Modifier
-                            .width(45.dp) // Establece un ancho fijo para el TextField
-                            .padding(top = 15.dp)
-                            .border(
-                                BorderStroke(
-                                    3.dp,
-                                    com.example.cypher_vault.view.resources.firstColor
-                                ),
-                                shape = RoundedCornerShape(4.dp),
-                            )
-                            .focusRequester(focusRequesters[1])
-                            .onFocusChanged { focusState ->
-                                handleFocusChange(1, focusState.isFocused)
-                            }
-                    )
-                }
-                /// VALOR DIGITO 3 ///////////////////////////////////////////////
-                Spacer(modifier = Modifier.width(8.dp))
-                Column {
+                            },
+                            label = {
+                                Text(
+                                    "",
+                                    fontSize = 20.sp,
+                                    fontFamily = com.example.cypher_vault.view.resources.fontFamily,
+                                    color = com.example.cypher_vault.view.resources.thirdColor,
+                                    fontWeight = FontWeight.Bold,
+                                )
+                            },
+                            singleLine = true,
+                            shape = RoundedCornerShape(4.dp),
+                            colors = TextFieldDefaults.colors(
+                                focusedContainerColor = Color.Transparent,
+                                unfocusedContainerColor = Color.Transparent,
+                                disabledContainerColor = Color.Transparent,
+                                cursorColor = com.example.cypher_vault.view.resources.thirdColor,
+                                focusedIndicatorColor = com.example.cypher_vault.view.resources.firstColor,
+                                unfocusedIndicatorColor = com.example.cypher_vault.view.resources.firstColor,
+                            ),
+                            modifier = Modifier
+                                .width(45.dp) // Establece un ancho fijo para el TextField
+                                .padding(top = 15.dp)
+                                .border(
+                                    BorderStroke(
+                                        3.dp,
+                                        com.example.cypher_vault.view.resources.firstColor
+                                    ),
+                                    shape = RoundedCornerShape(4.dp),
+                                )
+                                .focusRequester(focusRequesters[1])
+                                .onFocusChanged { focusState ->
+                                    handleFocusChange(1, focusState.isFocused)
+                                }
+                        )
+                    }
+                    /// VALOR DIGITO 3 ///////////////////////////////////////////////
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Column {
                         TextField(
                             value = tercerValorCodigo.value,
                             onValueChange = {
@@ -788,146 +510,446 @@ fun ElevatedCardMailConfirmation(
                                     handleFocusChange(2, focusState.isFocused)
                                 }
                         )
-                }
-                /// VALOR DIGITO 4 ///////////////////////////////////////////////
-                Spacer(modifier = Modifier.width(8.dp))
-                Column {
-                    TextField(
-                        value = cuartoValorCodigo.value,
-                        onValueChange = {
-                            handleTextChange(3, it.text)
-                            //cuartoValorCodigo.value = it
-                        },
-                        textStyle = TextStyle(
-                            color = firstColor,
-                            fontSize = 16.sp,
-                            fontFamily = com.example.cypher_vault.view.resources.fontFamily,
-                            fontWeight = FontWeight.Bold
-                        ),
-                        placeholder = {
-                            Text(
-                                "",
-                                style = TextStyle(
-                                    color = Color.Gray,
-                                    fontSize = 16.sp,
-                                    fontFamily = com.example.cypher_vault.view.resources.fontFamily
-                                )
-                            )
-                        },
-                        label = {
-                            Text(
-                                "",
-                                fontSize = 20.sp,
+                    }
+                    /// VALOR DIGITO 4 ///////////////////////////////////////////////
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Column {
+                        TextField(
+                            value = cuartoValorCodigo.value,
+                            onValueChange = {
+                                handleTextChange(3, it.text)
+                                //cuartoValorCodigo.value = it
+                            },
+                            textStyle = TextStyle(
+                                color = firstColor,
+                                fontSize = 16.sp,
                                 fontFamily = com.example.cypher_vault.view.resources.fontFamily,
-                                color = com.example.cypher_vault.view.resources.thirdColor,
-                                fontWeight = FontWeight.Bold,
-                            )
-                        },
-                        singleLine = true,
-                        shape = RoundedCornerShape(4.dp),
-                        colors = TextFieldDefaults.colors(
-                            focusedContainerColor = Color.Transparent,
-                            unfocusedContainerColor = Color.Transparent,
-                            disabledContainerColor = Color.Transparent,
-                            cursorColor = com.example.cypher_vault.view.resources.thirdColor,
-                            focusedIndicatorColor = com.example.cypher_vault.view.resources.firstColor,
-                            unfocusedIndicatorColor = com.example.cypher_vault.view.resources.firstColor,
-                        ),
-                        modifier = Modifier
-                            .width(45.dp) // Establece un ancho fijo para el TextField
-                            .padding(top = 15.dp)
-                            .border(
-                                BorderStroke(
-                                    3.dp,
-                                    com.example.cypher_vault.view.resources.firstColor
-                                ),
-                                shape = RoundedCornerShape(4.dp),
-                            )
-                            .focusRequester(focusRequesters[3])
-                            .onFocusChanged { focusState ->
-                                handleFocusChange(3, focusState.isFocused)
-                            }
-                    )
-                }
-                /// VALOR DIGITO 5 ///////////////////////////////////////////////
-                Spacer(modifier = Modifier.width(8.dp))
-                Column {
-                    TextField(
-                        value = quintoValorCodigo.value,
-                        onValueChange = {
-                            handleTextChange(4, it.text)
-                            //quintoValorCodigo.value = it
-                        },
-                        textStyle = TextStyle(
-                            color = firstColor,
-                            fontSize = 16.sp,
-                            fontFamily = com.example.cypher_vault.view.resources.fontFamily,
-                            fontWeight = FontWeight.Bold
-                        ),
-                        placeholder = {
-                            Text(
-                                "",
-                                style = TextStyle(
-                                    color = Color.Gray,
-                                    fontSize = 16.sp,
-                                    fontFamily = com.example.cypher_vault.view.resources.fontFamily
+                                fontWeight = FontWeight.Bold
+                            ),
+                            placeholder = {
+                                Text(
+                                    "",
+                                    style = TextStyle(
+                                        color = Color.Gray,
+                                        fontSize = 16.sp,
+                                        fontFamily = com.example.cypher_vault.view.resources.fontFamily
+                                    )
                                 )
-                            )
-                        },
-                        label = {
-                            Text(
-                                "",
-                                fontSize = 20.sp,
+                            },
+                            label = {
+                                Text(
+                                    "",
+                                    fontSize = 20.sp,
+                                    fontFamily = com.example.cypher_vault.view.resources.fontFamily,
+                                    color = com.example.cypher_vault.view.resources.thirdColor,
+                                    fontWeight = FontWeight.Bold,
+                                )
+                            },
+                            singleLine = true,
+                            shape = RoundedCornerShape(4.dp),
+                            colors = TextFieldDefaults.colors(
+                                focusedContainerColor = Color.Transparent,
+                                unfocusedContainerColor = Color.Transparent,
+                                disabledContainerColor = Color.Transparent,
+                                cursorColor = com.example.cypher_vault.view.resources.thirdColor,
+                                focusedIndicatorColor = com.example.cypher_vault.view.resources.firstColor,
+                                unfocusedIndicatorColor = com.example.cypher_vault.view.resources.firstColor,
+                            ),
+                            modifier = Modifier
+                                .width(45.dp) // Establece un ancho fijo para el TextField
+                                .padding(top = 15.dp)
+                                .border(
+                                    BorderStroke(
+                                        3.dp,
+                                        com.example.cypher_vault.view.resources.firstColor
+                                    ),
+                                    shape = RoundedCornerShape(4.dp),
+                                )
+                                .focusRequester(focusRequesters[3])
+                                .onFocusChanged { focusState ->
+                                    handleFocusChange(3, focusState.isFocused)
+                                }
+                        )
+                    }
+                    /// VALOR DIGITO 5 ///////////////////////////////////////////////
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Column {
+                        TextField(
+                            value = quintoValorCodigo.value,
+                            onValueChange = {
+                                handleTextChange(4, it.text)
+                                //quintoValorCodigo.value = it
+                            },
+                            textStyle = TextStyle(
+                                color = firstColor,
+                                fontSize = 16.sp,
                                 fontFamily = com.example.cypher_vault.view.resources.fontFamily,
-                                color = com.example.cypher_vault.view.resources.thirdColor,
-                                fontWeight = FontWeight.Bold,
-                            )
-                        },
-                        singleLine = true,
-                        shape = RoundedCornerShape(4.dp),
-                        colors = TextFieldDefaults.colors(
-                            focusedContainerColor = Color.Transparent,
-                            unfocusedContainerColor = Color.Transparent,
-                            disabledContainerColor = Color.Transparent,
-                            cursorColor = com.example.cypher_vault.view.resources.thirdColor,
-                            focusedIndicatorColor = com.example.cypher_vault.view.resources.firstColor,
-                            unfocusedIndicatorColor = com.example.cypher_vault.view.resources.firstColor,
-                        ),
-                        modifier = Modifier
-                            .width(45.dp) // Establece un ancho fijo para el TextField
-                            .padding(top = 15.dp)
-                            .border(
-                                BorderStroke(
-                                    3.dp,
-                                    com.example.cypher_vault.view.resources.firstColor
+                                fontWeight = FontWeight.Bold
+                            ),
+                            placeholder = {
+                                Text(
+                                    "",
+                                    style = TextStyle(
+                                        color = Color.Gray,
+                                        fontSize = 16.sp,
+                                        fontFamily = com.example.cypher_vault.view.resources.fontFamily
+                                    )
+                                )
+                            },
+                            label = {
+                                Text(
+                                    "",
+                                    fontSize = 20.sp,
+                                    fontFamily = com.example.cypher_vault.view.resources.fontFamily,
+                                    color = com.example.cypher_vault.view.resources.thirdColor,
+                                    fontWeight = FontWeight.Bold,
+                                )
+                            },
+                            singleLine = true,
+                            shape = RoundedCornerShape(4.dp),
+                            colors = TextFieldDefaults.colors(
+                                focusedContainerColor = Color.Transparent,
+                                unfocusedContainerColor = Color.Transparent,
+                                disabledContainerColor = Color.Transparent,
+                                cursorColor = com.example.cypher_vault.view.resources.thirdColor,
+                                focusedIndicatorColor = com.example.cypher_vault.view.resources.firstColor,
+                                unfocusedIndicatorColor = com.example.cypher_vault.view.resources.firstColor,
+                            ),
+                            modifier = Modifier
+                                .width(45.dp) // Establece un ancho fijo para el TextField
+                                .padding(top = 15.dp)
+                                .border(
+                                    BorderStroke(
+                                        3.dp,
+                                        com.example.cypher_vault.view.resources.firstColor
+                                    ),
+                                    shape = RoundedCornerShape(4.dp),
+                                )
+                                .focusRequester(focusRequesters[4])
+                                .onFocusChanged { focusState ->
+                                    handleFocusChange(4, focusState.isFocused)
+                                }
+                        )
+                    }
+                }
+                //// Botones del formulario //////////////////////////////////////////////////////////////////////////
+                Spacer(modifier = Modifier.height(8.dp))
+                Row(
+                    horizontalArrangement = Arrangement.Absolute.Center
+                ) {
+                    /// BOTON LIMPIAR
+                    Column {
+                        Row(
+                            horizontalArrangement = Arrangement.Absolute.Center
+                        ) {
+                            OutlinedButton(
+                                onClick = {
+                                    focusManager.clearFocus(force = true)
+                                    primerValorCodigo.value = TextFieldValue("")
+                                    segundoValorCodigo.value = TextFieldValue("")
+                                    tercerValorCodigo.value = TextFieldValue("")
+                                    cuartoValorCodigo.value = TextFieldValue("")
+                                    quintoValorCodigo.value = TextFieldValue("")
+                                },
+                                shape = RoundedCornerShape(15.dp),
+                                border = BorderStroke(3.dp, Color.Gray),
+                                colors = ButtonDefaults.buttonColors(
+                                    containerColor = thirdColor,
+                                    contentColor = wingWhite
                                 ),
-                                shape = RoundedCornerShape(4.dp),
-                            )
-                            .focusRequester(focusRequesters[4])
-                            .onFocusChanged { focusState ->
-                                handleFocusChange(4, focusState.isFocused)
+                                modifier = Modifier
+                                    .width(200.dp)
+                            ) {
+                                Text(
+                                    "Limpiar campos",
+                                    fontWeight = FontWeight.Bold
+                                )
                             }
-                    )
+                        }
+                        Row(
+                            horizontalArrangement = Arrangement.Absolute.Center
+                        ) {
+                            OutlinedButton(
+                                onClick = {
+                                    if (comprobarCodigo(
+                                            mailCode,
+                                            primerValorCodigo.value.text,
+                                            segundoValorCodigo.value.text,
+                                            tercerValorCodigo.value.text,
+                                            cuartoValorCodigo.value.text,
+                                            quintoValorCodigo.value.text
+                                        )
+                                    ) {
+                                        isAuthenticaed = true
+                                        showConfirmationLoguin = true
+                                    } else {
+                                        Toast.makeText(
+                                            context,
+                                            "Error en la autenticacion",
+                                            Toast.LENGTH_SHORT
+                                        )
+                                            .show()
+                                        mailCode = ""
+                                        navController.navigateToListLogin()
+                                    }
+                                },
+                                shape = RoundedCornerShape(15.dp),
+                                border = BorderStroke(3.dp, Color.Gray),
+                                colors = ButtonDefaults.buttonColors(
+                                    containerColor = thirdColor,
+                                    contentColor = wingWhite
+                                ),
+                                modifier = Modifier
+                                    .width(200.dp)
+                                    .padding(vertical = 30.dp)
+                            ) {
+                                Text(
+                                    "Comprobar",
+                                    fontWeight = FontWeight.Bold
+                                )
+                            }
+                        }
+                    }
                 }
             }
-            //// Botones del formulario //////////////////////////////////////////////////////////////////////////
-            Spacer(modifier = Modifier.height(8.dp))
-            Row(
-                horizontalArrangement = Arrangement.Absolute.Center
+        }
+    }
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////////
+    ///// SE INSERTA ESO ACA POR EL SCOPE DE VARIABLES //////////////////////////////////////////////////////////////
+    /// TARJETA DE LA 2DA AUTHENTICACION PARTE DEL DIA ////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    @Composable
+    fun ElevatedCardDayPart(
+        context: Context,
+        navController: NavController,
+        secondAuthController: SecondAuthController,
+        userAccessController: UserAccessController,
+        userId: String,
+        isInternetAvailable: Boolean
+    ) {
+        var dayPart by remember { mutableStateOf(SecondAuthManager.DayPart.MORNING) }
+        ElevatedCard(
+            elevation = CardDefaults.cardElevation(
+                defaultElevation = 6.dp
+            ),
+            modifier = Modifier
+                .padding(16.dp)
+                .background(mainBackgroundColor)
+                .fillMaxHeight(),
+        ) {
+            Column(
+                modifier = Modifier
+                    .padding(16.dp)
+                    .background(wingWhite),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center
             ) {
-                /// BOTON LIMPIAR
-                Column {
-                    Row(
-                        horizontalArrangement = Arrangement.Absolute.Center
-                    ) {
+                /// TITULO //////////////////////////////////////////////////////////////////
+                Spacer(modifier = Modifier.height(15.dp))
+                Row(
+                    horizontalArrangement = Arrangement.Absolute.Center
+                ) {
+                    Icon(
+                        Icons.Filled.Lock,
+                        contentDescription = "Localized description",
+                        Modifier.size(150.dp),
+                        tint = secondColor
+                    )
+                }
+                Spacer(modifier = Modifier.height(15.dp))
+                Row(
+                    horizontalArrangement = Arrangement.Absolute.Center
+                ) {
+                    Text(
+                        text = "Segunda",
+                        fontSize = 20.sp,
+                        color = secondColor,
+                        style = textStyleTittle2,
+                        onTextLayout = { /* No se necesita hacer nada aquí */ }
+                    )
+                }
+                Spacer(modifier = Modifier.height(8.dp))
+                Row(
+                    horizontalArrangement = Arrangement.Absolute.Center
+                ) {
+                    Text(
+                        text = "Autentificacion",
+                        fontSize = 20.sp,
+                        color = secondColor,
+                        style = textStyleTittle2,
+                        onTextLayout = { /* No se necesita hacer nada aquí */ }
+                    )
+                }
+                /// Informacion de RED///////////////////////////////
+                Row {
+                    AssistChip(
+                        shape = RoundedCornerShape(4.dp),
+                        border = BorderStroke(3.dp, firstColor),
+                        onClick = { Log.d("Assist chip", "WbTwilight world") },
+                        label = {
+                            if (isInternetAvailable) {
+                                Text(
+                                    text = "con conexion",
+                                    color = firstColor,
+                                    style = textStyleTittle2,
+                                    onTextLayout = { /* No se necesita hacer nada aquí */ })
+                            } else {
+                                Text(
+                                    text = "sin conexion",
+                                    color = firstColor,
+                                    style = textStyleTittle2,
+                                    onTextLayout = { /* No se necesita hacer nada aquí */ })
+                            }
+                        },
+                        leadingIcon = {
+                            if (isInternetAvailable) {
+                                Icon(
+                                    Icons.Filled.Wifi,
+                                    contentDescription = "Localized description",
+                                    Modifier.size(AssistChipDefaults.IconSize),
+                                    tint = firstColor
+                                )
+
+                            } else {
+                                Icon(
+                                    Icons.Filled.WifiOff,
+                                    contentDescription = "Localized description",
+                                    Modifier.size(AssistChipDefaults.IconSize),
+                                    tint = firstColor
+                                )
+                            }
+                        }
+                    )
+                }
+                Spacer(modifier = Modifier.height(20.dp))
+                /// TEXTO DE LA CARD //////////////////////////////////////////////////////////////////
+                Row {
+                    Text(
+                        text = "¿En que momento del dia te conectaste la ultima vez?",
+                        color = firstColor,
+                        style = textStyleTittle2,
+                        onTextLayout = { /* No se necesita hacer nada aquí */ },
+                        modifier = Modifier.padding(horizontal = 16.dp)
+                    )
+                }
+                Spacer(modifier = Modifier.height(20.dp))
+                Row(
+                    horizontalArrangement = Arrangement.Absolute.Center
+                ) {
+                    AssistChip(
+                        shape = RoundedCornerShape(4.dp),
+                        border = BorderStroke(3.dp, firstColor),
+                        colors = AssistChipDefaults.assistChipColors(
+                            containerColor = Color.Transparent,
+                            labelColor = firstColor,
+                        ),
+                        modifier = Modifier
+                            .width(250.dp)
+                            .padding(top = 15.dp),
+                        onClick = { dayPart = SecondAuthManager.DayPart.MORNING },
+                        label = { Text("Mañana(7:00AM-15:00PM)") },
+                        leadingIcon = {
+                            if (dayPart == SecondAuthManager.DayPart.MORNING) {
+                                Icon(
+                                    Icons.Outlined.Check,
+                                    contentDescription = "Localized description",
+                                    Modifier.size(AssistChipDefaults.IconSize),
+                                    tint = firstColor
+                                )
+                            } else {
+                                Icon(
+                                    Icons.Outlined.WbTwilight,
+                                    contentDescription = "Localized description",
+                                    Modifier.size(AssistChipDefaults.IconSize),
+                                    tint = firstColor
+                                )
+                            }
+                        }
+                    )
+                }
+                Spacer(modifier = Modifier.height(8.dp))
+                Row(
+                    horizontalArrangement = Arrangement.Absolute.Center
+                ) {
+                    AssistChip(
+                        shape = RoundedCornerShape(4.dp),
+                        border = BorderStroke(3.dp, firstColor),
+                        colors = AssistChipDefaults.assistChipColors(
+                            containerColor = Color.Transparent,
+                            labelColor = firstColor,
+                        ),
+                        modifier = Modifier
+                            .width(250.dp)
+                            .padding(top = 15.dp),
+                        onClick = { dayPart = SecondAuthManager.DayPart.AFTERNOON },
+                        label = { Text("Tarde(15:00PM-23:00PM)") },
+                        leadingIcon = {
+                            if (dayPart == SecondAuthManager.DayPart.AFTERNOON) {
+                                Icon(
+                                    Icons.Outlined.Check,
+                                    contentDescription = "Localized description",
+                                    Modifier.size(AssistChipDefaults.IconSize),
+                                    tint = firstColor
+                                )
+                            } else {
+                                Icon(
+                                    Icons.Outlined.WbSunny,
+                                    contentDescription = "Localized description",
+                                    Modifier.size(AssistChipDefaults.IconSize),
+                                    tint = firstColor
+                                )
+                            }
+                        }
+                    )
+                }
+                Spacer(modifier = Modifier.height(8.dp))
+                Row(
+                    horizontalArrangement = Arrangement.Absolute.Center
+                ) {
+                    AssistChip(
+                        shape = RoundedCornerShape(4.dp),
+                        border = BorderStroke(3.dp, firstColor),
+                        colors = AssistChipDefaults.assistChipColors(
+                            containerColor = Color.Transparent,
+                            labelColor = firstColor,
+                        ),
+                        modifier = Modifier
+                            .width(250.dp)
+                            .padding(top = 15.dp),
+                        onClick = { dayPart = SecondAuthManager.DayPart.EVENING },
+                        label = { Text("Noche(23:00PM-7:00AM)") },
+                        leadingIcon = {
+                            if (dayPart == SecondAuthManager.DayPart.EVENING) {
+                                Icon(
+                                    Icons.Outlined.Check,
+                                    contentDescription = "Localized description",
+                                    Modifier.size(AssistChipDefaults.IconSize),
+                                    tint = firstColor
+                                )
+                            } else {
+                                Icon(
+                                    Icons.Outlined.Nightlight,
+                                    contentDescription = "Localized description",
+                                    Modifier.size(AssistChipDefaults.IconSize),
+                                    tint = firstColor
+                                )
+                            }
+                        }
+                    )
+                }
+                ///// Boton de comprobacion //////////////////////////////////////////////////////////////////
+                Spacer(modifier = Modifier.height(8.dp))
+                Row {
                     OutlinedButton(
                         onClick = {
-                            focusManager.clearFocus(force = true)
-                            primerValorCodigo.value = TextFieldValue("")
-                            segundoValorCodigo.value = TextFieldValue("")
-                            tercerValorCodigo.value = TextFieldValue("")
-                            cuartoValorCodigo.value = TextFieldValue("")
-                            quintoValorCodigo.value = TextFieldValue("")
+                            if (secondAuthController.authenticateWOConection(userId, dayPart)) {
+                                isAuthenticaed = true
+                                showConfirmationLoguin = true
+                            } else {
+                                Toast.makeText(context, "Error en la autenticacion", Toast.LENGTH_SHORT)
+                                    .show()
+                                navController.navigateToListLogin()
+                            }
                         },
                         shape = RoundedCornerShape(15.dp),
                         border = BorderStroke(3.dp, Color.Gray),
@@ -937,327 +959,369 @@ fun ElevatedCardMailConfirmation(
                         ),
                         modifier = Modifier
                             .width(200.dp)
+                            .padding(vertical = 30.dp)
                     ) {
                         Text(
-                            "Limpiar campos",
+                            "Comprobar",
                             fontWeight = FontWeight.Bold
                         )
                     }
-                        }
-                    Row(
-                        horizontalArrangement = Arrangement.Absolute.Center
-                    ) {
-                        OutlinedButton(
-                            onClick = {
-                                if (comprobarCodigo(
-                                        mailCode,
-                                        primerValorCodigo.value.text,
-                                        segundoValorCodigo.value.text,
-                                        tercerValorCodigo.value.text,
-                                        cuartoValorCodigo.value.text,
-                                        quintoValorCodigo.value.text
-                                    )
-                                ) {
-                                    /////Ingreso de usuario
-                                    userAccessController.insertUserIncome(userId)
-                                    ///////////////////////
-                                    navController.navigateToGallery(userId)
-                                } else {
-                                    Toast.makeText(
-                                        context,
-                                        "Error en la autenticacion",
-                                        Toast.LENGTH_SHORT
-                                    )
-                                        .show()
-                                    mailCode = ""
-                                    navController.navigateToListLogin()
-                                }
-                            },
-                            shape = RoundedCornerShape(15.dp),
-                            border = BorderStroke(3.dp, Color.Gray),
-                            colors = ButtonDefaults.buttonColors(
-                                containerColor = thirdColor,
-                                contentColor = wingWhite
-                            ),
-                            modifier = Modifier
-                                .width(200.dp)
-                                .padding(vertical = 30.dp)
-                        ) {
-                            Text(
-                                "Comprobar",
-                                fontWeight = FontWeight.Bold
-                            )
-                        }
+                }
+
+            }
+        }
+    }
+    //////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    //////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    //////////////////////////////////////////////////////////////////////////////////////////////////////////
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    ///////// LOGICA DE LA PANTALLA PRINCIPAL //////////////////////////////////////////////////////////////////////////
+    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(20.dp)
+            .verticalScroll(rememberScrollState()),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        //Elementos de la 2da Authentificacion//////////////////////////////////////////
+        ///////////////////////////////////////////////////////////////////////////////
+        if (imagePrintLogin.value == null) {
+            Log.d("ConfirmationLoginScreen", "imagePrintLogin.value == null")
+            if (isSecondAuth == true) {
+                Log.d("ConfirmationLoginScreen", "isSecondAuth == true")
+                /// SIN IMAGENES Y CON SEGUNDA ACTIVADA ////////////////////////
+                if(!isAuthenticaed){
+                    showConfirmationLoguin = false
+                    if (isInternetAvailable) {
+                        ElevatedCardMailConfirmation(
+                            context,
+                            navController,
+                            secondAuthController,
+                            userAccessController,
+                            userId,
+                            isInternetAvailable
+                        )
+                    } else {
+                        ElevatedCardDayPart(
+                            context,
+                            navController,
+                            secondAuthController,
+                            userAccessController,
+                            userId,
+                            isInternetAvailable
+                        )
                     }
                 }
+            } else {
+                Log.d("ConfirmationLoginScreen", "isSecondAuth == false")
+                /// SIN IMAGENES Y SIN SEGUNDA ACTIVADA ////////////////////////
+                // Ingreso de usuario
+                showConfirmationLoguin = true
             }
+        } else {
+            Log.d("ConfirmationLoginScreen", "imagePrintLogin.value != null")
+            /// CON IMAGENES Y CON SEGUNDA ACTIVADA ////////////////////////
+            if (isSecondAuth == true) {
+                Log.d("ConfirmationLoginScreen", "isSecondAuth == true")
+                when (result.value) {
+                    null -> {
+                        Text(
+                            "Esperando...",
+                            fontSize = 20.sp,
+                            fontWeight = FontWeight.Bold,
+                        )
+                    }
+                    true -> {
+                        if(!isAuthenticaed) {
+                            showConfirmationLoguin = false
+                            if (isInternetAvailable) {
+                                ElevatedCardMailConfirmation(
+                                    context,
+                                    navController,
+                                    secondAuthController,
+                                    userAccessController,
+                                    userId,
+                                    isInternetAvailable
+                                )
+                            } else {
+                                ElevatedCardDayPart(
+                                    context,
+                                    navController,
+                                    secondAuthController,
+                                    userAccessController,
+                                    userId,
+                                    isInternetAvailable
+                                )
+                            }
+                        }
+                    }
+                    false -> {
+                        showDenyAccess = true
+                    }
+                }
+            } else {
+                Log.d("ConfirmationLoginScreen", "isSecondAuth == false")
+                /// CON IMAGENES Y CON SEGUNDA DESACTIVADA ////////////////////////
+                when (result.value) {
+                    null -> {
+                        Text(
+                            "Esperando...",
+                            fontSize = 20.sp,
+                            fontWeight = FontWeight.Bold,
+                        )
+                    }
+
+                    true -> {
+                        showConfirmationLoguin = true
+                    }
+
+                    false -> {
+                        showDenyAccess = true
+                    }
+                }
+                ////// Mostrar o ocultar datos //////////////////////////////////////////////////////////////////////////
+                if (hayImagen(result)) {
+                    showData = datosParaPruebas(showImage, showData, distance, imagePrintRegister, imagePrintLogin)
+                }
+            }
+        }
+        //// Pantalla de confirmacion de logueo //////////////////////////////////////////////////////////////////////////
+        if (showConfirmationLoguin) {
+            pantallaDeConfirmacion(userId, userAccessController, navController)
+        }
+        /// Pantalla de denegacion de acceso //////////////////////////////////////////////////////////////////////////
+        if (showDenyAccess) {
+            pantallaAccesoDenegado(showData, distance, navController)
+        }
+        //Boton vuelta al logueo //////////////////////////////////////////////////////////////////////////
+        Spacer(modifier = Modifier.weight(1f)) // Push the button to the bottom
+        OutlinedButton(
+            onClick = { navController.navigateToListLogin() },
+            shape = RoundedCornerShape(15.dp),
+            border = BorderStroke(3.dp, Color.Gray),
+            colors = ButtonDefaults.buttonColors(
+                containerColor = Color.Transparent,
+                contentColor = Color.Gray
+            ),
+            modifier = Modifier
+                .width(200.dp)
+                .padding(bottom = 30.dp)
+        ) {
+            Text(
+                "Volver",
+                fontWeight = FontWeight.Bold
+            )
+        }
+    }
+}
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+////// DATOS DE PRUEBA /////////////////////////////////
+@Composable
+private fun datosParaPruebas(
+    showImage: Boolean,
+    showData: Boolean,
+    distance: MutableState<Float?>,
+    imagePrintRegister: MutableState<Bitmap?>,
+    imagePrintLogin: MutableState<Bitmap?>
+): Boolean {
+    var showImage1 = showImage
+    var showData1 = showData
+    OutlinedButton(
+        onClick = { showImage1 = !showImage1 },
+        shape = RoundedCornerShape(15.dp),
+        border = BorderStroke(3.dp, firstColor),
+        colors = ButtonDefaults.buttonColors(
+            containerColor = Color.Transparent,
+            contentColor = thirdColor
+        ),
+        modifier = Modifier
+            .width(200.dp)
+            .padding(top = 16.dp)
+    ) {
+        Text(
+            if (showImage1) "Ocultar imágenes" else "Ver imágenes",
+            fontFamily = fontFamily,
+            color = thirdColor,
+            fontWeight = FontWeight.Bold
+        )
+    }
+    OutlinedButton(
+        onClick = { showData1 = !showData1 },
+        shape = RoundedCornerShape(15.dp),
+        border = BorderStroke(3.dp, firstColor),
+        colors = ButtonDefaults.buttonColors(
+            containerColor = Color.Transparent,
+            contentColor = thirdColor
+        ),
+        modifier = Modifier
+            .width(200.dp)
+            .padding(top = 16.dp)
+    ) {
+        Text(
+            if (showData1) "Ocultar datos" else "Ver datos",
+            fontFamily = fontFamily,
+            color = thirdColor,
+            fontWeight = FontWeight.Bold
+        )
+    }
+    if (showData1 && distance.value != null) {
+        Text(
+            "Distancia calculada: ${distance.value}",
+            fontFamily = fontFamily,
+            fontWeight = FontWeight.Bold,
+            color = thirdColor,
+            modifier = Modifier.padding(top = 16.dp)
+        )
+    }
+    if (showImage1) {
+        ImageWithLandmarks(imagePrintRegister)
+        ImageWithLandmarks(imagePrintLogin)
+    }
+    return showData1
+}
+
+///// Pantalla de acceso denegado ///////////////////////////////////////
+@Composable
+private fun pantallaAccesoDenegado(
+    showData: Boolean,
+    distance: MutableState<Float?>,
+    navController: NavController
+) {
+    var showData1 = showData
+    Image(
+        painter = painterResource(id = R.drawable.failure),
+        contentDescription = "No son la misma persona",
+        modifier = Modifier.size(128.dp)
+    )
+    Text(
+        "Acceso denegado.",
+        fontSize = 20.sp,
+        fontFamily = fontFamily,
+        color = Color.Red,
+        fontWeight = FontWeight.ExtraBold,
+        modifier = Modifier.padding(top = 16.dp)
+    )
+    OutlinedButton(
+        onClick = { showData1 = !showData1 },
+        shape = RoundedCornerShape(15.dp),
+        border = BorderStroke(3.dp, firstColor),
+        colors = ButtonDefaults.buttonColors(
+            containerColor = Color.Transparent,
+            contentColor = thirdColor
+        ),
+        modifier = Modifier
+            .width(200.dp)
+            .padding(top = 16.dp)
+    ) {
+        Text(
+            if (showData1) "Ocultar datos" else "Ver datos",
+            fontFamily = fontFamily,
+            color = thirdColor,
+            fontWeight = FontWeight.Bold
+        )
+    }
+    if (showData1 && distance.value != null) {
+        Text(
+            "Distancia calculada: ${distance.value}",
+            fontFamily = fontFamily,
+            fontWeight = FontWeight.Bold,
+            color = thirdColor,
+            modifier = Modifier.padding(top = 16.dp)
+        )
+    }
+    OutlinedButton(
+        onClick = { navController.navigateToListLogin() },
+        shape = RoundedCornerShape(15.dp),
+        border = BorderStroke(3.dp, firstColor),
+        colors = ButtonDefaults.buttonColors(
+            containerColor = Color.Transparent,
+            contentColor = thirdColor
+        ),
+        modifier = Modifier
+            .width(200.dp)
+            .padding(top = 30.dp)
+    ) {
+        Text(
+            "Iniciar sesión",
+            fontFamily = fontFamily,
+            color = thirdColor,
+            fontWeight = FontWeight.Bold
+        )
+    }
+}
+
+//// Pantalla de confirmacion de logueo //////////////////////////////////////////////////////////////////////////
+@Composable
+private fun pantallaDeConfirmacion(
+    userId: String,
+    userAccessController: UserAccessController,
+    navController: NavController
+) {
+    var insertarIngreso by remember { mutableStateOf(false) }
+    Image(
+        painter = painterResource(id = R.drawable.successful),
+        contentDescription = "Bienvenido!",
+        modifier = Modifier.size(128.dp)
+    )
+    Text(
+        "¡Bienvenido!",
+        fontSize = 20.sp,
+        fontFamily = fontFamily,
+        color = thirdColor,
+        fontWeight = FontWeight.ExtraBold,
+        modifier = Modifier.padding(top = 16.dp)
+    )
+    OutlinedButton(
+        onClick = {
+            insertarIngreso = true
+            navController.navigateToGallery(userId)
+                  },
+        shape = RoundedCornerShape(15.dp),
+        border = BorderStroke(3.dp, firstColor),
+        colors = ButtonDefaults.buttonColors(
+            containerColor = Color.Transparent,
+            contentColor = thirdColor
+        ),
+        modifier = Modifier
+            .width(200.dp)
+            .padding(top = 30.dp)
+    ) {
+        Text(
+            "Ir a la galería",
+            fontFamily = fontFamily,
+            color = thirdColor,
+            fontWeight = FontWeight.Bold
+        )
+    }
+    if (insertarIngreso) {
+        LaunchedEffect(userId) {
+            userAccessController.insertUserIncome(userId)
+            insertarIngreso = false // Close dialog or reset state after execution
         }
     }
 }
 
-fun comprobarCodigo(mailCode: String, value1: String, value2: String, value3: String, value4: String, value5: String): Boolean {
+@Composable
+private fun hayImagen(result: MutableState<Boolean?>) =
+    result.value == true
+
+fun comprobarCodigo(
+    mailCode: String,
+    value1: String,
+    value2: String,
+    value3: String,
+    value4: String,
+    value5: String
+): Boolean {
     Log.d("Comprobando codigo", "COMPROBACION : $mailCode = $value1$value2$value3$value4$value5")
     return mailCode == value1 + value2 + value3 + value4 + value5
 }
-
-
-/// TARJETA DE LA 2DA AUTHENTICACION PARTE DEL DIA ////////////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-@Composable
-fun ElevatedCardDayPart(
-    context: Context,
-    navController: NavController,
-    secondAuthController: SecondAuthController,
-    userAccessController: UserAccessController,
-    userId: String,
-    isInternetAvailable: Boolean
-) {
-    var dayPart by remember { mutableStateOf(SecondAuthManager.DayPart.MORNING) }
-    ElevatedCard(
-        elevation = CardDefaults.cardElevation(
-            defaultElevation = 6.dp
-        ),
-        modifier = Modifier
-            .padding(16.dp)
-            .background(mainBackgroundColor)
-            .fillMaxHeight(),
-    ) {
-        Column(
-            modifier = Modifier
-                .padding(16.dp)
-                .background(wingWhite),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
-        ) {
-            /// TITULO //////////////////////////////////////////////////////////////////
-            Spacer(modifier = Modifier.height(15.dp))
-            Row(
-                horizontalArrangement = Arrangement.Absolute.Center
-            ) {
-                Icon(
-                    Icons.Filled.Lock,
-                    contentDescription = "Localized description",
-                    Modifier.size(150.dp),
-                    tint = secondColor
-                )
-            }
-            Spacer(modifier = Modifier.height(15.dp))
-            Row(
-                horizontalArrangement = Arrangement.Absolute.Center
-            ) {
-                Text(
-                    text = "Segunda",
-                    fontSize = 20.sp,
-                    color = secondColor,
-                    style = textStyleTittle2,
-                    onTextLayout = { /* No se necesita hacer nada aquí */ }
-                )
-            }
-            Spacer(modifier = Modifier.height(8.dp))
-            Row(
-                horizontalArrangement = Arrangement.Absolute.Center
-            ) {
-                Text(
-                    text = "Autentificacion",
-                    fontSize = 20.sp,
-                    color = secondColor,
-                    style = textStyleTittle2,
-                    onTextLayout = { /* No se necesita hacer nada aquí */ }
-                )
-            }
-            /// Informacion de RED///////////////////////////////
-            Row {
-                AssistChip(
-                    shape = RoundedCornerShape(4.dp),
-                    border = BorderStroke(3.dp, firstColor),
-                    onClick = { Log.d("Assist chip", "WbTwilight world") },
-                    label = {
-                        if (isInternetAvailable) {
-                            Text(
-                                text = "con conexion",
-                                color = firstColor,
-                                style = textStyleTittle2,
-                                onTextLayout = { /* No se necesita hacer nada aquí */ })
-                        } else {
-                            Text(
-                                text = "sin conexion",
-                                color = firstColor,
-                                style = textStyleTittle2,
-                                onTextLayout = { /* No se necesita hacer nada aquí */ })
-                        }
-                    },
-                    leadingIcon = {
-                        if (isInternetAvailable) {
-                            Icon(
-                                Icons.Filled.Wifi,
-                                contentDescription = "Localized description",
-                                Modifier.size(AssistChipDefaults.IconSize),
-                                tint = firstColor
-                            )
-
-                        } else {
-                            Icon(
-                                Icons.Filled.WifiOff,
-                                contentDescription = "Localized description",
-                                Modifier.size(AssistChipDefaults.IconSize),
-                                tint = firstColor
-                            )
-                        }
-                    }
-                )
-            }
-            Spacer(modifier = Modifier.height(20.dp))
-            /// TEXTO DE LA CARD //////////////////////////////////////////////////////////////////
-            Row {
-                Text(
-                    text = "¿En que momento del dia te conectaste la ultima vez?",
-                    color = firstColor,
-                    style = textStyleTittle2,
-                    onTextLayout = { /* No se necesita hacer nada aquí */ },
-                    modifier = Modifier.padding(horizontal = 16.dp)
-                )
-            }
-            Spacer(modifier = Modifier.height(20.dp))
-            Row(
-                horizontalArrangement = Arrangement.Absolute.Center
-            ) {
-                AssistChip(
-                    shape = RoundedCornerShape(4.dp),
-                    border = BorderStroke(3.dp, firstColor),
-                    colors = AssistChipDefaults.assistChipColors(
-                        containerColor = Color.Transparent,
-                        labelColor = firstColor,
-                    ),
-                    modifier = Modifier
-                        .width(250.dp)
-                        .padding(top = 15.dp),
-                    onClick = { dayPart = SecondAuthManager.DayPart.MORNING },
-                    label = { Text("Mañana(7:00AM-15:00PM)") },
-                    leadingIcon = {
-                        if (dayPart == SecondAuthManager.DayPart.MORNING) {
-                            Icon(
-                                Icons.Outlined.Check,
-                                contentDescription = "Localized description",
-                                Modifier.size(AssistChipDefaults.IconSize),
-                                tint = firstColor
-                            )
-                        } else {
-                            Icon(
-                                Icons.Outlined.WbTwilight,
-                                contentDescription = "Localized description",
-                                Modifier.size(AssistChipDefaults.IconSize),
-                                tint = firstColor
-                            )
-                        }
-                    }
-                )
-            }
-            Spacer(modifier = Modifier.height(8.dp))
-            Row(
-                horizontalArrangement = Arrangement.Absolute.Center
-            ) {
-                AssistChip(
-                    shape = RoundedCornerShape(4.dp),
-                    border = BorderStroke(3.dp, firstColor),
-                    colors = AssistChipDefaults.assistChipColors(
-                        containerColor = Color.Transparent,
-                        labelColor = firstColor,
-                    ),
-                    modifier = Modifier
-                        .width(250.dp)
-                        .padding(top = 15.dp),
-                    onClick = { dayPart = SecondAuthManager.DayPart.AFTERNOON },
-                    label = { Text("Tarde(15:00PM-23:00PM)") },
-                    leadingIcon = {
-                        if (dayPart == SecondAuthManager.DayPart.AFTERNOON) {
-                            Icon(
-                                Icons.Outlined.Check,
-                                contentDescription = "Localized description",
-                                Modifier.size(AssistChipDefaults.IconSize),
-                                tint = firstColor
-                            )
-                        } else {
-                            Icon(
-                                Icons.Outlined.WbSunny,
-                                contentDescription = "Localized description",
-                                Modifier.size(AssistChipDefaults.IconSize),
-                                tint = firstColor
-                            )
-                        }
-                    }
-                )
-            }
-            Spacer(modifier = Modifier.height(8.dp))
-            Row(
-                horizontalArrangement = Arrangement.Absolute.Center
-            ) {
-                AssistChip(
-                    shape = RoundedCornerShape(4.dp),
-                    border = BorderStroke(3.dp, firstColor),
-                    colors = AssistChipDefaults.assistChipColors(
-                        containerColor = Color.Transparent,
-                        labelColor = firstColor,
-                    ),
-                    modifier = Modifier
-                        .width(250.dp)
-                        .padding(top = 15.dp),
-                    onClick = { dayPart = SecondAuthManager.DayPart.EVENING },
-                    label = { Text("Noche(23:00PM-7:00AM)") },
-                    leadingIcon = {
-                        if (dayPart == SecondAuthManager.DayPart.EVENING) {
-                            Icon(
-                                Icons.Outlined.Check,
-                                contentDescription = "Localized description",
-                                Modifier.size(AssistChipDefaults.IconSize),
-                                tint = firstColor
-                            )
-                        } else {
-                            Icon(
-                                Icons.Outlined.Nightlight,
-                                contentDescription = "Localized description",
-                                Modifier.size(AssistChipDefaults.IconSize),
-                                tint = firstColor
-                            )
-                        }
-                    }
-                )
-            }
-            Spacer(modifier = Modifier.height(8.dp))
-            Row {
-                OutlinedButton(
-                    onClick = {
-                        if (secondAuthController.authenticateWOConection(userId, dayPart)) {
-                            /////Ingreso de usuario
-                            userAccessController.insertUserIncome(userId)
-                            ///////////////////////
-                            navController.navigateToGallery(userId)
-                        } else {
-                            Toast.makeText(context, "Error en la autenticacion", Toast.LENGTH_SHORT)
-                                .show()
-                            navController.navigateToListLogin()
-                        }
-                    },
-                    shape = RoundedCornerShape(15.dp),
-                    border = BorderStroke(3.dp, Color.Gray),
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = thirdColor,
-                        contentColor = wingWhite
-                    ),
-                    modifier = Modifier
-                        .width(200.dp)
-                        .padding(vertical = 30.dp)
-                ) {
-                    Text(
-                        "Comprobar",
-                        fontWeight = FontWeight.Bold
-                    )
-                }
-            }
-
-        }
-    }
-}
-
 
 @Composable
 fun ImageWithLandmarks(bitmapState: MutableState<Bitmap?>) {
