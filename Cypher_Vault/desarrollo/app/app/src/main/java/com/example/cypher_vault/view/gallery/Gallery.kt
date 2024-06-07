@@ -142,27 +142,12 @@ import com.example.cypher_vault.model.session.SessionState
 import com.example.cypher_vault.view.registration.LimitedTextBox
 import com.example.cypher_vault.view.registration.findAncestorActivity
 import com.example.cypher_vault.view.resources.redColor
-import com.google.zxing.BarcodeFormat
-import com.google.zxing.EncodeHintType
-import com.google.zxing.MultiFormatWriter
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.channels.ticker
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import okhttp3.MediaType.Companion.toMediaTypeOrNull
-import okhttp3.MultipartBody
-import okhttp3.MultipartBody.Part.Companion.createFormData
-import okhttp3.RequestBody.Companion.asRequestBody
-import retrofit2.Call
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
-import retrofit2.http.Multipart
-import retrofit2.http.POST
-import retrofit2.http.Part
 import java.io.ByteArrayOutputStream
-import java.io.File
 
 
 //Variables de entorno/////////////////////////////

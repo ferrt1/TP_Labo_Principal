@@ -19,7 +19,7 @@ import com.example.cypher_vault.view.gallery.Gallery
 import com.example.cypher_vault.view.registration.InitialScreen
 import com.example.cypher_vault.view.registration.RegistrationCameraScreen
 import com.example.cypher_vault.controller.gallery.GalleryController
-import com.example.cypher_vault.view.gallery.UserProfile
+
 
 @RequiresApi(Build.VERSION_CODES.Q)
 @Composable
@@ -91,18 +91,7 @@ fun NavigationHost() {
                 // Manejar el caso en que el userId no se pudo recuperar
             }
         }
-        composable("profile/{userId}") {backStackEntry ->
-            BackHandler(true) {
-                // Or do nothing
-                Log.i("LOG_TAG", "Clicked back")
-            }
-            val userId = backStackEntry.arguments?.getString("userId")
-            if (userId != null) {
-                UserProfile(navigationController, userId)
-            } else {
-                // Manejar el caso en que el userId no se pudo recuperar
-            }
-        }
+
         composable("list") {
             BackHandler(true) {
                 // Or do nothing
