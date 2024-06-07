@@ -670,6 +670,7 @@ fun Gallery(navController: NavController, userId: String, galleryController: Gal
                             onClick = {
                                 showDeletePanel = true
                                 deletePasswordState.value = TextFieldValue("")
+
                                       },
                             shape = RoundedCornerShape(4.dp),
                             border = BorderStroke(3.dp, firstColor),
@@ -1489,6 +1490,7 @@ fun Gallery(navController: NavController, userId: String, galleryController: Gal
                         onDismissRequest = {
                             showDeletePanel = false
                             deletePasswordState.value = TextFieldValue("")
+                            showError = false
                         },
                         sheetState = sheetDeleteState
                     ) {
