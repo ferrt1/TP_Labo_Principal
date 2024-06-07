@@ -2,6 +2,7 @@ package com.example.cypher_vault.controller.data
 
 import android.util.Log
 import androidx.compose.runtime.MutableState
+import com.example.cypher_vault.database.BlockedUsers
 import com.example.cypher_vault.database.ImagesLogin
 import com.example.cypher_vault.database.ImagesRegister
 import com.example.cypher_vault.database.User
@@ -146,4 +147,17 @@ class DatabaseController(){
             DatabaseManager.deleteImgs(selectedImageIds)
         }
     }
+
+    fun insertBlockUser(blockedUser: BlockedUsers){
+        DatabaseManager.insertBlockedUser(blockedUser)
+    }
+
+    fun getBlockedUser(userId: String): BlockedUsers? {
+        return DatabaseManager.getBlockedUser(userId)
+    }
+
+    fun deleteBlockedUser(userId: String){
+        DatabaseManager.deleteBlockedUser(userId)
+    }
+
 }

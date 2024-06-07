@@ -5,6 +5,7 @@ import android.util.Log
 import androidx.compose.runtime.MutableState
 import androidx.room.Room
 import com.example.cypher_vault.database.AppDatabase
+import com.example.cypher_vault.database.BlockedUsers
 import com.example.cypher_vault.database.ImageDao
 import com.example.cypher_vault.database.Images
 import com.example.cypher_vault.database.ImagesLogin
@@ -15,6 +16,7 @@ import com.example.cypher_vault.database.UserPremium
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 import java.security.SecureRandom
 
@@ -200,5 +202,27 @@ object DatabaseManager {
         }
     }
 
+    fun insertBlockedUser(blockedUser: BlockedUsers) {
+        runBlocking {
+            withContext(Dispatchers.IO) {
+                database.blockedUsersDao().insertBlockedUser(blockedUser)
+            }
+        }
+    }
 
+    fun getBlockedUser(userId: String): BlockedUsers? {
+        return runBlocking {
+            withContext(Dispatchers.IO) {
+                database.blockedUsersDao().getBlockedUser(userId)
+            }
+        }
+    }
+
+    fun deleteBlockedUser(userId: String) {
+        runBlocking {
+            withContext(Dispatchers.IO) {
+                database.blockedUsersDao().deleteBlockedUser(userId)
+            }
+        }
+    }
 }
