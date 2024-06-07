@@ -167,8 +167,9 @@ import java.io.File
 
 //Variables de entorno/////////////////////////////
 val pixelesDeRedimensionamiento = 1f
-val maximoImagenesPremium = 30 //860
-val maximoImagenesModoPobre = 5 //42
+val maximoImagenesPremium = 40 //860
+val maximoImagenesModoPobre = 10 //42
+val MAX_IMAGE_SELECTION = 30
 var isPremium: Boolean? = false
 var userPremiumSince = ""
 
@@ -310,6 +311,7 @@ fun Gallery(navController: NavController, userId: String, galleryController: Gal
         }
     }
 
+
     //Acceso a la galeria/imagenes del celular///////////////////////
     if (ContextCompat.checkSelfPermission(
             context,
@@ -328,38 +330,49 @@ fun Gallery(navController: NavController, userId: String, galleryController: Gal
         galleryController.loadImagesForUser(userId)
     }
     val images = galleryController.getGalleryImages()
+    var indeximg by remember { mutableStateOf(images.size) }
     val imageUris = remember { mutableStateOf<List<Uri>>(listOf()) }
+    indeximg = images.size
     LaunchedEffect(key1 = imageUris.value) {
         galleryController.loadImagesForUser(userId)
     }
 
+
     //Seleccion de imagenes de la galeria del celular y almacenamiento////////////////
-    val launcher =
-        rememberLauncherForActivityResult(ActivityResultContracts.GetMultipleContents()) { uris: List<Uri>? ->
-            uris?.forEach { uri ->
+    val launcher = rememberLauncherForActivityResult(ActivityResultContracts.GetMultipleContents()) { uris: List<Uri>? ->
+        val maxSelectionLimit = if (isPremium == true) maximoImagenesPremium else maximoImagenesModoPobre
+        indeximg = images.size
+
+        val limitedUris = uris?.take(MAX_IMAGE_SELECTION) ?: emptyList()
+
+        limitedUris.forEach { uri ->
+            if (indeximg < maxSelectionLimit) {
                 uri?.let {
                     val inputStream = context.contentResolver.openInputStream(it)
                     val bitmapOriginal = BitmapFactory.decodeStream(inputStream)
-                    //Test Imagen Original
-                    //galleryController.saveBitmapToFile(context, bitmapOriginal, "original_image.png")
+                    // Test Imagen Original
+                    // galleryController.saveBitmapToFile(context, bitmapOriginal, "original_image.png")
                     val bitmapResize = galleryController.reduceImageSize(
                         bitmapOriginal.asImageBitmap(),
                         pixelesDeRedimensionamiento
                     )
-                    //Test Imagen Redim
-                    //galleryController.saveBitmapToFile(context, bitmapResize.asAndroidBitmap(), "resized_image.png")
+                    // Test Imagen Redim
+                    // galleryController.saveBitmapToFile(context, bitmapResize.asAndroidBitmap(), "resized_image.png")
                     val byteArrayOutputStream = ByteArrayOutputStream()
                     bitmapResize.asAndroidBitmap()
                         .compress(Bitmap.CompressFormat.PNG, 60, byteArrayOutputStream)
                     val compressedImageData = byteArrayOutputStream.toByteArray()
-                    //Test Imagen bajo compresion
-                    //galleryController.saveByteArrayToFile(context, compressedImageData, "compressed_image.png")
+                    // Test Imagen bajo compresion
+                    // galleryController.saveByteArrayToFile(context, compressedImageData, "compressed_image.png")
 
                     galleryController.saveImage(compressedImageData, userId)
                     imageUris.value += it
+                    indeximg++
+                    Log.e("proceso", "lo que vale ${indeximg},${images.size}")
                 }
             }
         }
+    }
     val selectedImageBitmap = remember { mutableStateOf<Bitmap?>(null) }
 
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(rememberTopAppBarState())
@@ -375,28 +388,40 @@ fun Gallery(navController: NavController, userId: String, galleryController: Gal
     }
     Log.e("galeria", "LISTA DE INGRESOS : $listaDeIngresos")
 
-    val launcherProfile = rememberLauncherForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
-        uri?.let {
-            val inputStream = context.contentResolver.openInputStream(it)
-            val bitmapOriginal = BitmapFactory.decodeStream(inputStream)
-            val bitmapResize = galleryController.reduceImageSize(
-                bitmapOriginal.asImageBitmap(),
-                1.0f // Ajusta este valor según sea necesario
-            )
-            val byteArrayOutputStream = ByteArrayOutputStream()
-            bitmapResize.asAndroidBitmap()
-                .compress(Bitmap.CompressFormat.PNG, 60, byteArrayOutputStream)
-            val compressedImageData = byteArrayOutputStream.toByteArray()
-            scope.launch {
-                withContext(Dispatchers.IO) {
-                    galleryController.updateProfileImage(userId, compressedImageData)
+
+    val launcherProfile = rememberLauncherForActivityResult(ActivityResultContracts.GetMultipleContents()) { uris: List<Uri>? ->
+        val maxSelectionLimit = if (isPremium == true) maximoImagenesPremium else maximoImagenesModoPobre
+        indeximg = images.size
+
+        // Only process the first 10 (or the max selection limit) images if more than allowed are selected
+        val limitedUris = uris?.take(MAX_IMAGE_SELECTION) ?: emptyList()
+
+        limitedUris.forEach { uri ->
+            if (indeximg < maxSelectionLimit) {
+                uri?.let {
+                    val inputStream = context.contentResolver.openInputStream(it)
+                    val bitmapOriginal = BitmapFactory.decodeStream(inputStream)
+                    val bitmapResize = galleryController.reduceImageSize(
+                        bitmapOriginal.asImageBitmap(),
+                        1.0f // Ajusta este valor según sea necesario
+                    )
+                    val byteArrayOutputStream = ByteArrayOutputStream()
+                    bitmapResize.asAndroidBitmap()
+                        .compress(Bitmap.CompressFormat.PNG, 60, byteArrayOutputStream)
+                    val compressedImageData = byteArrayOutputStream.toByteArray()
+
+                    scope.launch {
+                        withContext(Dispatchers.IO) {
+                            galleryController.updateProfileImage(userId, compressedImageData)
+                        }
+                        // Actualiza la imagen en la UI
+                        userImage = compressedImageData
+                    }
                 }
-                // Actualiza la imagen en la UI
-                userImage = compressedImageData
+                indeximg++
             }
         }
     }
-
 
     val onImageClick = {
         launcherProfile.launch("image/*")
@@ -816,7 +841,9 @@ fun Gallery(navController: NavController, userId: String, galleryController: Gal
                                                 galleryController.deleteImg(userId, selectedImageIds)
                                             }
                                         }
+                                        indeximg=images.size
                                         longClickPerformed = false
+                                        Log.e("proceso","lo que vale el indeximg luego de eliminar $indeximg")
                                     },
                                     shape = RoundedCornerShape(4.dp),
                                     border = BorderStroke(3.dp,firstColor),

@@ -13,6 +13,8 @@ import com.example.cypher_vault.database.User
 import com.example.cypher_vault.database.UserIncome
 import com.example.cypher_vault.database.UserPremium
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.withContext
 import java.security.SecureRandom
 
@@ -130,35 +132,36 @@ object DatabaseManager {
     }
 
     suspend fun deleteImgUser(uid: String) {
-        withContext(Dispatchers.IO) {
-            val images = database.imageDao().getImagesForUser(uid)
-            Log.d("dato", "esta es la info de la images: $images")
-            images?.forEach { image ->
-                securelyDeleteImage(image, database.imageDao())
-            }
+        val batchSize = 10 // Número máximo de imágenes a procesar en cada lote
+        val imageDao = database.imageDao()
+        val images = imageDao.getImagesForUser(uid)
+
+        images?.chunked(batchSize)?.forEach { batch ->
+            processAndDeleteBatch(batch, imageDao)
         }
     }
 
-    // Hacer que securelyDeleteImage sea una función de suspensión
-    suspend fun securelyDeleteImage(image: Images, imageDao: ImageDao) {
-        // Si la imagen existe
-        if (image != null) {
-            // Número de sobrescrituras
-            val overwriteCycles = 1
-            val random = SecureRandom()
 
-            for (i in 0 until overwriteCycles) {
-                // Crear un byte array aleatorio del mismo tamaño que imageData
+    suspend fun processAndDeleteBatch(batch: List<Images>, imageDao: ImageDao) {
+        val random = SecureRandom()
+        batch.forEach { image ->
+            try {
+                // Sobrescribir la imagen con datos aleatorios
                 val randomData = ByteArray(image.imageData.size)
                 random.nextBytes(randomData)
-
-                // Actualizar la imagen con los datos aleatorios
                 image.imageData = randomData
                 imageDao.updateImage(image)
-            }
 
-            // Finalmente, borrar la imagen
-            imageDao.deleteImage(image)
+                // Borrar la imagen
+                imageDao.deleteImage(image)
+
+            } catch (e: Exception) {
+                // Manejar cualquier excepción que ocurra durante el procesamiento de la imagen
+                Log.e("Error", "Error processing image: ${e.message}")
+            } finally {
+                // Liberar memoria
+                System.gc() // Llamar al recolector de basura para liberar la memoria no utilizada
+            }
         }
     }
 
@@ -170,17 +173,30 @@ object DatabaseManager {
 
     suspend fun deleteImgs(selectedImageIds: MutableState<List<Long>>) {
         withContext(Dispatchers.IO) {
-            for (id in selectedImageIds.value) {
-                val image = database.imageDao().getImageById(id)
-                image?.let {
-                    val random = SecureRandom()
-                    val randomData = ByteArray(it.imageData.size)
-                    random.nextBytes(randomData)  // Para llenar randomData con datos aleatorios
-                    it.imageData = randomData
-                    database.imageDao().updateImage(it)
-                    database.imageDao().deleteImage(it)
+            val imageDao = database.imageDao()
+            val random = SecureRandom()
+
+            // Ejecutar las operaciones de forma concurrente
+            val jobs = selectedImageIds.value.map { id ->
+                async {
+                    val image = imageDao.getImageById(id)
+                    image?.let {
+                        // Generar los datos aleatorios para cada imagen
+                        val randomData = ByteArray(it.imageData.size)
+                        random.nextBytes(randomData)
+
+                        // Actualizar los datos de la imagen con los datos aleatorios
+                        it.imageData = randomData
+                        imageDao.updateImage(it)
+
+                        // Eliminar la imagen
+                        imageDao.deleteImage(it)
+                    }
                 }
             }
+
+            // Esperar a que todas las operaciones terminen
+            jobs.awaitAll()
         }
     }
 
