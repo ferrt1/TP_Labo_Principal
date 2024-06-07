@@ -2,13 +2,16 @@ package com.example.cypher_vault.view.resources
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.content.res.Resources
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
 import android.graphics.Rect
+import android.graphics.RectF
 import android.view.View
+import androidx.core.content.res.ResourcesCompat
 import com.example.cypher_vault.R
 
 class FaceOverlayView(context: Context) : View(context) {
@@ -29,65 +32,81 @@ class FaceOverlayView(context: Context) : View(context) {
     private var timerValue: Int = 0
     private var eyesOpens: Int = 0
 
+    val textPaint = Paint().apply {
+        color = Color.parseColor("#02a6c3")
+        textSize = 18f.spToPx()
+        typeface = ResourcesCompat.getFont(context, R.font.expandedconsolabold)
+        textAlign = Paint.Align.CENTER
+    }
+
+    val backgroundPaint = Paint().apply {
+        color = Color.WHITE
+        style = Paint.Style.FILL
+    }
+
+    val borderPaint = Paint().apply {
+        color = Color.BLACK
+        style = Paint.Style.STROKE
+        strokeWidth = 2f.dpToPx()
+    }
+
     @SuppressLint("DrawAllocation")
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
 
-        if(message==null) {
+        if (message == null) {
             when (currentOrientation) {
                 "smile" -> {
-                    drawTextCentered(
+                    drawTextWithBackground(
                         canvas,
                         "Por favor sonría",
                         width / 2f,
-                        height * 0.9f
+                        height * 0.1f,
+                        textPaint,
+                        backgroundPaint,
                     )
                 }
-
-                "blink1" -> {
-                    drawTextCentered(
+                "blink1", "blink2", "blink3" -> {
+                    drawTextWithBackground(
                         canvas,
                         "Por favor, pestañee. Restantes $eyesOpens",
                         width / 2f,
-                        height * 0.9f
+                        height * 0.1f,
+                        textPaint,
+                        backgroundPaint
                     )
                 }
-
-                "blink2" -> {
-                    drawTextCentered(
-                        canvas,
-                        "Por favor, pestañee. Restantes $eyesOpens",
-                        width / 2f,
-                        height * 0.9f
-                    )
-                }
-
-                "blink3" -> {
-                    drawTextCentered(
-                        canvas,
-                        "Por favor, pestañee. Restantes $eyesOpens",
-                        width / 2f,
-                        height * 0.9f
-                    )
-                }
-
                 "front" -> {
                     if (timerValue > 0) {
-                        drawTextCentered(
+                        drawTextWithBackground(
                             canvas,
                             "$timerValue",
                             width / 2f,
-                            height * 0.85f
+                            height * 0.05f,
+                            textPaint,
+                            backgroundPaint,
                         )
-                        drawTextCentered(
+                        drawTextWithBackground(
                             canvas,
                             "Mire hacia la cámara.",
                             width / 2f,
-                            height * 0.9f
+                            height * 0.1f,
+                            textPaint,
+                            backgroundPaint,
                         )
                     }
                 }
             }
+        } else {
+            // Aplica la fuente personalizada al mensaje generado por updateMessage
+            drawTextWithBackground(
+                canvas,
+                message!!,
+                width / 2f,
+                height * 0.1f,
+                textPaint,
+                backgroundPaint
+            )
         }
 
 
@@ -112,38 +131,6 @@ class FaceOverlayView(context: Context) : View(context) {
             (height / 2 + maxBoxHeight / 2 - 100)   // Ajusta la posición inferior acorde a la nueva altura y movimiento
         )
 
-        // Dibuja el targetBox mínimo en azul
-        val minTargetPaint = Paint().apply {
-            color = Color.BLUE
-            style = Paint.Style.STROKE
-            strokeWidth = 4f
-        }
-       // canvas.drawRect(minTargetBox!!, minTargetPaint)
-
-        // Dibuja el targetBox máximo en verde
-        val maxTargetPaint = Paint().apply {
-            color = Color.GREEN
-            style = Paint.Style.STROKE
-            strokeWidth = 4f
-        }
-        //canvas.drawRect(maxTargetBox!!, maxTargetPaint)
-
-        // Dibuja el boundingBox en rojo
-        boundingBox?.let {
-            val paint = Paint().apply {
-                color = Color.RED
-                style = Paint.Style.STROKE
-                strokeWidth = 4f
-            }
-
-            val left = width - it.right * width.toFloat() / imageHeight
-            val top = it.top * height.toFloat() / imageWidth
-            val right = width - it.left * width.toFloat() / imageHeight
-            val bottom = it.bottom * height.toFloat() / imageWidth
-
-           // canvas.drawRect(left, top, right, bottom, paint)
-        }
-
         // Dibuja la silueta correcta dependiendo del estado
         val silhouetteBitmap = if (inside) silhouette else silhouetteError
         val aspectRatio = silhouetteBitmap.width.toFloat() / silhouetteBitmap.height.toFloat()
@@ -155,14 +142,6 @@ class FaceOverlayView(context: Context) : View(context) {
 
         canvas.drawBitmap(silhouetteBitmap, null, Rect(left, top, right, bottom), null)
 
-        message?.let {
-            val textPaint = Paint().apply {
-                color = Color.WHITE
-                textSize = 50f
-                textAlign = Paint.Align.CENTER
-            }
-            canvas.drawText(it, (width / 2).toFloat(), (height * 0.9).toFloat(), textPaint)
-        }
     }
 
 
@@ -221,7 +200,36 @@ class FaceOverlayView(context: Context) : View(context) {
         invalidate()
     }
 
+    private fun drawTextWithBackground(
+        canvas: Canvas,
+        text: String,
+        x: Float,
+        y: Float,
+        textPaint: Paint,
+        backgroundPaint: Paint,
+        cornerRadius: Float = 24f
+    ) {
+        val textWidth = textPaint.measureText(text)
+        val textHeight = textPaint.descent() - textPaint.ascent()
 
+        val paddingX = canvas.width * 0.05f
+        val paddingY = textHeight * 0.2f
+
+        val rectLeft = x - textWidth / 2 - paddingX
+        val rectTop = y + textPaint.ascent() - paddingY
+        val rectRight = x + textWidth / 2 + paddingX
+        val rectBottom = y + textPaint.descent() + paddingY
+
+        val rectF = RectF(rectLeft, rectTop, rectRight, rectBottom)
+
+        canvas.drawRoundRect(rectF, cornerRadius, cornerRadius, backgroundPaint)
+        canvas.drawRoundRect(rectF, cornerRadius, cornerRadius, borderPaint)
+        canvas.drawText(text, x, y, textPaint)
+    }
+
+
+    private fun Float.spToPx(): Float = this * Resources.getSystem().displayMetrics.scaledDensity
+    private fun Float.dpToPx(): Float = this * Resources.getSystem().displayMetrics.density
 
 
 }

@@ -76,6 +76,7 @@ fun LoginCamera(navController: NavController, userId: String) {
     val eyesOpens = remember { mutableIntStateOf(3) }
 
     val eyesOpenedAfterBlink = remember { mutableStateOf(false) }
+    val isLoading = remember { mutableStateOf(false) }
 
     imageAnalysis.setAnalyzer(ContextCompat.getMainExecutor(context)) { imageProxy ->
         val mediaImage = imageProxy.image
@@ -184,7 +185,7 @@ fun LoginCamera(navController: NavController, userId: String) {
                                             coroutineScope,
                                             navController,
                                             true,
-                                            //assetManager
+                                            isLoading
                                         )
                                         timer.intValue = 3
                                         timerStarted.value = false

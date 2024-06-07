@@ -65,10 +65,13 @@ class CameraController(
         state: MutableState<Boolean>,
         coroutineScope: CoroutineScope,
         navController: NavController,
-        isRegister: Boolean
+        isRegister: Boolean,
+        isLoading: MutableState<Boolean>
     ) {
         Log.d("Imagen", "entra aca")
         try {
+            isLoading.value = true
+
             val tempFile = File.createTempFile("tempImage", ".jpg", context.cacheDir)
             val outputFileOptions = ImageCapture.OutputFileOptions.Builder(tempFile).build()
             imageCapture.takePicture(
@@ -167,6 +170,7 @@ class CameraController(
                                             state.value = false
                                             tempFile.delete()
                                             cameraProvider.unbindAll()
+                                            isLoading.value = false
                                             if (isRegister) {
                                                 navController.navigateToConfirmationLogin(userId)
                                             } else {
@@ -175,17 +179,20 @@ class CameraController(
                                         }
                                     } else {
                                         Log.e("Imagen", "No se detectaron caras")
+                                        isLoading.value = false
                                         if (!isRegister)
                                             navController.navigateToConfirmation(userId, false, "No se detectaron caras")
                                     }
                                 }
                                 .addOnFailureListener { e ->
                                     Log.e("Imagen", "Error al procesar la imagen", e)
+                                    isLoading.value = false
                                     if (!isRegister)
                                         navController.navigateToConfirmation(userId, false, "Error al procesar la imagen")
                                 }
                         } catch (e: Exception) {
                             Log.e("Imagen", "Error al procesar la imagen", e)
+                            isLoading.value = false
                             if (!isRegister)
                                 navController.navigateToConfirmation(userId, false, "Error al procesar la imagen")
                         }
@@ -193,12 +200,14 @@ class CameraController(
 
                     override fun onError(exception: ImageCaptureException) {
                         Log.e("Imagen", "Error al capturar la imagen", exception)
+                        isLoading.value = false
                         if (!isRegister)
                             navController.navigateToConfirmation(userId, false, "Error al capturar la imagen")
                     }
                 })
         } catch (e: Exception) {
             Log.e("Imagen", "Error al iniciar la captura de imagen", e)
+            isLoading.value = false
             if (!isRegister)
                 navController.navigateToConfirmation(userId, false, "Error al iniciar la captura de imagen")
         }

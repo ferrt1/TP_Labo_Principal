@@ -8,6 +8,7 @@ import androidx.camera.core.ImageCapture
 import androidx.camera.core.Preview
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.PreviewView
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -82,6 +83,8 @@ fun RegistrationCameraScreen(navController: NavController, userId: String) {
 
     val eyesOpens = remember { mutableIntStateOf(3) }
     val eyesOpenedAfterBlink = remember { mutableStateOf(false) }
+
+    val isLoading = remember { mutableStateOf(false) }
 
     imageAnalysis.setAnalyzer(ContextCompat.getMainExecutor(context)) { imageProxy ->
         val mediaImage = imageProxy.image
@@ -190,7 +193,7 @@ fun RegistrationCameraScreen(navController: NavController, userId: String) {
                                             coroutineScope,
                                             navController,
                                             false,
-                                            //assetManager
+                                            isLoading
                                         )
                                         timer.intValue = 3
                                         timerStarted.value = false
@@ -237,12 +240,9 @@ fun RegistrationCameraScreen(navController: NavController, userId: String) {
                     eyesOpens.intValue
                 )
             }
-
         }
     }
 }
-
-
 
 @Composable
 fun CameraPreview(preview: Preview) {
