@@ -10,6 +10,7 @@ import android.graphics.BitmapFactory
 import android.net.Uri
 import android.os.Build
 import android.util.Log
+import android.view.Gravity
 import android.view.WindowManager
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -152,9 +153,9 @@ import java.io.ByteArrayOutputStream
 
 //Variables de entorno/////////////////////////////
 val pixelesDeRedimensionamiento = 1f
-val maximoImagenesPremium = 40 //860
-val maximoImagenesModoPobre = 10 //42
-val MAX_IMAGE_SELECTION = 30
+val maximoImagenesPremium = 30 //860
+val maximoImagenesModoPobre = 15 //42
+val MAX_IMAGE_SELECTION = 10
 var isPremium: Boolean? = false
 var userPremiumSince = ""
 
@@ -191,24 +192,22 @@ val textStyleTittle2 = TextStyle(
 @Composable
 fun Gallery(navController: NavController, userId: String, galleryController: GalleryController) {
 
-
-//    //-----"CODIGO PARA QUE SE VEA EN NEGRO LA GALERIA SI QUIERE SACAR FOTOCAPTURA-----//
-//    val block = LocalContext.current
-//    // Usar DisposableEffect para configurar y limpiar la bandera FLAG_SECURE
-//    DisposableEffect(Unit) {
-//        // Configurar la bandera FLAG_SECURE
-//        val activity = block as? Activity
-//        activity?.window?.setFlags(
-//            WindowManager.LayoutParams.FLAG_SECURE,
-//            WindowManager.LayoutParams.FLAG_SECURE
-//        )
-//        // Limpiar la bandera FLAG_SECURE cuando el Composable se desecha
-//        onDispose {
-//            activity?.window?.clearFlags(WindowManager.LayoutParams.FLAG_SECURE)
-//        }
-//    }
+   //-----"CODIGO PARA QUE SE VEA EN NEGRO LA GALERIA SI QUIERE SACAR FOTOCAPTURA-----//
+    val block = LocalContext.current
+    // Usar DisposableEffect para configurar y limpiar la bandera FLAG_SECURE
+    DisposableEffect(Unit) {
+        // Configurar la bandera FLAG_SECURE
+        val activity = block as? Activity
+        activity?.window?.setFlags(
+            WindowManager.LayoutParams.FLAG_SECURE,
+            WindowManager.LayoutParams.FLAG_SECURE
+        )
+        // Limpiar la bandera FLAG_SECURE cuando el Composable se desecha
+        onDispose {
+            activity?.window?.clearFlags(WindowManager.LayoutParams.FLAG_SECURE)
+        }
+    }
     //----------------------------------------------------------------------------------//
-
     var dbc = DatabaseController()
 
     // variable para selecionar las imagenes para eliminar
@@ -296,7 +295,6 @@ fun Gallery(navController: NavController, userId: String, galleryController: Gal
         }
     }
 
-
     //Acceso a la galeria/imagenes del celular///////////////////////
     if (ContextCompat.checkSelfPermission(
             context,
@@ -325,35 +323,41 @@ fun Gallery(navController: NavController, userId: String, galleryController: Gal
 
     //Seleccion de imagenes de la galeria del celular y almacenamiento////////////////
     val launcher = rememberLauncherForActivityResult(ActivityResultContracts.GetMultipleContents()) { uris: List<Uri>? ->
+        Log.e("proceso", "lo que vale uris: ${uris.toString()}")
         val maxSelectionLimit = if (isPremium == true) maximoImagenesPremium else maximoImagenesModoPobre
-        indeximg = images.size
-
         val limitedUris = uris?.take(MAX_IMAGE_SELECTION) ?: emptyList()
 
         limitedUris.forEach { uri ->
             if (indeximg < maxSelectionLimit) {
                 uri?.let {
-                    val inputStream = context.contentResolver.openInputStream(it)
-                    val bitmapOriginal = BitmapFactory.decodeStream(inputStream)
-                    // Test Imagen Original
-                    // galleryController.saveBitmapToFile(context, bitmapOriginal, "original_image.png")
-                    val bitmapResize = galleryController.reduceImageSize(
-                        bitmapOriginal.asImageBitmap(),
-                        pixelesDeRedimensionamiento
-                    )
-                    // Test Imagen Redim
-                    // galleryController.saveBitmapToFile(context, bitmapResize.asAndroidBitmap(), "resized_image.png")
-                    val byteArrayOutputStream = ByteArrayOutputStream()
-                    bitmapResize.asAndroidBitmap()
-                        .compress(Bitmap.CompressFormat.PNG, 60, byteArrayOutputStream)
-                    val compressedImageData = byteArrayOutputStream.toByteArray()
-                    // Test Imagen bajo compresion
-                    // galleryController.saveByteArrayToFile(context, compressedImageData, "compressed_image.png")
+                    context.contentResolver.openInputStream(it)?.use { inputStream ->
+                        try {
+                            val bitmapOriginal = BitmapFactory.decodeStream(inputStream)
+                            val bitmapResize = galleryController.reduceImageSize(
+                                bitmapOriginal.asImageBitmap(),
+                                pixelesDeRedimensionamiento
+                            )
+                            val byteArrayOutputStream = ByteArrayOutputStream()
+                            bitmapResize.asAndroidBitmap()
+                                .compress(Bitmap.CompressFormat.PNG, 60, byteArrayOutputStream)
+                            val compressedImageData = byteArrayOutputStream.toByteArray()
 
-                    galleryController.saveImage(compressedImageData, userId)
-                    imageUris.value += it
-                    indeximg++
-                    Log.e("proceso", "lo que vale ${indeximg},${images.size}")
+                            // Liberar recursos
+                            inputStream.close()
+                            bitmapOriginal?.recycle()
+                            byteArrayOutputStream.close()
+
+                            galleryController.saveImage(compressedImageData, userId)
+                            imageUris.value += it
+                            indeximg++
+                            Log.e(
+                                "proceso",
+                                "lo que vale ${indeximg},${images.size} en rememberLauncherForActivityResult"
+                            )
+                        } catch (e: Exception) {
+                            Log.e("Error", "Error procesando imagen", e)
+                        }
+                    }
                 }
             }
         }
@@ -912,7 +916,14 @@ fun Gallery(navController: NavController, userId: String, galleryController: Gal
             },
             //Agregar imagen a la galeria de imagenes//////////////////////////////////////////////////////////////////
             floatingActionButton = {
-                FloatingActionButton(onClick = {
+                FloatingActionButton(
+                    onClick = {
+                        val toast = Toast.makeText(
+                            context,
+                            "Puedes seleccionar un máximo de 10 imágenes. Si seleccionas más de esta cantidad, no se guardarán", Toast.LENGTH_LONG
+                        )
+                        toast.setGravity(Gravity.TOP ,0, 0)
+                        toast.show()
                     if (isPremium == true) {
                         if(images.size < maximoImagenesPremium) {
                             launcher.launch("image/*")

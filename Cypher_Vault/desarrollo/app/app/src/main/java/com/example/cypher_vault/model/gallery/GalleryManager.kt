@@ -218,18 +218,27 @@ class GalleryManager {
             val user = DatabaseManager.getUserById(userId)
             if (user?.encryptionSalt != null) {
                 val salt = Base64.getDecoder().decode(user.encryptionSalt)
-                val password = user.password ?: throw IllegalArgumentException("Password missing for user $userId")
+                val password = user.password
+                    ?: throw IllegalArgumentException("Password missing for user $userId")
                 val encryptionService = EncryptionService()
-                encryptedImages.map { image ->
-                    val decryptedImageData = encryptionService.decrypt(password, image.imageData, salt)
-                    image.copy(imageData = decryptedImageData)
+                val decryptedImages = mutableListOf<Images>()
+                encryptedImages.chunked(10).forEach { batch ->
+                    batch.map { image ->
+                        val decryptedImageData =
+                            encryptionService.decrypt(password, image.imageData, salt)
+                        decryptedImages.add(image.copy(imageData = decryptedImageData))
+                    }
+                    // Liberar memoria después de procesar cada lote
+                    System.gc()
                 }
+                decryptedImages
             } else {
                 Log.e("EncryptionServiceGallery", "User not found or salt missing for user $userId")
                 emptyList()
             }
         }
     }
+
 
     @RequiresApi(Build.VERSION_CODES.O)
     fun saveImage(imageData: ByteArray, userId: String): Deferred<Int> {
