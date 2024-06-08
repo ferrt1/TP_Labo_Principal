@@ -5,8 +5,8 @@ import android.graphics.Bitmap
 import android.graphics.Point
 import com.example.cypher_vault.model.utils.MyUtil
 import org.tensorflow.lite.Interpreter
-import java.io.IOException
 import java.util.Vector
+import kotlin.math.ceil
 
 class MTCNN(assetManager: AssetManager) {
     private val factor = 0.709f
@@ -19,7 +19,7 @@ class MTCNN(assetManager: AssetManager) {
     private val oInterpreter: Interpreter
 
     init {
-        val options = Interpreter.Options().apply { setNumThreads(4) }
+        val options = Interpreter.Options().apply { numThreads = 4 }
         pInterpreter = Interpreter(MyUtil.loadModelFile(assetManager, "pnet.tflite"), options)
         rInterpreter = Interpreter(MyUtil.loadModelFile(assetManager, "rnet.tflite"), options)
         oInterpreter = Interpreter(MyUtil.loadModelFile(assetManager, "onet.tflite"), options)
@@ -56,8 +56,8 @@ class MTCNN(assetManager: AssetManager) {
             val resizedBitmap = MyUtil.bitmapResize(bitmap, scale)
             val w = resizedBitmap.width
             val h = resizedBitmap.height
-            val outW = (Math.ceil(w * 0.5 - 5) + 0.5).toInt()
-            val outH = (Math.ceil(h * 0.5 - 5) + 0.5).toInt()
+            val outW = (ceil(w * 0.5 - 5) + 0.5).toInt()
+            val outH = (ceil(h * 0.5 - 5) + 0.5).toInt()
             val prob1 = Array(1) { Array(outW) { Array(outH) { FloatArray(2) } } }
             val conv4_2_BiasAdd = Array(1) { Array(outW) { Array(outH) { FloatArray(4) } } }
             pNetForward(resizedBitmap, prob1, conv4_2_BiasAdd)

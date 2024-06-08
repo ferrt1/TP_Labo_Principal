@@ -13,12 +13,11 @@ import kotlin.math.max
 import kotlin.math.min
 
 object Utils {
-    // 复制图片，并设置isMutable=true
+
     fun copyBitmap(bitmap: Bitmap): Bitmap {
         return bitmap.copy(bitmap.config, true)
     }
 
-    // 在bitmap中画矩形
     fun drawRect(bitmap: Bitmap, rect: Rect, thick: Int) {
         try {
             val canvas = Canvas(bitmap)
@@ -35,7 +34,6 @@ object Utils {
         }
     }
 
-    // 在图中画点
     fun drawPoints(bitmap: Bitmap, landmark: Array<Point>, thick: Int) {
         for (i in landmark.indices) {
             val x = landmark[i].x
@@ -49,7 +47,6 @@ object Utils {
         drawPoints(bitmap, box.landmark, thick)
     }
 
-    // Flip alone diagonal
     fun flipDiag(data: FloatArray, h: Int, w: Int, stride: Int) {
         val tmp = FloatArray(w * h * stride)
         for (i in data.indices) tmp[i] = data[i]
@@ -62,7 +59,6 @@ object Utils {
         }
     }
 
-    // src转为二维存放到dst中
     fun expand(src: FloatArray, dst: Array<FloatArray>) {
         var idx = 0
         for (y in dst.indices) {
@@ -72,7 +68,6 @@ object Utils {
         }
     }
 
-    // src转为三维存放到dst中
     fun expand(src: FloatArray, dst: Array<Array<FloatArray>>) {
         var idx = 0
         for (y in dst.indices) {
@@ -84,7 +79,6 @@ object Utils {
         }
     }
 
-    // dst=src[:,:,1]
     fun expandProb(src: FloatArray, dst: Array<FloatArray>) {
         var idx = 0
         for (y in dst.indices) {
@@ -94,7 +88,6 @@ object Utils {
         }
     }
 
-    // box转化为rect
     fun boxes2rects(boxes: Vector<Box>): Array<Rect> {
         var cnt = 0
         for (i in boxes.indices) if (!boxes[i].deleted) cnt++
@@ -119,12 +112,10 @@ object Utils {
         return b
     }
 
-    // 按照rect的大小裁剪出人脸
     fun crop(bitmap: Bitmap, rect: Rect): Bitmap {
         return Bitmap.createBitmap(bitmap, rect.left, rect.top, rect.width(), rect.height())
     }
 
-    // rect上下左右各扩展pixels个像素
     fun rectExtend(bitmap: Bitmap, rect: Rect, pixels: Int) {
         rect.left = max(0, rect.left - pixels)
         rect.right = min(bitmap.width - 1, rect.right + pixels)

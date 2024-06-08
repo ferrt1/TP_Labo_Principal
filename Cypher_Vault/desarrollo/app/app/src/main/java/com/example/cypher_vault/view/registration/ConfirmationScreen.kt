@@ -126,7 +126,7 @@ fun ConfirmationScreen(navController: NavController, userId: String, registerSuc
                 modifier = Modifier.size(128.dp)
             )
             Text(
-                "Ocurrió un error",
+                messageError,
                 fontSize = 20.sp,
                 fontFamily = fontFamily,
                 color = Color.Red,
