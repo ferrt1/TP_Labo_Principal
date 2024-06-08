@@ -70,14 +70,16 @@ fun NavigationHost() {
             }
         }
 
-        composable("authenticate/{userId}") {backStackEntry ->
+        composable("authenticate/{userId}/{fromCamera}") {backStackEntry ->
             BackHandler(true) {
                 // Or do nothing
                 Log.i("LOG_TAG", "Clicked back")
             }
             val userId = backStackEntry.arguments?.getString("userId")
+            val fromCameraString = backStackEntry.arguments?.getString("fromCamera")
+            val fromCamera = fromCameraString.toBoolean()
             if (userId != null) {
-                ConfirmationLoginScreen(navigationController, userId)
+                ConfirmationLoginScreen(navigationController, userId, fromCamera)
             } else {
 
             }

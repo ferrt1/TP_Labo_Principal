@@ -108,7 +108,7 @@ val textStyleTittle2 = TextStyle(
 )
 
 @Composable
-fun ConfirmationLoginScreen(navController: NavController, userId: String) {
+fun ConfirmationLoginScreen(navController: NavController, userId: String, fromCamera : Boolean) {
     val context = LocalContext.current
     val authenticationController = AuthenticationController(context)
     var dbc = DatabaseController()
@@ -117,6 +117,7 @@ fun ConfirmationLoginScreen(navController: NavController, userId: String) {
     var showImage by remember { mutableStateOf(false) }
     var showConfirmationLoguin by remember { mutableStateOf(false) }
     var showDenyAccess by remember { mutableStateOf(false) }
+    var fromCamera by remember { mutableStateOf(fromCamera) }
 
     //Prototipado de la pantalla para logueo con camara
     val imagePrintRegister = remember { mutableStateOf<Bitmap?>(null) }
@@ -153,6 +154,7 @@ fun ConfirmationLoginScreen(navController: NavController, userId: String) {
     LaunchedEffect(Unit) {
         isInternetAvailable = serviceController.isInternetAvailable()
     }
+
     ////////////////////////////////////////////////////////////////////////////////////////////
     ////// DATOS DE PRUEBA /////////////////////////////////////////////////////////////////////
     ///////////////////////////////////////////////////////////////////////////////////////////
@@ -322,15 +324,14 @@ fun ConfirmationLoginScreen(navController: NavController, userId: String) {
         secondAuthController: SecondAuthController,
         userAccessController: UserAccessController,
         userId: String,
-        internetAvailable: Boolean
+        internetAvailable: Boolean,
+        mailCode: String
     ) {
         var primerValorCodigo = remember { mutableStateOf(TextFieldValue()) }
         var segundoValorCodigo = remember { mutableStateOf(TextFieldValue()) }
         var tercerValorCodigo = remember { mutableStateOf(TextFieldValue()) }
         var cuartoValorCodigo = remember { mutableStateOf(TextFieldValue()) }
         var quintoValorCodigo = remember { mutableStateOf(TextFieldValue()) }
-        var mailCode: String = remember { secondAuthController.sendMail(context, userId) }
-        Log.d("MailConfirmation", "salida: $mailCode")
 
         //Variables y logica del campo de rellenado
         val textFieldValues = listOf(
@@ -846,7 +847,6 @@ fun ConfirmationLoginScreen(navController: NavController, userId: String) {
                                             Toast.LENGTH_SHORT
                                         )
                                             .show()
-                                        mailCode = ""
                                         navController.navigateToListLogin()
                                     }
                                 },
@@ -1148,21 +1148,26 @@ fun ConfirmationLoginScreen(navController: NavController, userId: String) {
     ) {
         //Elementos de la 2da Authentificacion//////////////////////////////////////////
         ///////////////////////////////////////////////////////////////////////////////
-        if (imagePrintLogin.value == null && imagePrintRegister.value == null) {
+        if (!fromCamera) {
             Log.d("ConfirmationLoginScreen", "resul.value = $result")
             Log.d("ConfirmationLoginScreen", "imagePrintLogin.value == null")
             if (isSecondAuth == true) {
                 Log.d("ConfirmationLoginScreen", "isSecondAuth == true")
                 /// SIN IMAGENES Y CON SEGUNDA ACTIVADA ////////////////////////
                 if (!isAuthenticaed) {
+                    showDenyAccess = false
+                    showConfirmationLoguin = false
                     if (isInternetAvailable) {
+                        var mailCode: String = remember { secondAuthController.sendMail(context, userId) }
+                        Log.d("MailConfirmation", "salida: $mailCode")
                         ElevatedCardMailConfirmation(
                             context,
                             navController,
                             secondAuthController,
                             userAccessController,
                             userId,
-                            isInternetAvailable
+                            isInternetAvailable,
+                            mailCode
                         )
                     } else {
                         ElevatedCardDayPart(
@@ -1198,14 +1203,19 @@ fun ConfirmationLoginScreen(navController: NavController, userId: String) {
 
                     true -> {
                         if (!isAuthenticaed) {
+                            showDenyAccess = false
+                            showConfirmationLoguin = false
                             if (isInternetAvailable) {
+                                var mailCode: String = remember { secondAuthController.sendMail(context, userId) }
+                                Log.d("MailConfirmation", "salida: $mailCode")
                                 ElevatedCardMailConfirmation(
                                     context,
                                     navController,
                                     secondAuthController,
                                     userAccessController,
                                     userId,
-                                    isInternetAvailable
+                                    isInternetAvailable,
+                                    mailCode
                                 )
                             } else {
                                 ElevatedCardDayPart(

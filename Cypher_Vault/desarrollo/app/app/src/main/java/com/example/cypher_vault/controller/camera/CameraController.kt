@@ -172,7 +172,7 @@ class CameraController(
                                             cameraProvider.unbindAll()
                                             isLoading.value = false
                                             if (isRegister) {
-                                                navController.navigateToConfirmationLogin(userId)
+                                                navController.navigateToConfirmationLogin(userId,true)
                                             } else {
                                                 navController.navigateToConfirmation(userId, true, "bien")
                                             }

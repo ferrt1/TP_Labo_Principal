@@ -467,7 +467,7 @@ fun NavigationLogin(navController: NavController) {
                                                 val userAccessManager = UserAccessManager()
                                                 val userAccessController = UserAccessController(userAccessManager)
                                                 // Ingreso de usuario
-                                                navController.navigateToConfirmationLogin(userSelected)
+                                                navController.navigateToConfirmationLogin(userSelected,false)
                                                 showPasswordDialog = false
 
                                             } else {

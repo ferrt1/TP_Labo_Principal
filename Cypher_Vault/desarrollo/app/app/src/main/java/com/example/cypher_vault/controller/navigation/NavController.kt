@@ -51,8 +51,8 @@ class NavController(private val navController: NavController) {
         navController.navigate("list")
     }
 
-    fun navigateToConfirmationLogin(uid: String) {
-        navController.navigate("authenticate/$uid")
+    fun navigateToConfirmationLogin(uid: String, fromCamera : Boolean) {
+        navController.navigate("authenticate/$uid/$fromCamera")
     }
 
     fun navigateToCameraLogin(uid: String) {
