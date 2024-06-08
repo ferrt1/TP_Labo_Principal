@@ -13,17 +13,26 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.runBlocking
 
-class BlockUserManager {
+class BlockUserManager(private val userId: String){
 
     val db = DatabaseController()
     val maxAttempts = 3
+    var user: BlockedUsers? = null
 
-    fun getBlockUser(userId: String): BlockedUsers? {
-        return db.getBlockedUser(userId)
+    suspend fun getBlockedUser(userId: String): BlockedUsers? {
+        user = getBlockedUserAsync(userId).await()
+        Log.d("lockAccount", "///////user: $user")
+        return user
+    }
+
+    fun getBlockedUserAsync(userId: String): Deferred<BlockedUsers?> {
+        return CoroutineScope(Dispatchers.IO).async {
+            db.getBlockedUser(userId)
+        }
     }
 
     fun blockUser(userId: String): Deferred<Unit> {
-        val blockUserExists =  db.getBlockedUser(userId)
+        val blockUserExists =  user
         if (blockUserExists != null) {
             return CoroutineScope(Dispatchers.IO).async {
                 db.setBlocked(userId, true)
@@ -41,7 +50,7 @@ class BlockUserManager {
     fun createBlockUser(userId: String): Any? {
         Log.d("lockAccount", "///////createBlockUser")
         Log.d("lockAccount", "///////user: $user")
-        val blockUserExists =  db.getBlockedUser(userId)
+        val blockUserExists =  user
         if (user != null || user?.user_id == userId ) {
             return null
             }else{
@@ -55,7 +64,7 @@ class BlockUserManager {
     }
 
     fun getBlockDate(userId: String): String {
-        val blockUser = db.getBlockedUser(userId)
+        val blockUser = user
         val blockDate = getUntilDays(blockUser?.block_date)
         return blockDate
     }
@@ -71,19 +80,17 @@ class BlockUserManager {
         db.deleteBlockedUser(userId)
     }
 
-    var user: BlockedUsers? = null
-//    fun getAttempt(userId: String): Int? {
-//        userAttemp =
-//            if userAttemp == null {
-//
-//            }
-//    }
+    fun getAttempt(userId: String): Int? {
+        var userAttemp : Int? = user?.attempts
+        return userAttemp
+    }
 
     fun setBlocked(userId: String) {
        db.setBlocked(userId, true)
     }
 
     fun setAttempts(userId: String, attempts: Int) {
+        Log.d("lockAccount", "///////setAttempts")
         Log.d("lockAccount", "///////attempts: $attempts")
         Log.d("lockAccount", "///////user: $user")
         if(user != null ){

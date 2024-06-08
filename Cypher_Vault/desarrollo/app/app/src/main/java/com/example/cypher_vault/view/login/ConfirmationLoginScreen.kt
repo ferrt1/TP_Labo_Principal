@@ -46,6 +46,7 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -72,6 +73,7 @@ import com.example.cypher_vault.controller.income.UserAccessController
 import com.example.cypher_vault.controller.lockaccount.BlockUserController
 import com.example.cypher_vault.controller.navigation.NavController
 import com.example.cypher_vault.controller.service.ServiceController
+import com.example.cypher_vault.database.BlockedUsers
 import com.example.cypher_vault.model.authentication.SecondAuthManager
 import com.example.cypher_vault.model.income.UserAccessManager
 import com.example.cypher_vault.model.lockaccount.BlockUserManager
@@ -111,12 +113,13 @@ val textStyleTittle2 = TextStyle(
 
 @Composable
 fun ConfirmationLoginScreen(navController: NavController, userId: String, fromCamera : Boolean) {
+    val scope = rememberCoroutineScope()
     val context = LocalContext.current
     val authenticationController = AuthenticationController(context)
     var dbc = DatabaseController()
     var secondAuthManager = SecondAuthManager()
     var secondAuthController = SecondAuthController(secondAuthManager)
-    var blockUserManager = BlockUserManager()
+    var blockUserManager = BlockUserManager(userId)
     var blockUserController = BlockUserController(blockUserManager)
 
     //Variables de paneles principales
@@ -161,12 +164,16 @@ fun ConfirmationLoginScreen(navController: NavController, userId: String, fromCa
         isInternetAvailable = serviceController.isInternetAvailable()
     }
 
-//    //Variables para el bloqueo de usuario
-//    var intentosTotales : Int? = remember { blockUserController.getAttempt(userId) }
-//
-//    fun comprobarIntentos() {
-//        intentosTotales = blockUserController.getAttempt(userId)
-//    }
+    //Variables para el bloqueo de usuario
+    var intentosTotales by remember { mutableStateOf<Int?>(null) }
+    var blockedUser by remember { mutableStateOf<BlockedUsers?>(null) }
+
+    LaunchedEffect(userId) {
+        scope.launch {
+            blockedUser = blockUserController.getBlockedUser(userId)
+            intentosTotales = blockedUser?.attempts
+        }
+    }
 
     ////////////////////////////////////////////////////////////////////////////////////////////
     ////// DATOS DE PRUEBA /////////////////////////////////////////////////////////////////////
@@ -837,22 +844,18 @@ fun ConfirmationLoginScreen(navController: NavController, userId: String, fromCa
                                 )
                             }
                         }
-//                        Row(
-//                            horizontalArrangement = Arrangement.Absolute.Center
-//                        ) {
-//                            Spacer(modifier = Modifier.width(4.dp))
-//                            if(intentosTotales==null){
-//                                Log.d("lockAccount","////////Obteniendo IntentosTotales: $intentosTotales")
-//                                comprobarIntentos()
-//                            }
-//                            Text(
-//                                text = "Intento $intentosTotales de 3",
-//                                color = firstColor,
-//                                style = textStyleTittle2,
-//                                onTextLayout = { /* No se necesita hacer nada aquí */ },
-//                                modifier = Modifier.padding(horizontal = 16.dp)
-//                            )
-//                        }
+                        Row(
+                            horizontalArrangement = Arrangement.Absolute.Center
+                        ) {
+                            Spacer(modifier = Modifier.width(4.dp))
+                            Text(
+                                text = "Intento $intentosTotales de 3",
+                                color = firstColor,
+                                style = textStyleTittle2,
+                                onTextLayout = { /* No se necesita hacer nada aquí */ },
+                                modifier = Modifier.padding(horizontal = 16.dp)
+                            )
+                        }
                         Row(
                             horizontalArrangement = Arrangement.Absolute.Center
                         ) {
@@ -871,11 +874,11 @@ fun ConfirmationLoginScreen(navController: NavController, userId: String, fromCa
                                         isAuthenticaed = true
                                         showConfirmationLoguin = true
                                     } else {
-//                                        if(intentosTotales!=null){
-//                                            intentosTotales = intentosTotales!! + 1
-//                                        }
-//                                        Log.d("lockAccount","////////IntentosTotales: $intentosTotales")
-//                                        blockUserController.setAttempts(userId, intentosTotales!!)
+                                        if(intentosTotales!=null){
+                                            intentosTotales = intentosTotales!! + 1
+                                        }
+                                        Log.d("lockAccount","////////IntentosTotales: $intentosTotales")
+                                        blockUserController.setAttempts(userId, intentosTotales!!)
                                         Toast.makeText(
                                             context,
                                             "Error en la autenticacion",

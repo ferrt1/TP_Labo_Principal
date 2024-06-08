@@ -202,51 +202,27 @@ object DatabaseManager {
         }
     }
 
-    fun insertBlockedUser(blockedUser: BlockedUsers) {
-        runBlocking {
-            withContext(Dispatchers.IO) {
-                database.blockedUsersDao().insertBlockedUser(blockedUser)
-            }
-        }
+    suspend fun insertBlockedUser(blockedUser: BlockedUsers) {
+        database.blockedUsersDao().insertBlockedUser(blockedUser)
     }
 
-    fun getBlockedUser(userId: String): BlockedUsers? {
-        return runBlocking {
-            withContext(Dispatchers.IO) {
-                database.blockedUsersDao().getBlockedUser(userId)
-            }
-        }
+    suspend fun getBlockedUser(userId: String): BlockedUsers? {
+        return  database.blockedUsersDao().getBlockedUser(userId)
     }
 
-    fun deleteBlockedUser(userId: String) {
-        runBlocking {
-            withContext(Dispatchers.IO) {
-                database.blockedUsersDao().deleteBlockedUser(userId)
-            }
-        }
+    suspend fun deleteBlockedUser(userId: String) {
+        database.blockedUsersDao().deleteBlockedUser(userId)
     }
 
-    fun getUserAttemps(userId: String) : Int {
-        return runBlocking {
-            withContext(Dispatchers.IO) {
-                database.blockedUsersDao().getUserAttempts(userId)!!
-            }
-        }
+    suspend fun getUserAttemps(userId: String): Int {
+        return database.blockedUsersDao().getUserAttempts(userId)!!
     }
 
-    fun updateAttempts(userId: String, attempts: Int) {
-        runBlocking {
-            withContext(Dispatchers.IO) {
-                database.blockedUsersDao().updateUserAttempts(userId, attempts)
-            }
-        }
+    suspend fun updateAttempts(userId: String, attempts: Int) {
+        database.blockedUsersDao().updateUserAttempts(userId, attempts)
     }
 
-    fun setBlocked(userId: String, blocked: Boolean) {
-        runBlocking {
-            withContext(Dispatchers.IO) {
-            database.blockedUsersDao().setBlocked(userId, blocked)
-            }
-        }
+    suspend fun setBlocked(userId: String, blocked: Boolean) {
+        database.blockedUsersDao().setBlocked(userId, blocked)
     }
 }

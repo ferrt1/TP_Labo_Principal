@@ -148,28 +148,38 @@ class DatabaseController(){
         }
     }
 
-    fun insertBlockUser(blockedUser: BlockedUsers){
-        DatabaseManager.insertBlockedUser(blockedUser)
+    fun insertBlockUser(blockedUser: BlockedUsers): Deferred<Unit> {
+        return CoroutineScope(Dispatchers.IO).async {
+            DatabaseManager.insertBlockedUser(blockedUser)
+        }
     }
 
-    fun getBlockedUser(userId: String): BlockedUsers? {
-        return DatabaseManager.getBlockedUser(userId)
+    suspend fun getBlockedUser(userId: String): BlockedUsers? {
+         return  DatabaseManager.getBlockedUser(userId)
     }
 
-    fun deleteBlockedUser(userId: String){
-        DatabaseManager.deleteBlockedUser(userId)
+    fun deleteBlockedUser(userId: String): Deferred<Unit> {
+        return CoroutineScope(Dispatchers.IO).async {
+            DatabaseManager.deleteBlockedUser(userId)
+        }
     }
 
-    fun getUserAttemps(userId: String): Int{
-        return DatabaseManager.getUserAttemps(userId)
+    fun getUserAttemps(userId: String): Deferred<Int> {
+        return CoroutineScope(Dispatchers.IO).async {
+            DatabaseManager.getUserAttemps(userId)
+        }
     }
 
-    fun updateAttempts(userId: String, attempts: Int){
+    fun updateAttempts(userId: String, attempts: Int): Deferred<Unit> {
+        return CoroutineScope(Dispatchers.IO).async {
             DatabaseManager.updateAttempts(userId, attempts)
+        }
     }
 
-    fun setBlocked(userId: String, blocked: Boolean){
+    fun setBlocked(userId: String, blocked: Boolean): Deferred<Unit> {
+        return CoroutineScope(Dispatchers.IO).async {
             DatabaseManager.setBlocked(userId, blocked)
+        }
     }
 
 }
