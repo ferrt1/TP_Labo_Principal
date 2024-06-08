@@ -1,8 +1,10 @@
 package com.example.cypher_vault.model.lockaccount
 
 import android.util.Log
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import com.example.cypher_vault.controller.data.DatabaseController
 import com.example.cypher_vault.controller.lockaccount.BlockUserController
 import com.example.cypher_vault.database.BlockedUsers
@@ -17,50 +19,31 @@ class BlockUserManager(private val userId: String){
 
     val db = DatabaseController()
     val maxAttempts = 3
-    var user: BlockedUsers? = null
+    private var user: BlockedUsers? = null
 
     suspend fun getBlockedUser(userId: String): BlockedUsers? {
         user = getBlockedUserAsync(userId).await()
         Log.d("lockAccount", "///////user: $user")
+        if (user == null) {
+            createBlockUser(userId)
+            user = getBlockedUserAsync(userId).await()  // Asegúrate de actualizar `user` después de crear
+        }
         return user
     }
 
-    fun getBlockedUserAsync(userId: String): Deferred<BlockedUsers?> {
+    private fun getBlockedUserAsync(userId: String): Deferred<BlockedUsers?> {
         return CoroutineScope(Dispatchers.IO).async {
             db.getBlockedUser(userId)
         }
     }
 
-    fun blockUser(userId: String): Deferred<Unit> {
-        val blockUserExists =  user
-        if (blockUserExists != null) {
-            return CoroutineScope(Dispatchers.IO).async {
-                db.setBlocked(userId, true)
-            }
-        }else{
-            return CoroutineScope(Dispatchers.IO).async {
-                val blockDate = 0.toLong()
-                val isBlocked = true
-                val blockedUser = BlockedUsers(block_date = blockDate, blocked_user = isBlocked, user_id = userId, attempts = 3)
-                db.insertBlockUser(blockedUser)
-            }
-        }
-    }
-
-    fun createBlockUser(userId: String): Any? {
+    suspend fun createBlockUser(userId: String) {
         Log.d("lockAccount", "///////createBlockUser")
         Log.d("lockAccount", "///////user: $user")
-        val blockUserExists =  user
-        if (user != null || user?.user_id == userId ) {
-            return null
-            }else{
-                return CoroutineScope(Dispatchers.IO).async {
-                    val blockDate = 0.toLong()
-                    val isBlocked = false
-                    val blockedUser = BlockedUsers(block_date = blockDate, blocked_user = isBlocked, user_id = userId, attempts = 0)
-                    db.insertBlockUser(blockedUser)
-                }
-        }
+        val blockDate = 0.toLong()
+        val isBlocked = false
+        val blockedUser = BlockedUsers(block_date = blockDate, blocked_user = isBlocked, user_id = userId, attempts = 0)
+        db.insertBlockUser(blockedUser).await()
     }
 
     fun getBlockDate(userId: String): String {
@@ -81,21 +64,22 @@ class BlockUserManager(private val userId: String){
     }
 
     fun getAttempt(userId: String): Int? {
-        var userAttemp : Int? = user?.attempts
-        return userAttemp
+        val userAttempt: Int? = user?.attempts
+        return userAttempt
     }
 
     fun setBlocked(userId: String) {
-       db.setBlocked(userId, true)
+        db.setBlocked(userId, true)
     }
 
-    fun setAttempts(userId: String, attempts: Int) {
-        Log.d("lockAccount", "///////setAttempts")
+    suspend fun updateAttempts(blockedUsers: BlockedUsers, attempts: Int) {
+        user = blockedUsers
+        val userId = user?.user_id
+        Log.d("lockAccount", "///////updateAttempts")
         Log.d("lockAccount", "///////attempts: $attempts")
-        Log.d("lockAccount", "///////user: $user")
-        if(user != null ){
-            db.updateAttempts(userId, attempts)
+        Log.d("lockAccount", "///////userId: $userId")
+        if (userId != null) {
+            db.updateAttempts(userId, attempts).await()
         }
     }
-
 }

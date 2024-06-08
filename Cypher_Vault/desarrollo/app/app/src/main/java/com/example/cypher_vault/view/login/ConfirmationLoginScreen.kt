@@ -874,18 +874,18 @@ fun ConfirmationLoginScreen(navController: NavController, userId: String, fromCa
                                         isAuthenticaed = true
                                         showConfirmationLoguin = true
                                     } else {
-                                        if(intentosTotales!=null){
-                                            intentosTotales = intentosTotales!! + 1
+                                        intentosTotales = intentosTotales!! + 1
+                                        Log.d("lockAccount", "////////IntentosTotales: $intentosTotales")
+                                        scope.launch {
+                                            blockedUser?.let { blockUserController.setAttempts(it, intentosTotales!!) }
+                                            Log.d("lockAccount", "///////updateAttempts completed")
+                                            Toast.makeText(
+                                                context,
+                                                "Error en la autenticacion",
+                                                Toast.LENGTH_SHORT
+                                            ).show()
+                                            navController.navigateToListLogin()
                                         }
-                                        Log.d("lockAccount","////////IntentosTotales: $intentosTotales")
-                                        blockUserController.setAttempts(userId, intentosTotales!!)
-                                        Toast.makeText(
-                                            context,
-                                            "Error en la autenticacion",
-                                            Toast.LENGTH_SHORT
-                                        )
-                                            .show()
-                                        navController.navigateToListLogin()
                                     }
                                 },
                                 shape = RoundedCornerShape(15.dp),
