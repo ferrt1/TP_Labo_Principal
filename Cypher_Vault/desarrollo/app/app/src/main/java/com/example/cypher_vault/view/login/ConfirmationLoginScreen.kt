@@ -124,6 +124,14 @@ fun ConfirmationLoginScreen(navController: NavController, userId: String) {
     val result = remember { mutableStateOf<Boolean?>(null) }
     val distance = remember { mutableStateOf<Float?>(null) }
     var showData by remember { mutableStateOf(false) }
+    LaunchedEffect(userId) {
+        authenticationController.authenticate(userId) { isSuccess, registerBitmap, loginBitmap, dist ->
+            result.value = isSuccess
+            imagePrintRegister.value = registerBitmap
+            imagePrintLogin.value = loginBitmap
+            distance.value = dist
+        }
+    }
 
     //Se agrega ingreso de usuario
     val userAccessManager = UserAccessManager()
@@ -145,15 +153,164 @@ fun ConfirmationLoginScreen(navController: NavController, userId: String) {
     LaunchedEffect(Unit) {
         isInternetAvailable = serviceController.isInternetAvailable()
     }
+    ////////////////////////////////////////////////////////////////////////////////////////////
+    ////// DATOS DE PRUEBA /////////////////////////////////////////////////////////////////////
+    ///////////////////////////////////////////////////////////////////////////////////////////
+    @Composable
+    fun datosParaPruebas(
+        distance: MutableState<Float?>,
+        imagePrintRegister: MutableState<Bitmap?>,
+        imagePrintLogin: MutableState<Bitmap?>
+    ): Boolean {
+        OutlinedButton(
+            onClick = { showImage = !showImage },
+            shape = RoundedCornerShape(15.dp),
+            border = BorderStroke(3.dp, firstColor),
+            colors = ButtonDefaults.buttonColors(
+                containerColor = Color.Transparent,
+                contentColor = thirdColor
+            ),
+            modifier = Modifier
+                .width(200.dp)
+                .padding(top = 16.dp)
+        ) {
+            Text(
+                if (showImage) "Ocultar imágenes" else "Ver imágenes",
+                fontFamily = fontFamily,
+                color = thirdColor,
+                fontWeight = FontWeight.Bold
+            )
+        }
+        if (showData && distance.value != null) {
+            Text(
+                "Distancia calculada: ${distance.value}",
+                fontFamily = fontFamily,
+                fontWeight = FontWeight.Bold,
+                color = thirdColor,
+                modifier = Modifier.padding(top = 16.dp)
+            )
+        }
+        if (showImage) {
+            ImageWithLandmarks(imagePrintRegister)
+            ImageWithLandmarks(imagePrintLogin)
+        }
+        return showData
+    }
 
-    LaunchedEffect(userId) {
-        authenticationController.authenticate(userId) { isSuccess, registerBitmap, loginBitmap, dist ->
-            result.value = isSuccess
-            imagePrintRegister.value = registerBitmap
-            imagePrintLogin.value = loginBitmap
-            distance.value = dist
+    /////////////////////////////////////////////////////////////////////////////////////////////////////
+    //// Pantalla de confirmacion de logueo //////////////////////////////////////////////////////////////////////////
+    //////////////////////////////////////////////////////////////////////////////////////////////////////////
+    @Composable
+    fun pantallaDeConfirmacion(
+        userId: String,
+        userAccessController: UserAccessController,
+        navController: NavController
+    ) {
+        var insertarIngreso by remember { mutableStateOf(false) }
+        Image(
+            painter = painterResource(id = R.drawable.successful),
+            contentDescription = "Bienvenido!",
+            modifier = Modifier.size(128.dp)
+        )
+        Text(
+            "¡Bienvenido!",
+            fontSize = 20.sp,
+            fontFamily = fontFamily,
+            color = thirdColor,
+            fontWeight = FontWeight.ExtraBold,
+            modifier = Modifier.padding(top = 16.dp)
+        )
+        OutlinedButton(
+            onClick = {
+                insertarIngreso = true
+                navController.navigateToGallery(userId)
+            },
+            shape = RoundedCornerShape(15.dp),
+            border = BorderStroke(3.dp, firstColor),
+            colors = ButtonDefaults.buttonColors(
+                containerColor = Color.Transparent,
+                contentColor = thirdColor
+            ),
+            modifier = Modifier
+                .width(200.dp)
+                .padding(top = 30.dp)
+        ) {
+            Text(
+                "Ir a la galería",
+                fontFamily = fontFamily,
+                color = thirdColor,
+                fontWeight = FontWeight.Bold
+            )
+        }
+        OutlinedButton(
+            onClick = { showData = !showData },
+            shape = RoundedCornerShape(15.dp),
+            border = BorderStroke(3.dp, firstColor),
+            colors = ButtonDefaults.buttonColors(
+                containerColor = Color.Transparent,
+                contentColor = thirdColor
+            ),
+            modifier = Modifier
+                .width(200.dp)
+                .padding(top = 16.dp)
+        ) {
+            Text(
+                if (showData) "Ocultar datos" else "Ver datos",
+                fontFamily = fontFamily,
+                color = thirdColor,
+                fontWeight = FontWeight.Bold
+            )
+        }
+        if (insertarIngreso) {
+            LaunchedEffect(userId) {
+                userAccessController.insertUserIncome(userId)
+                insertarIngreso = false // Close dialog or reset state after execution
+            }
         }
     }
+
+    ///////////////////////////////////////////////////////////////////////////////////////
+    ///// Pantalla de acceso denegado ////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////////////////
+    @Composable
+    fun pantallaAccesoDenegado(
+        distance: MutableState<Float?>,
+        navController: NavController
+    ) {
+        Image(
+            painter = painterResource(id = R.drawable.failure),
+            contentDescription = "No son la misma persona",
+            modifier = Modifier.size(128.dp)
+        )
+        Text(
+            "Acceso denegado.",
+            fontSize = 20.sp,
+            fontFamily = fontFamily,
+            color = Color.Red,
+            fontWeight = FontWeight.ExtraBold,
+            modifier = Modifier.padding(top = 16.dp)
+        )
+        OutlinedButton(
+            onClick = { showData = !showData },
+            shape = RoundedCornerShape(15.dp),
+            border = BorderStroke(3.dp, firstColor),
+            colors = ButtonDefaults.buttonColors(
+                containerColor = Color.Transparent,
+                contentColor = thirdColor
+            ),
+            modifier = Modifier
+                .width(200.dp)
+                .padding(top = 16.dp)
+        ) {
+            Text(
+                if (showData) "Ocultar datos" else "Ver datos",
+                fontFamily = fontFamily,
+                color = thirdColor,
+                fontWeight = FontWeight.Bold
+            )
+        }
+    }
+
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     //// SE INSERTA ESO ACA POR EL SCOPE DE VARIABLES //////////////////////////////////////////////////////////////
     /// TARJETA DE LA 2DA AUTHENTICACION PARTE DEL MAIL ////////////////////////////////////////////////////////////////
@@ -946,7 +1103,11 @@ fun ConfirmationLoginScreen(navController: NavController, userId: String) {
                                 isAuthenticaed = true
                                 showConfirmationLoguin = true
                             } else {
-                                Toast.makeText(context, "Error en la autenticacion", Toast.LENGTH_SHORT)
+                                Toast.makeText(
+                                    context,
+                                    "Error en la autenticacion",
+                                    Toast.LENGTH_SHORT
+                                )
                                     .show()
                                 navController.navigateToListLogin()
                             }
@@ -987,13 +1148,13 @@ fun ConfirmationLoginScreen(navController: NavController, userId: String) {
     ) {
         //Elementos de la 2da Authentificacion//////////////////////////////////////////
         ///////////////////////////////////////////////////////////////////////////////
-        if (imagePrintLogin.value == null) {
+        if (imagePrintLogin.value == null && imagePrintRegister.value == null) {
+            Log.d("ConfirmationLoginScreen", "resul.value = $result")
             Log.d("ConfirmationLoginScreen", "imagePrintLogin.value == null")
             if (isSecondAuth == true) {
                 Log.d("ConfirmationLoginScreen", "isSecondAuth == true")
                 /// SIN IMAGENES Y CON SEGUNDA ACTIVADA ////////////////////////
-                if(!isAuthenticaed){
-                    showConfirmationLoguin = false
+                if (!isAuthenticaed) {
                     if (isInternetAvailable) {
                         ElevatedCardMailConfirmation(
                             context,
@@ -1021,6 +1182,7 @@ fun ConfirmationLoginScreen(navController: NavController, userId: String) {
                 showConfirmationLoguin = true
             }
         } else {
+            Log.d("ConfirmationLoginScreen", "resul.value = $result")
             Log.d("ConfirmationLoginScreen", "imagePrintLogin.value != null")
             /// CON IMAGENES Y CON SEGUNDA ACTIVADA ////////////////////////
             if (isSecondAuth == true) {
@@ -1033,9 +1195,9 @@ fun ConfirmationLoginScreen(navController: NavController, userId: String) {
                             fontWeight = FontWeight.Bold,
                         )
                     }
+
                     true -> {
-                        if(!isAuthenticaed) {
-                            showConfirmationLoguin = false
+                        if (!isAuthenticaed) {
                             if (isInternetAvailable) {
                                 ElevatedCardMailConfirmation(
                                     context,
@@ -1057,7 +1219,9 @@ fun ConfirmationLoginScreen(navController: NavController, userId: String) {
                             }
                         }
                     }
+
                     false -> {
+                        showConfirmationLoguin = false
                         showDenyAccess = true
                     }
                 }
@@ -1074,16 +1238,14 @@ fun ConfirmationLoginScreen(navController: NavController, userId: String) {
                     }
 
                     true -> {
+                        showDenyAccess = false
                         showConfirmationLoguin = true
                     }
 
                     false -> {
+                        showConfirmationLoguin = false
                         showDenyAccess = true
                     }
-                }
-                ////// Mostrar o ocultar datos //////////////////////////////////////////////////////////////////////////
-                if (hayImagen(result)) {
-                    showData = datosParaPruebas(showImage, showData, distance, imagePrintRegister, imagePrintLogin)
                 }
             }
         }
@@ -1093,7 +1255,11 @@ fun ConfirmationLoginScreen(navController: NavController, userId: String) {
         }
         /// Pantalla de denegacion de acceso //////////////////////////////////////////////////////////////////////////
         if (showDenyAccess) {
-            pantallaAccesoDenegado(showData, distance, navController)
+            pantallaAccesoDenegado(distance, navController)
+        }
+        ////// Mostrar o ocultar datos //////////////////////////////////////////////////////////////////////////
+        if (showData) {
+            datosParaPruebas(distance, imagePrintRegister, imagePrintLogin)
         }
         //Boton vuelta al logueo //////////////////////////////////////////////////////////////////////////
         Spacer(modifier = Modifier.weight(1f)) // Push the button to the bottom
@@ -1121,191 +1287,6 @@ fun ConfirmationLoginScreen(navController: NavController, userId: String) {
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-////// DATOS DE PRUEBA /////////////////////////////////
-@Composable
-private fun datosParaPruebas(
-    showImage: Boolean,
-    showData: Boolean,
-    distance: MutableState<Float?>,
-    imagePrintRegister: MutableState<Bitmap?>,
-    imagePrintLogin: MutableState<Bitmap?>
-): Boolean {
-    var showImage1 = showImage
-    var showData1 = showData
-    OutlinedButton(
-        onClick = { showImage1 = !showImage1 },
-        shape = RoundedCornerShape(15.dp),
-        border = BorderStroke(3.dp, firstColor),
-        colors = ButtonDefaults.buttonColors(
-            containerColor = Color.Transparent,
-            contentColor = thirdColor
-        ),
-        modifier = Modifier
-            .width(200.dp)
-            .padding(top = 16.dp)
-    ) {
-        Text(
-            if (showImage1) "Ocultar imágenes" else "Ver imágenes",
-            fontFamily = fontFamily,
-            color = thirdColor,
-            fontWeight = FontWeight.Bold
-        )
-    }
-    OutlinedButton(
-        onClick = { showData1 = !showData1 },
-        shape = RoundedCornerShape(15.dp),
-        border = BorderStroke(3.dp, firstColor),
-        colors = ButtonDefaults.buttonColors(
-            containerColor = Color.Transparent,
-            contentColor = thirdColor
-        ),
-        modifier = Modifier
-            .width(200.dp)
-            .padding(top = 16.dp)
-    ) {
-        Text(
-            if (showData1) "Ocultar datos" else "Ver datos",
-            fontFamily = fontFamily,
-            color = thirdColor,
-            fontWeight = FontWeight.Bold
-        )
-    }
-    if (showData1 && distance.value != null) {
-        Text(
-            "Distancia calculada: ${distance.value}",
-            fontFamily = fontFamily,
-            fontWeight = FontWeight.Bold,
-            color = thirdColor,
-            modifier = Modifier.padding(top = 16.dp)
-        )
-    }
-    if (showImage1) {
-        ImageWithLandmarks(imagePrintRegister)
-        ImageWithLandmarks(imagePrintLogin)
-    }
-    return showData1
-}
-
-///// Pantalla de acceso denegado ///////////////////////////////////////
-@Composable
-private fun pantallaAccesoDenegado(
-    showData: Boolean,
-    distance: MutableState<Float?>,
-    navController: NavController
-) {
-    var showData1 = showData
-    Image(
-        painter = painterResource(id = R.drawable.failure),
-        contentDescription = "No son la misma persona",
-        modifier = Modifier.size(128.dp)
-    )
-    Text(
-        "Acceso denegado.",
-        fontSize = 20.sp,
-        fontFamily = fontFamily,
-        color = Color.Red,
-        fontWeight = FontWeight.ExtraBold,
-        modifier = Modifier.padding(top = 16.dp)
-    )
-    OutlinedButton(
-        onClick = { showData1 = !showData1 },
-        shape = RoundedCornerShape(15.dp),
-        border = BorderStroke(3.dp, firstColor),
-        colors = ButtonDefaults.buttonColors(
-            containerColor = Color.Transparent,
-            contentColor = thirdColor
-        ),
-        modifier = Modifier
-            .width(200.dp)
-            .padding(top = 16.dp)
-    ) {
-        Text(
-            if (showData1) "Ocultar datos" else "Ver datos",
-            fontFamily = fontFamily,
-            color = thirdColor,
-            fontWeight = FontWeight.Bold
-        )
-    }
-    if (showData1 && distance.value != null) {
-        Text(
-            "Distancia calculada: ${distance.value}",
-            fontFamily = fontFamily,
-            fontWeight = FontWeight.Bold,
-            color = thirdColor,
-            modifier = Modifier.padding(top = 16.dp)
-        )
-    }
-    OutlinedButton(
-        onClick = { navController.navigateToListLogin() },
-        shape = RoundedCornerShape(15.dp),
-        border = BorderStroke(3.dp, firstColor),
-        colors = ButtonDefaults.buttonColors(
-            containerColor = Color.Transparent,
-            contentColor = thirdColor
-        ),
-        modifier = Modifier
-            .width(200.dp)
-            .padding(top = 30.dp)
-    ) {
-        Text(
-            "Iniciar sesión",
-            fontFamily = fontFamily,
-            color = thirdColor,
-            fontWeight = FontWeight.Bold
-        )
-    }
-}
-
-//// Pantalla de confirmacion de logueo //////////////////////////////////////////////////////////////////////////
-@Composable
-private fun pantallaDeConfirmacion(
-    userId: String,
-    userAccessController: UserAccessController,
-    navController: NavController
-) {
-    var insertarIngreso by remember { mutableStateOf(false) }
-    Image(
-        painter = painterResource(id = R.drawable.successful),
-        contentDescription = "Bienvenido!",
-        modifier = Modifier.size(128.dp)
-    )
-    Text(
-        "¡Bienvenido!",
-        fontSize = 20.sp,
-        fontFamily = fontFamily,
-        color = thirdColor,
-        fontWeight = FontWeight.ExtraBold,
-        modifier = Modifier.padding(top = 16.dp)
-    )
-    OutlinedButton(
-        onClick = {
-            insertarIngreso = true
-            navController.navigateToGallery(userId)
-                  },
-        shape = RoundedCornerShape(15.dp),
-        border = BorderStroke(3.dp, firstColor),
-        colors = ButtonDefaults.buttonColors(
-            containerColor = Color.Transparent,
-            contentColor = thirdColor
-        ),
-        modifier = Modifier
-            .width(200.dp)
-            .padding(top = 30.dp)
-    ) {
-        Text(
-            "Ir a la galería",
-            fontFamily = fontFamily,
-            color = thirdColor,
-            fontWeight = FontWeight.Bold
-        )
-    }
-    if (insertarIngreso) {
-        LaunchedEffect(userId) {
-            userAccessController.insertUserIncome(userId)
-            insertarIngreso = false // Close dialog or reset state after execution
-        }
-    }
-}
 
 @Composable
 private fun hayImagen(result: MutableState<Boolean?>) =
