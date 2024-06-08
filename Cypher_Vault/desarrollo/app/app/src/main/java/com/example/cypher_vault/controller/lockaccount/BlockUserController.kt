@@ -19,15 +19,15 @@ class BlockUserController(private val blockUserManager : BlockUserManager) {
         blockUserManager.deleteBlockUser(userId)
     }
 
-    fun getAttempt(userId: String): Int? {
-        runBlocking {
-            withContext(Dispatchers.IO) {
-                val attempts = blockUserManager.getAttempt(userId)
-                return@withContext attempts
-            }
-        }
-        return null
-    }
+//    fun getAttempt(userId: String): Int? {
+//        runBlocking {
+//            withContext(Dispatchers.IO) {
+//                val attempts = blockUserManager.getAttempt(userId)
+//                return@withContext attempts
+//            }
+//        }
+//        return null
+//    }
 
     fun setAttempts(userId: String, attempt: Int) {
         blockUserManager.setAttempts(userId, attempt)

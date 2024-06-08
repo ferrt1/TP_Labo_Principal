@@ -161,12 +161,12 @@ fun ConfirmationLoginScreen(navController: NavController, userId: String, fromCa
         isInternetAvailable = serviceController.isInternetAvailable()
     }
 
-    //Variables para el bloqueo de usuario
-    var intentosTotales : Int? = remember { blockUserController.getAttempt(userId) }
-
-    fun comprobarIntentos() {
-        intentosTotales = blockUserController.getAttempt(userId)
-    }
+//    //Variables para el bloqueo de usuario
+//    var intentosTotales : Int? = remember { blockUserController.getAttempt(userId) }
+//
+//    fun comprobarIntentos() {
+//        intentosTotales = blockUserController.getAttempt(userId)
+//    }
 
     ////////////////////////////////////////////////////////////////////////////////////////////
     ////// DATOS DE PRUEBA /////////////////////////////////////////////////////////////////////
@@ -837,22 +837,22 @@ fun ConfirmationLoginScreen(navController: NavController, userId: String, fromCa
                                 )
                             }
                         }
-                        Row(
-                            horizontalArrangement = Arrangement.Absolute.Center
-                        ) {
-                            Spacer(modifier = Modifier.width(4.dp))
-                            if(intentosTotales==null){
-                                Log.d("lockAccount","////////Obteniendo IntentosTotales: $intentosTotales")
-                                comprobarIntentos()
-                            }
-                            Text(
-                                text = "Intento $intentosTotales de 3",
-                                color = firstColor,
-                                style = textStyleTittle2,
-                                onTextLayout = { /* No se necesita hacer nada aquí */ },
-                                modifier = Modifier.padding(horizontal = 16.dp)
-                            )
-                        }
+//                        Row(
+//                            horizontalArrangement = Arrangement.Absolute.Center
+//                        ) {
+//                            Spacer(modifier = Modifier.width(4.dp))
+//                            if(intentosTotales==null){
+//                                Log.d("lockAccount","////////Obteniendo IntentosTotales: $intentosTotales")
+//                                comprobarIntentos()
+//                            }
+//                            Text(
+//                                text = "Intento $intentosTotales de 3",
+//                                color = firstColor,
+//                                style = textStyleTittle2,
+//                                onTextLayout = { /* No se necesita hacer nada aquí */ },
+//                                modifier = Modifier.padding(horizontal = 16.dp)
+//                            )
+//                        }
                         Row(
                             horizontalArrangement = Arrangement.Absolute.Center
                         ) {
@@ -871,11 +871,11 @@ fun ConfirmationLoginScreen(navController: NavController, userId: String, fromCa
                                         isAuthenticaed = true
                                         showConfirmationLoguin = true
                                     } else {
-                                        if(intentosTotales!=null){
-                                            intentosTotales = intentosTotales!! + 1
-                                        }
-                                        Log.d("lockAccount","////////IntentosTotales: $intentosTotales")
-                                        blockUserController.setAttempts(userId, intentosTotales!!)
+//                                        if(intentosTotales!=null){
+//                                            intentosTotales = intentosTotales!! + 1
+//                                        }
+//                                        Log.d("lockAccount","////////IntentosTotales: $intentosTotales")
+//                                        blockUserController.setAttempts(userId, intentosTotales!!)
                                         Toast.makeText(
                                             context,
                                             "Error en la autenticacion",

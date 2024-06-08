@@ -72,12 +72,12 @@ class BlockUserManager {
     }
 
     var user: BlockedUsers? = null
-    fun getAttempt(userId: String): Int? {
-        userAttemp =
-            if userAttemp == null {
-
-            }
-    }
+//    fun getAttempt(userId: String): Int? {
+//        userAttemp =
+//            if userAttemp == null {
+//
+//            }
+//    }
 
     fun setBlocked(userId: String) {
        db.setBlocked(userId, true)
