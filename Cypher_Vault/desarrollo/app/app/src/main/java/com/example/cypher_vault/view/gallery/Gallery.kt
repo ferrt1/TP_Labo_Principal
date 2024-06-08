@@ -193,6 +193,7 @@ val textStyleTittle2 = TextStyle(
 fun Gallery(navController: NavController, userId: String, galleryController: GalleryController) {
 
    //-----"CODIGO PARA QUE SE VEA EN NEGRO LA GALERIA SI QUIERE SACAR FOTOCAPTURA-----//
+    /*
     val block = LocalContext.current
     // Usar DisposableEffect para configurar y limpiar la bandera FLAG_SECURE
     DisposableEffect(Unit) {
@@ -207,6 +208,7 @@ fun Gallery(navController: NavController, userId: String, galleryController: Gal
             activity?.window?.clearFlags(WindowManager.LayoutParams.FLAG_SECURE)
         }
     }
+    */
     //----------------------------------------------------------------------------------//
     var dbc = DatabaseController()
 
