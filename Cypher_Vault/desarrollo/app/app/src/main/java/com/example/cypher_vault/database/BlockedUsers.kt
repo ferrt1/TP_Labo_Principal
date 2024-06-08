@@ -16,6 +16,7 @@ import androidx.room.PrimaryKey
 
 data class BlockedUsers (
     @PrimaryKey(autoGenerate = true) val id: Long = 0,
+    var attempts: Int?,
     val block_date: Long?, // Fecha de pago
     val blocked_user: Boolean?,
     val user_id: String

@@ -160,4 +160,16 @@ class DatabaseController(){
         DatabaseManager.deleteBlockedUser(userId)
     }
 
+    fun getUserAttemps(userId: String): Int{
+        return DatabaseManager.getUserAttemps(userId)
+    }
+
+    fun updateAttempts(userId: String, attempts: Int){
+            DatabaseManager.updateAttempts(userId, attempts)
+    }
+
+    fun setBlocked(userId: String, blocked: Boolean){
+            DatabaseManager.setBlocked(userId, blocked)
+    }
+
 }

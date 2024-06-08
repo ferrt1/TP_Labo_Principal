@@ -69,10 +69,12 @@ import com.example.cypher_vault.controller.authentication.AuthenticationControll
 import com.example.cypher_vault.controller.authentication.SecondAuthController
 import com.example.cypher_vault.controller.data.DatabaseController
 import com.example.cypher_vault.controller.income.UserAccessController
+import com.example.cypher_vault.controller.lockaccount.BlockUserController
 import com.example.cypher_vault.controller.navigation.NavController
 import com.example.cypher_vault.controller.service.ServiceController
 import com.example.cypher_vault.model.authentication.SecondAuthManager
 import com.example.cypher_vault.model.income.UserAccessManager
+import com.example.cypher_vault.model.lockaccount.BlockUserManager
 import com.example.cypher_vault.model.service.ServiceManager
 import com.example.cypher_vault.view.gallery.firstColor
 import com.example.cypher_vault.view.gallery.textStyleTittle2
@@ -114,6 +116,10 @@ fun ConfirmationLoginScreen(navController: NavController, userId: String, fromCa
     var dbc = DatabaseController()
     var secondAuthManager = SecondAuthManager()
     var secondAuthController = SecondAuthController(secondAuthManager)
+    var blockUserManager = BlockUserManager()
+    var blockUserController = BlockUserController(blockUserManager)
+
+    //Variables de paneles principales
     var showImage by remember { mutableStateOf(false) }
     var showConfirmationLoguin by remember { mutableStateOf(false) }
     var showDenyAccess by remember { mutableStateOf(false) }
@@ -153,6 +159,13 @@ fun ConfirmationLoginScreen(navController: NavController, userId: String, fromCa
     var isInternetAvailable by remember { mutableStateOf(false) }
     LaunchedEffect(Unit) {
         isInternetAvailable = serviceController.isInternetAvailable()
+    }
+
+    //Variables para el bloqueo de usuario
+    var intentosTotales : Int? = remember { blockUserController.getAttempt(userId) }
+
+    fun comprobarIntentos() {
+        intentosTotales = blockUserController.getAttempt(userId)
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////
@@ -827,8 +840,25 @@ fun ConfirmationLoginScreen(navController: NavController, userId: String, fromCa
                         Row(
                             horizontalArrangement = Arrangement.Absolute.Center
                         ) {
+                            Spacer(modifier = Modifier.width(4.dp))
+                            if(intentosTotales==null){
+                                Log.d("lockAccount","////////Obteniendo IntentosTotales: $intentosTotales")
+                                comprobarIntentos()
+                            }
+                            Text(
+                                text = "Intento $intentosTotales de 3",
+                                color = firstColor,
+                                style = textStyleTittle2,
+                                onTextLayout = { /* No se necesita hacer nada aquí */ },
+                                modifier = Modifier.padding(horizontal = 16.dp)
+                            )
+                        }
+                        Row(
+                            horizontalArrangement = Arrangement.Absolute.Center
+                        ) {
                             OutlinedButton(
                                 onClick = {
+
                                     if (comprobarCodigo(
                                             mailCode,
                                             primerValorCodigo.value.text,
@@ -841,6 +871,11 @@ fun ConfirmationLoginScreen(navController: NavController, userId: String, fromCa
                                         isAuthenticaed = true
                                         showConfirmationLoguin = true
                                     } else {
+                                        if(intentosTotales!=null){
+                                            intentosTotales = intentosTotales!! + 1
+                                        }
+                                        Log.d("lockAccount","////////IntentosTotales: $intentosTotales")
+                                        blockUserController.setAttempts(userId, intentosTotales!!)
                                         Toast.makeText(
                                             context,
                                             "Error en la autenticacion",
@@ -1103,9 +1138,10 @@ fun ConfirmationLoginScreen(navController: NavController, userId: String, fromCa
                                 isAuthenticaed = true
                                 showConfirmationLoguin = true
                             } else {
+                                blockUserController.blockUser(userId)
                                 Toast.makeText(
                                     context,
-                                    "Error en la autenticacion",
+                                    "Error en la autenticacion, cuenta bloqueada.",
                                     Toast.LENGTH_SHORT
                                 )
                                     .show()

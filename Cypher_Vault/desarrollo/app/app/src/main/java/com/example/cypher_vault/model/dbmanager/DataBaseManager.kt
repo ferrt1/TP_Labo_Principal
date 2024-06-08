@@ -225,4 +225,28 @@ object DatabaseManager {
             }
         }
     }
+
+    fun getUserAttemps(userId: String) : Int {
+        return runBlocking {
+            withContext(Dispatchers.IO) {
+                database.blockedUsersDao().getUserAttempts(userId)!!
+            }
+        }
+    }
+
+    fun updateAttempts(userId: String, attempts: Int) {
+        runBlocking {
+            withContext(Dispatchers.IO) {
+                database.blockedUsersDao().updateUserAttempts(userId, attempts)
+            }
+        }
+    }
+
+    fun setBlocked(userId: String, blocked: Boolean) {
+        runBlocking {
+            withContext(Dispatchers.IO) {
+            database.blockedUsersDao().setBlocked(userId, blocked)
+            }
+        }
+    }
 }
