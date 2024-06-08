@@ -49,7 +49,9 @@ fun LoginCamera(navController: NavController, userId: String) {
         .requireLensFacing(CameraSelector.LENS_FACING_FRONT)
         .build()
 
-    val cameraController = CameraController(userId, databaseController)
+    val isAnalyzing = remember { mutableStateOf(false) }
+
+    val cameraController = CameraController(userId, databaseController){ isAnalyzing.value = true }
 
     val cameraProvider = cameraProviderFuture.get()
     val preview = Preview.Builder().build()
@@ -76,7 +78,6 @@ fun LoginCamera(navController: NavController, userId: String) {
     val eyesOpens = remember { mutableIntStateOf(3) }
 
     val eyesOpenedAfterBlink = remember { mutableStateOf(false) }
-    val isLoading = remember { mutableStateOf(false) }
 
     imageAnalysis.setAnalyzer(ContextCompat.getMainExecutor(context)) { imageProxy ->
         val mediaImage = imageProxy.image
@@ -185,7 +186,7 @@ fun LoginCamera(navController: NavController, userId: String) {
                                             coroutineScope,
                                             navController,
                                             true,
-                                            isLoading
+
                                         )
                                         timer.intValue = 3
                                         timerStarted.value = false
@@ -222,13 +223,18 @@ fun LoginCamera(navController: NavController, userId: String) {
         modifier = Modifier.fillMaxSize(),
         contentAlignment = Alignment.BottomCenter
     ) {
-        if (isCameraOpen.value) {
+        if (isCameraOpen.value && !isAnalyzing.value) {
             CameraPreview(preview)
             AndroidView({ faceOverlayView })
-
             LaunchedEffect(currentOrientation.value, timer.intValue, eyesOpens.intValue) {
-                faceOverlayView.updateState(currentOrientation.value, timer.intValue, eyesOpens.intValue)
+                faceOverlayView.updateState(
+                    currentOrientation.value,
+                    timer.intValue,
+                    eyesOpens.intValue
+                )
             }
+        } else if (isAnalyzing.value) {
+            AnalyzingScreen()
         }
     }
 }

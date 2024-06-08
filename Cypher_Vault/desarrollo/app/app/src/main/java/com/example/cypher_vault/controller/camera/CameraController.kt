@@ -31,7 +31,8 @@ import com.google.mlkit.vision.face.FaceDetectorOptions
 
 class CameraController(
     private val userId: String,
-    private val databaseController: DatabaseController
+    private val databaseController: DatabaseController,
+    private val onStartAnalyzing: () -> Unit
 ) {
 
     fun startTimer(
@@ -66,12 +67,10 @@ class CameraController(
         coroutineScope: CoroutineScope,
         navController: NavController,
         isRegister: Boolean,
-        isLoading: MutableState<Boolean>
     ) {
         Log.d("Imagen", "entra aca")
         try {
-            isLoading.value = true
-
+            onStartAnalyzing()
             val tempFile = File.createTempFile("tempImage", ".jpg", context.cacheDir)
             val outputFileOptions = ImageCapture.OutputFileOptions.Builder(tempFile).build()
             imageCapture.takePicture(
@@ -107,8 +106,8 @@ class CameraController(
                                         val boundingBox = face.boundingBox
 
                                         // Reducir el tamaño del bounding box para que sea solo la cara
-                                        val reductionAmountX = 220
-                                        val reductionAmountY = 180
+                                        val reductionAmountX = 230
+                                        val reductionAmountY = 230
                                         val adjustedBoundingBox = Rect(
                                             boundingBox.left + reductionAmountX,
                                             boundingBox.top + reductionAmountY,
@@ -170,7 +169,6 @@ class CameraController(
                                             state.value = false
                                             tempFile.delete()
                                             cameraProvider.unbindAll()
-                                            isLoading.value = false
                                             if (isRegister) {
                                                 navController.navigateToConfirmationLogin(userId,true)
                                             } else {
@@ -179,20 +177,17 @@ class CameraController(
                                         }
                                     } else {
                                         Log.e("Imagen", "No se detectaron caras")
-                                        isLoading.value = false
                                         if (!isRegister)
                                             navController.navigateToConfirmation(userId, false, "No se detectaron caras")
                                     }
                                 }
                                 .addOnFailureListener { e ->
                                     Log.e("Imagen", "Error al procesar la imagen", e)
-                                    isLoading.value = false
                                     if (!isRegister)
                                         navController.navigateToConfirmation(userId, false, "Error al procesar la imagen")
                                 }
                         } catch (e: Exception) {
                             Log.e("Imagen", "Error al procesar la imagen", e)
-                            isLoading.value = false
                             if (!isRegister)
                                 navController.navigateToConfirmation(userId, false, "Error al procesar la imagen")
                         }
@@ -200,14 +195,12 @@ class CameraController(
 
                     override fun onError(exception: ImageCaptureException) {
                         Log.e("Imagen", "Error al capturar la imagen", exception)
-                        isLoading.value = false
                         if (!isRegister)
                             navController.navigateToConfirmation(userId, false, "Error al capturar la imagen")
                     }
                 })
         } catch (e: Exception) {
             Log.e("Imagen", "Error al iniciar la captura de imagen", e)
-            isLoading.value = false
             if (!isRegister)
                 navController.navigateToConfirmation(userId, false, "Error al iniciar la captura de imagen")
         }
