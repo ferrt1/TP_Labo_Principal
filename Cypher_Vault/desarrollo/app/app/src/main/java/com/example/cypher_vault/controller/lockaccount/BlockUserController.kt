@@ -12,8 +12,8 @@ import kotlinx.coroutines.withContext
 
 class BlockUserController(private val blockUserManager : BlockUserManager) {
 
-    fun blockUser(userId: String) {
-        //blockUserManager.blockUser(userId)
+    suspend fun blockUser(userId: String) {
+        blockUserManager.setBlocked(userId)
     }
 
     suspend fun getBlockedUser(userId: String): BlockedUsers? {

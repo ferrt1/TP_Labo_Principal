@@ -256,7 +256,7 @@ fun NavigationLogin(navController: NavController) {
                                     var tiempoRestanteDeBloqueo : Int = calcularTiempoRestante(blockedUser)
                                     Toast.makeText(
                                         context,
-                                        "Bloqueo de cuenta, quedan $tiempoRestanteDeBloqueo minutos",
+                                        "Tienes bloqueada la cuenta, quedan $tiempoRestanteDeBloqueo minutos.",
                                         Toast.LENGTH_SHORT
                                     ).show()
 

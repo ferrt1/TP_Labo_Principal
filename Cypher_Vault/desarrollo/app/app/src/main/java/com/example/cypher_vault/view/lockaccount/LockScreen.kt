@@ -9,7 +9,10 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.Wifi
@@ -38,7 +41,9 @@ import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.TextFieldValue
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.cypher_vault.R
@@ -62,7 +67,7 @@ import com.example.cypher_vault.view.login.wingWhite
 import com.example.cypher_vault.view.resources.fontFamily
 import com.example.cypher_vault.view.resources.thirdColor
 import kotlinx.coroutines.launch
-
+import kotlin.text.filter
 
 private var databaseController = DatabaseController()
 private val firstColor = Color(0xFF02a6c3)
@@ -138,6 +143,7 @@ fun LockScreen(navController: NavController, userId: String) {
             tercerValorCodigo.value = TextFieldValue("")
             cuartoValorCodigo.value = TextFieldValue("")
             quintoValorCodigo.value = TextFieldValue("")
+
         } else {
             if (value.length > 1) {
                 textFieldValues[index].value = TextFieldValue(value[0].toString())
@@ -174,9 +180,9 @@ fun LockScreen(navController: NavController, userId: String) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(16.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
+                .padding(20.dp)
+                .verticalScroll(rememberScrollState()),
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
             //Pantallita de recepcion
             //////////////// CON CONEXION A INTERNET //////////////////////////////////////////////////////////////////
@@ -264,6 +270,22 @@ fun LockScreen(navController: NavController, userId: String) {
                     )
                 }
                 //// Mensaje cuando hay conexion a internet //////////////////////////////////////////////////////////////////
+                Row(
+                    horizontalArrangement = Arrangement.Absolute.Center
+                ) {
+                    Spacer(modifier = Modifier.width(4.dp))
+                    Text(
+                        text = "En este momento tu cuenta se encuentra bloqueda," +
+                                "para desbloquearla ingresa el codigo que enviamos a tu mail." +
+                                " Ten en cuenta que si su ingreso es erroneo se bloquea la cuenta por 30min." +
+                                "Recuerda que puedes usar el boton de limpiar campos para volver a escribirlo." ,
+                        color = com.example.cypher_vault.view.gallery.firstColor,
+                        style = textStyleTittle2,
+                        textAlign = TextAlign.Center,
+                        onTextLayout = { /* No se necesita hacer nada aquí */ },
+                        modifier = Modifier.padding(horizontal = 12.dp)
+                    )
+                }
                 Spacer(modifier = Modifier.height(10.dp))
                 //// Formularios ingreso de codigo ////////////////////////////
                 Row(

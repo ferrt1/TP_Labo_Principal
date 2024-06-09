@@ -21,6 +21,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Lock
@@ -62,6 +63,7 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -1138,6 +1140,19 @@ fun ConfirmationLoginScreen(navController: NavController, userId: String, fromCa
                         }
                     )
                 }
+                /////// TEXTO DE INTENTOS ////////
+                Row(
+                    horizontalArrangement = Arrangement.Absolute.Center
+                ) {
+                    Spacer(modifier = Modifier.width(4.dp))
+                    Text(
+                        text = "Intento 1 de 1",
+                        color = firstColor,
+                        style = textStyleTittle2,
+                        onTextLayout = { /* No se necesita hacer nada aquí */ },
+                        modifier = Modifier.padding(horizontal = 16.dp)
+                    )
+                }
                 ///// Boton de comprobacion //////////////////////////////////////////////////////////////////
                 Spacer(modifier = Modifier.height(8.dp))
                 Row {
@@ -1147,14 +1162,18 @@ fun ConfirmationLoginScreen(navController: NavController, userId: String, fromCa
                                 isAuthenticaed = true
                                 showConfirmationLoguin = true
                             } else {
-                                blockUserController.blockUser(userId)
-                                Toast.makeText(
-                                    context,
-                                    "Error en la autenticacion, cuenta bloqueada.",
-                                    Toast.LENGTH_SHORT
-                                )
-                                    .show()
-                                navController.navigateToListLogin()
+                                Log.d("lockAccount", "////////Cuenta bloqueada")
+                                scope.launch {
+                                    blockUserController.blockUser(userId)
+                                    Log.d("lockAccount", "///////Cuenta bloqueada completed")
+                                    Toast.makeText(
+                                        context,
+                                        "Error en la autenticacion, cuenta bloqueada.",
+                                        Toast.LENGTH_SHORT
+                                    )
+                                        .show()
+                                    navController.navigateToListLogin()
+                                }
                             }
                         },
                         shape = RoundedCornerShape(15.dp),
