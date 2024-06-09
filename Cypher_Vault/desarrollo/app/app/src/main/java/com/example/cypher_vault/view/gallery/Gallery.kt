@@ -51,6 +51,7 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowBackIosNew
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.Share
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.AlertDialog
@@ -111,6 +112,7 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -171,10 +173,7 @@ val premiumButtonColor = Color(0xFF64C4F1)
 val premiumButtonTextColor = Color(0xFF000000)
 val mainBackgroundColor = Color(0xFFdcdcdc)
 val wingWhite = Color(0xFFdcdcdc)
-val fontFamily = FontFamily(
-    Font(R.font.expandedconsolabold, FontWeight.Normal)
-)
-val textStyle = TextStyle(fontSize = 25.sp, color = thirdColor, fontFamily = fontFamily)
+
 val textStyleTittle = TextStyle(
     fontWeight = FontWeight.ExtraBold,
     fontSize = 25.sp,
@@ -197,20 +196,20 @@ fun Gallery(navController: NavController, userId: String, galleryController: Gal
 
    //-----"CODIGO PARA QUE SE VEA EN NEGRO LA GALERIA SI QUIERE SACAR FOTOCAPTURA-----//
 
-    val block = LocalContext.current
-    // Usar DisposableEffect para configurar y limpiar la bandera FLAG_SECURE
-    DisposableEffect(Unit) {
-        // Configurar la bandera FLAG_SECURE
-        val activity = block as? Activity
-        activity?.window?.setFlags(
-            WindowManager.LayoutParams.FLAG_SECURE,
-            WindowManager.LayoutParams.FLAG_SECURE
-        )
-        // Limpiar la bandera FLAG_SECURE cuando el Composable se desecha
-        onDispose {
-            activity?.window?.clearFlags(WindowManager.LayoutParams.FLAG_SECURE)
-        }
-    }
+//    val block = LocalContext.current
+//    // Usar DisposableEffect para configurar y limpiar la bandera FLAG_SECURE
+//    DisposableEffect(Unit) {
+//        // Configurar la bandera FLAG_SECURE
+//        val activity = block as? Activity
+//        activity?.window?.setFlags(
+//            WindowManager.LayoutParams.FLAG_SECURE,
+//            WindowManager.LayoutParams.FLAG_SECURE
+//        )
+//        // Limpiar la bandera FLAG_SECURE cuando el Composable se desecha
+//        onDispose {
+//            activity?.window?.clearFlags(WindowManager.LayoutParams.FLAG_SECURE)
+//        }
+//    }
 
     //----------------------------------------------------------------------------------//
     var dbc = DatabaseController()
@@ -1105,11 +1104,13 @@ fun Gallery(navController: NavController, userId: String, galleryController: Gal
 
                 }
 
-                // Mostrar la imagen seleccionada en un diálogo/////////////////////////////////////////////////////////////////
                 if (selectedImageBitmap.value != null) {
                     Dialog(onDismissRequest = { selectedImageBitmap.value = null }) {
                         Column(
-                            modifier = Modifier.padding(16.dp)
+                            modifier = Modifier
+                                .padding(16.dp)
+                                .fillMaxWidth(),
+                            horizontalAlignment = Alignment.CenterHorizontally // Centrar el contenido horizontalmente
                         ) {
                             Image(
                                 bitmap = selectedImageBitmap.value!!.asImageBitmap(),
@@ -1130,18 +1131,26 @@ fun Gallery(navController: NavController, userId: String, galleryController: Gal
                                 Text(
                                     text = "Compartir",
                                     color = mainBackgroundColor,
-                                    style = textStyleTittle2,
+                                    style = TextStyle(
+                                        fontWeight = FontWeight.Bold,
+                                        fontSize = 15.sp,
+                                        letterSpacing = 1.sp
+                                    ),
                                     onTextLayout = { /* No se necesita hacer nada aquí */ }
                                 )
                             }
                         }
                     }
                 }
+
                 if (showDialog.value) {
                     Dialog(onDismissRequest = { showDialog.value = false }) {
                         qrCodeBitmap.value?.let {
                             Column(
-                                modifier = Modifier.padding(16.dp)
+                                modifier = Modifier
+                                    .padding(16.dp)
+                                    .fillMaxWidth(),
+                                horizontalAlignment = Alignment.CenterHorizontally // Centrar el contenido horizontalmente
                             ) {
                                 Image(
                                     bitmap = it.asImageBitmap(),
@@ -1150,20 +1159,70 @@ fun Gallery(navController: NavController, userId: String, galleryController: Gal
                                         .fillMaxWidth()
                                         .padding(bottom = 16.dp)
                                 )
-                                ClickableText(
-                                    text = AnnotatedString("Enlace: ${imageUrlText.value}"),
-                                    style = TextStyle(color = Color.Red),
-                                    onClick = { offset ->
-                                        // Aquí abres el enlace en el navegador del dispositivo
-                                        val uri = Uri.parse(imageUrlText.value) // Suponiendo que imageUrlText contiene el enlace generado
-                                        val intent = Intent(Intent.ACTION_VIEW, uri)
-                                        context.startActivity(intent)
+                                Row(
+                                    modifier = Modifier
+                                        .background(
+                                            color = Color.White,
+                                            shape = RoundedCornerShape(bottomStart = 8.dp, bottomEnd = 8.dp) // Solo redondear bordes inferiores
+                                        )
+                                        .padding(8.dp),
+                                    verticalAlignment = Alignment.CenterVertically // Alinear el contenido verticalmente al centro
+                                ) {
+                                    ClickableText(
+                                        text = AnnotatedString("Enlace: ${imageUrlText.value}"),
+                                        style = TextStyle(
+                                            fontWeight = FontWeight.ExtraBold,
+                                            color = firstColor,
+                                            fontFamily = com.example.cypher_vault.view.resources.fontFamily,
+                                            fontSize = 12.sp,
+                                            letterSpacing = 1.sp
+                                        ),
+                                        maxLines = 1,
+                                        overflow = TextOverflow.Ellipsis,
+                                        modifier = Modifier.weight(1f),
+                                        onClick = { offset ->
+                                            // Aquí abres el enlace en el navegador del dispositivo
+                                            val uri =
+                                                Uri.parse(imageUrlText.value) // Suponiendo que imageUrlText contiene el enlace generado
+                                            val intent = Intent(Intent.ACTION_VIEW, uri)
+                                            context.startActivity(intent)
+                                        }
+                                    )
+                                    IconButton(
+                                        onClick = {
+                                            // Aquí puedes manejar la lógica para compartir el enlace a otras apps
+                                            val shareIntent = Intent().apply {
+                                                action = Intent.ACTION_SEND
+                                                putExtra(Intent.EXTRA_TEXT, imageUrlText.value)
+                                                type = "text/plain"
+                                            }
+                                            context.startActivity(
+                                                Intent.createChooser(shareIntent, "Compartir enlace")
+                                            )
+                                        },
+                                        modifier = Modifier
+                                            .size(24.dp) // Tamaño total del IconButton, incluyendo el fondo circular
+                                    ) {
+                                        Box(
+                                            modifier = Modifier
+                                                .background(firstColor, shape = CircleShape)
+                                                .size(30.dp) // Tamaño del fondo circular
+                                                .padding(6.dp) // Ajusta el padding dentro del fondo circular
+                                        ) {
+                                            Icon(
+                                                imageVector = Icons.Default.Share,
+                                                contentDescription = "Compartir enlace",
+                                                tint = Color.White,
+                                                modifier = Modifier.size(18.dp) // Tamaño del icono
+                                            )
+                                        }
                                     }
-                                )
+                                }
                             }
                         }
                     }
                 }
+
                 // Mostrar el panel de premium ////////////////////////////////////////////////////////////////////////////////////
                 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
                 if (showPremiumPanel) {
