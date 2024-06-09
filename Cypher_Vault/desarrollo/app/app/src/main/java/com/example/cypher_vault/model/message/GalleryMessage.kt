@@ -44,8 +44,32 @@ fun messageLimitModePrueba(): String{
     return "Has llegado al límite del modo prueba. Por favor, compre el paquete premium para obtener más almacenamiento."
 }
 
+fun deleteImgInProgress(): String {
+    return "Estamos eliminando las imágenes. Por favor, sea paciente."
+}
+
+fun deleteImgComplete(): String {
+    return "Las imágenes se han eliminado con éxito."
+}
+
 fun messageLimitModePremium(): String{
     return "Has llegado al límite del modo Premium."
+}
+
+fun messageLoading(): String {
+    return "Estamos cargando las imágenes de su galería."
+}
+
+fun messageLoadingComplete(): String {
+    return "Todas sus imágenes se han cargado exitosamente."
+}
+
+fun messageAddingImages(): String {
+    return "Estamos guardando sus imágenes en su galería de manera segura."
+}
+
+fun messageAddingImagesComplete(): String {
+    return "Todas sus imágenes se han guardado exitosamente."
 }
 
 fun startMessageChannel(): Channel<String> {

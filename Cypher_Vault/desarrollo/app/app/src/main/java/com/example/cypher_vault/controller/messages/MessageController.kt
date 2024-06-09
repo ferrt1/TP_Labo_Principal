@@ -155,4 +155,28 @@ class MessageController {
         return messageLimitModePremium()
     }
 
+    fun getdeleteImgInProgress(): String{
+        return deleteImgInProgress()
+    }
+    fun getdeleteImg(): String{
+        return deleteImgComplete()
+    }
+
+    fun getmessageLoading(): String {
+        return messageLoading()
+    }
+
+    fun getmessageLoadingComplete(): String {
+        return messageLoadingComplete()
+    }
+
+    fun getmessageAddingImages(): String {
+        return messageAddingImages()
+    }
+
+    fun getmessageAddingImagesComplete(): String {
+        return messageAddingImagesComplete()
+    }
+
+
 }

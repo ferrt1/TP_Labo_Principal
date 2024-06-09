@@ -23,7 +23,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
-import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -73,7 +72,6 @@ import androidx.compose.material3.ModalDrawerSheet
 import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Switch
-import androidx.compose.material3.SwitchColors
 import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -100,7 +98,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asAndroidBitmap
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.input.nestedscroll.nestedScroll
-import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.AnnotatedString
@@ -149,7 +146,13 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.ByteArrayOutputStream
+import kotlin.math.log
 
+enum class Estado {
+    PROCESS,
+    FINALIZED,
+    BLOCKED
+}
 
 //Variables de entorno/////////////////////////////
 val pixelesDeRedimensionamiento = 1f
@@ -193,7 +196,7 @@ val textStyleTittle2 = TextStyle(
 fun Gallery(navController: NavController, userId: String, galleryController: GalleryController) {
 
    //-----"CODIGO PARA QUE SE VEA EN NEGRO LA GALERIA SI QUIERE SACAR FOTOCAPTURA-----//
-    /*
+
     val block = LocalContext.current
     // Usar DisposableEffect para configurar y limpiar la bandera FLAG_SECURE
     DisposableEffect(Unit) {
@@ -208,7 +211,7 @@ fun Gallery(navController: NavController, userId: String, galleryController: Gal
             activity?.window?.clearFlags(WindowManager.LayoutParams.FLAG_SECURE)
         }
     }
-    */
+
     //----------------------------------------------------------------------------------//
     var dbc = DatabaseController()
 
@@ -222,8 +225,10 @@ fun Gallery(navController: NavController, userId: String, galleryController: Gal
     //Variables para el mensaje de gallery
     var currentMessage by remember { mutableStateOf("") }
     val messageController = MessageController()
-    var  MessageModeStatus by remember { mutableStateOf(false) }
-
+    var DeletionStatus by remember { mutableStateOf(Estado.BLOCKED) } //Proceso de eliminacion de imagen
+    var LimitStatus by remember { mutableStateOf(Estado.BLOCKED) }    //Limite de modo prueba y modo premium
+    var LoginimgStatus by remember { mutableStateOf(Estado.BLOCKED) } //Carga inicial de imagenes de la galeria
+    var AddingImages by remember { mutableStateOf(Estado.BLOCKED) } //Agregando las imagenes
 
     //Variable de la 2 verificacion
     var checkedSecondAuth : Boolean? by remember { mutableStateOf(false) }
@@ -312,23 +317,28 @@ fun Gallery(navController: NavController, userId: String, galleryController: Gal
 
     //Carga de imagenes del usuario en la galeria//////////////////////
     LaunchedEffect(key1 = userId) {
+        LoginimgStatus=Estado.PROCESS
         galleryController.loadImagesForUser(userId)
+        LoginimgStatus=Estado.FINALIZED
     }
     val images = galleryController.getGalleryImages()
     var indeximg by remember { mutableStateOf(images.size) }
     val imageUris = remember { mutableStateOf<List<Uri>>(listOf()) }
     indeximg = images.size
     LaunchedEffect(key1 = imageUris.value) {
+        if(LoginimgStatus==Estado.BLOCKED) {
+            AddingImages = Estado.PROCESS }
         galleryController.loadImagesForUser(userId)
+        if(LoginimgStatus==Estado.BLOCKED) {
+            AddingImages=Estado.FINALIZED
+        }
     }
 
 
     //Seleccion de imagenes de la galeria del celular y almacenamiento////////////////
     val launcher = rememberLauncherForActivityResult(ActivityResultContracts.GetMultipleContents()) { uris: List<Uri>? ->
-        Log.e("proceso", "lo que vale uris: ${uris.toString()}")
         val maxSelectionLimit = if (isPremium == true) maximoImagenesPremium else maximoImagenesModoPobre
         val limitedUris = uris?.take(MAX_IMAGE_SELECTION) ?: emptyList()
-
         limitedUris.forEach { uri ->
             if (indeximg < maxSelectionLimit) {
                 uri?.let {
@@ -352,10 +362,6 @@ fun Gallery(navController: NavController, userId: String, galleryController: Gal
                             galleryController.saveImage(compressedImageData, userId)
                             imageUris.value += it
                             indeximg++
-                            Log.e(
-                                "proceso",
-                                "lo que vale ${indeximg},${images.size} en rememberLauncherForActivityResult"
-                            )
                         } catch (e: Exception) {
                             Log.e("Error", "Error procesando imagen", e)
                         }
@@ -364,6 +370,8 @@ fun Gallery(navController: NavController, userId: String, galleryController: Gal
             }
         }
     }
+
+
     val selectedImageBitmap = remember { mutableStateOf<Bitmap?>(null) }
 
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(rememberTopAppBarState())
@@ -787,8 +795,8 @@ fun Gallery(navController: NavController, userId: String, galleryController: Gal
                         IconButton(onClick = { abrirPanel(scope, drawerState) }) {
                             CircularImage(byteArray = userImage,
                                 modifier = Modifier
-                                .height(100.dp)
-                                .width(100.dp))
+                                    .height(100.dp)
+                                    .width(100.dp))
                         }
                     },
                     scrollBehavior = scrollBehavior,
@@ -807,7 +815,8 @@ fun Gallery(navController: NavController, userId: String, galleryController: Gal
                         modifier = Modifier
                             .clickable(
                                 onClick = {
-                                    longClickPerformed = false // Restablecer el estado de longClickPerformed
+                                    longClickPerformed =
+                                        false // Restablecer el estado de longClickPerformed
                                     selectedImageIds.value = emptyList()
                                     selectedImages.keys.forEach { key ->
                                         selectedImages[key] = false
@@ -821,6 +830,7 @@ fun Gallery(navController: NavController, userId: String, galleryController: Gal
                             .background(Color.White) // Fondo blanco para el Box
                             .border(2.dp, thirdColor, RoundedCornerShape(16.dp)) // Borde con color y forma redondeada
                     ) {
+                        //Botones de eliminar y cancelar para la elimincacion de imagenes ///////////////////////////////////////////
                         if (longClickPerformed) {
                             Row(
                                 modifier = Modifier
@@ -831,14 +841,15 @@ fun Gallery(navController: NavController, userId: String, galleryController: Gal
                             ) {
                                 Button(
                                     onClick = {
+                                        DeletionStatus=Estado.PROCESS
                                         scope.launch {
                                             withContext(Dispatchers.IO) {
                                                 galleryController.deleteImg(userId, selectedImageIds)
+                                                DeletionStatus=Estado.FINALIZED
                                             }
                                         }
                                         indeximg=images.size
                                         longClickPerformed = false
-                                        Log.e("proceso","lo que vale el indeximg luego de eliminar $indeximg")
                                     },
                                     shape = RoundedCornerShape(4.dp),
                                     border = BorderStroke(3.dp,firstColor),
@@ -889,10 +900,12 @@ fun Gallery(navController: NavController, userId: String, galleryController: Gal
                                 verticalAlignment = Alignment.CenterVertically,
                                 horizontalArrangement = Arrangement.SpaceBetween,
                             ) {
-                                val icon = if (MessageModeStatus) {
-                                    R.drawable.icoerror
-                                } else {
-                                    R.drawable.iconclarificatio
+                                val icon = when {
+                                    AddingImages == Estado.BLOCKED &&   DeletionStatus == Estado.BLOCKED && LimitStatus == Estado.BLOCKED && LoginimgStatus == Estado.BLOCKED -> R.drawable.iconclarificatio
+                                    LimitStatus == Estado.PROCESS -> R.drawable.icoerror
+                                    AddingImages == Estado.PROCESS || LoginimgStatus == Estado.PROCESS || DeletionStatus == Estado.PROCESS ->R.drawable.waiting
+                                    AddingImages == Estado.FINALIZED || LoginimgStatus == Estado.FINALIZED ||   DeletionStatus == Estado.FINALIZED ->R.drawable.successful
+                                    else -> {R.drawable.logo}
                                 }
                                 painterResource(id = icon)?.let {
                                     Image(
@@ -927,10 +940,11 @@ fun Gallery(navController: NavController, userId: String, galleryController: Gal
                         toast.setGravity(Gravity.TOP ,0, 0)
                         toast.show()
                     if (isPremium == true) {
+                        indeximg = images.size
                         if(images.size < maximoImagenesPremium) {
                             launcher.launch("image/*")
                         } else {
-                            MessageModeStatus=true
+                            LimitStatus=Estado.PROCESS
                             currentMessage=messageController.getmessageLimitModePremium()
 
                         }
@@ -938,7 +952,7 @@ fun Gallery(navController: NavController, userId: String, galleryController: Gal
                         if (images.size < maximoImagenesModoPobre) {
                             launcher.launch("image/*")
                         } else {
-                            MessageModeStatus=true
+                            LimitStatus=Estado.PROCESS
                             currentMessage=messageController.getmessageLimitModePrueba()
                         }
                     }
@@ -958,7 +972,8 @@ fun Gallery(navController: NavController, userId: String, galleryController: Gal
                     modifier = Modifier
                         .clickable(
                             onClick = {
-                                longClickPerformed = false // Restablecer el estado de longClickPerformed
+                                longClickPerformed =
+                                    false // Restablecer el estado de longClickPerformed
                                 selectedImageIds.value = emptyList()
                                 selectedImages.keys.forEach { key ->
                                     selectedImages[key] = false
@@ -1003,7 +1018,7 @@ fun Gallery(navController: NavController, userId: String, galleryController: Gal
                                                             image.imageData.size
                                                         )
                                                 }
-                                                //El caso que el usuario quiera borrar las imagenes
+                                                //El caso que el usuario quiera borrar las imagenes//////////////////////////////////
                                                 else {
                                                     if (!selectedImageIds.value.contains(image.id)) {
                                                         selectedImages[image.id] = !isSelected
@@ -1028,6 +1043,7 @@ fun Gallery(navController: NavController, userId: String, galleryController: Gal
                                             }
                                         )
                                 )
+                                // Genera los checkList en las imagenes//////////////////////////////////////////////////////////
                                 if (isSelected && longClickPerformed) {
                                     Checkbox(
                                         checked = true,
@@ -1043,19 +1059,49 @@ fun Gallery(navController: NavController, userId: String, galleryController: Gal
                             }
                         }
                     }
-                    if (!MessageModeStatus) {
-                        LaunchedEffect(Unit) {
-                            val messageChannel = messageController.getMessageChannel()
-                            for (message in messageChannel) {
-                                currentMessage = message
+
+                    // Ciclando los dialogos cada 5 segundo///////////////////////////////////////////////////////////////////
+                    LaunchedEffect(DeletionStatus,LimitStatus,LoginimgStatus,AddingImages) {
+                        when {
+                            AddingImages==Estado.PROCESS ->{
+                                currentMessage=messageController.getmessageAddingImages()
                             }
-                        }
-                        } else {
-                        CoroutineScope(Dispatchers.Default).launch {
-                            delay(5000) // Espera 5 segundos reales
-                            MessageModeStatus = false // Establece MessageModeStatus a false después de 5 segundos
-                        }
+                            AddingImages==Estado.FINALIZED ->{
+                                currentMessage=messageController.getmessageAddingImagesComplete()
+                                delay(5000) // Espera 5 segundos
+                                AddingImages=Estado.BLOCKED
                             }
+                            LoginimgStatus==Estado.PROCESS ->{
+                                currentMessage=messageController.getmessageLoading()
+                            }
+                            LoginimgStatus==Estado.FINALIZED ->{
+                                currentMessage=messageController.getmessageLoadingComplete()
+                                delay(5000) // Espera 5 segundos
+                                LoginimgStatus=Estado.BLOCKED
+                            }
+                            DeletionStatus == Estado.BLOCKED && LimitStatus == Estado.BLOCKED -> {
+                                val messageChannel = messageController.getMessageChannel()
+                                for (message in messageChannel) {
+                                    currentMessage = message
+                                }
+                            }
+                            DeletionStatus == Estado.PROCESS && LimitStatus == Estado.BLOCKED -> {
+                                currentMessage=messageController.getdeleteImgInProgress()
+                            }
+                            DeletionStatus == Estado.FINALIZED && LimitStatus == Estado.BLOCKED -> {
+                                currentMessage=messageController.getdeleteImg()
+                                delay(5000) // Espera 5 segundos
+                                DeletionStatus = Estado.BLOCKED
+                            }
+                            DeletionStatus == Estado.BLOCKED && LimitStatus == Estado.PROCESS -> {
+                                delay(5000) // Espera 5 segundos
+                                LimitStatus= Estado.BLOCKED
+                            }
+
+                        }
+
+                    }
+
 
                 }
 
