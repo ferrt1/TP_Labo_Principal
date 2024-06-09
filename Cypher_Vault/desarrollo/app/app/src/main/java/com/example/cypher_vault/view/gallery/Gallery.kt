@@ -196,20 +196,20 @@ fun Gallery(navController: NavController, userId: String, galleryController: Gal
 
    //-----"CODIGO PARA QUE SE VEA EN NEGRO LA GALERIA SI QUIERE SACAR FOTOCAPTURA-----//
 
-//    val block = LocalContext.current
-//    // Usar DisposableEffect para configurar y limpiar la bandera FLAG_SECURE
-//    DisposableEffect(Unit) {
-//        // Configurar la bandera FLAG_SECURE
-//        val activity = block as? Activity
-//        activity?.window?.setFlags(
-//            WindowManager.LayoutParams.FLAG_SECURE,
-//            WindowManager.LayoutParams.FLAG_SECURE
-//        )
-//        // Limpiar la bandera FLAG_SECURE cuando el Composable se desecha
-//        onDispose {
-//            activity?.window?.clearFlags(WindowManager.LayoutParams.FLAG_SECURE)
-//        }
-//    }
+    val block = LocalContext.current
+    // Usar DisposableEffect para configurar y limpiar la bandera FLAG_SECURE
+    DisposableEffect(Unit) {
+        // Configurar la bandera FLAG_SECURE
+        val activity = block as? Activity
+        activity?.window?.setFlags(
+            WindowManager.LayoutParams.FLAG_SECURE,
+            WindowManager.LayoutParams.FLAG_SECURE
+        )
+        // Limpiar la bandera FLAG_SECURE cuando el Composable se desecha
+        onDispose {
+            activity?.window?.clearFlags(WindowManager.LayoutParams.FLAG_SECURE)
+        }
+    }
 
     //----------------------------------------------------------------------------------//
     var dbc = DatabaseController()
