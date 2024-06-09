@@ -119,7 +119,7 @@ fun ConfirmationLoginScreen(navController: NavController, userId: String, fromCa
     var dbc = DatabaseController()
     var secondAuthManager = SecondAuthManager()
     var secondAuthController = SecondAuthController(secondAuthManager)
-    var blockUserManager = BlockUserManager(userId)
+    var blockUserManager = BlockUserManager()
     var blockUserController = BlockUserController(blockUserManager)
 
     //Variables de paneles principales
@@ -871,8 +871,14 @@ fun ConfirmationLoginScreen(navController: NavController, userId: String, fromCa
                                             quintoValorCodigo.value.text
                                         )
                                     ) {
-                                        isAuthenticaed = true
-                                        showConfirmationLoguin = true
+                                        intentosTotales = 0
+                                        Log.d("lockAccount", "////////IntentosTotales: $intentosTotales")
+                                        scope.launch {
+                                            blockedUser?.let { blockUserController.setAttempts(it, intentosTotales!!) }
+                                            Log.d("lockAccount", "///////updateAttempts completed")
+                                            isAuthenticaed = true
+                                            showConfirmationLoguin = true
+                                        }
                                     } else {
                                         intentosTotales = intentosTotales!! + 1
                                         Log.d("lockAccount", "////////IntentosTotales: $intentosTotales")

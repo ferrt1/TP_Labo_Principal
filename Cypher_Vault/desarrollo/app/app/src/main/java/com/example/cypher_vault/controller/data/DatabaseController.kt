@@ -158,6 +158,10 @@ class DatabaseController(){
          return  DatabaseManager.getBlockedUser(userId)
     }
 
+    suspend fun getBlockedUsers(): List<BlockedUsers> {
+        return DatabaseManager.getBlockedUsers()
+    }
+
     fun deleteBlockedUser(userId: String): Deferred<Unit> {
         return CoroutineScope(Dispatchers.IO).async {
             DatabaseManager.deleteBlockedUser(userId)
@@ -182,4 +186,9 @@ class DatabaseController(){
         }
     }
 
+    fun setBlockDate(userId: String, date: Long): Deferred<Unit> {
+        return CoroutineScope(Dispatchers.IO).async {
+            DatabaseManager.setBlockDate(userId, date)
+        }
+    }
 }

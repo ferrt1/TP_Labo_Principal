@@ -210,6 +210,10 @@ object DatabaseManager {
         return  database.blockedUsersDao().getBlockedUser(userId)
     }
 
+    suspend fun getBlockedUsers(): List<BlockedUsers> {
+        return database.blockedUsersDao().getAllBlockedUsers()
+    }
+
     suspend fun deleteBlockedUser(userId: String) {
         database.blockedUsersDao().deleteBlockedUser(userId)
     }
@@ -224,5 +228,9 @@ object DatabaseManager {
 
     suspend fun setBlocked(userId: String, blocked: Boolean) {
         database.blockedUsersDao().setBlocked(userId, blocked)
+    }
+
+    suspend fun setBlockDate(userId: String, date: Long) {
+        database.blockedUsersDao().setBlockDate(userId, date)
     }
 }

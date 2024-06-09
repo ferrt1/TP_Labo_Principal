@@ -21,8 +21,16 @@ class BlockUserController(private val blockUserManager : BlockUserManager) {
         return blockUserManager.getBlockedUser(userId)
     }
 
+    suspend fun getBlockedUsers(): List<BlockedUsers?> {
+        return blockUserManager.getBlockedUsers()
+    }
+
     fun getBlockDate(userId: String): String {
         return blockUserManager.getBlockDate(userId)
+    }
+
+    suspend fun setBlockDate(userId: String, date: Long) {
+        blockUserManager.setBlockDate(userId, date)
     }
 
     fun deleteBlock(userId: String) {
@@ -36,4 +44,6 @@ class BlockUserController(private val blockUserManager : BlockUserManager) {
     suspend fun setAttempts(blockedUser: BlockedUsers, attempt: Int){
         blockUserManager.updateAttempts(blockedUser, attempt)
     }
+
+
 }

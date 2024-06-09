@@ -1,6 +1,7 @@
 package com.example.cypher_vault.view.login
 
 
+import android.widget.Toast
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.animateDp
 import androidx.compose.animation.core.spring
@@ -52,14 +53,14 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
-import androidx.compose.material3.Snackbar
-import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -74,12 +75,14 @@ import com.example.cypher_vault.R
 import com.example.cypher_vault.controller.navigation.NavController
 import com.example.cypher_vault.controller.data.DatabaseController
 import com.example.cypher_vault.controller.income.UserAccessController
+import com.example.cypher_vault.controller.lockaccount.BlockUserController
 import com.example.cypher_vault.controller.messages.getincorrectPassword
 import com.example.cypher_vault.controller.messages.getsearcherMessage
 import com.example.cypher_vault.controller.messages.getvalidaUserMessage
+import com.example.cypher_vault.database.BlockedUsers
 import com.example.cypher_vault.model.income.UserAccessManager
+import com.example.cypher_vault.model.lockaccount.BlockUserManager
 import com.example.cypher_vault.view.resources.CustomTitle
-import com.example.cypher_vault.view.resources.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -105,6 +108,7 @@ fun LoginText(){
 @Composable
 fun NavigationLogin(navController: NavController) {
     val users by navController.users.collectAsState()
+    val context = LocalContext.current
     val buttonTextStyle = TextStyle(fontWeight = FontWeight.Bold, fontSize = 16.sp, color = thirdColor, fontFamily = fontFamily)
     var selectedPersona by remember { mutableStateOf<String?>(null) }
     var searchQuery by remember { mutableStateOf("") }
@@ -126,6 +130,19 @@ fun NavigationLogin(navController: NavController) {
         transitionSpec = { spring(stiffness = Spring.StiffnessLow) },
         label = ""
     ) { if (it) 0.dp else 300.dp }
+
+    //Variables para el bloqueo de usuario
+    val scope = rememberCoroutineScope()
+    var blockUserManager = BlockUserManager()
+    var blockUserController = BlockUserController(blockUserManager)
+    var blockedUsers by remember { mutableStateOf<List<BlockedUsers?>>( emptyList()) }
+    var blockedUser by remember { mutableStateOf<BlockedUsers?>(null) }
+
+    LaunchedEffect(blockedUsers) {
+        scope.launch {
+            blockedUsers = blockUserController.getBlockedUsers()
+        }
+    }
 
     Box(
         modifier = Modifier
@@ -231,7 +248,22 @@ fun NavigationLogin(navController: NavController) {
                         onClick = {
                             userSelected = user.uid
                             selectedPersona = user.firstName
-                            showConnectionOption = true // Muestra las opciones de conexión
+                            if (estaBloqueado(userSelected, blockedUsers)){
+                                blockedUser = blockedUsers.find { it?.user_id == userSelected }
+                                if(noTieneBloqueDeTiempo(blockedUser)){
+                                    navController.navigateToLockScreen(userSelected)
+                                }else{
+                                    var tiempoRestanteDeBloqueo : Int = calcularTiempoRestante(blockedUser)
+                                    Toast.makeText(
+                                        context,
+                                        "Bloqueo de cuenta, quedan $tiempoRestanteDeBloqueo minutos",
+                                        Toast.LENGTH_SHORT
+                                    ).show()
+
+                                }
+                            }else{
+                                showConnectionOption = true // Muestra las opciones de conexión
+                            }
                         },
                         shape = RoundedCornerShape(4.dp),
                         border = BorderStroke(3.dp, firstColor),
@@ -533,6 +565,44 @@ fun NavigationLogin(navController: NavController) {
     }
 
 
+}
+
+fun calcularTiempoRestante(blockedUser: BlockedUsers?): Int {
+    if (blockedUser == null) {
+        return 0
+    }else{
+        val bloqueo = 30 //minutos
+        val tiempoActual = System.currentTimeMillis()
+        val tiempoBloqueo = blockedUser.block_date
+        val tiempoTranscurrido = (tiempoActual - tiempoBloqueo!!) / (1000 * 60)
+        return (bloqueo - tiempoTranscurrido).toInt()
+    }
+}
+
+fun noTieneBloqueDeTiempo(blockedUser: BlockedUsers?): Boolean {
+    if (blockedUser == null) {
+        return true
+    }else{
+        val bloqueo = 30 //minutos
+        val tiempoActual = System.currentTimeMillis()
+        val tiempoBloqueo = blockedUser.block_date
+        val tiempoTranscurrido = (tiempoActual - tiempoBloqueo!!) / (1000 * 60)
+        return tiempoTranscurrido >= bloqueo
+    }
+}
+
+fun estaBloqueado(userSelected: String, blockedUsers: List<BlockedUsers?>?): Boolean {
+    if (blockedUsers == null) {
+        return false
+    }
+    for (user in blockedUsers) {
+        if (user != null) {
+            if (user.user_id == userSelected && user.blocked_user == true) {
+                return true
+            }
+        }
+    }
+    return false
 }
 
 

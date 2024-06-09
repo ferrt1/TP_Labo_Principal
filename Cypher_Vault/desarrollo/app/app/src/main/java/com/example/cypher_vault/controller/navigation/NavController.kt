@@ -3,7 +3,6 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.drawable.BitmapDrawable
 import android.os.Build
-import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.compose.runtime.MutableState
 import androidx.core.content.res.ResourcesCompat
@@ -70,6 +69,11 @@ class NavController(private val navController: NavController) {
 
     fun navigateToProfile(uid: String){
         navController.navigate("profile/$uid")
+    }
+
+
+    fun navigateToLockScreen(blockedUser: String) {
+        navController.navigate("lockscreen/$blockedUser")
     }
 
     @RequiresApi(Build.VERSION_CODES.O)

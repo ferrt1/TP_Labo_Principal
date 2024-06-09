@@ -15,7 +15,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.runBlocking
 
-class BlockUserManager(private val userId: String){
+class BlockUserManager {
 
     val db = DatabaseController()
     val maxAttempts = 3
@@ -29,6 +29,10 @@ class BlockUserManager(private val userId: String){
             user = getBlockedUserAsync(userId).await()  // Asegúrate de actualizar `user` después de crear
         }
         return user
+    }
+
+    suspend fun getBlockedUsers(): List<BlockedUsers?> {
+        return db.getBlockedUsers()
     }
 
     private fun getBlockedUserAsync(userId: String): Deferred<BlockedUsers?> {
@@ -68,8 +72,8 @@ class BlockUserManager(private val userId: String){
         return userAttempt
     }
 
-    fun setBlocked(userId: String) {
-        db.setBlocked(userId, true)
+    suspend fun setBlocked(userId: String) {
+        db.setBlocked(userId, true).await()
     }
 
     suspend fun updateAttempts(blockedUsers: BlockedUsers, attempts: Int) {
@@ -78,8 +82,19 @@ class BlockUserManager(private val userId: String){
         Log.d("lockAccount", "///////updateAttempts")
         Log.d("lockAccount", "///////attempts: $attempts")
         Log.d("lockAccount", "///////userId: $userId")
+
         if (userId != null) {
             db.updateAttempts(userId, attempts).await()
         }
+        if(attempts >= maxAttempts){
+            if (userId != null) {
+                Log.d("lockAccount", "///////Blockeo de usuario: $userId")
+                setBlocked(userId)
+            }
+        }
+    }
+
+    suspend fun setBlockDate(userId: String, date: Long) {
+        db.setBlockDate(userId, date).await()
     }
 }

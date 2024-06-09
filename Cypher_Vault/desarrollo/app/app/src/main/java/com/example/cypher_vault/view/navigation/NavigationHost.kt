@@ -19,6 +19,8 @@ import com.example.cypher_vault.view.gallery.Gallery
 import com.example.cypher_vault.view.registration.InitialScreen
 import com.example.cypher_vault.view.registration.RegistrationCameraScreen
 import com.example.cypher_vault.controller.gallery.GalleryController
+import com.example.cypher_vault.database.BlockedUsers
+import com.example.cypher_vault.view.lockaccount.LockScreen
 
 
 @RequiresApi(Build.VERSION_CODES.Q)
@@ -96,7 +98,16 @@ fun NavigationHost() {
                 // Manejar el caso en que el userId no se pudo recuperar
             }
         }
-
+        composable("lockscreen/{userId}") {backStackEntry ->
+            BackHandler(true) {
+                // Or do nothing
+                Log.i("LOG_TAG", "Clicked back")
+            }
+            val userId = backStackEntry.arguments?.getString("userId")
+            if (userId != null) {
+                LockScreen(navigationController, userId)
+            }
+        }
         composable("list") {
             BackHandler(true) {
                 // Or do nothing
