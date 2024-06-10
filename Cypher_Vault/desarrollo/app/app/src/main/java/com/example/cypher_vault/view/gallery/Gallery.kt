@@ -85,6 +85,7 @@ import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
@@ -228,7 +229,7 @@ fun Gallery(navController: NavController, userId: String, galleryController: Gal
     var LimitStatus by remember { mutableStateOf(Estado.BLOCKED) }    //Limite de modo prueba y modo premium
     var LoginimgStatus by remember { mutableStateOf(Estado.BLOCKED) } //Carga inicial de imagenes de la galeria
     var AddingImages by remember { mutableStateOf(Estado.BLOCKED) } //Agregando las imagenes
-
+    var Statuslimitimg by remember { mutableStateOf(false) }
     //Variable de la 2 verificacion
     var checkedSecondAuth : Boolean? by remember { mutableStateOf(false) }
     LaunchedEffect(key1 = Unit) { // Key can be anything to trigger on recomposition
@@ -323,21 +324,20 @@ fun Gallery(navController: NavController, userId: String, galleryController: Gal
     val images = galleryController.getGalleryImages()
     var indeximg by remember { mutableStateOf(images.size) }
     val imageUris = remember { mutableStateOf<List<Uri>>(listOf()) }
-    indeximg = images.size
+
+
     LaunchedEffect(key1 = imageUris.value) {
-        if(LoginimgStatus==Estado.BLOCKED) {
-            AddingImages = Estado.PROCESS }
         galleryController.loadImagesForUser(userId)
-        if(LoginimgStatus==Estado.BLOCKED) {
-            AddingImages=Estado.FINALIZED
-        }
     }
+
 
 
     //Seleccion de imagenes de la galeria del celular y almacenamiento////////////////
     val launcher = rememberLauncherForActivityResult(ActivityResultContracts.GetMultipleContents()) { uris: List<Uri>? ->
         val maxSelectionLimit = if (isPremium == true) maximoImagenesPremium else maximoImagenesModoPobre
         val limitedUris = uris?.take(MAX_IMAGE_SELECTION) ?: emptyList()
+        indeximg = images.size
+        AddingImages = Estado.PROCESS
         limitedUris.forEach { uri ->
             if (indeximg < maxSelectionLimit) {
                 uri?.let {
@@ -368,8 +368,14 @@ fun Gallery(navController: NavController, userId: String, galleryController: Gal
                 }
             }
         }
+        Log.e("foto","lo que vale index adentro$$indeximg")
     }
 
+    LaunchedEffect(images.size) {
+       if(images.size==indeximg) {
+           AddingImages = Estado.FINALIZED
+       }
+    }
 
     val selectedImageBitmap = remember { mutableStateOf<Bitmap?>(null) }
 
@@ -417,9 +423,12 @@ fun Gallery(navController: NavController, userId: String, galleryController: Gal
                     }
                 }
                 indeximg++
+                Log.e("foto","lo que vale index adentro$$indeximg")
             }
         }
     }
+
+    Log.e("foto","lo que vale index$$indeximg")
 
     val onImageClick = {
         launcherProfile.launch("image/*")
@@ -711,11 +720,7 @@ fun Gallery(navController: NavController, userId: String, galleryController: Gal
                             modifier = Modifier
                                 .clickable(
                                     onClick = {
-                                        longClickPerformed = false // Restablecer el estado de longClickPerformed
-                                        selectedImageIds.value = emptyList()
-                                        selectedImages.keys.forEach { key ->
-                                            selectedImages[key] = false
-                                        }
+                                        resettingTheChecklists(selectedImageIds = selectedImageIds, longClickPerformedSetter = { longClickPerformed = it }, selectedImages = selectedImages)
                                     },
                                     indication = null,  // Desactivar la indicación visual del clic
                                     interactionSource = remember { MutableInteractionSource() }
@@ -814,12 +819,7 @@ fun Gallery(navController: NavController, userId: String, galleryController: Gal
                         modifier = Modifier
                             .clickable(
                                 onClick = {
-                                    longClickPerformed =
-                                        false // Restablecer el estado de longClickPerformed
-                                    selectedImageIds.value = emptyList()
-                                    selectedImages.keys.forEach { key ->
-                                        selectedImages[key] = false
-                                    }
+                                    resettingTheChecklists(selectedImageIds = selectedImageIds, longClickPerformedSetter = { longClickPerformed = it }, selectedImages = selectedImages)
                                 },
                                 indication = null,  // Desactivar la indicación visual del clic
                                 interactionSource = remember { MutableInteractionSource() }
@@ -868,12 +868,11 @@ fun Gallery(navController: NavController, userId: String, galleryController: Gal
                                 Button(
                                     onClick = {
                                         // Lógica para cancelar
-                                        longClickPerformed = false // Restablecer el estado de longClickPerformed
-                                        selectedImageIds.value = emptyList()
-                                        selectedImages.keys.forEach { key ->
-                                            selectedImages[key] = false
-                                        }
-                                    },
+                                        resettingTheChecklists(selectedImageIds = selectedImageIds, longClickPerformedSetter = { longClickPerformed = it }, selectedImages = selectedImages)
+                                    if(selectedImageIds.value.isEmpty()){
+                                        resettingTheChecklists(selectedImageIds = selectedImageIds, longClickPerformedSetter = { longClickPerformed = it }, selectedImages = selectedImages)
+                                    }
+                                              },
                                     shape = RoundedCornerShape(4.dp),
                                     border = BorderStroke(3.dp,firstColor),
                                     colors = ButtonDefaults.buttonColors(
@@ -932,25 +931,35 @@ fun Gallery(navController: NavController, userId: String, galleryController: Gal
             floatingActionButton = {
                 FloatingActionButton(
                     onClick = {
-                        val toast = Toast.makeText(
-                            context,
-                            "Puedes seleccionar un máximo de 10 imágenes. Si seleccionas más de esta cantidad, no se guardarán", Toast.LENGTH_LONG
-                        )
-                        toast.setGravity(Gravity.TOP ,0, 0)
-                        toast.show()
                     if (isPremium == true) {
                         indeximg = images.size
                         if(images.size < maximoImagenesPremium) {
+                            resettingTheChecklists(selectedImageIds = selectedImageIds, longClickPerformedSetter = { longClickPerformed = it }, selectedImages = selectedImages)
+                            val toast = Toast.makeText(
+                                context,
+                                "Puedes seleccionar un máximo de 10 imágenes. Si seleccionas más de esta cantidad, no se guardarán", Toast.LENGTH_LONG
+                            )
+                            toast.setGravity(Gravity.TOP ,0, 0)
+                            toast.show()
                             launcher.launch("image/*")
                         } else {
+                            resettingTheChecklists(selectedImageIds = selectedImageIds, longClickPerformedSetter = { longClickPerformed = it }, selectedImages = selectedImages)
                             LimitStatus=Estado.PROCESS
                             currentMessage=messageController.getmessageLimitModePremium()
 
                         }
                     } else {
                         if (images.size < maximoImagenesModoPobre) {
+                            resettingTheChecklists(selectedImageIds = selectedImageIds, longClickPerformedSetter = { longClickPerformed = it }, selectedImages = selectedImages)
+                            val toast = Toast.makeText(
+                                context,
+                                "Puedes seleccionar un máximo de 10 imágenes. Si seleccionas más de esta cantidad, no se guardarán", Toast.LENGTH_LONG
+                            )
+                            toast.setGravity(Gravity.TOP ,0, 0)
+                            toast.show()
                             launcher.launch("image/*")
                         } else {
+                            resettingTheChecklists(selectedImageIds = selectedImageIds, longClickPerformedSetter = { longClickPerformed = it }, selectedImages = selectedImages)
                             LimitStatus=Estado.PROCESS
                             currentMessage=messageController.getmessageLimitModePrueba()
                         }
@@ -971,12 +980,7 @@ fun Gallery(navController: NavController, userId: String, galleryController: Gal
                     modifier = Modifier
                         .clickable(
                             onClick = {
-                                longClickPerformed =
-                                    false // Restablecer el estado de longClickPerformed
-                                selectedImageIds.value = emptyList()
-                                selectedImages.keys.forEach { key ->
-                                    selectedImages[key] = false
-                                }
+                                resettingTheChecklists(selectedImageIds = selectedImageIds, longClickPerformedSetter = { longClickPerformed = it }, selectedImages = selectedImages)
                             },
                             indication = null,  // Desactivar la indicación visual del clic
                             interactionSource = remember { MutableInteractionSource() }
@@ -1007,6 +1011,12 @@ fun Gallery(navController: NavController, userId: String, galleryController: Gal
                                         .padding(4.dp)
                                         .border(2.dp, Color.Black)
                                         .combinedClickable(
+                                            onLongClick = {
+                                                selectedImageIds.value = listOf(image.id)
+                                                selectedImages[image.id] = !isSelected
+                                                longClickPerformed = true
+                                                Log.e("img","imagenes seleciona click largo id selecionado${selectedImageIds.value}")
+                                            },
                                             onClick = {
                                                 //para ver las imagenes (zoom)
                                                 if (!longClickPerformed) {
@@ -1020,28 +1030,26 @@ fun Gallery(navController: NavController, userId: String, galleryController: Gal
                                                 //El caso que el usuario quiera borrar las imagenes//////////////////////////////////
                                                 else {
                                                     if (!selectedImageIds.value.contains(image.id)) {
+                                                        Log.e("img","imagenes seleciona id selecionado${selectedImageIds.value}")
                                                         selectedImages[image.id] = !isSelected
-                                                        selectedImageIds.value =
-                                                            selectedImageIds.value + image.id
+                                                        selectedImageIds.value = selectedImageIds.value + image.id
                                                     } else if (selectedImageIds.value.contains(image.id)) {
                                                         selectedImages[image.id] = !isSelected
-                                                        val updatedList =
-                                                            selectedImageIds.value.filter { it != image.id }
+                                                        val updatedList = selectedImageIds.value.filter { it != image.id }
                                                         selectedImageIds.value = updatedList
+                                                        Log.e("img","imagenes deselecionada id selecionado${selectedImageIds.value}")
 
                                                     }
                                                 }
                                                 // Restablece el indicador de clic largo
 
                                             },
-                                            onLongClick = {
-                                                selectedImageIds.value =
-                                                    selectedImageIds.value + image.id
-                                                longClickPerformed = true
-                                                selectedImages[image.id] = !isSelected
-                                            }
                                         )
                                 )
+                                if(selectedImageIds.value.isEmpty()){
+                                    Log.e("img","no hay nada selecionado id selecionado${selectedImageIds.value}")
+                                    resettingTheChecklists(selectedImageIds = selectedImageIds, longClickPerformedSetter = { longClickPerformed = it }, selectedImages = selectedImages)
+                                }
                                 // Genera los checkList en las imagenes//////////////////////////////////////////////////////////
                                 if (isSelected && longClickPerformed) {
                                     Checkbox(
@@ -1058,6 +1066,13 @@ fun Gallery(navController: NavController, userId: String, galleryController: Gal
                             }
                         }
                     }
+                    LaunchedEffect(selectedImageIds){
+                    if(selectedImageIds.value.isEmpty()){
+                        Log.e("img","no hay nada selecionado id selecionado${selectedImageIds.value}")
+                        resettingTheChecklists(selectedImageIds = selectedImageIds, longClickPerformedSetter = { longClickPerformed = it }, selectedImages = selectedImages)
+                    }
+                    }
+
 
                     // Ciclando los dialogos cada 5 segundo///////////////////////////////////////////////////////////////////
                     LaunchedEffect(DeletionStatus,LimitStatus,LoginimgStatus,AddingImages) {
@@ -1746,8 +1761,20 @@ fun Gallery(navController: NavController, userId: String, galleryController: Gal
             }
         )
     }
+
 }
 
+fun resettingTheChecklists(
+    selectedImageIds: MutableState<List<Long>>,
+    longClickPerformedSetter: (Boolean) -> Unit,
+    selectedImages: MutableMap<Long, Boolean>
+) {
+    longClickPerformedSetter(false) // Restablecer el estado de longClickPerformed
+    selectedImageIds.value = emptyList()
+    selectedImages.keys.forEach { key ->
+        selectedImages[key] = false
+    }
+}
 
 
 //Apertura del panel de usuario//////////////////////////////////////////////////////////////////////////////////////////
@@ -1836,6 +1863,8 @@ fun byteArrayToBitmap(byteArray: ByteArray?): Bitmap? {
         BitmapFactory.decodeByteArray(it, 0, it.size)
     }
 }
+
+
 
 
 //------------Barra de carga circular
