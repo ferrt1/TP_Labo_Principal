@@ -82,110 +82,129 @@ class CameraController(
                             val imageBytes = tempFile.readBytes()
                             var imgBitmap = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.size)
 
-                            // Rotar la imagen si es necesario
-                            val rotationDegrees = getRotationDegrees(tempFile)
-                            imgBitmap = rotateBitmap(imgBitmap, rotationDegrees)
+                            try {
+                                // Rotar la imagen si es necesario
+                                val rotationDegrees = getRotationDegrees(tempFile)
+                                imgBitmap = rotateBitmap(imgBitmap, rotationDegrees)
+                            } catch (e: Exception) {
+                                Log.e("Imagen", "Error al rotar la imagen", e)
+                            }
 
-                            // Crear InputImage para ML Kit
-                            val inputImage = InputImage.fromBitmap(imgBitmap, 0)
+                            try {
+                                // Crear InputImage para ML Kit
+                                val inputImage = InputImage.fromBitmap(imgBitmap, 0)
 
-                            // Configurar el detector de rostros
-                            val realTimeOpts = FaceDetectorOptions.Builder()
-                                .setContourMode(FaceDetectorOptions.CONTOUR_MODE_ALL)
-                                .setPerformanceMode(FaceDetectorOptions.PERFORMANCE_MODE_FAST)
-                                .setClassificationMode(FaceDetectorOptions.CLASSIFICATION_MODE_ALL)
-                                .enableTracking()
-                                .build()
+                                // Configurar el detector de rostros
+                                val realTimeOpts = FaceDetectorOptions.Builder()
+                                    .setContourMode(FaceDetectorOptions.CONTOUR_MODE_ALL)
+                                    .setPerformanceMode(FaceDetectorOptions.PERFORMANCE_MODE_FAST)
+                                    .setClassificationMode(FaceDetectorOptions.CLASSIFICATION_MODE_ALL)
+                                    .enableTracking()
+                                    .build()
 
-                            val detector = FaceDetection.getClient(realTimeOpts)
-                            detector.process(inputImage)
-                                .addOnSuccessListener { faces ->
-                                    if (faces.isNotEmpty()) {
-                                        // Suponemos que solo hay una cara y tomamos la primera
-                                        val face = faces[0]
-                                        val boundingBox = face.boundingBox
+                                val detector = FaceDetection.getClient(realTimeOpts)
+                                detector.process(inputImage)
+                                    .addOnSuccessListener { faces ->
+                                        try {
+                                            if (faces.isNotEmpty()) {
+                                                // Suponemos que solo hay una cara y tomamos la primera
+                                                val face = faces[0]
+                                                val boundingBox = face.boundingBox
 
-                                        // Reducir el tamaño del bounding box para que sea solo la cara
-                                        val reductionAmountX = 230
-                                        val reductionAmountY = 230
-                                        val adjustedBoundingBox = Rect(
-                                            boundingBox.left + reductionAmountX,
-                                            boundingBox.top + reductionAmountY,
-                                            boundingBox.right - reductionAmountX,
-                                            boundingBox.bottom - reductionAmountY
-                                        )
+                                                try {
+                                                    // Reducir el tamaño del bounding box para que sea solo la cara
+                                                    val reductionAmountX = 230
+                                                    val reductionAmountY = 230
+                                                    val adjustedBoundingBox = Rect(
+                                                        boundingBox.left + reductionAmountX,
+                                                        boundingBox.top + reductionAmountY,
+                                                        boundingBox.right - reductionAmountX,
+                                                        boundingBox.bottom - reductionAmountY
+                                                    )
 
-                                        // Recortar la imagen para obtener solo la cara
-                                        val faceBitmap = Bitmap.createBitmap(
-                                            imgBitmap,
-                                            adjustedBoundingBox.left,
-                                            adjustedBoundingBox.top,
-                                            adjustedBoundingBox.width(),
-                                            adjustedBoundingBox.height()
-                                        )
+                                                    // Recortar la imagen para obtener solo la cara
+                                                    val faceBitmap = Bitmap.createBitmap(
+                                                        imgBitmap,
+                                                        adjustedBoundingBox.left,
+                                                        adjustedBoundingBox.top,
+                                                        adjustedBoundingBox.width(),
+                                                        adjustedBoundingBox.height()
+                                                    )
 
-                                        // Convertir la imagen a escala de grises
-                                        val grayscaleBitmap = convertToGrayscale(faceBitmap)
+                                                    // Calcular las nuevas dimensiones manteniendo el aspecto original
+                                                    val aspectRatio = faceBitmap.width.toFloat() / faceBitmap.height.toFloat()
+                                                    val targetWidth: Int
+                                                    val targetHeight: Int
 
-                                        // Calcular las nuevas dimensiones manteniendo el aspecto original
-                                        val aspectRatio = grayscaleBitmap.width.toFloat() / grayscaleBitmap.height.toFloat()
-                                        val targetWidth: Int
-                                        val targetHeight: Int
+                                                    if (aspectRatio > 1) {
+                                                        targetWidth = 112
+                                                        targetHeight = (112 / aspectRatio).toInt()
+                                                    } else {
+                                                        targetHeight = 112
+                                                        targetWidth = (112 * aspectRatio).toInt()
+                                                    }
 
-                                        if (aspectRatio > 1) {
-                                            targetWidth = 112
-                                            targetHeight = (112 / aspectRatio).toInt()
-                                        } else {
-                                            targetHeight = 112
-                                            targetWidth = (112 * aspectRatio).toInt()
-                                        }
+                                                    // Redimensionar la imagen manteniendo el aspecto original
+                                                    val resizedBitmap = Bitmap.createScaledBitmap(faceBitmap, targetWidth, targetHeight, false)
 
-                                        // Redimensionar la imagen manteniendo el aspecto original
-                                        val resizedBitmap = Bitmap.createScaledBitmap(grayscaleBitmap, targetWidth, targetHeight, false)
+                                                    // Crear una nueva imagen de 112x112 píxeles y dibujar la imagen redimensionada en el centro
+                                                    val finalBitmap = Bitmap.createBitmap(112, 112, Bitmap.Config.ARGB_8888)
+                                                    val canvas = Canvas(finalBitmap)
+                                                    canvas.drawColor(Color.BLACK) // Rellenar el fondo con negro
 
-                                        // Crear una nueva imagen de 112x112 píxeles y dibujar la imagen redimensionada en el centro
-                                        val finalBitmap = Bitmap.createBitmap(112, 112, Bitmap.Config.ARGB_8888)
-                                        val canvas = Canvas(finalBitmap)
-                                        canvas.drawColor(Color.BLACK) // Rellenar el fondo con negro
+                                                    val left = (finalBitmap.width - resizedBitmap.width) / 2f
+                                                    val top = (finalBitmap.height - resizedBitmap.height) / 2f
+                                                    canvas.drawBitmap(resizedBitmap, left, top, null)
 
-                                        val left = (finalBitmap.width - resizedBitmap.width) / 2f
-                                        val top = (finalBitmap.height - resizedBitmap.height) / 2f
-                                        canvas.drawBitmap(resizedBitmap, left, top, null)
+                                                    // Guardar la imagen final
+                                                    val stream = ByteArrayOutputStream()
+                                                    finalBitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream)
+                                                    val finalImageBytes = stream.toByteArray()
 
-                                        // Guardar la imagen final
-                                        val stream = ByteArrayOutputStream()
-                                        finalBitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream)
-                                        val finalImageBytes = stream.toByteArray()
+                                                    val saveImageDeferred = if (isRegister) {
+                                                        databaseController.saveImageLogin(finalImageBytes, userId)
+                                                    } else {
+                                                        databaseController.saveImage(finalImageBytes, userId)
+                                                    }
 
-                                        val saveImageDeferred = if (isRegister) {
-                                            databaseController.saveImageLogin(finalImageBytes, userId)
-                                        } else {
-                                            databaseController.saveImage(finalImageBytes, userId)
-                                        }
-
-                                        coroutineScope.launch {
-                                            saveImageDeferred.await()
-                                            state.value = true
-                                            state.value = false
-                                            tempFile.delete()
-                                            cameraProvider.unbindAll()
-                                            if (isRegister) {
-                                                navController.navigateToConfirmationLogin(userId,true)
+                                                    coroutineScope.launch {
+                                                        saveImageDeferred.await()
+                                                        state.value = true
+                                                        state.value = false
+                                                        tempFile.delete()
+                                                        cameraProvider.unbindAll()
+                                                        if (isRegister) {
+                                                            navController.navigateToConfirmationLogin(userId, true)
+                                                        } else {
+                                                            navController.navigateToConfirmation(userId, true, "bien")
+                                                        }
+                                                    }
+                                                } catch (e: Exception) {
+                                                    Log.e("Imagen", "Error al recortar y redimensionar la imagen", e)
+                                                    if (!isRegister)
+                                                        navController.navigateToConfirmation(userId, false, "Error al procesar la imagen")
+                                                }
                                             } else {
-                                                navController.navigateToConfirmation(userId, true, "bien")
+                                                Log.e("Imagen", "No se detectaron caras")
+                                                if (!isRegister)
+                                                    navController.navigateToConfirmation(userId, false, "No se detectaron caras")
                                             }
+                                        } catch (e: Exception) {
+                                            Log.e("Imagen", "Error al procesar las caras detectadas", e)
+                                            if (!isRegister)
+                                                navController.navigateToConfirmation(userId, false, "Error al procesar la imagen")
                                         }
-                                    } else {
-                                        Log.e("Imagen", "No se detectaron caras")
-                                        if (!isRegister)
-                                            navController.navigateToConfirmation(userId, false, "No se detectaron caras")
                                     }
-                                }
-                                .addOnFailureListener { e ->
-                                    Log.e("Imagen", "Error al procesar la imagen", e)
-                                    if (!isRegister)
-                                        navController.navigateToConfirmation(userId, false, "Error al procesar la imagen")
-                                }
+                                    .addOnFailureListener { e ->
+                                        Log.e("Imagen", "Error al procesar la imagen", e)
+                                        if (!isRegister)
+                                            navController.navigateToConfirmation(userId, false, "Error al procesar la imagen")
+                                    }
+                            } catch (e: Exception) {
+                                Log.e("Imagen", "Error al crear InputImage o configurar el detector de rostros", e)
+                                if (!isRegister)
+                                    navController.navigateToConfirmation(userId, false, "Error al procesar la imagen")
+                            }
                         } catch (e: Exception) {
                             Log.e("Imagen", "Error al procesar la imagen", e)
                             if (!isRegister)
@@ -205,6 +224,7 @@ class CameraController(
                 navController.navigateToConfirmation(userId, false, "Error al iniciar la captura de imagen")
         }
     }
+
 
 
 
