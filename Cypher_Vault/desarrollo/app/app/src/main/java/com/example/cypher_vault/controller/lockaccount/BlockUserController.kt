@@ -1,5 +1,6 @@
 package com.example.cypher_vault.controller.lockaccount
 
+import android.content.Context
 import android.util.Log
 import com.example.cypher_vault.database.BlockedUsers
 import com.example.cypher_vault.model.lockaccount.BlockUserManager
@@ -43,6 +44,11 @@ class BlockUserController(private val blockUserManager : BlockUserManager) {
 
     suspend fun setAttempts(blockedUser: BlockedUsers, attempt: Int){
         blockUserManager.updateAttempts(blockedUser, attempt)
+    }
+
+    fun sendMail(context: Context, userId: String): String {
+        Log.e("MailConfirmation", "Ingreso al mail")
+        return blockUserManager.sendMail(context, userId)
     }
 
 

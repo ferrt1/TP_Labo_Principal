@@ -65,6 +65,7 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.TextFieldValue
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.cypher_vault.R
@@ -83,8 +84,6 @@ import com.example.cypher_vault.model.service.ServiceManager
 import com.example.cypher_vault.view.gallery.firstColor
 import com.example.cypher_vault.view.gallery.textStyleTittle2
 import com.example.cypher_vault.view.gallery.thirdColor
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 //Colores de la ui, tipo de letra, etc.///////////////////////
@@ -349,71 +348,20 @@ fun ConfirmationLoginScreen(navController: NavController, userId: String, fromCa
         internetAvailable: Boolean,
         mailCode: String
     ) {
-        var primerValorCodigo = remember { mutableStateOf(TextFieldValue()) }
-        var segundoValorCodigo = remember { mutableStateOf(TextFieldValue()) }
-        var tercerValorCodigo = remember { mutableStateOf(TextFieldValue()) }
-        var cuartoValorCodigo = remember { mutableStateOf(TextFieldValue()) }
-        var quintoValorCodigo = remember { mutableStateOf(TextFieldValue()) }
-
-        //Variables y logica del campo de rellenado
-        val textFieldValues = listOf(
-            primerValorCodigo,
-            segundoValorCodigo,
-            tercerValorCodigo,
-            cuartoValorCodigo,
-            quintoValorCodigo
-        )
-        val focusRequesters = List(5) { remember { FocusRequester() } }
-        val focusManager = LocalFocusManager.current
-        var focusedFieldIndex by remember { mutableStateOf(-1) }
-
-        fun handleTextChange(index: Int, value: String) {
-            if (index == 4 && textFieldValues.size > 1) {
-                focusManager.clearFocus()
-            }
-            if (index == 0 && primerValorCodigo.value.text.isNotEmpty() && segundoValorCodigo.value.text.isNotEmpty() && tercerValorCodigo.value.text.isNotEmpty() && cuartoValorCodigo.value.text.isNotEmpty() && quintoValorCodigo.value.text.isNotEmpty()) {
-                focusManager.clearFocus()
-                primerValorCodigo.value = TextFieldValue("")
-                segundoValorCodigo.value = TextFieldValue("")
-                tercerValorCodigo.value = TextFieldValue("")
-                cuartoValorCodigo.value = TextFieldValue("")
-                quintoValorCodigo.value = TextFieldValue("")
-            } else {
-                if (value.length > 1) {
-                    textFieldValues[index].value = TextFieldValue(value[0].toString())
-                    if (index < textFieldValues.size - 1) {
-                        handleTextChange(index + 1, value.substring(1))
-                        if (index < 4) {
-                            focusRequesters[index + 1].requestFocus()
-                        }
-                    }
-                } else {
-                    textFieldValues[index].value = TextFieldValue(value)
-                    if (value.isNotEmpty() && index < textFieldValues.size - 1) {
-                        if (index < 4) {
-                            focusRequesters[index + 1].requestFocus()
-                        }
-                    }
-                }
-            }
-        }
-
-        fun handleFocusChange(index: Int, isFocused: Boolean) {
-            focusedFieldIndex = index
-        }
+        var valorCodigo = remember { mutableStateOf(TextFieldValue()) }
 
         ElevatedCard(
             elevation = CardDefaults.cardElevation(
                 defaultElevation = 6.dp
             ),
             modifier = Modifier
-                .padding(16.dp)
+                .padding(15.dp)
                 .background(mainBackgroundColor)
                 .fillMaxHeight(),
         ) {
             Column(
                 modifier = Modifier
-                    .padding(16.dp)
+                    .padding(15.dp)
                     .background(wingWhite),
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Center
@@ -502,6 +450,7 @@ fun ConfirmationLoginScreen(navController: NavController, userId: String, fromCa
                         text = "Ingresa el codigo que acabamos de enviar a tu correo",
                         color = firstColor,
                         style = textStyleTittle2,
+                        textAlign = TextAlign.Center,
                         onTextLayout = { /* No se necesita hacer nada aquí */ },
                         modifier = Modifier.padding(horizontal = 16.dp)
                     )
@@ -515,16 +464,16 @@ fun ConfirmationLoginScreen(navController: NavController, userId: String, fromCa
                     Spacer(modifier = Modifier.width(8.dp))
                     Column {
                         TextField(
-                            value = primerValorCodigo.value,
-                            onValueChange = {
-                                handleTextChange(0, it.text)
-                                //primerValorCodigo.value = it
+                            value = valorCodigo.value,
+                            onValueChange = {nuevoValor ->
+                                valorCodigo.value = nuevoValor
                             },
                             textStyle = TextStyle(
                                 color = firstColor,
-                                fontSize = 16.sp,
+                                fontSize = 30.sp,
                                 fontFamily = com.example.cypher_vault.view.resources.fontFamily,
-                                fontWeight = FontWeight.Bold
+                                fontWeight = FontWeight.Bold,
+                                textAlign = TextAlign.Center
                             ),
                             placeholder = {
                                 Text(
@@ -545,6 +494,7 @@ fun ConfirmationLoginScreen(navController: NavController, userId: String, fromCa
                                     fontWeight = FontWeight.Bold,
                                 )
                             },
+                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                             singleLine = true,
                             shape = RoundedCornerShape(4.dp),
                             colors = TextFieldDefaults.colors(
@@ -556,8 +506,7 @@ fun ConfirmationLoginScreen(navController: NavController, userId: String, fromCa
                                 unfocusedIndicatorColor = com.example.cypher_vault.view.resources.firstColor,
                             ),
                             modifier = Modifier
-                                .width(45.dp) // Establece un ancho fijo para el TextField
-                                .padding(top = 15.dp)
+                                .width(200.dp) // Establece un ancho fijo para el TextField
                                 .border(
                                     BorderStroke(
                                         3.dp,
@@ -565,250 +514,6 @@ fun ConfirmationLoginScreen(navController: NavController, userId: String, fromCa
                                     ),
                                     shape = RoundedCornerShape(4.dp),
                                 )
-                                .focusRequester(focusRequesters[0])
-                                .onFocusChanged { focusState ->
-                                    handleFocusChange(0, focusState.isFocused)
-                                }
-                        )
-                    }
-                    /// VALOR DIGITO 2 ///////////////////////////////////////////////
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Column {
-                        TextField(
-                            value = segundoValorCodigo.value,
-                            onValueChange = {
-                                handleTextChange(1, it.text)
-                                //segundoValorCodigo.value = it
-                            },
-                            textStyle = TextStyle(
-                                color = firstColor,
-                                fontSize = 16.sp,
-                                fontFamily = com.example.cypher_vault.view.resources.fontFamily,
-                                fontWeight = FontWeight.Bold
-                            ),
-                            placeholder = {
-                                Text(
-                                    "",
-                                    style = TextStyle(
-                                        color = Color.Gray,
-                                        fontSize = 16.sp,
-                                        fontFamily = com.example.cypher_vault.view.resources.fontFamily
-                                    )
-                                )
-                            },
-                            label = {
-                                Text(
-                                    "",
-                                    fontSize = 20.sp,
-                                    fontFamily = com.example.cypher_vault.view.resources.fontFamily,
-                                    color = com.example.cypher_vault.view.resources.thirdColor,
-                                    fontWeight = FontWeight.Bold,
-                                )
-                            },
-                            singleLine = true,
-                            shape = RoundedCornerShape(4.dp),
-                            colors = TextFieldDefaults.colors(
-                                focusedContainerColor = Color.Transparent,
-                                unfocusedContainerColor = Color.Transparent,
-                                disabledContainerColor = Color.Transparent,
-                                cursorColor = com.example.cypher_vault.view.resources.thirdColor,
-                                focusedIndicatorColor = com.example.cypher_vault.view.resources.firstColor,
-                                unfocusedIndicatorColor = com.example.cypher_vault.view.resources.firstColor,
-                            ),
-                            modifier = Modifier
-                                .width(45.dp) // Establece un ancho fijo para el TextField
-                                .padding(top = 15.dp)
-                                .border(
-                                    BorderStroke(
-                                        3.dp,
-                                        com.example.cypher_vault.view.resources.firstColor
-                                    ),
-                                    shape = RoundedCornerShape(4.dp),
-                                )
-                                .focusRequester(focusRequesters[1])
-                                .onFocusChanged { focusState ->
-                                    handleFocusChange(1, focusState.isFocused)
-                                }
-                        )
-                    }
-                    /// VALOR DIGITO 3 ///////////////////////////////////////////////
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Column {
-                        TextField(
-                            value = tercerValorCodigo.value,
-                            onValueChange = {
-                                handleTextChange(2, it.text)
-                                //tercerValorCodigo.value = it
-                            },
-                            textStyle = TextStyle(
-                                color = firstColor,
-                                fontSize = 16.sp,
-                                fontFamily = com.example.cypher_vault.view.resources.fontFamily,
-                                fontWeight = FontWeight.Bold
-                            ),
-                            placeholder = {
-                                Text(
-                                    "",
-                                    style = TextStyle(
-                                        color = Color.Gray,
-                                        fontSize = 16.sp,
-                                        fontFamily = com.example.cypher_vault.view.resources.fontFamily
-                                    )
-                                )
-                            },
-                            label = {
-                                Text(
-                                    "",
-                                    fontSize = 20.sp,
-                                    fontFamily = com.example.cypher_vault.view.resources.fontFamily,
-                                    color = com.example.cypher_vault.view.resources.thirdColor,
-                                    fontWeight = FontWeight.Bold,
-                                )
-                            },
-                            singleLine = true,
-                            shape = RoundedCornerShape(4.dp),
-                            colors = TextFieldDefaults.colors(
-                                focusedContainerColor = Color.Transparent,
-                                unfocusedContainerColor = Color.Transparent,
-                                disabledContainerColor = Color.Transparent,
-                                cursorColor = com.example.cypher_vault.view.resources.thirdColor,
-                                focusedIndicatorColor = com.example.cypher_vault.view.resources.firstColor,
-                                unfocusedIndicatorColor = com.example.cypher_vault.view.resources.firstColor,
-                            ),
-                            modifier = Modifier
-                                .width(45.dp) // Establece un ancho fijo para el TextField
-                                .padding(top = 15.dp)
-                                .border(
-                                    BorderStroke(
-                                        3.dp,
-                                        com.example.cypher_vault.view.resources.firstColor
-                                    ),
-                                    shape = RoundedCornerShape(4.dp),
-                                )
-                                .focusRequester(focusRequesters[2])
-                                .onFocusChanged { focusState ->
-                                    handleFocusChange(2, focusState.isFocused)
-                                }
-                        )
-                    }
-                    /// VALOR DIGITO 4 ///////////////////////////////////////////////
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Column {
-                        TextField(
-                            value = cuartoValorCodigo.value,
-                            onValueChange = {
-                                handleTextChange(3, it.text)
-                                //cuartoValorCodigo.value = it
-                            },
-                            textStyle = TextStyle(
-                                color = firstColor,
-                                fontSize = 16.sp,
-                                fontFamily = com.example.cypher_vault.view.resources.fontFamily,
-                                fontWeight = FontWeight.Bold
-                            ),
-                            placeholder = {
-                                Text(
-                                    "",
-                                    style = TextStyle(
-                                        color = Color.Gray,
-                                        fontSize = 16.sp,
-                                        fontFamily = com.example.cypher_vault.view.resources.fontFamily
-                                    )
-                                )
-                            },
-                            label = {
-                                Text(
-                                    "",
-                                    fontSize = 20.sp,
-                                    fontFamily = com.example.cypher_vault.view.resources.fontFamily,
-                                    color = com.example.cypher_vault.view.resources.thirdColor,
-                                    fontWeight = FontWeight.Bold,
-                                )
-                            },
-                            singleLine = true,
-                            shape = RoundedCornerShape(4.dp),
-                            colors = TextFieldDefaults.colors(
-                                focusedContainerColor = Color.Transparent,
-                                unfocusedContainerColor = Color.Transparent,
-                                disabledContainerColor = Color.Transparent,
-                                cursorColor = com.example.cypher_vault.view.resources.thirdColor,
-                                focusedIndicatorColor = com.example.cypher_vault.view.resources.firstColor,
-                                unfocusedIndicatorColor = com.example.cypher_vault.view.resources.firstColor,
-                            ),
-                            modifier = Modifier
-                                .width(45.dp) // Establece un ancho fijo para el TextField
-                                .padding(top = 15.dp)
-                                .border(
-                                    BorderStroke(
-                                        3.dp,
-                                        com.example.cypher_vault.view.resources.firstColor
-                                    ),
-                                    shape = RoundedCornerShape(4.dp),
-                                )
-                                .focusRequester(focusRequesters[3])
-                                .onFocusChanged { focusState ->
-                                    handleFocusChange(3, focusState.isFocused)
-                                }
-                        )
-                    }
-                    /// VALOR DIGITO 5 ///////////////////////////////////////////////
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Column {
-                        TextField(
-                            value = quintoValorCodigo.value,
-                            onValueChange = {
-                                handleTextChange(4, it.text)
-                                //quintoValorCodigo.value = it
-                            },
-                            textStyle = TextStyle(
-                                color = firstColor,
-                                fontSize = 16.sp,
-                                fontFamily = com.example.cypher_vault.view.resources.fontFamily,
-                                fontWeight = FontWeight.Bold
-                            ),
-                            placeholder = {
-                                Text(
-                                    "",
-                                    style = TextStyle(
-                                        color = Color.Gray,
-                                        fontSize = 16.sp,
-                                        fontFamily = com.example.cypher_vault.view.resources.fontFamily
-                                    )
-                                )
-                            },
-                            label = {
-                                Text(
-                                    "",
-                                    fontSize = 20.sp,
-                                    fontFamily = com.example.cypher_vault.view.resources.fontFamily,
-                                    color = com.example.cypher_vault.view.resources.thirdColor,
-                                    fontWeight = FontWeight.Bold,
-                                )
-                            },
-                            singleLine = true,
-                            shape = RoundedCornerShape(4.dp),
-                            colors = TextFieldDefaults.colors(
-                                focusedContainerColor = Color.Transparent,
-                                unfocusedContainerColor = Color.Transparent,
-                                disabledContainerColor = Color.Transparent,
-                                cursorColor = com.example.cypher_vault.view.resources.thirdColor,
-                                focusedIndicatorColor = com.example.cypher_vault.view.resources.firstColor,
-                                unfocusedIndicatorColor = com.example.cypher_vault.view.resources.firstColor,
-                            ),
-                            modifier = Modifier
-                                .width(45.dp) // Establece un ancho fijo para el TextField
-                                .padding(top = 15.dp)
-                                .border(
-                                    BorderStroke(
-                                        3.dp,
-                                        com.example.cypher_vault.view.resources.firstColor
-                                    ),
-                                    shape = RoundedCornerShape(4.dp),
-                                )
-                                .focusRequester(focusRequesters[4])
-                                .onFocusChanged { focusState ->
-                                    handleFocusChange(4, focusState.isFocused)
-                                }
                         )
                     }
                 }
@@ -824,12 +529,7 @@ fun ConfirmationLoginScreen(navController: NavController, userId: String, fromCa
                         ) {
                             OutlinedButton(
                                 onClick = {
-                                    focusManager.clearFocus(force = true)
-                                    primerValorCodigo.value = TextFieldValue("")
-                                    segundoValorCodigo.value = TextFieldValue("")
-                                    tercerValorCodigo.value = TextFieldValue("")
-                                    cuartoValorCodigo.value = TextFieldValue("")
-                                    quintoValorCodigo.value = TextFieldValue("")
+                                    valorCodigo.value = TextFieldValue("")
                                 },
                                 shape = RoundedCornerShape(15.dp),
                                 border = BorderStroke(3.dp, Color.Gray),
@@ -866,11 +566,7 @@ fun ConfirmationLoginScreen(navController: NavController, userId: String, fromCa
 
                                     if (comprobarCodigo(
                                             mailCode,
-                                            primerValorCodigo.value.text,
-                                            segundoValorCodigo.value.text,
-                                            tercerValorCodigo.value.text,
-                                            cuartoValorCodigo.value.text,
-                                            quintoValorCodigo.value.text
+                                            valorCodigo.value.text
                                         )
                                     ) {
                                         intentosTotales = 0
@@ -936,13 +632,13 @@ fun ConfirmationLoginScreen(navController: NavController, userId: String, fromCa
                 defaultElevation = 6.dp
             ),
             modifier = Modifier
-                .padding(16.dp)
+                .padding(15.dp)
                 .background(mainBackgroundColor)
                 .fillMaxHeight(),
         ) {
             Column(
                 modifier = Modifier
-                    .padding(16.dp)
+                    .padding(15.dp)
                     .background(wingWhite),
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Center
@@ -1031,6 +727,7 @@ fun ConfirmationLoginScreen(navController: NavController, userId: String, fromCa
                         text = "¿En que momento del dia te conectaste la ultima vez?",
                         color = firstColor,
                         style = textStyleTittle2,
+                        textAlign = TextAlign.Center,
                         onTextLayout = { /* No se necesita hacer nada aquí */ },
                         modifier = Modifier.padding(horizontal = 16.dp)
                     )
@@ -1050,7 +747,9 @@ fun ConfirmationLoginScreen(navController: NavController, userId: String, fromCa
                             .width(250.dp)
                             .padding(top = 15.dp),
                         onClick = { dayPart = SecondAuthManager.DayPart.MORNING },
-                        label = { Text("Mañana(7:00AM-15:00PM)") },
+                        label = {
+                            Text("Mañana(7:00AM-15:00PM)",textAlign = TextAlign.Center,)
+                                },
                         leadingIcon = {
                             if (dayPart == SecondAuthManager.DayPart.MORNING) {
                                 Icon(
@@ -1085,7 +784,9 @@ fun ConfirmationLoginScreen(navController: NavController, userId: String, fromCa
                             .width(250.dp)
                             .padding(top = 15.dp),
                         onClick = { dayPart = SecondAuthManager.DayPart.AFTERNOON },
-                        label = { Text("Tarde(15:00PM-23:00PM)") },
+                        label = {
+                            Text("Tarde(15:00PM-23:00PM)",textAlign = TextAlign.Center,)
+                                },
                         leadingIcon = {
                             if (dayPart == SecondAuthManager.DayPart.AFTERNOON) {
                                 Icon(
@@ -1117,10 +818,11 @@ fun ConfirmationLoginScreen(navController: NavController, userId: String, fromCa
                             labelColor = firstColor,
                         ),
                         modifier = Modifier
-                            .width(250.dp)
-                            .padding(top = 15.dp),
+                            .width(250.dp),
                         onClick = { dayPart = SecondAuthManager.DayPart.EVENING },
-                        label = { Text("Noche(23:00PM-7:00AM)") },
+                        label = {
+                            Text("Noche(23:00PM-7:00AM)",textAlign = TextAlign.Center,)
+                                },
                         leadingIcon = {
                             if (dayPart == SecondAuthManager.DayPart.EVENING) {
                                 Icon(
@@ -1206,7 +908,7 @@ fun ConfirmationLoginScreen(navController: NavController, userId: String, fromCa
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(20.dp)
+            .padding(15.dp)
             .verticalScroll(rememberScrollState()),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
@@ -1368,14 +1070,10 @@ private fun hayImagen(result: MutableState<Boolean?>) =
 
 fun comprobarCodigo(
     mailCode: String,
-    value1: String,
-    value2: String,
-    value3: String,
-    value4: String,
-    value5: String
+    value1: String
 ): Boolean {
-    Log.d("Comprobando codigo", "COMPROBACION : $mailCode = $value1$value2$value3$value4$value5")
-    return mailCode == value1 + value2 + value3 + value4 + value5
+    Log.d("Comprobando codigo", "COMPROBACION : $mailCode = $value1")
+    return mailCode == value1
 }
 
 @Composable

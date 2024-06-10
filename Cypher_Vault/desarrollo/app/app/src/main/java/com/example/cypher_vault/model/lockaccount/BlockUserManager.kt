@@ -1,5 +1,6 @@
 package com.example.cypher_vault.model.lockaccount
 
+import android.content.Context
 import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -9,6 +10,7 @@ import com.example.cypher_vault.controller.data.DatabaseController
 import com.example.cypher_vault.controller.lockaccount.BlockUserController
 import com.example.cypher_vault.database.BlockedUsers
 import com.example.cypher_vault.database.UserPremium
+import com.example.cypher_vault.model.service.ServiceManager
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.Dispatchers
@@ -97,4 +99,16 @@ class BlockUserManager {
     suspend fun setBlockDate(userId: String, date: Long) {
         db.setBlockDate(userId, date).await()
     }
+
+    fun sendMail(context: Context, userId: String): String {
+        val serviceManager = ServiceManager(context)
+        var mail = ""
+        runBlocking {
+            val usuario = db.getUserById(userId)
+            mail = usuario?.email.toString()
+        }
+        Log.d("auth", "Mail: $mail")
+        return serviceManager.generateAndSendUnblockCode(context,mail)
+    }
+
 }

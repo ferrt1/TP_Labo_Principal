@@ -1,6 +1,7 @@
 package com.example.cypher_vault
 
 
+import android.content.pm.ActivityInfo
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
@@ -20,7 +21,7 @@ class MainActivity : ComponentActivity() {
     @RequiresApi(Build.VERSION_CODES.Q)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
+        requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
         DatabaseManager.initialize(this)
         setContent {
             NavigationHost()

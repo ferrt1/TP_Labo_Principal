@@ -1,11 +1,9 @@
 package com.example.cypher_vault.view.lockaccount
 
 import android.annotation.SuppressLint
-import android.graphics.BitmapFactory
 import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
@@ -34,11 +32,8 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.asImageBitmap
-import androidx.compose.ui.graphics.painter.BitmapPainter
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
@@ -46,16 +41,12 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.cypher_vault.R
-import com.example.cypher_vault.controller.authentication.AuthenticationController
 import com.example.cypher_vault.controller.authentication.SecondAuthController
 import com.example.cypher_vault.controller.data.DatabaseController
 import com.example.cypher_vault.controller.lockaccount.BlockUserController
 import com.example.cypher_vault.controller.navigation.NavController
 import com.example.cypher_vault.controller.service.ServiceController
 import com.example.cypher_vault.database.BlockedUsers
-import com.example.cypher_vault.database.ImagesRegister
-import com.example.cypher_vault.database.User
 import com.example.cypher_vault.model.authentication.SecondAuthManager
 import com.example.cypher_vault.model.lockaccount.BlockUserManager
 import com.example.cypher_vault.model.service.ServiceManager
@@ -67,7 +58,6 @@ import com.example.cypher_vault.view.login.wingWhite
 import com.example.cypher_vault.view.resources.fontFamily
 import com.example.cypher_vault.view.resources.thirdColor
 import kotlinx.coroutines.launch
-import kotlin.text.filter
 
 private var databaseController = DatabaseController()
 private val firstColor = Color(0xFF02a6c3)
@@ -114,73 +104,21 @@ fun LockScreen(navController: NavController, userId: String) {
     var secondAuthManager = SecondAuthManager()
     var secondAuthController = SecondAuthController(secondAuthManager)
 
-    var primerValorCodigo = remember { mutableStateOf(TextFieldValue()) }
-    var segundoValorCodigo = remember { mutableStateOf(TextFieldValue()) }
-    var tercerValorCodigo = remember { mutableStateOf(TextFieldValue()) }
-    var cuartoValorCodigo = remember { mutableStateOf(TextFieldValue()) }
-    var quintoValorCodigo = remember { mutableStateOf(TextFieldValue()) }
-
-    //Variables y logica del campo de rellenado
-    val textFieldValues = listOf(
-        primerValorCodigo,
-        segundoValorCodigo,
-        tercerValorCodigo,
-        cuartoValorCodigo,
-        quintoValorCodigo
-    )
-    val focusRequesters = List(5) { remember { FocusRequester() } }
-    val focusManager = LocalFocusManager.current
-    var focusedFieldIndex by remember { mutableStateOf(-1) }
-
-    fun handleTextChange(index: Int, value: String) {
-        if (index == 4 && textFieldValues.size > 1) {
-            focusManager.clearFocus()
-        }
-        if (index == 0 && primerValorCodigo.value.text.isNotEmpty() && segundoValorCodigo.value.text.isNotEmpty() && tercerValorCodigo.value.text.isNotEmpty() && cuartoValorCodigo.value.text.isNotEmpty() && quintoValorCodigo.value.text.isNotEmpty()) {
-            focusManager.clearFocus()
-            primerValorCodigo.value = TextFieldValue("")
-            segundoValorCodigo.value = TextFieldValue("")
-            tercerValorCodigo.value = TextFieldValue("")
-            cuartoValorCodigo.value = TextFieldValue("")
-            quintoValorCodigo.value = TextFieldValue("")
-
-        } else {
-            if (value.length > 1) {
-                textFieldValues[index].value = TextFieldValue(value[0].toString())
-                if (index < textFieldValues.size - 1) {
-                    handleTextChange(index + 1, value.substring(1))
-                    if (index < 4) {
-                        focusRequesters[index + 1].requestFocus()
-                    }
-                }
-            } else {
-                textFieldValues[index].value = TextFieldValue(value)
-                if (value.isNotEmpty() && index < textFieldValues.size - 1) {
-                    if (index < 4) {
-                        focusRequesters[index + 1].requestFocus()
-                    }
-                }
-            }
-        }
-    }
-
-    fun handleFocusChange(index: Int, isFocused: Boolean) {
-        focusedFieldIndex = index
-    }
+    var valorCodigo = remember { mutableStateOf(TextFieldValue()) }
 
     ElevatedCard(
         elevation = CardDefaults.cardElevation(
             defaultElevation = 6.dp
         ),
         modifier = Modifier
-            .padding(16.dp)
+            .padding(15.dp)
             .background(mainBackgroundColor)
             .fillMaxHeight(),
     ) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(20.dp)
+                .padding(15.dp)
                 .verticalScroll(rememberScrollState()),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
@@ -188,7 +126,7 @@ fun LockScreen(navController: NavController, userId: String) {
             //////////////// CON CONEXION A INTERNET //////////////////////////////////////////////////////////////////
             ///////////////////////////////////////////////////////////////////////////////////////////////////////////
             if (isInternetAvailable) {
-                var mailCode: String = remember { secondAuthController.sendMail(context, userId) }
+                var mailCode: String = remember { blockUserController.sendMail(context, userId) }
                 /// TITULO //////////////////////////////////////////////////////////////////
                 Spacer(modifier = Modifier.height(15.dp))
                 Row(
@@ -278,7 +216,7 @@ fun LockScreen(navController: NavController, userId: String) {
                         text = "En este momento tu cuenta se encuentra bloqueda," +
                                 "para desbloquearla ingresa el codigo que enviamos a tu mail." +
                                 " Ten en cuenta que si su ingreso es erroneo se bloquea la cuenta por 30min." +
-                                "Recuerda que puedes usar el boton de limpiar campos para volver a escribirlo." ,
+                                "Recuerda que puedes usar el boton de limpiar campos para volver a escribirlo.",
                         color = com.example.cypher_vault.view.gallery.firstColor,
                         style = textStyleTittle2,
                         textAlign = TextAlign.Center,
@@ -295,16 +233,16 @@ fun LockScreen(navController: NavController, userId: String) {
                     Spacer(modifier = Modifier.width(8.dp))
                     Column {
                         TextField(
-                            value = primerValorCodigo.value,
-                            onValueChange = {
-                                handleTextChange(0, it.text)
-                                //primerValorCodigo.value = it
+                            value = valorCodigo.value,
+                            onValueChange = {nuevoValor ->
+                                valorCodigo.value = nuevoValor
                             },
                             textStyle = TextStyle(
                                 color = com.example.cypher_vault.view.gallery.firstColor,
-                                fontSize = 16.sp,
+                                fontSize = 30.sp,
                                 fontFamily = fontFamily,
-                                fontWeight = FontWeight.Bold
+                                fontWeight = FontWeight.Bold,
+                                textAlign = TextAlign.Center
                             ),
                             placeholder = {
                                 Text(
@@ -323,8 +261,10 @@ fun LockScreen(navController: NavController, userId: String) {
                                     fontFamily = fontFamily,
                                     color = thirdColor,
                                     fontWeight = FontWeight.Bold,
+
                                 )
                             },
+                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                             singleLine = true,
                             shape = RoundedCornerShape(4.dp),
                             colors = TextFieldDefaults.colors(
@@ -336,8 +276,7 @@ fun LockScreen(navController: NavController, userId: String) {
                                 unfocusedIndicatorColor = com.example.cypher_vault.view.resources.firstColor,
                             ),
                             modifier = Modifier
-                                .width(45.dp) // Establece un ancho fijo para el TextField
-                                .padding(top = 15.dp)
+                                .width(200.dp) // Establece un ancho fijo para el TextField
                                 .border(
                                     BorderStroke(
                                         3.dp,
@@ -345,250 +284,6 @@ fun LockScreen(navController: NavController, userId: String) {
                                     ),
                                     shape = RoundedCornerShape(4.dp),
                                 )
-                                .focusRequester(focusRequesters[0])
-                                .onFocusChanged { focusState ->
-                                    handleFocusChange(0, focusState.isFocused)
-                                }
-                        )
-                    }
-                    /// VALOR DIGITO 2 ///////////////////////////////////////////////
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Column {
-                        TextField(
-                            value = segundoValorCodigo.value,
-                            onValueChange = {
-                                handleTextChange(1, it.text)
-                                //segundoValorCodigo.value = it
-                            },
-                            textStyle = TextStyle(
-                                color = com.example.cypher_vault.view.gallery.firstColor,
-                                fontSize = 16.sp,
-                                fontFamily = fontFamily,
-                                fontWeight = FontWeight.Bold
-                            ),
-                            placeholder = {
-                                Text(
-                                    "",
-                                    style = TextStyle(
-                                        color = Color.Gray,
-                                        fontSize = 16.sp,
-                                        fontFamily = fontFamily
-                                    )
-                                )
-                            },
-                            label = {
-                                Text(
-                                    "",
-                                    fontSize = 20.sp,
-                                    fontFamily = fontFamily,
-                                    color = thirdColor,
-                                    fontWeight = FontWeight.Bold,
-                                )
-                            },
-                            singleLine = true,
-                            shape = RoundedCornerShape(4.dp),
-                            colors = TextFieldDefaults.colors(
-                                focusedContainerColor = Color.Transparent,
-                                unfocusedContainerColor = Color.Transparent,
-                                disabledContainerColor = Color.Transparent,
-                                cursorColor = thirdColor,
-                                focusedIndicatorColor = com.example.cypher_vault.view.resources.firstColor,
-                                unfocusedIndicatorColor = com.example.cypher_vault.view.resources.firstColor,
-                            ),
-                            modifier = Modifier
-                                .width(45.dp) // Establece un ancho fijo para el TextField
-                                .padding(top = 15.dp)
-                                .border(
-                                    BorderStroke(
-                                        3.dp,
-                                        com.example.cypher_vault.view.resources.firstColor
-                                    ),
-                                    shape = RoundedCornerShape(4.dp),
-                                )
-                                .focusRequester(focusRequesters[1])
-                                .onFocusChanged { focusState ->
-                                    handleFocusChange(1, focusState.isFocused)
-                                }
-                        )
-                    }
-                    /// VALOR DIGITO 3 ///////////////////////////////////////////////
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Column {
-                        TextField(
-                            value = tercerValorCodigo.value,
-                            onValueChange = {
-                                handleTextChange(2, it.text)
-                                //tercerValorCodigo.value = it
-                            },
-                            textStyle = TextStyle(
-                                color = com.example.cypher_vault.view.gallery.firstColor,
-                                fontSize = 16.sp,
-                                fontFamily = fontFamily,
-                                fontWeight = FontWeight.Bold
-                            ),
-                            placeholder = {
-                                Text(
-                                    "",
-                                    style = TextStyle(
-                                        color = Color.Gray,
-                                        fontSize = 16.sp,
-                                        fontFamily = fontFamily
-                                    )
-                                )
-                            },
-                            label = {
-                                Text(
-                                    "",
-                                    fontSize = 20.sp,
-                                    fontFamily = fontFamily,
-                                    color = thirdColor,
-                                    fontWeight = FontWeight.Bold,
-                                )
-                            },
-                            singleLine = true,
-                            shape = RoundedCornerShape(4.dp),
-                            colors = TextFieldDefaults.colors(
-                                focusedContainerColor = Color.Transparent,
-                                unfocusedContainerColor = Color.Transparent,
-                                disabledContainerColor = Color.Transparent,
-                                cursorColor = thirdColor,
-                                focusedIndicatorColor = com.example.cypher_vault.view.resources.firstColor,
-                                unfocusedIndicatorColor = com.example.cypher_vault.view.resources.firstColor,
-                            ),
-                            modifier = Modifier
-                                .width(45.dp) // Establece un ancho fijo para el TextField
-                                .padding(top = 15.dp)
-                                .border(
-                                    BorderStroke(
-                                        3.dp,
-                                        com.example.cypher_vault.view.resources.firstColor
-                                    ),
-                                    shape = RoundedCornerShape(4.dp),
-                                )
-                                .focusRequester(focusRequesters[2])
-                                .onFocusChanged { focusState ->
-                                    handleFocusChange(2, focusState.isFocused)
-                                }
-                        )
-                    }
-                    /// VALOR DIGITO 4 ///////////////////////////////////////////////
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Column {
-                        TextField(
-                            value = cuartoValorCodigo.value,
-                            onValueChange = {
-                                handleTextChange(3, it.text)
-                                //cuartoValorCodigo.value = it
-                            },
-                            textStyle = TextStyle(
-                                color = com.example.cypher_vault.view.gallery.firstColor,
-                                fontSize = 16.sp,
-                                fontFamily = fontFamily,
-                                fontWeight = FontWeight.Bold
-                            ),
-                            placeholder = {
-                                Text(
-                                    "",
-                                    style = TextStyle(
-                                        color = Color.Gray,
-                                        fontSize = 16.sp,
-                                        fontFamily = fontFamily
-                                    )
-                                )
-                            },
-                            label = {
-                                Text(
-                                    "",
-                                    fontSize = 20.sp,
-                                    fontFamily = fontFamily,
-                                    color = thirdColor,
-                                    fontWeight = FontWeight.Bold,
-                                )
-                            },
-                            singleLine = true,
-                            shape = RoundedCornerShape(4.dp),
-                            colors = TextFieldDefaults.colors(
-                                focusedContainerColor = Color.Transparent,
-                                unfocusedContainerColor = Color.Transparent,
-                                disabledContainerColor = Color.Transparent,
-                                cursorColor = thirdColor,
-                                focusedIndicatorColor = com.example.cypher_vault.view.resources.firstColor,
-                                unfocusedIndicatorColor = com.example.cypher_vault.view.resources.firstColor,
-                            ),
-                            modifier = Modifier
-                                .width(45.dp) // Establece un ancho fijo para el TextField
-                                .padding(top = 15.dp)
-                                .border(
-                                    BorderStroke(
-                                        3.dp,
-                                        com.example.cypher_vault.view.resources.firstColor
-                                    ),
-                                    shape = RoundedCornerShape(4.dp),
-                                )
-                                .focusRequester(focusRequesters[3])
-                                .onFocusChanged { focusState ->
-                                    handleFocusChange(3, focusState.isFocused)
-                                }
-                        )
-                    }
-                    /// VALOR DIGITO 5 ///////////////////////////////////////////////
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Column {
-                        TextField(
-                            value = quintoValorCodigo.value,
-                            onValueChange = {
-                                handleTextChange(4, it.text)
-                                //quintoValorCodigo.value = it
-                            },
-                            textStyle = TextStyle(
-                                color = com.example.cypher_vault.view.gallery.firstColor,
-                                fontSize = 16.sp,
-                                fontFamily = fontFamily,
-                                fontWeight = FontWeight.Bold
-                            ),
-                            placeholder = {
-                                Text(
-                                    "",
-                                    style = TextStyle(
-                                        color = Color.Gray,
-                                        fontSize = 16.sp,
-                                        fontFamily = fontFamily
-                                    )
-                                )
-                            },
-                            label = {
-                                Text(
-                                    "",
-                                    fontSize = 20.sp,
-                                    fontFamily = fontFamily,
-                                    color = thirdColor,
-                                    fontWeight = FontWeight.Bold,
-                                )
-                            },
-                            singleLine = true,
-                            shape = RoundedCornerShape(4.dp),
-                            colors = TextFieldDefaults.colors(
-                                focusedContainerColor = Color.Transparent,
-                                unfocusedContainerColor = Color.Transparent,
-                                disabledContainerColor = Color.Transparent,
-                                cursorColor = thirdColor,
-                                focusedIndicatorColor = com.example.cypher_vault.view.resources.firstColor,
-                                unfocusedIndicatorColor = com.example.cypher_vault.view.resources.firstColor,
-                            ),
-                            modifier = Modifier
-                                .width(45.dp) // Establece un ancho fijo para el TextField
-                                .padding(top = 15.dp)
-                                .border(
-                                    BorderStroke(
-                                        3.dp,
-                                        com.example.cypher_vault.view.resources.firstColor
-                                    ),
-                                    shape = RoundedCornerShape(4.dp),
-                                )
-                                .focusRequester(focusRequesters[4])
-                                .onFocusChanged { focusState ->
-                                    handleFocusChange(4, focusState.isFocused)
-                                }
                         )
                     }
                 }
@@ -604,12 +299,7 @@ fun LockScreen(navController: NavController, userId: String) {
                         ) {
                             OutlinedButton(
                                 onClick = {
-                                    focusManager.clearFocus(force = true)
-                                    primerValorCodigo.value = TextFieldValue("")
-                                    segundoValorCodigo.value = TextFieldValue("")
-                                    tercerValorCodigo.value = TextFieldValue("")
-                                    cuartoValorCodigo.value = TextFieldValue("")
-                                    quintoValorCodigo.value = TextFieldValue("")
+                                    valorCodigo.value = TextFieldValue("")
                                 },
                                 shape = RoundedCornerShape(15.dp),
                                 border = BorderStroke(3.dp, Color.Gray),
@@ -646,11 +336,7 @@ fun LockScreen(navController: NavController, userId: String) {
 
                                     if (comprobarCodigo(
                                             mailCode,
-                                            primerValorCodigo.value.text,
-                                            segundoValorCodigo.value.text,
-                                            tercerValorCodigo.value.text,
-                                            cuartoValorCodigo.value.text,
-                                            quintoValorCodigo.value.text
+                                            valorCodigo.value.text
                                         )
                                     ) {
                                         Log.d("lockAccount", "////////Codigo Correcto")
@@ -668,7 +354,12 @@ fun LockScreen(navController: NavController, userId: String) {
                                         Log.d("lockAccount", "////////Codigo Incorrecto")
                                         scope.launch {
                                             var time = System.currentTimeMillis()
-                                            userId.let { blockUserController.setBlockDate(it, time) }
+                                            userId.let {
+                                                blockUserController.setBlockDate(
+                                                    it,
+                                                    time
+                                                )
+                                            }
                                             Log.d("lockAccount", "///////updateAttempts completed")
                                             Toast.makeText(
                                                 context,
@@ -789,6 +480,7 @@ fun LockScreen(navController: NavController, userId: String) {
                                 "intentarlo cuando tengas conexion a internet",
                         color = com.example.cypher_vault.view.gallery.firstColor,
                         style = textStyleTittle2,
+                        textAlign = TextAlign.Center,
                         onTextLayout = { /* No se necesita hacer nada aquí */ },
                         modifier = Modifier.padding(horizontal = 16.dp)
                     )
@@ -819,12 +511,9 @@ fun LockScreen(navController: NavController, userId: String) {
 
 fun comprobarCodigo(
     mailCode: String,
-    value1: String,
-    value2: String,
-    value3: String,
-    value4: String,
-    value5: String
+    value1: String
 ): Boolean {
-    Log.d("Comprobando codigo", "COMPROBACION : $mailCode = $value1$value2$value3$value4$value5")
-    return mailCode == value1 + value2 + value3 + value4 + value5
+    Log.d(
+        "Comprobando codigo", "COMPROBACION : $mailCode = $value1)")
+        return mailCode == value1
 }

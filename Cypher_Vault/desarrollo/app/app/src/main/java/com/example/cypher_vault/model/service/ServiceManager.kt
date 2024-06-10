@@ -9,8 +9,6 @@ import android.net.Uri
 import android.util.Log
 import com.example.cypher_vault.controller.data.DatabaseController
 import kotlinx.coroutines.runBlocking
-import android.os.Bundle;
-import android.view.View;
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import java.util.Properties;
@@ -20,7 +18,6 @@ import javax.mail.MessagingException;
 import javax.mail.PasswordAuthentication;
 import javax.mail.Session;
 import javax.mail.Transport;
-import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 
@@ -65,14 +62,36 @@ class ServiceManager(private val context: Context) {
         Atentamente,
         El equipo de CypherVault
     """.trimIndent()
-        buttonSendEmail(recipient, subject, body)
+        sendEmail(recipient, subject, body)
+        return mailCode
+    }
+
+    fun generateAndSendUnblockCode(context: Context, mail: String): String {
+        var recipient = mail
+        if(mailCode==""){
+            runBlocking {
+                generateRandomCode()
+            }
+        }
+        val subject = "Tu código de desbloqueo es $mailCode"
+        val body = """
+        Estimado Usuario,
+
+        Su código de desbloqueo para CypherVault es: $mailCode
+
+        Por favor, ingrese este código en la aplicación para poder desbloquear su cuenta.
+
+        Atentamente,
+        El equipo de CypherVault
+    """.trimIndent()
+        sendEmail(recipient, subject, body)
         return mailCode
     }
 
     private val emailUsername = "cyphervaultapp@hotmail.com"
     private val emailPassword = "11111111111111a$"
 
-    fun buttonSendEmail(receiverEmail: String, subjects: String, body: String) {
+    fun sendEmail(receiverEmail: String, subjects: String, body: String) {
         val stringSenderEmail = emailUsername
         val stringReceiverEmail = receiverEmail
         val stringPasswordSenderEmail = emailPassword
@@ -115,33 +134,6 @@ class ServiceManager(private val context: Context) {
         }
     }
 
-
-    fun sendEmail(context: Context, recipient: String, subject: String, body: String, attachmentUri: Uri? = null) {
-        val emailSelectorIntent = Intent(Intent.ACTION_SENDTO).apply {
-            data = Uri.parse("mailto:")
-        }
-
-        val emailIntent = Intent(Intent.ACTION_SEND).apply {
-            putExtra(Intent.EXTRA_EMAIL, arrayOf(recipient))
-            putExtra(Intent.EXTRA_SUBJECT, subject)
-            putExtra(Intent.EXTRA_TEXT, body)
-            addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-            addFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION)
-            setSelector(emailSelectorIntent)
-        }
-
-        attachmentUri?.let {
-            emailIntent.putExtra(Intent.EXTRA_STREAM, it)
-        }
-
-        try {
-            context.startActivity(emailIntent)
-        } catch (e: ActivityNotFoundException) {
-            // Manejar el caso en que no hay aplicaciones de correo electrónico disponibles
-            e.printStackTrace()
-        }
-    }
-
     fun generateRandomCode() {
         // Utilizar runBlocking para mantener el contexto de coroutinas si es necesario
         runBlocking {
@@ -152,4 +144,6 @@ class ServiceManager(private val context: Context) {
             }
         }
     }
+
+
 }
