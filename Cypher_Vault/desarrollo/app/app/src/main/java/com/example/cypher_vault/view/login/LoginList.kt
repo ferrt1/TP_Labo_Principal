@@ -312,9 +312,6 @@ fun NavigationLogin(navController: NavController) {
                 Text("Registrarse", style = buttonTextStyle)
             }
         }
-
-
-
     }
     /////// PANEL DE OPCIONES DE LOGUEO POR USUARIO //////////////////////////////////////////////////////
     if (showConnectionOption) {

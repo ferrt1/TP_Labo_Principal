@@ -333,7 +333,8 @@ fun Gallery(navController: NavController, userId: String, galleryController: Gal
         galleryController.loadImagesForUser(userId)
     }
 
-
+    // Barra superior mantiene el color
+    val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior(rememberTopAppBarState())
 
     //Seleccion de imagenes de la galeria del celular y almacenamiento////////////////
     val launcher = rememberLauncherForActivityResult(ActivityResultContracts.GetMultipleContents()) { uris: List<Uri>? ->
@@ -382,8 +383,6 @@ fun Gallery(navController: NavController, userId: String, galleryController: Gal
     }
 
     val selectedImageBitmap = remember { mutableStateOf<Bitmap?>(null) }
-
-    val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(rememberTopAppBarState())
 
     // Variables de Ingresos de usuario
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
@@ -517,7 +516,10 @@ fun Gallery(navController: NavController, userId: String, galleryController: Gal
                                     Text(
                                         text = galleryController.procesarString(nombre),
                                         color = mainBackgroundColor,
-                                        style = textStyleTittle2
+                                        style = textStyleTittle2,
+                                        maxLines = 1,
+                                        softWrap = true,
+                                        overflow = TextOverflow.Ellipsis
                                     )
                                 }
                                 Spacer(modifier = Modifier.height(20.dp))
@@ -542,7 +544,10 @@ fun Gallery(navController: NavController, userId: String, galleryController: Gal
                         Text(
                             text = email,
                             color = mainBackgroundColor,
-                            style = textStyleTittle2
+                            style = textStyleTittle2,
+                            maxLines = 1,
+                            softWrap = true,
+                            overflow = TextOverflow.Ellipsis
                         )
                         Spacer(modifier = Modifier.height(16.dp))
                         // Habilitar segunda verificacion ///////////////////////////////////////////////////////////////
@@ -704,20 +709,16 @@ fun Gallery(navController: NavController, userId: String, galleryController: Gal
         //Pantalla principal de la galeria///////////////////////////////////////////////////////////////////////////////
         //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         Scaffold(
-
             modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
-
-
             ///BARRA SUPERIOR ////////////////////////////////////////////////////////////////////////////////////////////////
             topBar = {
-
                 CenterAlignedTopAppBar(
                     modifier = Modifier,
-
                     colors = TopAppBarDefaults.topAppBarColors(
                         containerColor = thirdColor,
-                        titleContentColor = thirdColor,
+                        titleContentColor = thirdColor
                     ),
+                    scrollBehavior = scrollBehavior,
                     title = {
 
                         Column(
@@ -781,7 +782,9 @@ fun Gallery(navController: NavController, userId: String, galleryController: Gal
                                     text = galleryController.procesarString(nombre),
                                     color = mainBackgroundColor,
                                     style = textStyleTittle2,
-                                    onTextLayout = { /* No se necesita hacer nada aquí */ }
+                                    maxLines = 1,
+                                    softWrap = true,
+                                    overflow = TextOverflow.Ellipsis
                                 )
 
                             }
@@ -807,7 +810,6 @@ fun Gallery(navController: NavController, userId: String, galleryController: Gal
                                     .width(100.dp))
                         }
                     },
-                    scrollBehavior = scrollBehavior,
                 )
             },
 
