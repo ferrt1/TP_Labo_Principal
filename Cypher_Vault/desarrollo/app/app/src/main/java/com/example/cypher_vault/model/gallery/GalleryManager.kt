@@ -207,6 +207,10 @@ class GalleryManager {
 
     val images = mutableStateOf<List<Images>>(listOf())
 
+    fun clearImages() {
+        images.value = listOf()
+    }
+
     fun getGalleryImages(): List<Images> {
         return images.value
     }

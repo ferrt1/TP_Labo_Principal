@@ -212,5 +212,9 @@ class GalleryController() {
         galleryManager.deleteImgs(userId, selectedImageIds)
     }
 
+    fun clearImages(){
+        galleryManager.clearImages()
+    }
+
 
 }

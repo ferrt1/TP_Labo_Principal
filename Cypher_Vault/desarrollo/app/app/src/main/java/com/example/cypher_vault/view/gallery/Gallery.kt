@@ -214,6 +214,7 @@ fun Gallery(navController: NavController, userId: String, galleryController: Gal
 
     //----------------------------------------------------------------------------------//
     var dbc = DatabaseController()
+    var inProcess by remember { mutableStateOf(false) }
 
     // variable para selecionar las imagenes para eliminar
     val selectedImageIds = remember { mutableStateOf<List<Long>>(listOf()) }
@@ -317,9 +318,11 @@ fun Gallery(navController: NavController, userId: String, galleryController: Gal
 
     //Carga de imagenes del usuario en la galeria//////////////////////
     LaunchedEffect(key1 = userId) {
+        inProcess = true
         LoginimgStatus=Estado.PROCESS
         galleryController.loadImagesForUser(userId)
         LoginimgStatus=Estado.FINALIZED
+        inProcess = false
     }
     val images = galleryController.getGalleryImages()
     var indeximg by remember { mutableStateOf(images.size) }
@@ -368,6 +371,7 @@ fun Gallery(navController: NavController, userId: String, galleryController: Gal
                 }
             }
         }
+        inProcess = false
         Log.e("foto","lo que vale index adentro$$indeximg")
     }
 
@@ -819,7 +823,11 @@ fun Gallery(navController: NavController, userId: String, galleryController: Gal
                         modifier = Modifier
                             .clickable(
                                 onClick = {
-                                    resettingTheChecklists(selectedImageIds = selectedImageIds, longClickPerformedSetter = { longClickPerformed = it }, selectedImages = selectedImages)
+                                    resettingTheChecklists(
+                                        selectedImageIds = selectedImageIds,
+                                        longClickPerformedSetter = { longClickPerformed = it },
+                                        selectedImages = selectedImages
+                                    )
                                 },
                                 indication = null,  // Desactivar la indicación visual del clic
                                 interactionSource = remember { MutableInteractionSource() }
@@ -927,43 +935,52 @@ fun Gallery(navController: NavController, userId: String, galleryController: Gal
                     }
                 }
             },
-            //Agregar imagen a la galeria de imagenes//////////////////////////////////////////////////////////////////
+            //Boton Agregar imagen a la galeria de imagenes//////////////////////////////////////////////////////////////////
             floatingActionButton = {
                 FloatingActionButton(
                     onClick = {
-                    if (isPremium == true) {
-                        indeximg = images.size
-                        if(images.size < maximoImagenesPremium) {
-                            resettingTheChecklists(selectedImageIds = selectedImageIds, longClickPerformedSetter = { longClickPerformed = it }, selectedImages = selectedImages)
-                            val toast = Toast.makeText(
+                        if ( inProcess == false ){
+                            inProcess = true
+                            if (isPremium == true) {
+                                indeximg = images.size
+                                if(images.size < maximoImagenesPremium) {
+                                    resettingTheChecklists(selectedImageIds = selectedImageIds, longClickPerformedSetter = { longClickPerformed = it }, selectedImages = selectedImages)
+                                    val toast = Toast.makeText(
+                                        context,
+                                        "Puedes seleccionar un máximo de 10 imágenes. Si seleccionas más de esta cantidad, no se guardarán", Toast.LENGTH_LONG
+                                    )
+                                    toast.setGravity(Gravity.TOP ,0, 0)
+                                    toast.show()
+                                    launcher.launch("image/*")
+                                } else {
+                                    inProcess = false
+                                    resettingTheChecklists(selectedImageIds = selectedImageIds, longClickPerformedSetter = { longClickPerformed = it }, selectedImages = selectedImages)
+                                    LimitStatus=Estado.PROCESS
+                                    currentMessage=messageController.getmessageLimitModePremium()
+                                }
+                            } else {
+                                if (images.size < maximoImagenesModoPobre) {
+                                    resettingTheChecklists(selectedImageIds = selectedImageIds, longClickPerformedSetter = { longClickPerformed = it }, selectedImages = selectedImages)
+                                    val toast = Toast.makeText(
+                                        context,
+                                        "Puedes seleccionar un máximo de 10 imágenes. Si seleccionas más de esta cantidad, no se guardarán", Toast.LENGTH_LONG
+                                    )
+                                    toast.setGravity(Gravity.TOP ,0, 0)
+                                    toast.show()
+                                    launcher.launch("image/*")
+                                } else {
+                                    inProcess = false
+                                    resettingTheChecklists(selectedImageIds = selectedImageIds, longClickPerformedSetter = { longClickPerformed = it }, selectedImages = selectedImages)
+                                    LimitStatus=Estado.PROCESS
+                                    currentMessage=messageController.getmessageLimitModePrueba()
+                                }
+                            }
+                        }else{
+                            Toast.makeText(
                                 context,
-                                "Puedes seleccionar un máximo de 10 imágenes. Si seleccionas más de esta cantidad, no se guardarán", Toast.LENGTH_LONG
-                            )
-                            toast.setGravity(Gravity.TOP ,0, 0)
-                            toast.show()
-                            launcher.launch("image/*")
-                        } else {
-                            resettingTheChecklists(selectedImageIds = selectedImageIds, longClickPerformedSetter = { longClickPerformed = it }, selectedImages = selectedImages)
-                            LimitStatus=Estado.PROCESS
-                            currentMessage=messageController.getmessageLimitModePremium()
-
+                                "Procesos activos, espere un momento.", Toast.LENGTH_LONG
+                            ).show()
                         }
-                    } else {
-                        if (images.size < maximoImagenesModoPobre) {
-                            resettingTheChecklists(selectedImageIds = selectedImageIds, longClickPerformedSetter = { longClickPerformed = it }, selectedImages = selectedImages)
-                            val toast = Toast.makeText(
-                                context,
-                                "Puedes seleccionar un máximo de 10 imágenes. Si seleccionas más de esta cantidad, no se guardarán", Toast.LENGTH_LONG
-                            )
-                            toast.setGravity(Gravity.TOP ,0, 0)
-                            toast.show()
-                            launcher.launch("image/*")
-                        } else {
-                            resettingTheChecklists(selectedImageIds = selectedImageIds, longClickPerformedSetter = { longClickPerformed = it }, selectedImages = selectedImages)
-                            LimitStatus=Estado.PROCESS
-                            currentMessage=messageController.getmessageLimitModePrueba()
-                        }
-                    }
                 }) {
                     Icon(
                         modifier = Modifier.width(30.dp),
@@ -980,7 +997,11 @@ fun Gallery(navController: NavController, userId: String, galleryController: Gal
                     modifier = Modifier
                         .clickable(
                             onClick = {
-                                resettingTheChecklists(selectedImageIds = selectedImageIds, longClickPerformedSetter = { longClickPerformed = it }, selectedImages = selectedImages)
+                                resettingTheChecklists(
+                                    selectedImageIds = selectedImageIds,
+                                    longClickPerformedSetter = { longClickPerformed = it },
+                                    selectedImages = selectedImages
+                                )
                             },
                             indication = null,  // Desactivar la indicación visual del clic
                             interactionSource = remember { MutableInteractionSource() }
@@ -1015,7 +1036,10 @@ fun Gallery(navController: NavController, userId: String, galleryController: Gal
                                                 selectedImageIds.value = listOf(image.id)
                                                 selectedImages[image.id] = !isSelected
                                                 longClickPerformed = true
-                                                Log.e("img","imagenes seleciona click largo id selecionado${selectedImageIds.value}")
+                                                Log.e(
+                                                    "img",
+                                                    "imagenes seleciona click largo id selecionado${selectedImageIds.value}"
+                                                )
                                             },
                                             onClick = {
                                                 //para ver las imagenes (zoom)
@@ -1030,14 +1054,22 @@ fun Gallery(navController: NavController, userId: String, galleryController: Gal
                                                 //El caso que el usuario quiera borrar las imagenes//////////////////////////////////
                                                 else {
                                                     if (!selectedImageIds.value.contains(image.id)) {
-                                                        Log.e("img","imagenes seleciona id selecionado${selectedImageIds.value}")
+                                                        Log.e(
+                                                            "img",
+                                                            "imagenes seleciona id selecionado${selectedImageIds.value}"
+                                                        )
                                                         selectedImages[image.id] = !isSelected
-                                                        selectedImageIds.value = selectedImageIds.value + image.id
+                                                        selectedImageIds.value =
+                                                            selectedImageIds.value + image.id
                                                     } else if (selectedImageIds.value.contains(image.id)) {
                                                         selectedImages[image.id] = !isSelected
-                                                        val updatedList = selectedImageIds.value.filter { it != image.id }
+                                                        val updatedList =
+                                                            selectedImageIds.value.filter { it != image.id }
                                                         selectedImageIds.value = updatedList
-                                                        Log.e("img","imagenes deselecionada id selecionado${selectedImageIds.value}")
+                                                        Log.e(
+                                                            "img",
+                                                            "imagenes deselecionada id selecionado${selectedImageIds.value}"
+                                                        )
 
                                                     }
                                                 }
@@ -1178,7 +1210,10 @@ fun Gallery(navController: NavController, userId: String, galleryController: Gal
                                     modifier = Modifier
                                         .background(
                                             color = Color.White,
-                                            shape = RoundedCornerShape(bottomStart = 8.dp, bottomEnd = 8.dp) // Solo redondear bordes inferiores
+                                            shape = RoundedCornerShape(
+                                                bottomStart = 8.dp,
+                                                bottomEnd = 8.dp
+                                            ) // Solo redondear bordes inferiores
                                         )
                                         .padding(8.dp),
                                     verticalAlignment = Alignment.CenterVertically // Alinear el contenido verticalmente al centro
@@ -1302,6 +1337,8 @@ fun Gallery(navController: NavController, userId: String, galleryController: Gal
                                                 userPremiumSinceDate
                                             )
                                             showPremiumPanel = false
+                                            Toast.makeText(context, "Se esta cerrando su sesion para completar la operacion", Toast.LENGTH_SHORT).show()
+                                            galleryController.clearImages()
                                             navController.navigateToListLogin()
                                         },
                                         modifier = Modifier.padding(top = 16.dp, bottom = 70.dp),
@@ -1587,7 +1624,9 @@ fun Gallery(navController: NavController, userId: String, galleryController: Gal
                         title = { Text(text = "Confirmar salida") },
                         text = { Text(text = "¿Estás seguro de que quieres salir?") },
                         confirmButton = {
-                            TextButton(onClick = { galleryController.closeSession(context,navController) }) {
+                            TextButton(onClick = {
+                                galleryController.clearImages()
+                                galleryController.closeSession(context,navController) }) {
                                 Text(text = "Salir")
                             }
                         },

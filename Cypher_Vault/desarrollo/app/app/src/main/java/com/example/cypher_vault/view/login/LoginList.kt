@@ -44,6 +44,7 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Send
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.AlertDialog
@@ -69,6 +70,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.sp
 import com.example.cypher_vault.R
@@ -177,8 +179,8 @@ fun NavigationLogin(navController: NavController) {
                 shape = RoundedCornerShape(4.dp),
                 trailingIcon = {
                     Icon(
-                        Icons.AutoMirrored.Filled.Send,
-                        contentDescription = "Icono de envío",
+                        Icons.Filled.Search,
+                        contentDescription = "Icono de busqueda",
                         tint = thirdColor
                     )
                 },
@@ -279,18 +281,24 @@ fun NavigationLogin(navController: NavController) {
                             horizontalAlignment = Alignment.CenterHorizontally,
                         ) {
                             Text(
-                                text = user.firstName?.take(16)?.let { if (it.length < 16) it else "$it..." } ?: "",
+                                text = user.firstName.toString(), //.take(16)?.let { if (it.length < 16) it else "$it..." } ?: "",
                                 fontSize = 20.sp,
                                 fontFamily = fontFamily,
                                 color = thirdColor,
-                                fontWeight = FontWeight.Bold
+                                fontWeight = FontWeight.Bold,
+                                maxLines = 1,
+                                softWrap = true,
+                                overflow = TextOverflow.Ellipsis //
                             )
                             Text(
-                                text = user.email?.take(23)?.let { if (it.length < 23) it else "$it..." } ?: "",
+                                text = user.email.toString(), //.take(23)?.let { if (it.length < 23) it else "$it..." } ?: "",
                                 fontSize = 14.sp,
                                 fontFamily = fontFamily,
                                 color = thirdColor,
-                                fontWeight = FontWeight.Bold
+                                fontWeight = FontWeight.Bold,
+                                maxLines = 1,
+                                softWrap = true,
+                                overflow = TextOverflow.Ellipsis //
                             )
                         }
                     }
@@ -308,6 +316,7 @@ fun NavigationLogin(navController: NavController) {
 
 
     }
+    /////// PANEL DE OPCIONES DE LOGUEO POR USUARIO //////////////////////////////////////////////////////
     if (showConnectionOption) {
         Box(
             modifier = Modifier
@@ -374,6 +383,7 @@ fun NavigationLogin(navController: NavController) {
             }
         }
     }
+    /////// PANEL DE CONTRASEÑA ///////////////////////////////////////////////////////////
     else if (showPasswordDialog) {
         var showError by remember { mutableStateOf(false) }
 
