@@ -195,7 +195,7 @@ val textStyleTittle2 = TextStyle(
 @Composable
 fun Gallery(navController: NavController, userId: String, galleryController: GalleryController) {
 
-   //-----"CODIGO PARA QUE SE VEA EN NEGRO LA GALERIA SI QUIERE SACAR FOTOCAPTURA-----//
+    //-----"CODIGO PARA QUE SE VEA EN NEGRO LA GALERIA SI QUIERE SACAR FOTOCAPTURA-----//
 
     val block = LocalContext.current
     // Usar DisposableEffect para configurar y limpiar la bandera FLAG_SECURE
@@ -222,7 +222,6 @@ fun Gallery(navController: NavController, userId: String, galleryController: Gal
     val selectedImages = remember { mutableStateMapOf<Long, Boolean>() }
 
 
-
     //Variables para el mensaje de gallery
     var currentMessage by remember { mutableStateOf("") }
     val messageController = MessageController()
@@ -232,7 +231,7 @@ fun Gallery(navController: NavController, userId: String, galleryController: Gal
     var AddingImages by remember { mutableStateOf(Estado.BLOCKED) } //Agregando las imagenes
     var Statuslimitimg by remember { mutableStateOf(false) }
     //Variable de la 2 verificacion
-    var checkedSecondAuth : Boolean? by remember { mutableStateOf(false) }
+    var checkedSecondAuth: Boolean? by remember { mutableStateOf(false) }
     LaunchedEffect(key1 = Unit) { // Key can be anything to trigger on recomposition
         val usuarioTemp = dbc.getUserById(userId)
         if (usuarioTemp != null) {
@@ -317,69 +316,78 @@ fun Gallery(navController: NavController, userId: String, galleryController: Gal
     }
 
     //Carga de imagenes del usuario en la galeria//////////////////////
+
+    //Cuando cambia el UID
     LaunchedEffect(key1 = userId) {
         inProcess = true
-        LoginimgStatus=Estado.PROCESS
+        LoginimgStatus = Estado.PROCESS
         galleryController.loadImagesForUser(userId)
-        LoginimgStatus=Estado.FINALIZED
+        LoginimgStatus = Estado.FINALIZED
         inProcess = false
     }
     val images = galleryController.getGalleryImages()
     var indeximg by remember { mutableStateOf(images.size) }
     val imageUris = remember { mutableStateOf<List<Uri>>(listOf()) }
 
-
+    // Cuando cambian las imagenes
     LaunchedEffect(key1 = imageUris.value) {
+        inProcess = true
+        LoginimgStatus = Estado.PROCESS
         galleryController.loadImagesForUser(userId)
+        LoginimgStatus = Estado.FINALIZED
+        inProcess = false
     }
 
     // Barra superior mantiene el color
-    val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior(rememberTopAppBarState())
+    val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(rememberTopAppBarState())
 
     //Seleccion de imagenes de la galeria del celular y almacenamiento////////////////
-    val launcher = rememberLauncherForActivityResult(ActivityResultContracts.GetMultipleContents()) { uris: List<Uri>? ->
-        val maxSelectionLimit = if (isPremium == true) maximoImagenesPremium else maximoImagenesModoPobre
-        val limitedUris = uris?.take(MAX_IMAGE_SELECTION) ?: emptyList()
-        indeximg = images.size
-        AddingImages = Estado.PROCESS
-        limitedUris.forEach { uri ->
-            if (indeximg < maxSelectionLimit) {
-                uri?.let {
-                    context.contentResolver.openInputStream(it)?.use { inputStream ->
-                        try {
-                            val bitmapOriginal = BitmapFactory.decodeStream(inputStream)
-                            val bitmapResize = galleryController.reduceImageSize(
-                                bitmapOriginal.asImageBitmap(),
-                                pixelesDeRedimensionamiento
-                            )
-                            val byteArrayOutputStream = ByteArrayOutputStream()
-                            bitmapResize.asAndroidBitmap()
-                                .compress(Bitmap.CompressFormat.PNG, 60, byteArrayOutputStream)
-                            val compressedImageData = byteArrayOutputStream.toByteArray()
+    val launcher =
+        rememberLauncherForActivityResult(ActivityResultContracts.GetMultipleContents()) { uris: List<Uri>? ->
+            val maxSelectionLimit =
+                if (isPremium == true) maximoImagenesPremium else maximoImagenesModoPobre
+            val limitedUris = uris?.take(MAX_IMAGE_SELECTION) ?: emptyList()
+            indeximg = images.size
+            AddingImages = Estado.PROCESS
+            limitedUris.forEach { uri ->
+                inProcess = true
+                if (indeximg < maxSelectionLimit) {
+                    uri?.let {
+                        context.contentResolver.openInputStream(it)?.use { inputStream ->
+                            try {
+                                val bitmapOriginal = BitmapFactory.decodeStream(inputStream)
+                                val bitmapResize = galleryController.reduceImageSize(
+                                    bitmapOriginal.asImageBitmap(),
+                                    pixelesDeRedimensionamiento
+                                )
+                                val byteArrayOutputStream = ByteArrayOutputStream()
+                                bitmapResize.asAndroidBitmap()
+                                    .compress(Bitmap.CompressFormat.PNG, 60, byteArrayOutputStream)
+                                val compressedImageData = byteArrayOutputStream.toByteArray()
 
-                            // Liberar recursos
-                            inputStream.close()
-                            bitmapOriginal?.recycle()
-                            byteArrayOutputStream.close()
+                                // Liberar recursos
+                                inputStream.close()
+                                bitmapOriginal?.recycle()
+                                byteArrayOutputStream.close()
 
-                            galleryController.saveImage(compressedImageData, userId)
-                            imageUris.value += it
-                            indeximg++
-                        } catch (e: Exception) {
-                            Log.e("Error", "Error procesando imagen", e)
+                                galleryController.saveImage(compressedImageData, userId)
+                                imageUris.value += it
+                                indeximg++
+                            } catch (e: Exception) {
+                                Log.e("Error", "Error procesando imagen", e)
+                            }
                         }
                     }
                 }
             }
+            inProcess = false
+            Log.e("foto", "lo que vale index adentro$$indeximg")
         }
-        inProcess = false
-        Log.e("foto","lo que vale index adentro$$indeximg")
-    }
 
     LaunchedEffect(images.size) {
-       if(images.size==indeximg) {
-           AddingImages = Estado.FINALIZED
-       }
+        if (images.size == indeximg) {
+            AddingImages = Estado.FINALIZED
+        }
     }
 
     val selectedImageBitmap = remember { mutableStateOf<Bitmap?>(null) }
@@ -396,42 +404,45 @@ fun Gallery(navController: NavController, userId: String, galleryController: Gal
     Log.e("galeria", "LISTA DE INGRESOS : $listaDeIngresos")
 
 
-    val launcherProfile = rememberLauncherForActivityResult(ActivityResultContracts.GetMultipleContents()) { uris: List<Uri>? ->
-        val maxSelectionLimit = if (isPremium == true) maximoImagenesPremium else maximoImagenesModoPobre
-        indeximg = images.size
+    val launcherProfile =
+        rememberLauncherForActivityResult(ActivityResultContracts.GetMultipleContents()) { uris: List<Uri>? ->
+            val maxSelectionLimit =
+                if (isPremium == true) maximoImagenesPremium else maximoImagenesModoPobre
+            indeximg = images.size
 
-        // Only process the first 10 (or the max selection limit) images if more than allowed are selected
-        val limitedUris = uris?.take(MAX_IMAGE_SELECTION) ?: emptyList()
+            // Only process the first 10 (or the max selection limit) images if more than allowed are selected
+            val limitedUris = uris?.take(MAX_IMAGE_SELECTION) ?: emptyList()
+            inProcess = true
+            limitedUris.forEach { uri ->
+                if (indeximg < maxSelectionLimit) {
+                    uri?.let {
+                        val inputStream = context.contentResolver.openInputStream(it)
+                        val bitmapOriginal = BitmapFactory.decodeStream(inputStream)
+                        val bitmapResize = galleryController.reduceImageSize(
+                            bitmapOriginal.asImageBitmap(),
+                            1.0f // Ajusta este valor según sea necesario
+                        )
+                        val byteArrayOutputStream = ByteArrayOutputStream()
+                        bitmapResize.asAndroidBitmap()
+                            .compress(Bitmap.CompressFormat.PNG, 60, byteArrayOutputStream)
+                        val compressedImageData = byteArrayOutputStream.toByteArray()
 
-        limitedUris.forEach { uri ->
-            if (indeximg < maxSelectionLimit) {
-                uri?.let {
-                    val inputStream = context.contentResolver.openInputStream(it)
-                    val bitmapOriginal = BitmapFactory.decodeStream(inputStream)
-                    val bitmapResize = galleryController.reduceImageSize(
-                        bitmapOriginal.asImageBitmap(),
-                        1.0f // Ajusta este valor según sea necesario
-                    )
-                    val byteArrayOutputStream = ByteArrayOutputStream()
-                    bitmapResize.asAndroidBitmap()
-                        .compress(Bitmap.CompressFormat.PNG, 60, byteArrayOutputStream)
-                    val compressedImageData = byteArrayOutputStream.toByteArray()
-
-                    scope.launch {
-                        withContext(Dispatchers.IO) {
-                            galleryController.updateProfileImage(userId, compressedImageData)
+                        scope.launch {
+                            withContext(Dispatchers.IO) {
+                                galleryController.updateProfileImage(userId, compressedImageData)
+                            }
+                            // Actualiza la imagen en la UI
+                            userImage = compressedImageData
                         }
-                        // Actualiza la imagen en la UI
-                        userImage = compressedImageData
                     }
+                    indeximg++
+                    Log.e("foto", "lo que vale index adentro$$indeximg")
                 }
-                indeximg++
-                Log.e("foto","lo que vale index adentro$$indeximg")
             }
+            inProcess = false
         }
-    }
 
-    Log.e("foto","lo que vale index$$indeximg")
+    Log.e("foto", "lo que vale index$$indeximg")
 
     val onImageClick = {
         launcherProfile.launch("image/*")
@@ -471,7 +482,6 @@ fun Gallery(navController: NavController, userId: String, galleryController: Gal
     }
 
 
-
     //Panel del usuario//////////////////////////////////////////////////////////////////////////////////////////////
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     ModalNavigationDrawer(
@@ -487,7 +497,7 @@ fun Gallery(navController: NavController, userId: String, galleryController: Gal
                         modifier = Modifier
                             .fillMaxSize()
                             .verticalScroll(rememberScrollState())
-                            .padding(16.dp),
+                            .padding(20.dp),
                         horizontalAlignment = Alignment.CenterHorizontally,
                         verticalArrangement = Arrangement.Center
                     ) {
@@ -496,11 +506,12 @@ fun Gallery(navController: NavController, userId: String, galleryController: Gal
                             Column(
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .padding(16.dp),
+                                    .padding(15.dp),
                                 horizontalAlignment = Alignment.CenterHorizontally,
                                 verticalArrangement = Arrangement.Center
                             ) {
                                 Row(
+                                    modifier = Modifier.fillMaxWidth().padding(horizontal = 15.dp),
                                     horizontalArrangement = Arrangement.Absolute.Center
                                 ) {
                                     Text(
@@ -542,6 +553,7 @@ fun Gallery(navController: NavController, userId: String, galleryController: Gal
                         }
                         Spacer(modifier = Modifier.height(8.dp))
                         Text(
+                            modifier = Modifier.fillMaxWidth().padding(horizontal = 15.dp),
                             text = email,
                             color = mainBackgroundColor,
                             style = textStyleTittle2,
@@ -554,7 +566,8 @@ fun Gallery(navController: NavController, userId: String, galleryController: Gal
                         Button(
                             onClick = {
                                 checkedSecondAuth = !checkedSecondAuth!!
-                                galleryController.saveSecondAuth(userId,
+                                galleryController.saveSecondAuth(
+                                    userId,
                                     checkedSecondAuth!!
                                 )
                                 Log.d("galeria", "checkedSecondAuth: $checkedSecondAuth")
@@ -579,13 +592,22 @@ fun Gallery(navController: NavController, userId: String, galleryController: Gal
 
                                 checkedSecondAuth?.let {
                                     Switch(
-                                        colors = SwitchDefaults.colors(checkedThumbColor = thirdColor,checkedIconColor = thirdColor, checkedTrackColor= firstColor),
+                                        colors = SwitchDefaults.colors(
+                                            checkedThumbColor = thirdColor,
+                                            checkedIconColor = thirdColor,
+                                            checkedTrackColor = firstColor
+                                        ),
                                         checked = it,
                                         onCheckedChange = {
                                             checkedSecondAuth = it
-                                            Log.d("galeria", "checkedSecondAuth: $checkedSecondAuth")
-                                            galleryController.saveSecondAuth(userId,
-                                                checkedSecondAuth!!)
+                                            Log.d(
+                                                "galeria",
+                                                "checkedSecondAuth: $checkedSecondAuth"
+                                            )
+                                            galleryController.saveSecondAuth(
+                                                userId,
+                                                checkedSecondAuth!!
+                                            )
                                         },
                                         thumbContent = if (checkedSecondAuth == true) {
                                             {
@@ -608,7 +630,8 @@ fun Gallery(navController: NavController, userId: String, galleryController: Gal
                         Button(
                             onClick = {
                                 nameState = nombre
-                                showPasswordPanel = true },
+                                showPasswordPanel = true
+                            },
                             shape = RoundedCornerShape(4.dp),
                             border = BorderStroke(3.dp, firstColor),
                             colors = ButtonDefaults.buttonColors(
@@ -687,7 +710,7 @@ fun Gallery(navController: NavController, userId: String, galleryController: Gal
                                 showDeletePanel = true
                                 deletePasswordState.value = TextFieldValue("")
 
-                                      },
+                            },
                             shape = RoundedCornerShape(4.dp),
                             border = BorderStroke(3.dp, firstColor),
                             colors = ButtonDefaults.buttonColors(
@@ -710,22 +733,26 @@ fun Gallery(navController: NavController, userId: String, galleryController: Gal
         //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         Scaffold(
             modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
-            ///BARRA SUPERIOR ////////////////////////////////////////////////////////////////////////////////////////////////
             topBar = {
                 CenterAlignedTopAppBar(
-                    modifier = Modifier,
+                    modifier = Modifier
+                        .background(thirdColor),
                     colors = TopAppBarDefaults.topAppBarColors(
                         containerColor = thirdColor,
+                        scrolledContainerColor = thirdColor,
                         titleContentColor = thirdColor
                     ),
-                    scrollBehavior = scrollBehavior,
+                    scrollBehavior = scrollBehavior, // Usamos pinnedScrollBehavior
                     title = {
-
                         Column(
                             modifier = Modifier
                                 .clickable(
                                     onClick = {
-                                        resettingTheChecklists(selectedImageIds = selectedImageIds, longClickPerformedSetter = { longClickPerformed = it }, selectedImages = selectedImages)
+                                        resettingTheChecklists(
+                                            selectedImageIds = selectedImageIds,
+                                            longClickPerformedSetter = { longClickPerformed = it },
+                                            selectedImages = selectedImages
+                                        )
                                     },
                                     indication = null,  // Desactivar la indicación visual del clic
                                     interactionSource = remember { MutableInteractionSource() }
@@ -804,10 +831,12 @@ fun Gallery(navController: NavController, userId: String, galleryController: Gal
                     actions = {
                         Spacer(modifier = Modifier.height(20.dp))
                         IconButton(onClick = { abrirPanel(scope, drawerState) }) {
-                            CircularImage(byteArray = userImage,
+                            CircularImage(
+                                byteArray = userImage,
                                 modifier = Modifier
                                     .height(100.dp)
-                                    .width(100.dp))
+                                    .width(100.dp)
+                            )
                         }
                     },
                 )
@@ -837,7 +866,11 @@ fun Gallery(navController: NavController, userId: String, galleryController: Gal
                             .fillMaxWidth()
                             .clip(RoundedCornerShape(16.dp)) // Bordes redondeados
                             .background(Color.White) // Fondo blanco para el Box
-                            .border(2.dp, thirdColor, RoundedCornerShape(16.dp)) // Borde con color y forma redondeada
+                            .border(
+                                2.dp,
+                                thirdColor,
+                                RoundedCornerShape(16.dp)
+                            ) // Borde con color y forma redondeada
                     ) {
                         //Botones de eliminar y cancelar para la elimincacion de imagenes ///////////////////////////////////////////
                         if (longClickPerformed) {
@@ -845,23 +878,29 @@ fun Gallery(navController: NavController, userId: String, galleryController: Gal
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .padding(8.dp),
-                                horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterHorizontally),
+                                horizontalArrangement = Arrangement.spacedBy(
+                                    8.dp,
+                                    Alignment.CenterHorizontally
+                                ),
                                 verticalAlignment = Alignment.CenterVertically
                             ) {
                                 Button(
                                     onClick = {
-                                        DeletionStatus=Estado.PROCESS
+                                        DeletionStatus = Estado.PROCESS
                                         scope.launch {
                                             withContext(Dispatchers.IO) {
-                                                galleryController.deleteImg(userId, selectedImageIds)
-                                                DeletionStatus=Estado.FINALIZED
+                                                galleryController.deleteImg(
+                                                    userId,
+                                                    selectedImageIds
+                                                )
+                                                DeletionStatus = Estado.FINALIZED
                                             }
                                         }
-                                        indeximg=images.size
+                                        indeximg = images.size
                                         longClickPerformed = false
                                     },
                                     shape = RoundedCornerShape(4.dp),
-                                    border = BorderStroke(3.dp,firstColor),
+                                    border = BorderStroke(3.dp, firstColor),
                                     colors = ButtonDefaults.buttonColors(
                                         containerColor = thirdColor,
                                         contentColor = wingWhite,
@@ -878,13 +917,23 @@ fun Gallery(navController: NavController, userId: String, galleryController: Gal
                                 Button(
                                     onClick = {
                                         // Lógica para cancelar
-                                        resettingTheChecklists(selectedImageIds = selectedImageIds, longClickPerformedSetter = { longClickPerformed = it }, selectedImages = selectedImages)
-                                    if(selectedImageIds.value.isEmpty()){
-                                        resettingTheChecklists(selectedImageIds = selectedImageIds, longClickPerformedSetter = { longClickPerformed = it }, selectedImages = selectedImages)
-                                    }
-                                              },
+                                        resettingTheChecklists(
+                                            selectedImageIds = selectedImageIds,
+                                            longClickPerformedSetter = { longClickPerformed = it },
+                                            selectedImages = selectedImages
+                                        )
+                                        if (selectedImageIds.value.isEmpty()) {
+                                            resettingTheChecklists(
+                                                selectedImageIds = selectedImageIds,
+                                                longClickPerformedSetter = {
+                                                    longClickPerformed = it
+                                                },
+                                                selectedImages = selectedImages
+                                            )
+                                        }
+                                    },
                                     shape = RoundedCornerShape(4.dp),
-                                    border = BorderStroke(3.dp,firstColor),
+                                    border = BorderStroke(3.dp, firstColor),
                                     colors = ButtonDefaults.buttonColors(
                                         containerColor = thirdColor,
                                         contentColor = wingWhite,
@@ -899,8 +948,7 @@ fun Gallery(navController: NavController, userId: String, galleryController: Gal
                                     )
                                 }
                             }
-                        }
-                        else {
+                        } else {
                             Row(
                                 modifier = Modifier
                                     .fillMaxWidth()
@@ -909,11 +957,13 @@ fun Gallery(navController: NavController, userId: String, galleryController: Gal
                                 horizontalArrangement = Arrangement.SpaceBetween,
                             ) {
                                 val icon = when {
-                                    AddingImages == Estado.BLOCKED &&   DeletionStatus == Estado.BLOCKED && LimitStatus == Estado.BLOCKED && LoginimgStatus == Estado.BLOCKED -> R.drawable.iconclarificatio
+                                    AddingImages == Estado.BLOCKED && DeletionStatus == Estado.BLOCKED && LimitStatus == Estado.BLOCKED && LoginimgStatus == Estado.BLOCKED -> R.drawable.iconclarificatio
                                     LimitStatus == Estado.PROCESS -> R.drawable.icoerror
-                                    AddingImages == Estado.PROCESS || LoginimgStatus == Estado.PROCESS || DeletionStatus == Estado.PROCESS ->R.drawable.waiting
-                                    AddingImages == Estado.FINALIZED || LoginimgStatus == Estado.FINALIZED ||   DeletionStatus == Estado.FINALIZED ->R.drawable.successful
-                                    else -> {R.drawable.logo}
+                                    AddingImages == Estado.PROCESS || LoginimgStatus == Estado.PROCESS || DeletionStatus == Estado.PROCESS -> R.drawable.waiting
+                                    AddingImages == Estado.FINALIZED || LoginimgStatus == Estado.FINALIZED || DeletionStatus == Estado.FINALIZED -> R.drawable.successful
+                                    else -> {
+                                        R.drawable.logo
+                                    }
                                 }
                                 painterResource(id = icon)?.let {
                                     Image(
@@ -941,49 +991,68 @@ fun Gallery(navController: NavController, userId: String, galleryController: Gal
             floatingActionButton = {
                 FloatingActionButton(
                     onClick = {
-                        if ( inProcess == false ){
+                        if (inProcess == false) {
                             inProcess = true
                             if (isPremium == true) {
                                 indeximg = images.size
-                                if(images.size < maximoImagenesPremium) {
-                                    resettingTheChecklists(selectedImageIds = selectedImageIds, longClickPerformedSetter = { longClickPerformed = it }, selectedImages = selectedImages)
+                                if (images.size < maximoImagenesPremium) {
+                                    resettingTheChecklists(
+
+                                        selectedImageIds = selectedImageIds,
+                                        longClickPerformedSetter = { longClickPerformed = it },
+                                        selectedImages = selectedImages
+                                    )
                                     val toast = Toast.makeText(
                                         context,
-                                        "Puedes seleccionar un máximo de 10 imágenes. Si seleccionas más de esta cantidad, no se guardarán", Toast.LENGTH_LONG
+                                        "Puedes seleccionar un máximo de 10 imágenes. Si seleccionas más de esta cantidad, no se guardarán",
+                                        Toast.LENGTH_LONG
                                     )
-                                    toast.setGravity(Gravity.TOP ,0, 0)
+                                    toast.setGravity(Gravity.TOP, 0, 0)
                                     toast.show()
                                     launcher.launch("image/*")
                                 } else {
                                     inProcess = false
-                                    resettingTheChecklists(selectedImageIds = selectedImageIds, longClickPerformedSetter = { longClickPerformed = it }, selectedImages = selectedImages)
-                                    LimitStatus=Estado.PROCESS
-                                    currentMessage=messageController.getmessageLimitModePremium()
+                                    resettingTheChecklists(
+                                        selectedImageIds = selectedImageIds,
+                                        longClickPerformedSetter = { longClickPerformed = it },
+                                        selectedImages = selectedImages
+                                    )
+                                    LimitStatus = Estado.PROCESS
+                                    currentMessage = messageController.getmessageLimitModePremium()
                                 }
                             } else {
                                 if (images.size < maximoImagenesModoPobre) {
-                                    resettingTheChecklists(selectedImageIds = selectedImageIds, longClickPerformedSetter = { longClickPerformed = it }, selectedImages = selectedImages)
+                                    resettingTheChecklists(
+                                        selectedImageIds = selectedImageIds,
+                                        longClickPerformedSetter = { longClickPerformed = it },
+                                        selectedImages = selectedImages
+                                    )
                                     val toast = Toast.makeText(
                                         context,
-                                        "Puedes seleccionar un máximo de 10 imágenes. Si seleccionas más de esta cantidad, no se guardarán", Toast.LENGTH_LONG
+                                        "Puedes seleccionar un máximo de 10 imágenes. Si seleccionas más de esta cantidad, no se guardarán",
+                                        Toast.LENGTH_LONG
                                     )
-                                    toast.setGravity(Gravity.TOP ,0, 0)
+                                    toast.setGravity(Gravity.TOP, 0, 0)
                                     toast.show()
                                     launcher.launch("image/*")
                                 } else {
                                     inProcess = false
-                                    resettingTheChecklists(selectedImageIds = selectedImageIds, longClickPerformedSetter = { longClickPerformed = it }, selectedImages = selectedImages)
-                                    LimitStatus=Estado.PROCESS
-                                    currentMessage=messageController.getmessageLimitModePrueba()
+                                    resettingTheChecklists(
+                                        selectedImageIds = selectedImageIds,
+                                        longClickPerformedSetter = { longClickPerformed = it },
+                                        selectedImages = selectedImages
+                                    )
+                                    LimitStatus = Estado.PROCESS
+                                    currentMessage = messageController.getmessageLimitModePrueba()
                                 }
                             }
-                        }else{
+                        } else {
                             Toast.makeText(
                                 context,
                                 "Procesos activos, espere un momento.", Toast.LENGTH_LONG
                             ).show()
                         }
-                }) {
+                    }) {
                     Icon(
                         modifier = Modifier.width(30.dp),
                         tint = firstColor,
@@ -1080,9 +1149,16 @@ fun Gallery(navController: NavController, userId: String, galleryController: Gal
                                             },
                                         )
                                 )
-                                if(selectedImageIds.value.isEmpty()){
-                                    Log.e("img","no hay nada selecionado id selecionado${selectedImageIds.value}")
-                                    resettingTheChecklists(selectedImageIds = selectedImageIds, longClickPerformedSetter = { longClickPerformed = it }, selectedImages = selectedImages)
+                                if (selectedImageIds.value.isEmpty()) {
+                                    Log.e(
+                                        "img",
+                                        "no hay nada selecionado id selecionado${selectedImageIds.value}"
+                                    )
+                                    resettingTheChecklists(
+                                        selectedImageIds = selectedImageIds,
+                                        longClickPerformedSetter = { longClickPerformed = it },
+                                        selectedImages = selectedImages
+                                    )
                                 }
                                 // Genera los checkList en las imagenes//////////////////////////////////////////////////////////
                                 if (isSelected && longClickPerformed) {
@@ -1100,50 +1176,64 @@ fun Gallery(navController: NavController, userId: String, galleryController: Gal
                             }
                         }
                     }
-                    LaunchedEffect(selectedImageIds){
-                    if(selectedImageIds.value.isEmpty()){
-                        Log.e("img","no hay nada selecionado id selecionado${selectedImageIds.value}")
-                        resettingTheChecklists(selectedImageIds = selectedImageIds, longClickPerformedSetter = { longClickPerformed = it }, selectedImages = selectedImages)
-                    }
+                    LaunchedEffect(selectedImageIds) {
+                        if (selectedImageIds.value.isEmpty()) {
+                            Log.e(
+                                "img",
+                                "no hay nada selecionado id selecionado${selectedImageIds.value}"
+                            )
+                            resettingTheChecklists(
+                                selectedImageIds = selectedImageIds,
+                                longClickPerformedSetter = { longClickPerformed = it },
+                                selectedImages = selectedImages
+                            )
+                        }
                     }
 
 
                     // Ciclando los dialogos cada 5 segundo///////////////////////////////////////////////////////////////////
-                    LaunchedEffect(DeletionStatus,LimitStatus,LoginimgStatus,AddingImages) {
+                    LaunchedEffect(DeletionStatus, LimitStatus, LoginimgStatus, AddingImages) {
                         when {
-                            AddingImages==Estado.PROCESS ->{
-                                currentMessage=messageController.getmessageAddingImages()
+                            AddingImages == Estado.PROCESS -> {
+                                currentMessage = messageController.getmessageAddingImages()
                             }
-                            AddingImages==Estado.FINALIZED ->{
-                                currentMessage=messageController.getmessageAddingImagesComplete()
+
+                            AddingImages == Estado.FINALIZED -> {
+                                currentMessage = messageController.getmessageAddingImagesComplete()
                                 delay(5000) // Espera 5 segundos
-                                AddingImages=Estado.BLOCKED
+                                AddingImages = Estado.BLOCKED
                             }
-                            LoginimgStatus==Estado.PROCESS ->{
-                                currentMessage=messageController.getmessageLoading()
+
+                            LoginimgStatus == Estado.PROCESS -> {
+                                currentMessage = messageController.getmessageLoading()
                             }
-                            LoginimgStatus==Estado.FINALIZED ->{
-                                currentMessage=messageController.getmessageLoadingComplete()
+
+                            LoginimgStatus == Estado.FINALIZED -> {
+                                currentMessage = messageController.getmessageLoadingComplete()
                                 delay(5000) // Espera 5 segundos
-                                LoginimgStatus=Estado.BLOCKED
+                                LoginimgStatus = Estado.BLOCKED
                             }
+
                             DeletionStatus == Estado.BLOCKED && LimitStatus == Estado.BLOCKED -> {
                                 val messageChannel = messageController.getMessageChannel()
                                 for (message in messageChannel) {
                                     currentMessage = message
                                 }
                             }
+
                             DeletionStatus == Estado.PROCESS && LimitStatus == Estado.BLOCKED -> {
-                                currentMessage=messageController.getdeleteImgInProgress()
+                                currentMessage = messageController.getdeleteImgInProgress()
                             }
+
                             DeletionStatus == Estado.FINALIZED && LimitStatus == Estado.BLOCKED -> {
-                                currentMessage=messageController.getdeleteImg()
+                                currentMessage = messageController.getdeleteImg()
                                 delay(5000) // Espera 5 segundos
                                 DeletionStatus = Estado.BLOCKED
                             }
+
                             DeletionStatus == Estado.BLOCKED && LimitStatus == Estado.PROCESS -> {
                                 delay(5000) // Espera 5 segundos
-                                LimitStatus= Estado.BLOCKED
+                                LimitStatus = Estado.BLOCKED
                             }
 
                         }
@@ -1249,7 +1339,10 @@ fun Gallery(navController: NavController, userId: String, galleryController: Gal
                                                 type = "text/plain"
                                             }
                                             context.startActivity(
-                                                Intent.createChooser(shareIntent, "Compartir enlace")
+                                                Intent.createChooser(
+                                                    shareIntent,
+                                                    "Compartir enlace"
+                                                )
                                             )
                                         },
                                         modifier = Modifier
@@ -1339,7 +1432,11 @@ fun Gallery(navController: NavController, userId: String, galleryController: Gal
                                                 userPremiumSinceDate
                                             )
                                             showPremiumPanel = false
-                                            Toast.makeText(context, "Se esta cerrando su sesion para completar la operacion", Toast.LENGTH_SHORT).show()
+                                            Toast.makeText(
+                                                context,
+                                                "Se esta cerrando su sesion para completar la operacion",
+                                                Toast.LENGTH_SHORT
+                                            ).show()
                                             galleryController.clearImages()
                                             navController.navigateToListLogin()
                                         },
@@ -1397,7 +1494,15 @@ fun Gallery(navController: NavController, userId: String, galleryController: Gal
 
                                         },
                                         textStyle = TextStyle(
-                                            color = if(!getvalidatePasswordLengthMax(actualPasswordState.value.text) || getvalidatePasswordSpecialCharacters(actualPasswordState.value.text) || getvalidatePasswordNotContainUserName(actualPasswordState.value.text,nameState) ) redColor else com.example.cypher_vault.view.resources.firstColor,
+                                            color = if (!getvalidatePasswordLengthMax(
+                                                    actualPasswordState.value.text
+                                                ) || getvalidatePasswordSpecialCharacters(
+                                                    actualPasswordState.value.text
+                                                ) || getvalidatePasswordNotContainUserName(
+                                                    actualPasswordState.value.text,
+                                                    nameState
+                                                )
+                                            ) redColor else com.example.cypher_vault.view.resources.firstColor,
                                             fontSize = 13.sp,
                                             fontFamily = com.example.cypher_vault.view.resources.fontFamily,
                                             fontWeight = FontWeight.Bold
@@ -1422,11 +1527,16 @@ fun Gallery(navController: NavController, userId: String, galleryController: Gal
                                             )
                                         },
                                         singleLine = true,
-                                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text, imeAction = ImeAction.Done),
+                                        keyboardOptions = KeyboardOptions(
+                                            keyboardType = KeyboardType.Text,
+                                            imeAction = ImeAction.Done
+                                        ),
                                         visualTransformation = if (passwordVisible.value) VisualTransformation.None else PasswordVisualTransformation(),
                                         trailingIcon = {
                                             IconButton(
-                                                onClick = { passwordVisible.value = !passwordVisible.value },
+                                                onClick = {
+                                                    passwordVisible.value = !passwordVisible.value
+                                                },
                                                 modifier = Modifier.offset(y = 10.dp)
                                             ) {
                                                 Icon(
@@ -1472,7 +1582,13 @@ fun Gallery(navController: NavController, userId: String, galleryController: Gal
 
                                         },
                                         textStyle = TextStyle(
-                                            color = if(!getvalidatePasswordLengthMax(passwordState.value.text) || getvalidatePasswordSpecialCharacters(passwordState.value.text) || getvalidatePasswordNotContainUserName(passwordState.value.text,nameState) ) redColor else com.example.cypher_vault.view.resources.firstColor,
+                                            color = if (!getvalidatePasswordLengthMax(passwordState.value.text) || getvalidatePasswordSpecialCharacters(
+                                                    passwordState.value.text
+                                                ) || getvalidatePasswordNotContainUserName(
+                                                    passwordState.value.text,
+                                                    nameState
+                                                )
+                                            ) redColor else com.example.cypher_vault.view.resources.firstColor,
                                             fontSize = 13.sp,
                                             fontFamily = com.example.cypher_vault.view.resources.fontFamily,
                                             fontWeight = FontWeight.Bold
@@ -1497,11 +1613,16 @@ fun Gallery(navController: NavController, userId: String, galleryController: Gal
                                             )
                                         },
                                         singleLine = true,
-                                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text, imeAction = ImeAction.Done),
+                                        keyboardOptions = KeyboardOptions(
+                                            keyboardType = KeyboardType.Text,
+                                            imeAction = ImeAction.Done
+                                        ),
                                         visualTransformation = if (passwordVisible.value) VisualTransformation.None else PasswordVisualTransformation(),
                                         trailingIcon = {
                                             IconButton(
-                                                onClick = { passwordVisible.value = !passwordVisible.value },
+                                                onClick = {
+                                                    passwordVisible.value = !passwordVisible.value
+                                                },
                                                 modifier = Modifier.offset(y = 10.dp)
                                             ) {
                                                 Icon(
@@ -1536,19 +1657,34 @@ fun Gallery(navController: NavController, userId: String, galleryController: Gal
                                 modifier = Modifier.align(Alignment.CenterHorizontally)
                             ) {
                                 if (isContentVisiblpasswordState) {
-                                    if (getfullpasswordfield(passwordState.value.text, nameState) != "") {
+                                    if (getfullpasswordfield(
+                                            passwordState.value.text,
+                                            nameState
+                                        ) != ""
+                                    ) {
                                         Column(
                                             verticalArrangement = Arrangement.Center,
                                             horizontalAlignment = Alignment.CenterHorizontally
                                         ) {
                                             Row(verticalAlignment = Alignment.CenterVertically) {
-                                                (if (!getvalidatePasswordCharacters(passwordState.value.text)|| !getvalidatePasswordsSecialcharacters(passwordState.value.text)
-                                                    ||!getvalidatePasswordLength(passwordState.value.text)
-                                                    || !getvalidatePasswordLengthMax(passwordState.value.text) || !getvalidatePasswordNotContainNumber(passwordState.value.text)
-                                                    || !getvalidateAlphabeticCharacter(passwordState.value.text)){
+                                                (if (!getvalidatePasswordCharacters(passwordState.value.text) || !getvalidatePasswordsSecialcharacters(
+                                                        passwordState.value.text
+                                                    )
+                                                    || !getvalidatePasswordLength(passwordState.value.text)
+                                                    || !getvalidatePasswordLengthMax(passwordState.value.text) || !getvalidatePasswordNotContainNumber(
+                                                        passwordState.value.text
+                                                    )
+                                                    || !getvalidateAlphabeticCharacter(passwordState.value.text)
+                                                ) {
                                                     R.drawable.iconwarning
-                                                } else if (getvalidatePasswordNotContainUserName(passwordState.value.text,nombre)
-                                                    || getvalidatePasswordSpecialCharacters(passwordState.value.text)) {
+                                                } else if (getvalidatePasswordNotContainUserName(
+                                                        passwordState.value.text,
+                                                        nombre
+                                                    )
+                                                    || getvalidatePasswordSpecialCharacters(
+                                                        passwordState.value.text
+                                                    )
+                                                ) {
                                                     R.drawable.icoerror
                                                 } else {
                                                     null
@@ -1566,9 +1702,16 @@ fun Gallery(navController: NavController, userId: String, galleryController: Gal
 
                                                 Spacer(modifier = Modifier.width(8.dp)) // Espacio entre la imagen y el texto
                                                 Row(verticalAlignment = Alignment.CenterVertically) {
-                                                    if (getfullpasswordfield(passwordState.value.text, nombre) != "null") {
+                                                    if (getfullpasswordfield(
+                                                            passwordState.value.text,
+                                                            nombre
+                                                        ) != "null"
+                                                    ) {
                                                         LimitedTextBox(
-                                                            text = getfullpasswordfield(passwordState.value.text, nombre),
+                                                            text = getfullpasswordfield(
+                                                                passwordState.value.text,
+                                                                nombre
+                                                            ),
                                                             maxWidth = 250.dp // Ajusta este valor según tus necesidades
                                                         )
                                                     }
@@ -1585,25 +1728,31 @@ fun Gallery(navController: NavController, userId: String, galleryController: Gal
                             ) {
                                 Button(
                                     onClick = {
-                                        if (contrasena!= actualPasswordState.value.text){
+                                        if (contrasena != actualPasswordState.value.text) {
                                             Toast.makeText(
                                                 context,
-                                                "La contraseña actual es incorrecta",Toast.LENGTH_SHORT).show()
-                                        }else if(passwordState.value.text == actualPasswordState.value.text){
+                                                "La contraseña actual es incorrecta",
+                                                Toast.LENGTH_SHORT
+                                            ).show()
+                                        } else if (passwordState.value.text == actualPasswordState.value.text) {
                                             Toast.makeText(
                                                 context,
-                                                "La contraseña actual es igual a la nueva",Toast.LENGTH_SHORT).show()
-                                        }
-
-                                        else{
-                                            galleryController.changePassword(userId, passwordState.value.text)
+                                                "La contraseña actual es igual a la nueva",
+                                                Toast.LENGTH_SHORT
+                                            ).show()
+                                        } else {
+                                            galleryController.changePassword(
+                                                userId,
+                                                passwordState.value.text
+                                            )
                                             showPasswordPanel = false
                                             contrasena = passwordState.value.text
                                             passwordState.value = TextFieldValue("")
                                             actualPasswordState.value = TextFieldValue("")
                                             Toast.makeText(
                                                 context,
-                                                "Contraseña actualizada",Toast.LENGTH_SHORT).show()
+                                                "Contraseña actualizada", Toast.LENGTH_SHORT
+                                            ).show()
                                         }
                                     },
                                     modifier = Modifier.padding(top = 16.dp, bottom = 100.dp),
@@ -1628,7 +1777,8 @@ fun Gallery(navController: NavController, userId: String, galleryController: Gal
                         confirmButton = {
                             TextButton(onClick = {
                                 galleryController.clearImages()
-                                galleryController.closeSession(context,navController) }) {
+                                galleryController.closeSession(context, navController)
+                            }) {
                                 Text(text = "Salir")
                             }
                         },
@@ -1683,7 +1833,15 @@ fun Gallery(navController: NavController, userId: String, galleryController: Gal
 
                                         },
                                         textStyle = TextStyle(
-                                            color = if(!getvalidatePasswordLengthMax(deletePasswordState.value.text) || getvalidatePasswordSpecialCharacters(deletePasswordState.value.text) || getvalidatePasswordNotContainUserName(deletePasswordState.value.text,nameState) ) redColor else com.example.cypher_vault.view.resources.firstColor,
+                                            color = if (!getvalidatePasswordLengthMax(
+                                                    deletePasswordState.value.text
+                                                ) || getvalidatePasswordSpecialCharacters(
+                                                    deletePasswordState.value.text
+                                                ) || getvalidatePasswordNotContainUserName(
+                                                    deletePasswordState.value.text,
+                                                    nameState
+                                                )
+                                            ) redColor else com.example.cypher_vault.view.resources.firstColor,
                                             fontSize = 13.sp,
                                             fontFamily = com.example.cypher_vault.view.resources.fontFamily,
                                             fontWeight = FontWeight.Bold
@@ -1708,11 +1866,16 @@ fun Gallery(navController: NavController, userId: String, galleryController: Gal
                                             )
                                         },
                                         singleLine = true,
-                                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text, imeAction = ImeAction.Done),
+                                        keyboardOptions = KeyboardOptions(
+                                            keyboardType = KeyboardType.Text,
+                                            imeAction = ImeAction.Done
+                                        ),
                                         visualTransformation = if (passwordVisible.value) VisualTransformation.None else PasswordVisualTransformation(),
                                         trailingIcon = {
                                             IconButton(
-                                                onClick = { passwordVisible.value = !passwordVisible.value },
+                                                onClick = {
+                                                    passwordVisible.value = !passwordVisible.value
+                                                },
                                                 modifier = Modifier.offset(y = 10.dp)
                                             ) {
                                                 Icon(
@@ -1780,7 +1943,8 @@ fun Gallery(navController: NavController, userId: String, galleryController: Gal
                                                     deletePasswordState.value = TextFieldValue("")
                                                     Toast.makeText(
                                                         context,
-                                                        "No se pudo eliminar la cuenta", Toast.LENGTH_SHORT
+                                                        "No se pudo eliminar la cuenta",
+                                                        Toast.LENGTH_SHORT
                                                     ).show()
                                                     showDeletePanel = false
                                                 }
@@ -1861,7 +2025,11 @@ fun LimitedTextBox(text: String, maxWidth: Dp) {
 
 // Imagen circular ///////////////////////////////////////////////////////////////////////////////////
 @Composable
-fun CircularImage(byteArray: ByteArray?, onClick:(() -> Unit)? = null, modifier: Modifier = Modifier) {
+fun CircularImage(
+    byteArray: ByteArray?,
+    onClick: (() -> Unit)? = null,
+    modifier: Modifier = Modifier
+) {
     val bitmap: Bitmap? = byteArrayToBitmap(byteArray)
     Log.d("galeria", "CircularImage: $bitmap")
     if (bitmap != null) {
@@ -1904,8 +2072,6 @@ fun byteArrayToBitmap(byteArray: ByteArray?): Bitmap? {
         BitmapFactory.decodeByteArray(it, 0, it.size)
     }
 }
-
-
 
 
 //------------Barra de carga circular
