@@ -261,7 +261,6 @@ fun NavigationLogin(navController: NavController) {
                                         "Tienes bloqueada la cuenta, quedan $tiempoRestanteDeBloqueo minutos.",
                                         Toast.LENGTH_SHORT
                                     ).show()
-
                                 }
                             }else{
                                 showConnectionOption = true // Muestra las opciones de conexión
