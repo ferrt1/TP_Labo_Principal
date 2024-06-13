@@ -744,8 +744,7 @@ fun ConfirmationLoginScreen(navController: NavController, userId: String, fromCa
                             labelColor = firstColor,
                         ),
                         modifier = Modifier
-                            .width(250.dp)
-                            .padding(top = 15.dp),
+                            .width(250.dp),
                         onClick = { dayPart = SecondAuthManager.DayPart.MORNING },
                         label = {
                             Text("Mañana(7:00AM-15:00PM)",textAlign = TextAlign.Center,)
@@ -781,8 +780,7 @@ fun ConfirmationLoginScreen(navController: NavController, userId: String, fromCa
                             labelColor = firstColor,
                         ),
                         modifier = Modifier
-                            .width(250.dp)
-                            .padding(top = 15.dp),
+                            .width(250.dp),
                         onClick = { dayPart = SecondAuthManager.DayPart.AFTERNOON },
                         label = {
                             Text("Tarde(15:00PM-23:00PM)",textAlign = TextAlign.Center,)

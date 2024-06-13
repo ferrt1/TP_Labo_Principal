@@ -47,6 +47,7 @@ import androidx.compose.foundation.text.ClickableText
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.outlined.ExitToApp
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowBackIosNew
 import androidx.compose.material.icons.filled.Check
@@ -557,6 +558,7 @@ fun Gallery(navController: NavController, userId: String, galleryController: Gal
                             text = email,
                             color = mainBackgroundColor,
                             style = textStyleTittle2,
+                            textAlign = TextAlign.Center,
                             maxLines = 1,
                             softWrap = true,
                             overflow = TextOverflow.Ellipsis
@@ -823,7 +825,7 @@ fun Gallery(navController: NavController, userId: String, galleryController: Gal
                             Icon(
                                 modifier = Modifier.width(30.dp),
                                 tint = firstColor,
-                                imageVector = Icons.Filled.ArrowBackIosNew,
+                                imageVector = Icons.AutoMirrored.Outlined.ExitToApp,
                                 contentDescription = "Localized description"
                             )
                         }
