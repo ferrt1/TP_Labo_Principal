@@ -1136,6 +1136,8 @@ image::Recursos/gallery/EliminadoDeImagenes.JPG[Imagen en galeria,700,700,align=
 
 *PANEL DE USUARIO*
 
+Fuente: link:https://developer.android.com/develop/ui/compose/components?hl=es-419[android.com/compose]
+
 * Como se puede apreciar en esta imagen, este es el panel de usuario donde el mismo podra personalizar su cuenta.
 
 ====
@@ -1156,6 +1158,16 @@ image::Recursos/sprint 5/imagenes/PanelDeUsuario1.jpg[Imagen en galeria,200,200,
 IMAGENES DEL PANEL DE USUARIO <<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
 === 2FA / Segundo Factor de Autentificacion
+
+*De las siguientes fuentes se fue recopilando informacion de como configurar y de diferentes metodos de implementacion*
+
+Fuente: link:https://www.youtube.com/watch?v=JQRcT_m4tsA&t=49s[youtube.com]
+
+Fuente: link:https://github.com/enrichman/androidmail[github.com/androidmail]
+
+Fuente: link:https://javapapers.com/android/android-email-app-with-gmail-smtp-using-javamail/[javapapers.com]
+
+Fuente: link:https://stackoverflow.com/questions/2020088/sending-email-in-android-using-javamail-api-without-using-the-default-built-in-a/2033124#2033124[stackoverflow.com]
 
 *La misma pertenece a una solicitud de cambio por parte de nuestro PO, la cual constaba de dos requerimientos, una version con internet y otra sin internet.*
 
