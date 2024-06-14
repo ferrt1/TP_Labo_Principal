@@ -27,6 +27,8 @@ interface ImageDao {
     @Query("SELECT * FROM Images WHERE id = :imageId")
     fun getIId(imageId: Long): Images?
 
+    @Query("SELECT COUNT(*) FROM images WHERE user_id = :userId")
+    fun getindexImg(userId: String): Int
 
     @Delete
     fun deleteImage(image: Images)

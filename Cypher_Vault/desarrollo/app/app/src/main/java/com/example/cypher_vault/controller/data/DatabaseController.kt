@@ -191,4 +191,10 @@ class DatabaseController(){
             DatabaseManager.setBlockDate(userId, date)
         }
     }
+
+    suspend fun indexImg(userId: String): Int {
+        return withContext(Dispatchers.IO) {
+            DatabaseManager.indexImg(userId)
+        }
+    }
 }

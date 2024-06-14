@@ -233,4 +233,8 @@ object DatabaseManager {
     suspend fun setBlockDate(userId: String, date: Long) {
         database.blockedUsersDao().setBlockDate(userId, date)
     }
+
+    fun indexImg(userId: String): Int {
+        return database.imageDao().getindexImg(userId)
+    }
 }

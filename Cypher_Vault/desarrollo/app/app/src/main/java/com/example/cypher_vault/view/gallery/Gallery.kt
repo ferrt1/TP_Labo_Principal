@@ -194,8 +194,7 @@ val textStyleTittle2 = TextStyle(
 @RequiresApi(Build.VERSION_CODES.Q)
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
-fun Gallery(navController: NavController, userId: String, galleryController: GalleryController) {
-
+ fun Gallery(navController: NavController, userId: String, galleryController: GalleryController) {
     //-----"CODIGO PARA QUE SE VEA EN NEGRO LA GALERIA SI QUIERE SACAR FOTOCAPTURA-----//
 
     val block = LocalContext.current
@@ -316,28 +315,55 @@ fun Gallery(navController: NavController, userId: String, galleryController: Gal
         )
     }
 
+
     //Carga de imagenes del usuario en la galeria//////////////////////
 
     //Cuando cambia el UID
     LaunchedEffect(key1 = userId) {
         inProcess = true
-        LoginimgStatus = Estado.PROCESS
         galleryController.loadImagesForUser(userId)
-        LoginimgStatus = Estado.FINALIZED
         inProcess = false
     }
     val images = galleryController.getGalleryImages()
     var indeximg by remember { mutableStateOf(images.size) }
     val imageUris = remember { mutableStateOf<List<Uri>>(listOf()) }
 
+
+    var indeximages by remember { mutableStateOf(0) }
+
+    LaunchedEffect(key1 = userId) {
+        indeximages = dbc.indexImg(userId)
+        if(indeximages!=0){
+            LoginimgStatus = Estado.PROCESS
+        }
+
+        Log.e("index", "Cantidad de imágenes: $indeximages")
+    }
+
+    // Usar `indeximages` para mostrar la cantidad de imágenes
+    Text(": $indeximages")
+
+
+
+    Log.e("proceso","${images.size} $indeximg ${imageUris.value}")
     // Cuando cambian las imagenes
     LaunchedEffect(key1 = imageUris.value) {
         inProcess = true
-        LoginimgStatus = Estado.PROCESS
         galleryController.loadImagesForUser(userId)
-        LoginimgStatus = Estado.FINALIZED
+        if(LoginimgStatus==Estado.PROCESS){
+             LoginimgStatus = Estado.FINALIZED}
         inProcess = false
     }
+
+    LaunchedEffect(images.size){
+        Log.e("estado","valores de $indeximg ${images.size}")
+        if(AddingImages==Estado.PROCESS && indeximg==images.size){
+            AddingImages=Estado.FINALIZED
+        }
+    }
+
+
+
 
     // Barra superior mantiene el color
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(rememberTopAppBarState())
@@ -349,10 +375,10 @@ fun Gallery(navController: NavController, userId: String, galleryController: Gal
                 if (isPremium == true) maximoImagenesPremium else maximoImagenesModoPobre
             val limitedUris = uris?.take(MAX_IMAGE_SELECTION) ?: emptyList()
             indeximg = images.size
-            AddingImages = Estado.PROCESS
             limitedUris.forEach { uri ->
                 inProcess = true
                 if (indeximg < maxSelectionLimit) {
+                    AddingImages = Estado.PROCESS
                     uri?.let {
                         context.contentResolver.openInputStream(it)?.use { inputStream ->
                             try {
@@ -385,11 +411,6 @@ fun Gallery(navController: NavController, userId: String, galleryController: Gal
             Log.e("foto", "lo que vale index adentro$$indeximg")
         }
 
-    LaunchedEffect(images.size) {
-        if (images.size == indeximg) {
-            AddingImages = Estado.FINALIZED
-        }
-    }
 
     val selectedImageBitmap = remember { mutableStateOf<Bitmap?>(null) }
 
@@ -953,6 +974,7 @@ fun Gallery(navController: NavController, userId: String, galleryController: Gal
                         } else {
                             Row(
                                 modifier = Modifier
+                                    .verticalScroll(rememberScrollState())
                                     .fillMaxWidth()
                                     .padding(horizontal = 16.dp, vertical = 8.dp),
                                 verticalAlignment = Alignment.CenterVertically,
@@ -1195,7 +1217,15 @@ fun Gallery(navController: NavController, userId: String, galleryController: Gal
 
                     // Ciclando los dialogos cada 5 segundo///////////////////////////////////////////////////////////////////
                     LaunchedEffect(DeletionStatus, LimitStatus, LoginimgStatus, AddingImages) {
+                        Log.e("estado", "posible estados $DeletionStatus $LimitStatus $LoginimgStatus $AddingImages")
                         when {
+                            LoginimgStatus==Estado.BLOCKED && AddingImages==Estado.BLOCKED && DeletionStatus == Estado.BLOCKED && LimitStatus == Estado.BLOCKED -> {
+                                val messageChannel = messageController.getMessageChannel()
+                                for (message in messageChannel) {
+                                    currentMessage = message
+                                }
+                            }
+
                             AddingImages == Estado.PROCESS -> {
                                 currentMessage = messageController.getmessageAddingImages()
                             }
@@ -1214,13 +1244,6 @@ fun Gallery(navController: NavController, userId: String, galleryController: Gal
                                 currentMessage = messageController.getmessageLoadingComplete()
                                 delay(5000) // Espera 5 segundos
                                 LoginimgStatus = Estado.BLOCKED
-                            }
-
-                            DeletionStatus == Estado.BLOCKED && LimitStatus == Estado.BLOCKED -> {
-                                val messageChannel = messageController.getMessageChannel()
-                                for (message in messageChannel) {
-                                    currentMessage = message
-                                }
                             }
 
                             DeletionStatus == Estado.PROCESS && LimitStatus == Estado.BLOCKED -> {
@@ -2121,4 +2144,3 @@ fun ShowQRCodeDialog(bitmap: Bitmap, onDismiss: () -> Unit) {
         }
     )
 }
-
