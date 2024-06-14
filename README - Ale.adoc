@@ -1148,7 +1148,7 @@ image:Recursos/gallery/EliminadoDeImagenes.JPG[]
 image::imagenAdoc/icondatabase.png[100,100]
 
 
-*Guardar datos en una base de datos es ideal para los datos estructurados o que se repiten, como la información de contacto. En esta página, en la que se asume que estás familiarizado con las bases de datos SQL en general, encontrarás información que te ayudará a comenzar a usar bases de datos SQLite en Android. Las APIs que necesitarás para utilizar una base de datos en Android están disponibles en el paquete android.database.sqlite.*
+*Utilizaremos la libreria de Room para la gestion de de nuestra base de datos. Se va a crear un Modelo para la administracion de la base de datos y un controlador para llamadas directas en caso de ser necesario, por las limitaciones del entorno de android studio, aunque dentro de la implementacion siempre se esta llamando desde el modelo (MVC).*
 
 NOTE: *Consideramos utilizar:* la libreria Room de Android Studio.
 
@@ -1164,6 +1164,29 @@ Fuente : link:https://medium.com/@sdranju/step-by-step-how-to-setting-up-and-imp
 
 WARNING: *¿Por que Room?:* Si bien estas APIs son potentes, se caracterizan por ser bastante específicas y su uso requiere de mucho tiempo y esfuerzo. No hay verificación en tiempo de compilación de las consultas de SQL sin procesar. A medida que cambia tu grafo de datos, debes actualizar manualmente las consultas de SQL afectadas. Este proceso puede llevar mucho tiempo y causar errores.
 Debes usar mucho código estándar para convertir entre consultas de SQL y objetos de datos. Por estos motivos, usamos la Biblioteca de persistencias Room como una capa de abstracción para acceder a la información de las bases de datos SQLite la app.
+
+NOTE: *Dificultades:* El tiempo de obtencion de datos siendo que es rapida no deja de tener un tiempo para la misma, hay cierto tipo de firma en las funciones las cuales permiten la obtencion de los datos sin crashear la app, esta se llama `suspend` y en cada llamadado a estas funciones hay otras funciones que se dentro hay una `coroutine.async` esta es llamada desde otra la cual se termina el llamado como `.await()`, de esta manera se soluciona el problema del acceso a datos y asi no se bloquea la aplicacion en la obtencion de los mismos.
+
+.Ejemplo de lo mencionado anteriormente
+[source,kotlin]
+----
+Dentro de DatabaseManager:
+    suspend fun setBlockDate(userId: String, date: Long) {
+        database.blockedUsersDao().setBlockDate(userId, date)
+    }
+
+Dentro de ControllerDatabase:
+    fun setBlockDate(userId: String, date: Long): Deferred<Unit> {
+        return CoroutineScope(Dispatchers.IO).async {
+            DatabaseManager.setBlockDate(userId, date)
+        }
+    }
+
+Llamado desde un modelo:
+    suspend fun setBlockDate(userId: String, date: Long) {
+        db.setBlockDate(userId, date).await()
+    }
+----
 
 *Componentes principales*
 
@@ -1208,140 +1231,48 @@ dependencies {
 ** ImagesDao.kt
 ** ImagesRegister.kt
 ** ImagesRegisterDao.kt
-
+** ImageLogin.kt
+** ImageLoginDao.kt
+** UserIncome.kt
+** UserIncomeDao.kt
+** UserPremium.kt
+** UserPremiumDao.kt
 
 .AppDatabase.kt
 [source, kotlin]
 ----
-@Database(entities = [User::class, Images::class, ImagesRegister::class], version = 2) # <1>
+@Database(entities = [User::class, Images::class, ImagesRegister::class, ImagesLogin::class, UserIncome::class, UserPremium::class, BlockedUsers::class], version = 2)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun userDao(): UserDao
     abstract fun imageDao(): ImageDao
     abstract fun imageRegisterDao(): ImageRegisterDao
+    abstract fun imageLoginDao(): ImageLoginDao
+    abstract fun userIncomeDao(): UserIncomeDao
+    abstract fun userPremiumDao(): UserPremiumDao
+    abstract fun blockedUsersDao(): BlockedUsersDao
 }
 ----
-<1> Creacion/Definicion de una base de datos con tres tablas (Usuarios, imagenes y registro de imagenes).
+<1> Esta realiza las conexiones entre lo que seria la tabla y su interfaz de acceso.
 
-.User.kt
-[source, kotlin]
-----
-@Entity
-data class User(
-    @PrimaryKey val uid: Long,
-    @ColumnInfo(name = "first_name") val firstName: String?,
-    @ColumnInfo(name = "email") val email: String?,
-    @ColumnInfo(name = "entry_date") val entryDate: Long, // Fecha de ingreso
-    @ColumnInfo(name = "pin") val pin: String? // PIN del usuario
-) # <1>
-----
-<1> Definicion de la entidad User
+*DatabaseManager.kt y ControllerDatabase.kt*
 
-.UserDao.kt
-[source, kotlin]
-----
-@Dao
-interface UserDao { # <1>
-    @Query("SELECT * FROM user")
-    fun getAll(): List<User>
+* Como ya denotan sus nombres es la interfaz para el acceso a la base de datos, las mismas facilitan el acceso a cada una de las tablas, siendo que cada tabla tiene su interfaz propia las llamadas `Dao`.
 
-    @Query("SELECT * FROM user WHERE uid IN (:userIds)")
-    fun loadAllByIds(userIds: IntArray): List<User>
+*User.kt y UserDao.kt*
 
-    @Query("SELECT * FROM user WHERE first_name LIKE :first AND " +
-            "email LIKE :last LIMIT 1")
-    fun findByName(first: String, last: String): User
+* Es la tabla de datos principales o de mas relevancia del usuario, el cual contiene:*
 
-    @Insert
-    fun insert(user: User) // Método para insertar un solo usuario
+** UID - Identificador
+** Nombre
+** Email
+** Contraseña
+** Fecha de creacion de la cuenta
+** Si es un usuario premium
+** Si tiene la doble autentificacion activa
+** Clave de cifrado
 
-    @Query("SELECT * FROM user WHERE email = :email LIMIT 1")
-    fun findByEmail(email: String): User? // Método para buscar un usuario por su correo electrónico
 
-    @Delete
-    fun delete(user: User)
 
-    @Insert
-    fun insertAll(vararg users: User)
-
-    @Query("SELECT * FROM user WHERE uid = :userId")
-    fun getUserById(userId: Int): User?
-}
-----
-<1> Interfaz de la entidad User
-
-.Images.kt
-[source, kotlin]
-----
-@Entity(
-    tableName = "images",
-    foreignKeys = [ForeignKey(
-        entity = User::class,
-        parentColumns = ["uid"],
-        childColumns = ["user_id"],
-        onDelete = ForeignKey.CASCADE
-    )]
-)
-data class Images(
-    @PrimaryKey(autoGenerate = true) val id: Long = 0,
-    val imageData: ByteArray,
-    val user_id: Int
-) # <1>
-----
-<1> Definicion de la entidad Images, la misma es para el almacenamiento de las imagenes privadas ( galeria principal de la aplicacion ).
-
-.ImageDao.kt
-[source, kotlin]
-----
-@Dao
-interface ImageDao { # <1>
-    @Insert
-    fun insertImage(images: Images)
-
-    @Query("SELECT * FROM images WHERE user_id = :userId")
-    fun getImagesForUser(userId: Int): List<Images>
-
-    // Otros métodos según sea necesario
-}
-----
-<1> Interfaz de la entidad Images
-
-.ImagesRegister.kt
-[source, kotlin]
-----
-@Entity(
-    tableName = "images_register",
-    foreignKeys = [ForeignKey(
-        entity = User::class,
-        parentColumns = ["uid"],
-        childColumns = ["user_id"],
-        onDelete = ForeignKey.CASCADE
-    )]
-)
-data class ImagesRegister(
-    @PrimaryKey(autoGenerate = true) val id: Long = 0,
-    val imageData: ByteArray,
-    val user_id: Int // referencia al usuario que posee la imagen
-) # <1>
-----
-<1> Definicion de la entidad  ImagesRegister, aqui se almacenaran las imagenes de registro del usuario.
-
-.ImagesRegisterDao.kt
-[source, kotlin]
-----
-@Dao
-interface ImageRegisterDao { # <1>
-    @Insert
-    fun insertImage(imagesRegister: ImagesRegister)
-
-    @Query("SELECT * FROM images WHERE user_id = :userId")
-    fun getImagesForUser(userId: Long): List<ImagesRegister>
-}
-----
-<1> Interfaz de la entidad ImagesRegister.
-
-*Paquete model > dbmanager*
-
-* Se define la interfaz DataBaseManager la cual contiene las tres interfases principales UserDao, ImagesDao e ImagesRegisterDao, la misma se implementa para aislar y organizar los llamados aparte de facilitar la inicializacion de la base de datos.
 
 .DataBaseManager.kt
 [source, kotlin]
