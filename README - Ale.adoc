@@ -834,7 +834,30 @@ fun CloseCameraButton(cameraProvider: ProcessCameraProvider, authenticationContr
 ----
 <1> La función `CloseCameraButton` permite al usuario cerrar la cámara frontal si se ha seleccionado una cuenta incorrecta. Ofrece una interfaz para regresar de manera rápida al inicio de sesión, específicamente a la pantalla de `NavigationLogin`, facilitando el desplazamiento dentro de la aplicación.
 
-=== Mejora de interfaz
+
+==== Vista, controlador y modelo:
+
+** Respetando el patrón de diseño MVC, se ha separado la vista, el controlador y el modelo de los zocalos de mensajes, a contunuacion se indicara las responasabilidades de cada paquete y se explicara cual es el objetivo de cada uno.
+
+** view > Registration > InitialScreen.kt
+
+image::Recursos/MVC/view.JPG[]
+
+*** El paquete `view` contiene toda la parte visual donde el usuario interactúa. En este caso, es el formulario de registro. El objetivo de la `view` es visualizar los campos de registro (nombre, correo, contraseña) y los botones (registrarse, iniciar seccion). A medida que el usuario rellena los campos, la vista envía los datos al controlador.
+
+** Controller > messages > MessageController.kt
+
+image::Recursos/MVC/controller.JPG[]
+
+*** El paquete `Controller` se encarga de gestionar los datos ingresados por el usuario y coordinar la comunicación entre la vista y el modelo. La funcion del controlador es recibir los datos enviados desde la vista (campos de registro completados por el usuario) y enviar esos datos al modelo para su análisis y procesamiento. por ultimo, Una vez que el modelo devuelve un resultado (por ejemplo, validación exitosa o error), el controlador actualiza la vista con la respuesta correspondiente.
+
+** Model > message > RegistrationMessage.kt
+
+image::Recursos/MVC/model.JPG[]
+
+*** El paquete `Model` contiene la lógica de negocio y la validación de datos. Las funciones del modelo es validar los datos, analiza los datos ingresados por el usuario (nombre, correo, contraseña) y verifica si cumplen con las condiciones requeridas. Contiene las reglas de negocio para la aplicación, por ejemplo, longitud mínima de contraseña, formato de correo válido, etc. por ultimo se obtiene una devolucion de resultados, el modelo envía una respuesta al controlador (éxitoso o erroneo) según el análisis de los datos.
+
+*Estilos de la aplicacion*
 
 ==== Cambio de tipo de letra
 
@@ -846,8 +869,6 @@ fun CloseCameraButton(cameraProvider: ProcessCameraProvider, authenticationContr
 NOTE: *Aclaracion:* La uniformidad en el tamaño de los caracteres de la fuente `consola`, independientemente de que sean mayúsculas o minúsculas, nos permite calcular con precisión la longitud de los textos. Esto es especialmente útil para optimizar el espacio disponible dentro de los botones de inicio de sección, donde se mostrarán el nombre de usuario y su correo electrónico correspondiente. 
 
 image::Recursos/mejora_De_Interfaz/largo-de-usuario.JPG[]
-
-
 
 
 ==== Cambios de botones
@@ -873,7 +894,6 @@ image::Recursos/mejora_De_Interfaz/optimizacion-de-busqueda-de-usuario.JPG[]
 ** El logo de aplicación se ha incorporado tanto en la pantalla de registro como en la de inicio de sección, aportando una imagen más profesional al diseño general.
 
 image::Recursos/mejora_De_Interfaz/logo-de-la-app.JPG[]
-
 
 
 === Zócalo de Mensaje
@@ -994,40 +1014,9 @@ image::Recursos/gallery/mensajes.JPG[]
 
 *** Límite de capacidad en modo premium: Similar al modo prueba, se indicará al usuario que ha alcanzado el límite de capacidad en modo premium.
 
-** Como se puede apreciar en esta imagen, este es el panel de usuario donde podrá personalizar su cuenta.
-
-image::Recursos/gallery/PanelDeUsuario.jpg[]
-
-
-==== Vista, controlador y modelo:
-
-** Respetando el patrón de diseño MVC, se ha separado la vista, el controlador y el modelo de los zocalos de mensajes, a contunuacion se indicara las responasabilidades de cada paquete y se explicara cual es el objetivo de cada uno.
-
-** view > Registration > InitialScreen.kt
-
-image::Recursos/MVC/view.JPG[]
-
-*** El paquete `view` contiene toda la parte visual donde el usuario interactúa. En este caso, es el formulario de registro. El objetivo de la `view` es visualizar los campos de registro (nombre, correo, contraseña) y los botones (registrarse, iniciar seccion). A medida que el usuario rellena los campos, la vista envía los datos al controlador.
-
-** Controller > messages > MessageController.kt
-
-image::Recursos/MVC/controller.JPG[]
-
-*** El paquete `Controller` se encarga de gestionar los datos ingresados por el usuario y coordinar la comunicación entre la vista y el modelo. La funcion del controlador es recibir los datos enviados desde la vista (campos de registro completados por el usuario) y enviar esos datos al modelo para su análisis y procesamiento. por ultimo, Una vez que el modelo devuelve un resultado (por ejemplo, validación exitosa o error), el controlador actualiza la vista con la respuesta correspondiente.
-
-** Model > message > RegistrationMessage.kt
-
-image::Recursos/MVC/model.JPG[]
-
-*** El paquete `Model` contiene la lógica de negocio y la validación de datos. Las funciones del modelo es validar los datos, analiza los datos ingresados por el usuario (nombre, correo, contraseña) y verifica si cumplen con las condiciones requeridas. Contiene las reglas de negocio para la aplicación, por ejemplo, longitud mínima de contraseña, formato de correo válido, etc. por ultimo se obtiene una devolucion de resultados, el modelo envía una respuesta al controlador (éxitoso o erroneo) según el análisis de los datos.
-
-
-
 === Galeria de Imagenes
 
 *En esta interfaz se visualizan las imagenes privadas el usuario que ya se encuentran cifradas, en la misma el usuario puede agregar sus imagenes mediante un boton, aparte tiene acceso a su perfil en el cual puede visualizar sus datos personales y actualizar su contraseña.*
-
-
 
 ==== Diseño
 
@@ -1104,7 +1093,15 @@ fun ScaffoldExample() {
 <4> Se declada un boton flotante
 <5> El contenido el cual puede tener elementos variados como textos, imagenes, etc.
 
-==== Implementacion 
+==== *Implementacion* 
+
+* *Dentro de la aplicacion:*
+
+** Para esta implementacion se creo una vista llamada Gallery dentro del paquete de vistas y en paralelo se implementa el controlador GalleryController:
+
+*** *Gallery:* dentro de la misma se encuentra toda la declaracion de los elementos visuales, con los cuales el usuario interactua.
+
+*** *GalleryController:* tiene los accesos a la base de datos, es decir, la vista no interactua con la base de datos directamente sino que pasa por el controlador. Tanto para la carga de imagenes al inicio de la galeria como cuando se almacenan nuevas imagenes 
 
 .Imagenes de la implementacion
 ====
@@ -1123,23 +1120,38 @@ image:Recursos/Pantallas-de-galeria.png[Imagen en galeria,700,700,align="center"
 
 * *Imagen en la aplicacion:*
 ** visualizacion de la imagen seleccionada dentro de la aplicacion
-image:Recursos/gallery/AgredadoDeIImagen.JPG[]
+
+====
+image:Recursos/gallery/AgredadoDeIImagen.JPG[Imagen en galeria,700,700,align="center"]
+====
 
 * *Eliminado de imagenes*:
 ** Se seleciona la imagen o las imagenes que se quiere borrar.
 ** En la parte inferior de la pantalla, aparecerán dos botones: "Cancelar" y "Eliminar", si se seleciona boton eliminar se borrara todas las imagenes selecionado, de lo contrario el usuario tiene la opcion de cancelar. 
 
-image:Recursos/gallery/EliminadoDeImagenes.JPG[]
+====
+image:Recursos/gallery/EliminadoDeImagenes.JPG[Imagen en galeria,700,700,align="center"]
+====
 
 
+*Panel de usuario*
 
-* *Dentro de la aplicacion:*
+* Como se puede apreciar en esta imagen, este es el panel de usuario donde podrá personalizar su cuenta.
 
-** Para esta implementacion se creo una vista llamada Gallery dentro del paquete de vistas y en paralelo se implementa el controlador GalleryController:
+====
+image::Recursos/sprint 5/imagenes/PanelDeUsuario1.jpg[Imagen en galeria,200,200,align="center"]
+====
 
-*** *Gallery:* dentro de la misma se encuentra toda la declaracion de los elementos visuales, con los cuales el usuario interactua.
+* *Contenido:*
 
-*** *GalleryController:* tiene los accesos a la base de datos, es decir, la vista no interactua con la base de datos directamente sino que pasa por el controlador. Tanto para la carga de imagenes al inicio de la galeria como cuando se almacenan nuevas imagenes 
+** *Informacion de la cuenta:* Nombre e Email.
+** *Foto personalizable*
+** *Activacion de 2FA (2do Factor de Autentificacion)*
+** *Cambio de contraseña*
+** *Ingresos del usuario:* Una lista con los ultimos 5 ingresos
+** *Premium:* Consta de una activacion o ver la informacion del momento de la compra.
+** *Cerrar sesion*
+** *Eliminar cuenta:* la misma se realiza con borrado seguro.
 
 
 
@@ -1221,7 +1233,17 @@ dependencies {
 
 *Paquete database*
 
-* El mismo consta de siete archivos, como se nombro anteriormente, la base de datos en Room consta de 3 partes principales, la clase de la base de datos, las entidades de datos (tablas) y los objetos de acceso a datos (DAO) ( Interfaces en las cuales estan descriptas las querys ). 
+.Patron de diseño
+[source, android studio]
+----
+java/
+├── controller/
+├── database/ <---
+├── model/
+├── ui/
+----
+
+* El mismo consta de trece archivos, como se nombro anteriormente, la base de datos en Room consta de 3 partes principales, la clase de la base de datos, las entidades de datos (tablas) y los objetos de acceso a datos (DAO) ( Interfaces en las cuales estan descriptas las querys ). 
 
 * Los archivos son:
 ** AppDatabase.kt
@@ -1237,6 +1259,10 @@ dependencies {
 ** UserIncomeDao.kt
 ** UserPremium.kt
 ** UserPremiumDao.kt
+
+*DatabaseManager.kt y ControllerDatabase.kt*
+
+* Como ya denotan sus nombres es la interfaz para el acceso a la base de datos, las mismas facilitan el acceso a cada una de las tablas, siendo que cada tabla tiene su interfaz propia las llamadas `Dao`.
 
 .AppDatabase.kt
 [source, kotlin]
@@ -1254,13 +1280,9 @@ abstract class AppDatabase : RoomDatabase() {
 ----
 <1> Esta realiza las conexiones entre lo que seria la tabla y su interfaz de acceso.
 
-*DatabaseManager.kt y ControllerDatabase.kt*
-
-* Como ya denotan sus nombres es la interfaz para el acceso a la base de datos, las mismas facilitan el acceso a cada una de las tablas, siendo que cada tabla tiene su interfaz propia las llamadas `Dao`.
-
 *User.kt y UserDao.kt*
 
-* Es la tabla de datos principales o de mas relevancia del usuario, el cual contiene:*
+* Es la tabla de datos principales o de mas relevancia del usuario, el cual contiene:
 
 ** UID - Identificador
 ** Nombre
@@ -1271,436 +1293,48 @@ abstract class AppDatabase : RoomDatabase() {
 ** Si tiene la doble autentificacion activa
 ** Clave de cifrado
 
+*ImageRegister e ImageRegisterDao.kt*
 
+* En esta tabla se almacena la imagen de registro del usuario, las misma contiene: 
 
+** UID - Identificador
+** ByteArray - Datos de la imagen
 
-.DataBaseManager.kt
-[source, kotlin]
-----
-object DatabaseManager {
-    private lateinit var database: AppDatabase
+*ImageLogin.kt e ImageLoginDao.kt*
 
-    fun initialize(context: Context) {
-        database = Room.databaseBuilder(
-            context.applicationContext,
-            AppDatabase::class.java, "my_database"
-        ).build()
-    }
+* Almacena la imagen al momento de logueo la misma se utiliza para la etapa de verificacion de usuario, contrastando con la imagen que se almaceno en ImageRegister, esta tabla contiene:
 
-    // Métodos relacionados con la tabla de usuarios
-    fun getAllUsers(): List<User> {
-        return database.userDao().getAll()
-    }
+** UID - Identificador
+** ByteArray - Datos de la imagen
 
-    fun getUserById(userId: Int): User? {
-        return database.userDao().getUserById(userId)
-    }
+*UserIncome.kt y UserIncomeDao.kt*
 
-    fun insertUser(user: User) {
-        database.userDao().insert(user)
-    }
+* La tabla cumple la funcion de almacenar los ingresos de los usuarios, esta informacion luego es utilizada dentro de las principales funcionalidades como por ejemplo la 2FA / Segundo factor de autentificacion, la misma contiene:
 
-    fun deleteUser(user: User) {
-        database.userDao().delete(user)
-    }
+** UID - Identificador
+** Ingreso - Hora y Fecha
 
-    // Métodos relacionados con la tabla de imágenes
-    fun insertImage(image: Images) {
-        database.imageDao().insertImage(image)
-    }
+*Image.kt e ImageDao.kt*
 
-    fun getImagesForUser(userId: Int): List<Images> {
-        return database.imageDao().getImagesForUser(userId)
-    }
+* Esta tabla es la principal de la aplicacion junto con la de Usuario, ya que en la misma se alamacenan las imagenes personales del usuario, su boveda cifrada, la misma contiene :
 
-    // Métodos relacionados con la tabla de registros de imágenes
-    fun insertImageRegister(imageRegister: ImagesRegister) {
-        database.imageRegisterDao().insertImage(imageRegister)
-    }
+** UID - Identificador
+** ByteArray - Datos de la imagen
 
-    fun getImageRegistersForImage(user_id: Long): List<ImagesRegister> {
-        return database.imageRegisterDao().getImagesForUser(user_id)
-    }
+*UserPremium.kt y UserPremiumDao.kt*
 
-    // Otros métodos según sea necesario para otras operaciones con usuarios, imágenes e imágenes registros
-}
-----
+* Almacena los datos de la funcionalidad premium que tiene la aplicacion, la misma contiene:
 
-=== Reconocimiento facial
+** UID - Identificador
+** Fecha de Inscripcion - Hora y Fecha
+** Boolean - Si es o no es usuario premium
 
-image::Recursos/siluetaDeRostro.png[100,100]
+*BlockedUsers.kt y BlockedUsersDao.kt*
 
+* Tabla que es utilizada por una funcionalidad principal de la aplicacion la cual registra si el usuario esta bloqueado o cuandos intentos realizo en la etapa de la 2FA / Segunda autentificacion, aparte el moemento de la inabilitacion de la cuenta, la misma contiene:
 
-WARNING: *Aun en desarrollo*: Se dara un breve repaso a las herramientas que se  utilizaron para el reconocimiento facial, ya que aun esta en proceso de desarrollo y para optimizar los tiempos de armado de informe se resuelve que no ira esta documentacion a detalle, pero si los conceptos utilizados hasta el momento.
+** UID - Identificador
+** Momento de la inabilitacion de cuenta - Hora y Fecha
+** Boolean - Si esta o no esta bloqueda la cuenta
+** Cantidad de Intentos
 
-.*Conceptos  preliminares*
-
-* *Reconocimiento facial:* compara dos caras y nos dice si son o no de la misma persona.
-
-* *Seguimiento facial:* seguimiento del rostro dentro la toma
-
-* *Detección de landmarks:* son los puntos de interes del rostro, como ojos la barbilla orejas orejas etc.
-
-* *Detección de contornos:* son tambien los puntos de interes del rostro, como ojos la barbilla, etc.
-
-* *Clasificacion:* si esta con los ojos abiertos la boca abierta etc.
-
-Fuente: link:https://developers.google.com/android/reference/com/google/mlkit/vision/face/Face[Android\Developer\MlKit\Vision\Face]
-
-Fuente: link:https://developers.google.com/ml-kit/vision/face-detection/android?hl=es-419[Android\Developer\MlKit\Vision\FaceDetection]
-
-Fuente: link:https://developer.android.com/media/camera/camerax?hl=es-419[Android\Developer\CameraX]
-
-.Deteccion de Contornos
-image::Recursos/face_contours.svg[700,700]
-
-* *Librerias utilizadas en Android Studio:*
-
-** *MLkit - FaceDetection:*
-*** Con la API de detección de rostro del Kit de AA, puedes detectar rostros en una imagen, identificar rasgos faciales clave y obtener los contornos de los rostros detectados.
-
-*** El ML Kit de Google proporciona las APIs de Vision de aprendizaje automático integradas en el dispositivo para detectar rostros, escanear códigos de barras, etiquetar imágenes y mucho más. El Analizador de ML Kit facilita la integración del kit con tu app de CameraX.
-
-*** El Analizador de ML Kit es una implementación de la interfaz de ImageAnalysis.Analyzer. Anula la resolución objetivo predeterminada (si es necesario) para optimizar el uso del ML Kit, controla las transformaciones de coordenadas y pasa los marcos al ML Kit, que muestra los resultados agregados del análisis.
-
-** *CameraX:*
-*** CameraX es una biblioteca de Jetpack creada para que el desarrollo de una apps de cámara sea más fácil. Para las apps nuevas, te recomendamos que comiences con CameraX. Proporciona una API coherente y fácil de usar que funcione en la gran mayoría de los dispositivos Android y ofrece retrocompatibilidad con Android 5.0 (nivel de API 21).
-
-*** CameraX destaca los casos de uso, que te permiten concentrarte en la tarea que debes completar en lugar de administrar variaciones específicas del dispositivo. Se admiten los casos de uso de la cámara más comunes:
-
-**** *Vista previa:* Permite obtener una imagen en la pantalla.
-
-**** *Análisis de imágenes:* Permite acceder a un búfer sin inconvenientes a fin de utilizarlo en tus algoritmos, por ejemplo, para pasar contenido a ML Kit.
-
-**** *Captura de imágenes:* Permite guardar imágenes.
-
-**** *Captura de video:* Permite guardar videos y audio.
-
-* *Lineamientos para imágenes de entrada*
-
-** Para el reconocimiento facial, se debe usar una imagen con una dimensión de al menos 480 × 360 píxeles. Para que el Kit de AA detecte rostros con precisión, las imágenes de entrada deben contener rostros representados con datos de píxeles suficientes. En general, cada rostro que quieras detectar en una imagen debe tener al menos 100 x 100 píxeles. Si deseas detectar los contornos de los rostros, ML Kit requiere una entrada de mayor resolución: cada rostro debe tener al menos 200 x 200 píxeles.
-
-** Si detectas rostros en una aplicación en tiempo real, te recomendamos que también consideres las dimensiones generales de las imágenes de entrada. Las imágenes más pequeñas se pueden procesar más rápido. Para reducir la latencia, captura imágenes con resoluciones más bajas, pero ten en cuenta los requisitos de precisión que se mencionaron anteriormente y asegúrate de que el rostro del sujeto ocupe la mayor parte posible de la imagen.
-
-* *Puntos de referencia*
-
-** Un punto de referencia es un lugar de interés en un rostro. El ojo izquierdo, el ojo derecho y la base de la nariz son ejemplos de puntos de referencia.
-
-** ML Kit detecta rostros sin buscar puntos de referencia. La detección de puntos de referencia es un paso opcional que está inhabilitado de forma predeterminada.
-
-** En la siguiente tabla, se resumen todos los puntos de referencia que se pueden detectar dado el ángulo Euler Y de un rostro asociado:
-
-.*Ángulo Euler Y Puntos de referencia detectables*
-====
-*Menos de -36 grados:* ojo izquierdo, boca izquierda, oreja izquierda, base de la nariz, mejilla izquierda.
-
-*De -36 a -12 grados:* boca izquierda, base de la nariz, parte inferior de la boca, ojo derecho, ojo izquierdo, mejilla izquierda, punta de la oreja izquierda
-
-*De -12 a 12 grados:* ojo derecho, ojo izquierdo, base de la nariz, mejilla izquierda, mejilla derecha, boca izquierda, boca derecha, parte inferior de la boca
-
-*De 12 a 36 grados:* boca derecha, base de la nariz, parte inferior de la boca, ojo izquierdo, ojo derecho, mejilla derecha, punta de la oreja derecha
-
-*Más de 36 grados:*	ojo derecho, boca derecha, oreja derecha, base de la nariz, mejilla derecha
-
-Cada punto de referencia detectado incluye su posición asociada en la imagen.
-====
-
-* *Contornos*
-
-** Un contorno es un conjunto de puntos que representan la forma de una característica facial. Se basa en puntajes que arroja la libreria por ejemplo :
-
-.Óvalo de rostro 36 puntos:
-[cols=2*,options=header]
-|===
-|Parte del rostro | Cantidad
-|Labio superior (parte superior) |	11 puntos
-|Ceja izquierda (parte superior) |	5 puntos	
-|Labio superior (parte inferior) |	9 puntos
-|Ceja izquierda (parte inferior) |	5 puntos	
-|Labio inferior (parte superior) |	9 puntos
-|Ceja derecha (parte superior) |	5 puntos	
-|Labio inferior (parte inferior) |	9 puntos
-|Ceja derecha (parte inferior) |	5 puntos	
-|Puente nasal |	2 puntos
-|Ojo izquierdo |	16 puntos	
-|Parte inferior de la nariz	| 3 puntos
-|Ojo derecho |	16 puntos
-|Mejilla izquierda (centro) |	1 punto
-|Mejilla derecha (centro) |	1 punto
-|===
-
-** Cuando obtienes todos los contornos de un rostro a la vez, se obtiene un array de 133 puntos, que se asignan a los contornos de los rasgos como se muestra a continuación:
-
-.Índices de contornos de características
-[cols=2*,options=header]
-|===
-|Cantidad de puntos | Parte del rostro
-|0-35|	Óvalo de rostro
-|36-40|	Ceja izquierda (parte superior)
-|41-45|	Ceja izquierda (parte inferior)
-|46-50|	Ceja derecha (parte superior)
-|51-55|	Ceja derecha (parte inferior)
-|56-71|	Ojo izquierdo
-|72-87|	Ojo derecho
-|88-96|	Labio superior (parte inferior)
-|97-105|	Labio inferior (parte superior)
-|106-116|	Labio superior (parte superior)
-|117-125|	Labio inferior (parte inferior)
-|126-127|	Puente nasal
-|128-130|	Parte inferior de la nariz (ten en cuenta que el punto central está en el índice 128)
-|131|	Mejilla izquierda (centro)
-|132|	Mejilla derecha (centro)
-|===
-
-* *Distancia Euclidiana*
-
-** La distancia euclidiana es una medida de distancia entre dos puntos en un espacio euclidiano. En el contexto del reconocimiento facial, los landmarks son puntos específicos en la cara, como la punta de la nariz, las esquinas de los ojos, etc. Para calcular la distancia euclidiana entre dos landmarks (puntos), primero necesitas tener las coordenadas de cada punto en forma de lista o tupla.
-
-** Supongamos que tienes dos landmarks representados por tuplas (x1, y1) y (x2, y2). Se utiliza a distancia euclidiana entre dos puntos los cuales pertenecen a un Landmark especifico del rostro, estos estan contenidos en las listas de informacion de cada una de las capturas, luego hay un margen de error o umbral de error de distancia entre los puntos llamado threshold. Esta distancia calculada si esta dentro del umbral o margen impuesto por nosotros puede utilizarse para reconocer rostros, ya que los landmarks son puntos especificos de cada rostro lo cual arman la singularidad de la persona. A este tipo de reconocimiento se podria llamarlo de similaridad y tiene una formula especifica:
-
-====
-image::Recursos/formulaDistanciaEuclidea.jpeg[700,700]
-====
-
-* Para lo cual dentro de nuestra aplicacion tenemos una herramienta que  nos permite calcular la distancia euclidiana.
-
-.Dentro de nuestra aplicacion
-[source, kotlin]
-----
-val thresholdLandmarks = 20.0
-
-fun calcularDistanciaEuclidiana(lista1: List<PointF>, lista2: List<PointF>): Double { # <1>
-    if (lista1.size != lista2.size) {
-        throw IllegalArgumentException("Las listas deben tener el mismo tamaño")
-    }
-
-    return lista1.zip(lista2) { punto1, punto2 ->
-        val dx = punto1.x - punto2.x
-        val dy = punto1.y - punto2.y
-        sqrt(dx * dx + dy * dy.toDouble())
-    }.sum()
-}
-
-fun areFacesSimilar( # <2>
-    face1Points: List<PointF>,
-    face2Points: List<PointF>,
-    threshold: Double
-): Boolean {
-    val distance = calcularDistanciaEuclidiana(face1Points, face2Points)
-    return distance <= threshold
-}
-----
-<1> Funcion para calcular la distancia Euclidea entre dos puntos en un plano, en nuestro caso la distancia que hay entre la posicion de una parte del rostro de una captura y otra ( Imagen del registro y la Imagen del login )
-<2> Funcion en donde entran los dos puntos, llama a la funcion de distancia y se lo compara con el threshold.
-
-.*Explicacion de la logica del sistema de reconocimiento facial dentro del proyecto*
-
-* Luego de llenar el formulario de registro se posiciona al usuario dentro de la pantalla de captura de imagenes.
-
-* La captura se realiza y se almacenan la informacion de la imagen en la base datos junto a los Landmarks y los Contornos con el ID del usuario. Luego pasa a la pantalla de confirmacion de registro, donde se encuentra un boton para inicio de sesion, al presionalo se redirige al usuario a la pantalla lo inicio de sesion.
-
-* En la pantalla de inicio de sesion nos encontramos con una lista donde aparece el nombre y el mail del usuario. El usuario presiona el boton y se lo redirige automaticamente al area de captura de imagenes y se toma la foto.
-
-* Al momento de tomarse la foto, se compara la informacion de Landmarks de la foto del registro y la foto del logueo punto a punto, mediante la funcion de distancia euclidiana.
-
-* Si hay mas de 8 puntos de los 10 que son en total que verifican dentro del threshold Landmarks, entonces retorna true. Y pasa a la pantalla de galeria, en caso de no verificar se reintenta la toma fotografica, hasta que verifique.
-
-
-*Notas de implementacion al 5 de mayo*
-
-NOTE: *Mejora herramientas basicas:* como esta en fase de desarrollo las comprobaciones son basicas pero se tienen pensadas varias herramientas para la mejora de la comprobacion de persona, ya que no estamos utilizando modelos entrenados de Inteligencia Artificial. El unico que se utiliza es la API MLKIT, pero la misma es para deteccion de rostros no para reconocimiento (link:https://developers.google.com/ml-kit/vision/face-detection?hl=es-419[documentacion, solo ver el inicio, donde aparece esto nombrado anteriormente]) pero dice que la api sive tambien para "identificar rasgos faciales clave", entonces para el reconocimiento se implementaran herramientas ( codigo ) que utilicen Landmarks y Contornos del rostro, es decir, sera de diseño propio.
-
-NOTE: *Mejora en la captura:* mejora en la captura fotografica, realizando el recorte del rostro y recien en ese momento la toma de datos ( landmarks y contornos ), luego enderezamientos utilizando puntos del rostro, para que los rostros queden alineados al eje Y.
-
-NOTE: *Mejoras visuales:* verificacion del tamaño del rostro en pantalla, ya que si los rostros son de distintas dimensiones, el codigo no funciona, avisos visuales al usuario los cuales le iran indicando que tiene que tiene que hacer en el area de captura de fotos ( Acercarse a la camara, alejarse, inclinacion de rostro en ese Y y Z, subir o bajar el rostro dentro del area de captura ), con verificaciones visuales para asegurar el margen de error en este area tan critica.
-
-=== Reconocimiento facial implementación al día 20/05
-
-* *Detección de Rostros en Tiempo Real y Captura de Fotos*
-** Esta implementación también utiliza ML Kit para la detección de rostros. El registro funciona en tiempo real y cuando se detecta un rostro, se comienza un temporizador de 3 segundos. Si el rostro se mantiene en el cuadro durante estos 3 segundos, la aplicación toma una foto y la guarda en la base de datos para luego poder utilizarla en el reconocimiento.
-
-** Para el inicio de sesión, el proceso de detección de rostros en tiempo real y captura de fotos se repite. Cuando el usuario inicia sesión, la aplicación detecta el rostro del usuario y toma una foto después de 3 segundos. Esta foto se utiliza para compararla con la del registro guardada en nuestra base de datos.
-
-** La aplicación utiliza un modelo de TensorFlow Lite cargado localmente para extraer características del rostro. Luego, compara estas características con las características del rostro guardado en la base de datos para verificar la identidad del usuario. Para compararlas se utiliza lo mencionado anteriormente. La distancia euclidiana
-
-* *Librerías utilizadas:*
-** *TensorFlow Lite:* Es una biblioteca que permite ejecutar modelos de machine learning en dispositivos móviles.
-
-* *Funciones utilizadas:*
-
-[source, kotlin]
-----
-fun loadModelFile(assetManager: AssetManager, modelPath: String): MappedByteBuffer {
-    val fileDescriptor: AssetFileDescriptor = assetManager.openFd(modelPath)
-    val inputStream = FileInputStream(fileDescriptor.fileDescriptor)
-    val fileChannel: FileChannel = inputStream.channel
-    val startOffset: Long = fileDescriptor.startOffset
-    val declaredLength: Long = fileDescriptor.declaredLength
-    return fileChannel.map(FileChannel.MapMode.READ_ONLY, startOffset, declaredLength)
-}
-----
-
-*loadModelFile* esta función carga el modelo utilizado llamado MobileFaceNet en la aplicación.
-
-[source, kotlin]
-----
-fun extractFaceFeatures(model: Interpreter, faceImage: Bitmap): FloatArray {
-    val faceFeatures = Array(1) { FloatArray(192) } // El modelo produce 192 características
-    val faceImageBuffer = convertBitmapToBuffer(faceImage) 
-    model.run(faceImageBuffer, faceFeatures)
-    return faceFeatures[0] 
-}
-----
-
-*extractFaceFeatures* : Esta función utiliza el modelo para extraer características del rostro en la imagen proporcionada. Las características son un conjunto de 192 valores flotantes que representan diferentes aspectos del rostro.
-
-
-[source, kotlin]
-----
-fun compareFaceFeatures(features1: FloatArray, features2: FloatArray): Float {
-    var sum = 0.0f
-    for (i in features1.indices) {
-        sum += (features1[i] - features2[i]).pow(2)
-    }
-    val result = sqrt(sum)
-    return result
-}
-----
-
-Por último tenemos la función *compareFaceFeatures* la cuál se encargara de calcular la distancia euclidiana entre los dos conjuntos de características extraídas anteriormente. Como ya fue explicado se tiene un umbral y si entra dentro de ese rango decimos que los dos rostros pertenecen a la misma persona.
-
-=== Reconocimiento facial ( con internet )
-
-* *Detección de Rostros en Tiempo Real y Captura de Fotos*
-
-** Esta implementación también utiliza lo mismo que la anterior para la detección facial.
-
-** En el servidor, tenemos dos versiones de una API para el reconocimiento facial. Ambas versiones de la API reciben la foto del usuario y la comparan con la foto guardada en la base de datos para verificar la identidad del usuario.
-
-NOTE: *Las dos API utilizan Flask como framework para construir la app web.*
-
-==== API Versión 1
-
-Esta API proporciona un servicio para comparar dos caras en imágenes diferentes. Utiliza la biblioteca face_recognition para la detección y comparación de caras.
-
-* *Librerias utilizadas:*
-** *Numpy:*
-*** Es una biblioteca que da soporte para crear vectores y matrices grandes multidimensionales, junto con una gran colección de funciones matemáticas de alto nivel ya que permite trabajar con datos numéricos de manera eficiente. 
-** *cv2:*
-*** Es una biblioteca de OpenCV para Python que proporciona funciones y algoritmos para el procesamiento de imágenes y vídeo.
-** *face_recognition:*
-*** Es una biblioteca simple de reconocimiento facial que incluye detección de rostros, reconocimiento de rostros y manipulación de rostros.
-
-*Endpoint*
-[source, python]
-----
-@app.route('/compare_faces', methods=['POST'])
-def compare_faces():
-    image1 = np.frombuffer(request.files['image1'].read(), np.uint8)
-    image2 = np.frombuffer(request.files['image2'].read(), np.uint8)
-----
-
-*POST /compare_faces*
-
-Toma dos imágenes en formato binario como parámetro
-
-[source, python]
-----
-face_location1 = face_recognition.face_locations(image1)[0]
-face_location2 = face_recognition.face_locations(image2)[0]
-face_image1_encodings = face_recognition.face_encodings(image1, known_face_locations=[face_loc1])[0]
-face_image2_encodings = face_recognition.face_encodings(image2, known_face_locations=[face_loc2])[0]
-----
-
-Se utiliza *face_locations* de face_recognition para detectar el rostro de la imágen y luego *face_encodings* para decodificar el rostro en un vector de 128 dimensiones.
-Por último se utiliza la función *compare_faces* también de face_recognition y se guarda el resultado en una variable. Esta variable es la que se devuelve en un objeto JSON a la aplicación con un true si las dos caras son de la misma persona o false en caso contrario.
-
-[source, python]
-----
-result = face_recognition.compare_faces([face_image1_encodings], face_image2_encodings, 0.5)
-return jsonify({"result": bool(result[0])})
-----
-
-==== API Versión 2
-
-Esta API proporciona un servicio para comparar dos caras en imágenes diferentes. Utiliza la biblioteca facenet_pytorch y cv2 para la detección y comparación de caras.
-
-* *Librerias utilizadas:*
-** *Numpy*: 
-*** Es una biblioteca que da soporte para crear vectores y matrices grandes multidimensionales, junto con una gran colección de funciones matemáticas de alto nivel ya que permite trabajar con datos numéricos de manera eficiente. 
-** *cv2:*
-*** Es una biblioteca de OpenCV para Python que proporciona funciones y algoritmos para el procesamiento de imágenes y vídeo. 
-** *facenet_pytorch:* 
-*** Es una biblioteca que proporciona una implementación de FaceNet, un sistema de reconocimiento facial que utiliza una red neuronal para extraer características útiles de las imágenes de los rostros.
-
-*ENDPOINT* 
-
-[source, python]
-----
-@app.route('/compare_faces', methods=['POST'])
-def compare_faces():
-    image1 = np.frombuffer(request.files['image1'].read(), np.uint8)
-    image2 = np.frombuffer(request.files['image2'].read(), np.uint8)
-----
-
-*POST /compare_faces*
-
-Toma dos imágenes en formato binario como parámetro
-
-
-[source, python]
-----
-embedding1 = get_embedding(resizedImage1)
-embedding2 = get_embedding(resizedImage2)
-----
-Se llama a la función get_embedding para guardar la codificación del rostro en una variable.
-
-[source, python]
-----
-def get_embedding(img):
-        # Detectar rostros
-    faces = face_cascade.detectMultiScale(img, 1.1, 4)
-    # Para cada rostro detectado, extraer las características con FaceNet
-    for (x, y, w, h) in faces:
-        face = img[y:y+h, x:x+w]
-        face = cv2.resize(face, (160, 160))
-        face = Image.fromarray(face)
-        face = np.array(face)  # Convertir la imagen a un array de NumPy
-        face = torch.unsqueeze(torch.tensor(face), 0)
-        embedding = model(face.permute(0, 3, 1, 2).float())
-            
-        return embedding
-----
-
-Se utiliza esta función para detectar los rostros y obtener las características.
-
-<1> *Se detecta el rostro*:
-*  Se utiliza un clasificador de cascada Haar pre-entrenado (en este caso, ‘haarcascade_frontalface_default.xml’ de OpenCV) para detectar rostros en la imagen.
-<2> *Extraer las características del rostro.:*
-* Una vez se detecta el rostro se extrae de la imagen. Luego, se redimensiona la imagen del rostro a un tamaño fijo (en este caso, 160x160 píxeles).
-<3> *Codificación del rostro:*
-* La imagen del rostro se pasa a través del modelo FaceNet pre-entrenado para obtener una representación numérica, o “incrustación”, del rostro. Esta incrustación es un vector de 512 dimensiones12 que captura las características únicas del rostro.
-<4> *Se devuelve para compararlos*
-
-
-Por último se comparan las distancias y se devuelve la respuesta.
-[source, python]
----- 
-    distance = torch.dist(embedding1, embedding2)
-    print(distance)
-    # Si la distancia es menor a un cierto umbral, entonces los rostros son el mismo
-    if distance < 0.36:
-        return jsonify({"result": True})
-    else:
-        return jsonify({"result": False})\
-----
-
-<1> *Cálculo de la distancia:*
-* La línea distance = torch.dist(embedding1, embedding2) está calculando la distancia entre las dos "incrustaciones" (mencionadas anteriormente) de rostros. La función torch.dist calcula la distancia euclidiana entre estos dos vectores, que es una medida de cuán diferentes son las dos caras.
-
-<2> *Comparación de la distancia con un umbral:*
-* La distancia calculada se compara con un umbral predefinido de 0.36. Este umbral es un valor que se ha elegido para determinar si dos caras son la misma persona. Si la distancia es menor a 0.36, entonces se considera que las caras son de la misma persona.
-
-<3> *Devolución del resultado a la aplicación*
-
-NOTE: Se decidió implementar el reconocimiento facial sin internet y con el modelo de TensorFlow Lite.
