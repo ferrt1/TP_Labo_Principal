@@ -1106,7 +1106,7 @@ fun ScaffoldExample() {
 .Imagenes de la implementacion
 ====
 
-image:Recursos/Pantallas-de-galeria.png[Imagen en galeria,700,700,align="center"]
+image::Recursos/Pantallas-de-galeria.png[Imagen en galeria,700,700,align="center"]
 
 ====
 * *Vista principal de la galeria:* 
@@ -1122,7 +1122,7 @@ image:Recursos/Pantallas-de-galeria.png[Imagen en galeria,700,700,align="center"
 ** visualizacion de la imagen seleccionada dentro de la aplicacion
 
 ====
-image:Recursos/gallery/AgredadoDeIImagen.JPG[Imagen en galeria,700,700,align="center"]
+image::Recursos/gallery/AgredadoDeIImagen.JPG[Imagen en galeria,700,700,align="center"]
 ====
 
 * *Eliminado de imagenes*:
@@ -1130,13 +1130,13 @@ image:Recursos/gallery/AgredadoDeIImagen.JPG[Imagen en galeria,700,700,align="ce
 ** En la parte inferior de la pantalla, aparecerán dos botones: "Cancelar" y "Eliminar", si se seleciona boton eliminar se borrara todas las imagenes selecionado, de lo contrario el usuario tiene la opcion de cancelar. 
 
 ====
-image:Recursos/gallery/EliminadoDeImagenes.JPG[Imagen en galeria,700,700,align="center"]
+image::Recursos/gallery/EliminadoDeImagenes.JPG[Imagen en galeria,700,700,align="center"]
 ====
 
 
-*Panel de usuario*
+*PANEL DE USUARIO*
 
-* Como se puede apreciar en esta imagen, este es el panel de usuario donde podrá personalizar su cuenta.
+* Como se puede apreciar en esta imagen, este es el panel de usuario donde el mismo podra personalizar su cuenta.
 
 ====
 image::Recursos/sprint 5/imagenes/PanelDeUsuario1.jpg[Imagen en galeria,200,200,align="center"]
@@ -1153,6 +1153,96 @@ image::Recursos/sprint 5/imagenes/PanelDeUsuario1.jpg[Imagen en galeria,200,200,
 ** *Cerrar sesion*
 ** *Eliminar cuenta:* la misma se realiza con borrado seguro.
 
+IMAGENES DEL PANEL DE USUARIO <<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+=== 2FA / Segundo Factor de Autentificacion
+
+*La misma pertenece a una solicitud de cambio por parte de nuestro PO, la cual constaba de dos requerimientos, una version con internet y otra sin internet.*
+
+* Luego de que el usuario active su 2FA en el panel personal, cada vez que inicie sesion se requerira completar el proceso de 2FA con y sin internet.
+
+*Version con Internet*
+
+* Uno de los pedidos del PO era una autentificacion en lo posible con huella digital, pero realizando una investigancion acerca del requerimiento solicitado no era factible ya que el sistema de huella digital era un servicio propio del sistama de android / celular, por ende no nos proporcionaba la informacion que necesatabamos para dicha funcionalidad ya que se necesitaba una imagen / datos / semilla de la huella del usuario. Pero lo unico que proporcionaba el servicio era una autentificacion por parte del usuario / dueño del celular, entonces esto no aplicaba para nusetra aplicacion la cual tiene multiples usuarios. Para resolver esto se decidio optar por una autentificacion via email:
+
+** *Autentificacion por Email:* luego de que el usuario ingreso su contraseña y tenga internet aparecera una pantalla la cual le solicita 5 digitos, los mismos fueron enviados a su correo, el cual ingreso al momento de su registro, el usuario tiene 3 intentos para concretar bien esta operacion en caso de ser correcto ingresa a su galeria y los intentos se reinician a 0, pero caso contrario, si el usuario consume sus 3 intentos la cuenta sera bloqueada.
+
+====
+image::Recursos/sprint 5/imagenes/2faemail1.jpg[2fa,200,200, align="center"]
+====
+
+====
+image::Recursos/sprint 5/imagenes/2faemail2.jpg[2fa,300,300, align="center"]
+====
+
+* Para realizar esta implementacion se requirio:
+
+** *Crear una cuenta de correo:* se probaron diferentes apis para el envio de correos, pero constaban con limitaciones, siendo que esto es un periodo de prueba o prototipado de una app, no se quiere pagar por versiones premium o con limitaciones. Luego de descartar las opciones anteriores se decidio por crearla dentro de Gmail y usar el servicio mediante conexion smtp, pero el mismo necesitaba configuraciones adicionales de seguridad y se desestimo, para pasar luego al servicio de correo de Hotmail el cual es el que se encuentra implementado ahora. 
+
+NOTE: *Inconvenientes:* el unico problema que detectamos fue la saturacion de correos al momento de pruebas, hace que en el servicio salte un alerta como de spam o de robo de cuenta, previamente habia que autenticar la cuenta con un celular ya que sino tenia limites de emails x dia. Siendo asi no deberia bloquearse la cuenta ya que no inflijimos ningun acuerdo de restricciones que propone hotmail, como el envio de publicidad, spam o en el peor de los casos informacion que el usuario / destinatario no quiere.
+
+.Codigo de una de las funciones principales del servicio
+[source, kotlin]
+----
+    fun sendEmail(receiverEmail: String, subjects: String, body: String) {
+        val stringSenderEmail = emailUsername
+        val stringReceiverEmail = receiverEmail
+        val stringPasswordSenderEmail = emailPassword
+        val stringHost = "smtp-mail.outlook.com"
+
+        val properties = Properties().apply {
+            put("mail.transport.protocol", "smtp")
+            put("mail.smtp.host", stringHost)
+            put("mail.smtp.port", "587")
+            put("mail.smtp.auth", "true")
+            put("mail.smtp.starttls.enable", "true")
+        }
+
+        val session = Session.getInstance(properties, object : Authenticator() {
+            override fun getPasswordAuthentication(): PasswordAuthentication {
+                return PasswordAuthentication(stringSenderEmail, stringPasswordSenderEmail)
+            }
+        })
+
+        try {
+            val mimeMessage = MimeMessage(session).apply {
+                setFrom(InternetAddress(stringSenderEmail))
+                addRecipient(Message.RecipientType.TO, InternetAddress(stringReceiverEmail))
+                subject = subjects
+                setText(body)
+            }
+
+            Thread {
+                try {
+                    Log.d("SendEmail", "Enviando correo electrónico...")
+                    Transport.send(mimeMessage)
+                } catch (e: MessagingException) {
+                    e.printStackTrace()
+                    Log.e("SendEmail", "Error al enviar el correo electrónico: ${e.message}")
+                }
+            }.start()
+        } catch (e: MessagingException) {
+            e.printStackTrace()
+            Log.e("SendEmail", "Error al enviar el correo electrónico: ${e.message}")
+        }
+    }
+----
+
+*Version sin Internet*
+
+* En este caso la solicitud del PO era "una alternativa sin internet", la cual se decidio resolver mediante la reutilizacion de un requerimiento obligatorio de la aplicacion la cual es `un log el cual almacene los ingresos de los usuarios`. La utilizacion del mismo es mediante la creacion de una funcionalidad la misma le consulta al usuario en que momento del dia se conecto por ultima vez:
+
+** *Autentificacion por partes del dia:* se utiliza el ultimo ingreso del usuario y luego se compara con la respuesta del mismo, hay que destacar que el usuario consta con un intento, luego de que ese intento es correcto ingresa a su galeria caso contrario se le bloquea la cuenta.
+
+NOTE: *Intentos:* se decidio poner un solo intento ya que la propia funcionalidad carece de mucha seguiridad en este momento, cuantas mas divisiones del dia tenga mas segura sera, pero en este caso consta con solo 3, por ende se limita para que no reintente y por descarte ingrese.
+
+====
+image::Recursos/sprint 5/imagenes/2fapartesdeldia.jpg[2fa,250,250, align="center"]
+====
+
+*Bloqueo de la cuenta*
+
+* 
 
 
 === Almacenamiento
