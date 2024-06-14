@@ -1240,10 +1240,44 @@ NOTE: *Intentos:* se decidio poner un solo intento ya que la propia funcionalida
 image::Recursos/sprint 5/imagenes/2fapartesdeldia.jpg[2fa,250,250, align="center"]
 ====
 
-*Bloqueo de la cuenta*
+*Bloqueo de cuenta cuenta*
 
-* 
+* Como se menciono anteriormente los distintos factores de autentificacion constan de `intentos` los cuales se implementaron para impedir el ingreso por fuerza bruta ( realizar varios intentos con combinaciones diferentes ), para realizar el desbloqueo solo se requiere de internet ya que se envia al correo del usuario una clave, la cual el usuario debe ingresar en su correspondiente pantalla.
 
+** *Pantalla de bloqueo:* existen dos pantallas una con internet y que otra la cual detecto que el usuario no tiene internet.
+
+.Pantalla sin conexion
+====
+image::Recursos/sprint 5/imagenes//bloqueo1.jpg[2fa,250,250, align="center"]
+====
+
+.Bandeja de entrada / Correo de Cypher Vault
+====
+image::Recursos/sprint 5/imagenes/bloqueo23.jpg[2fa,300,300, align="center"]
+====
+
+
+.Pantalla con conexion
+====
+image::Recursos/sprint 5/imagenes/bloqueo2.jpg[2fa,250,250, align="center"]
+====
+
+** *Intentos:* tambien por cuestiones de seguridad se limita la cantidad de intentos a 1, ya que se podria realizar ataques de fuerza bruta, a todo esto se le advierte al usuario que el mal ingreso del codigo va a bloquear su cuenta por un tiempo determinado. En caso de ser incorrecto el ingreso del codigo se bloquea la cuenta y se comunica al usuario utilizando los mensajes de sistema de android llamado `Toast`.
+
+.Pantalla de Logueo con mensaje de bloqueo
+====
+image::Recursos/sprint 5/imagenes/bloqueo0.jpg[2fa,250,250, align="center"]
+====
+
+.Mensaje de bloqueo
+====
+image::Recursos/sprint 5/imagenes/bloqueo0112.jpg[2fa,250,250, align="center"]
+====
+
+.Mensaje de bloqueo con el tiempo restante para un nuevo intento
+====
+image::Recursos/sprint 5/imagenes/bloqueo011.jpg[2fa,250,250, align="center"]
+====
 
 === Almacenamiento
 
