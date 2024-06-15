@@ -1,7 +1,6 @@
 package com.example.cypher_vault.controller.camera
 
 import android.content.Context
-import android.content.res.AssetManager
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Canvas
@@ -17,8 +16,6 @@ import androidx.compose.runtime.MutableState
 import androidx.core.content.ContextCompat
 import com.example.cypher_vault.controller.navigation.NavController
 import com.example.cypher_vault.controller.data.DatabaseController
-import com.example.cypher_vault.model.mtcnn.MTCNN
-import com.example.cypher_vault.view.resources.FaceOverlayView
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -224,9 +221,6 @@ class CameraController(
                 navController.navigateToConfirmation(userId, false, "Error al iniciar la captura de imagen")
         }
     }
-
-
-
 
     fun rotateBitmap(bitmap: Bitmap, rotationDegrees: Int): Bitmap {
         val matrix = Matrix()
