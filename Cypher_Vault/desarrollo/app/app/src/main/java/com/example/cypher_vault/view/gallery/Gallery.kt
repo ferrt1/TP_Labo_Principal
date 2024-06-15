@@ -357,12 +357,14 @@ fun Gallery(navController: NavController, userId: String, galleryController: Gal
 
     //Cuando cambia el UID
     LaunchedEffect(key1 = userId) {
+        inProcess = true
         galleryController.loadImagesForUser(userId)
         indeximages = dbc.indexImg(userId)
         if (indeximages != 0) {
             LoginimgStatus = Estado.PROCESS
         }
         Log.e("index", "Cantidad de imágenes: $indeximages")
+        inProcess = false
     }
 
     // Usar `indeximages` para mostrar la cantidad de imágenes
@@ -376,6 +378,7 @@ fun Gallery(navController: NavController, userId: String, galleryController: Gal
             LoginimgStatus = Estado.FINALIZED
         }
     }
+
     LaunchedEffect(images.size) {
         inProcess = true
         Log.e("estado", "valores de $indeximg ${images.size}")
@@ -911,7 +914,6 @@ fun Gallery(navController: NavController, userId: String, galleryController: Gal
                             ) {
                                 Button(
                                     onClick = {
-                                        if (inProcess == true) {
                                             inProcess = true
                                             DeletionStatus = Estado.PROCESS
                                             scope.launch {
@@ -924,13 +926,6 @@ fun Gallery(navController: NavController, userId: String, galleryController: Gal
                                                     inProcess = false
                                                 }
                                             }
-                                        } else {
-                                            Toast.makeText(
-                                                context,
-                                                "Procesos activos, espere un momento.",
-                                                Toast.LENGTH_LONG
-                                            ).show()
-                                        }
                                         indeximg = images.size
                                         longClickPerformed = false
                                     },
