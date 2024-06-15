@@ -1133,6 +1133,50 @@ image::Recursos/gallery/AgredadoDeIImagen.JPG[Imagen en galeria,700,700,align="c
 image::Recursos/gallery/EliminadoDeImagenes.JPG[Imagen en galeria,700,700,align="center"]
 ====
 
+* *Eliminado de modo seguro*:
+** Para eliminar imágenes de forma segura, el proceso implica obtener las IDs de cada foto seleccionado por el usuario y luego se realiza una serie de pasos para asegurar que la información original sea irrecuperable. En la sección de abajo se muestra un código que como funciona la eliminación segura.      
+
+*** Selección de imagines: Como se mencionó anteriormente, el usuario selecciona las imagines que desea eliminar, obteniendo las IDs correspondientes.     
+
+*** Obtención de información: Iteramos sobre cada ID para solicitar la información de la correspondiente foto asociada en nuestra base de datos.
+   
+*** Generación de datos aleatorios: Para cada imagen, generamos datos aleatorios que reemplazaran la informacion original 
+    
+*** Actualización y eliminación: Guardando los datos aleatorios en la base de datos y finalmente, eliminamos la información de la imagen. Al realizar este proceso lo hace prácticamente imposible recuperar la información original de las imágenes.    
+ 
+.Codigo para eliminar las imagenes
+[source,kotlin]
+----
+    suspend fun deleteImgs(selectedImageIds: MutableState<List<Long>>) {
+        withContext(Dispatchers.IO) {
+            val imageDao = database.imageDao()
+            val random = SecureRandom()
+
+            // Ejecutar las operaciones de forma concurrente
+            val jobs = selectedImageIds.value.map { id ->
+                async {
+                    val image = imageDao.getImageById(id)
+                    image?.let {
+                        // Generar los datos aleatorios para cada imagen
+                        val randomData = ByteArray(it.imageData.size)
+                        random.nextBytes(randomData)
+
+                        // Actualizar los datos de la imagen con los datos aleatorios
+                        it.imageData = randomData
+                        imageDao.updateImage(it)
+
+                        // Eliminar la imagen
+                        imageDao.deleteImage(it)
+                    }
+                }
+            }
+            // Esperar a que todas las operaciones terminen
+            jobs.awaitAll()
+        }
+    }
+----
+
+
 
 *PANEL DE USUARIO*
 

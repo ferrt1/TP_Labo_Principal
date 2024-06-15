@@ -196,7 +196,6 @@ object DatabaseManager {
                     }
                 }
             }
-
             // Esperar a que todas las operaciones terminen
             jobs.awaitAll()
         }

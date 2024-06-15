@@ -192,7 +192,7 @@ val textStyleTittle2 = TextStyle(
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
 fun Gallery(navController: NavController, userId: String, galleryController: GalleryController) {
-
+/*
     //-----"CODIGO PARA QUE SE VEA EN NEGRO LA GALERIA SI QUIERE SACAR FOTOCAPTURA-----//
     val block = LocalContext.current
     // Usar DisposableEffect para configurar y limpiar la bandera FLAG_SECURE
@@ -209,7 +209,7 @@ fun Gallery(navController: NavController, userId: String, galleryController: Gal
         }
     }
     //----------------------------------------------------------------------------------//
-
+*/
     //Variables necesarias/////////////////////////
     val context = LocalContext.current
     val activity = context.findAncestorActivity()
@@ -913,18 +913,18 @@ fun Gallery(navController: NavController, userId: String, galleryController: Gal
                             ) {
                                 Button(
                                     onClick = {
-                                            inProcess = true
-                                            DeletionStatus = Estado.PROCESS
-                                            scope.launch {
-                                                withContext(Dispatchers.IO) {
-                                                    galleryController.deleteImg(
-                                                        userId,
-                                                        selectedImageIds
-                                                    )
-                                                    DeletionStatus = Estado.FINALIZED
-                                                    inProcess = false
-                                                }
+                                        inProcess = true
+                                        DeletionStatus = Estado.PROCESS
+                                        scope.launch {
+                                            withContext(Dispatchers.IO) {
+                                                galleryController.deleteImg(
+                                                    userId,
+                                                    selectedImageIds
+                                                )
+                                                DeletionStatus = Estado.FINALIZED
+                                                inProcess = false
                                             }
+                                        }
                                         indexImage = images.size
                                         longClickPerformed = false
                                     },
@@ -1019,79 +1019,97 @@ fun Gallery(navController: NavController, userId: String, galleryController: Gal
             },
             //Boton Agregar imagen a la galeria de imagenes//////////////////////////////////////////////////////////////////
             floatingActionButton = {
-                FloatingActionButton(
-                    onClick = {
-                        indexImage = galleryController.getImagesSize()
-                        val maximoDeGaleria = if ( isPremium == true ) maximoImagenesPremium else maximoImagenesModoPobre
-                        val valorRestante = if( maximoDeGaleria - indexImage > 10 ) { 10 } else { maximoDeGaleria - indexImage }
-                        if (inProcess == false) {
-                            inProcess = true
-                            if (isPremium == true) {
-                                indexImage = galleryController.getImagesSize()
-                                if (indexImage < maximoImagenesPremium) {
-                                    resettingTheChecklists(
-                                        selectedImageIds = selectedImageIds,
-                                        longClickPerformedSetter = { longClickPerformed = it },
-                                        selectedImages = selectedImages
-                                    )
+                /*
+                *     AddingImages == Estado.BLOCKED && DeletionStatus == Estado.BLOCKED && LimitStatus == Estado.BLOCKED && LoginimgStatus == Estado.BLOCKED -> R.drawable.iconclarificatio
+                                    LimitStatus == Estado.PROCESS -> R.drawable.icoerror
+                                    AddingImages == Estado.PROCESS || LoginimgStatus == Estado.PROCESS || DeletionStatus == Estado.PROCESS -> R.drawable.waiting
+                                    AddingImages == Estado.FINALIZED || LoginimgStatu
+                * */
+                if (AddingImages == Estado.BLOCKED && DeletionStatus == Estado.BLOCKED && LoginimgStatus == Estado.BLOCKED) {
+                    FloatingActionButton(
+                        onClick = {
+                            indexImage = galleryController.getImagesSize()
+                            val maximoDeGaleria =
+                                if (isPremium == true) maximoImagenesPremium else maximoImagenesModoPobre
+                            val valorRestante = if (maximoDeGaleria - indexImage > 10) {
+                                10
+                            } else {
+                                maximoDeGaleria - indexImage
+                            }
+                            if (inProcess == false) {
+                                Log.e(
+                                    "inProcess",
+                                    "se pone true en la parte de agregar imagen? $inProcess"
+                                )
+                                if (isPremium == true) {
+                                    indexImage = galleryController.getImagesSize()
+                                    if (indexImage < maximoImagenesPremium) {
+                                        resettingTheChecklists(
+                                            selectedImageIds = selectedImageIds,
+                                            longClickPerformedSetter = { longClickPerformed = it },
+                                            selectedImages = selectedImages
+                                        )
 
-                                    val toast = Toast.makeText(
-                                        context,
-                                        "Puedes seleccionar un máximo de $valorRestante imágenes. Si seleccionas más de esta cantidad, no se guardarán",
-                                        Toast.LENGTH_LONG
-                                    )
-                                    toast.setGravity(Gravity.TOP, 0, 0)
-                                    toast.show()
-                                    launcher.launch("image/*")
+                                        val toast = Toast.makeText(
+                                            context,
+                                            "Puedes seleccionar un máximo de $valorRestante imágenes. Si seleccionas más de esta cantidad, no se guardarán",
+                                            Toast.LENGTH_LONG
+                                        )
+                                        toast.setGravity(Gravity.TOP, 0, 0)
+                                        toast.show()
+                                        launcher.launch("image/*")
+                                    } else {
+                                        inProcess = false
+                                        resettingTheChecklists(
+                                            selectedImageIds = selectedImageIds,
+                                            longClickPerformedSetter = { longClickPerformed = it },
+                                            selectedImages = selectedImages
+                                        )
+                                        LimitStatus = Estado.PROCESS
+                                        currentMessage =
+                                            messageController.getmessageLimitModePremium()
+                                    }
                                 } else {
-                                    inProcess = false
-                                    resettingTheChecklists(
-                                        selectedImageIds = selectedImageIds,
-                                        longClickPerformedSetter = { longClickPerformed = it },
-                                        selectedImages = selectedImages
-                                    )
-                                    LimitStatus = Estado.PROCESS
-                                    currentMessage = messageController.getmessageLimitModePremium()
+                                    if (indexImage < maximoImagenesModoPobre) {
+                                        resettingTheChecklists(
+                                            selectedImageIds = selectedImageIds,
+                                            longClickPerformedSetter = { longClickPerformed = it },
+                                            selectedImages = selectedImages
+                                        )
+                                        val toast = Toast.makeText(
+                                            context,
+                                            "Puedes seleccionar un máximo de $valorRestante imágenes. Si seleccionas más de esta cantidad, no se guardarán",
+                                            Toast.LENGTH_LONG
+                                        )
+                                        toast.setGravity(Gravity.TOP, 0, 0)
+                                        toast.show()
+                                        launcher.launch("image/*")
+                                    } else {
+                                        inProcess = false
+                                        resettingTheChecklists(
+                                            selectedImageIds = selectedImageIds,
+                                            longClickPerformedSetter = { longClickPerformed = it },
+                                            selectedImages = selectedImages
+                                        )
+                                        LimitStatus = Estado.PROCESS
+                                        currentMessage =
+                                            messageController.getmessageLimitModePrueba()
+                                    }
                                 }
                             } else {
-                                if (indexImage < maximoImagenesModoPobre) {
-                                    resettingTheChecklists(
-                                        selectedImageIds = selectedImageIds,
-                                        longClickPerformedSetter = { longClickPerformed = it },
-                                        selectedImages = selectedImages
-                                    )
-                                    val toast = Toast.makeText(
-                                        context,
-                                        "Puedes seleccionar un máximo de $valorRestante imágenes. Si seleccionas más de esta cantidad, no se guardarán",
-                                        Toast.LENGTH_LONG
-                                    )
-                                    toast.setGravity(Gravity.TOP, 0, 0)
-                                    toast.show()
-                                    launcher.launch("image/*")
-                                } else {
-                                    inProcess = false
-                                    resettingTheChecklists(
-                                        selectedImageIds = selectedImageIds,
-                                        longClickPerformedSetter = { longClickPerformed = it },
-                                        selectedImages = selectedImages
-                                    )
-                                    LimitStatus = Estado.PROCESS
-                                    currentMessage = messageController.getmessageLimitModePrueba()
-                                }
+                                Toast.makeText(
+                                    context,
+                                    "Procesos activos, espere un momento.", Toast.LENGTH_LONG
+                                ).show()
                             }
-                        } else {
-                            Toast.makeText(
-                                context,
-                                "Procesos activos, espere un momento.", Toast.LENGTH_LONG
-                            ).show()
-                        }
-                    }) {
-                    Icon(
-                        modifier = Modifier.width(30.dp),
-                        tint = firstColor,
-                        imageVector = Icons.Default.Add,
-                        contentDescription = "Add"
-                    )
+                        }) {
+                        Icon(
+                            modifier = Modifier.width(30.dp),
+                            tint = firstColor,
+                            imageVector = Icons.Default.Add,
+                            contentDescription = "Add"
+                        )
+                    }
                 }
             },
             //Contenido de la galeria del usuario///////////////////////////////////////////////////////////////////////////
