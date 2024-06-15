@@ -216,5 +216,8 @@ class GalleryController() {
         galleryManager.clearImages()
     }
 
+    fun getImagesSize(): Int {
+        return galleryManager.getImagesSize()
+    }
 
 }

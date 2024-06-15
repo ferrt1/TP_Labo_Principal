@@ -194,9 +194,9 @@ val textStyleTittle2 = TextStyle(
 @RequiresApi(Build.VERSION_CODES.Q)
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
- fun Gallery(navController: NavController, userId: String, galleryController: GalleryController) {
-    //-----"CODIGO PARA QUE SE VEA EN NEGRO LA GALERIA SI QUIERE SACAR FOTOCAPTURA-----//
+fun Gallery(navController: NavController, userId: String, galleryController: GalleryController) {
 
+    //-----"CODIGO PARA QUE SE VEA EN NEGRO LA GALERIA SI QUIERE SACAR FOTOCAPTURA-----//
     val block = LocalContext.current
     // Usar DisposableEffect para configurar y limpiar la bandera FLAG_SECURE
     DisposableEffect(Unit) {
@@ -211,16 +211,19 @@ val textStyleTittle2 = TextStyle(
             activity?.window?.clearFlags(WindowManager.LayoutParams.FLAG_SECURE)
         }
     }
-
     //----------------------------------------------------------------------------------//
+
+    //Variables necesarias/////////////////////////
+    val context = LocalContext.current
+    val activity = context.findAncestorActivity()
     var dbc = DatabaseController()
     var inProcess by remember { mutableStateOf(false) }
+    val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(rememberTopAppBarState())
 
     // variable para selecionar las imagenes para eliminar
     val selectedImageIds = remember { mutableStateOf<List<Long>>(listOf()) }
     var longClickPerformed by remember { mutableStateOf(false) }
     val selectedImages = remember { mutableStateMapOf<Long, Boolean>() }
-
 
     //Variables para el mensaje de gallery
     var currentMessage by remember { mutableStateOf("") }
@@ -229,7 +232,7 @@ val textStyleTittle2 = TextStyle(
     var LimitStatus by remember { mutableStateOf(Estado.BLOCKED) }    //Limite de modo prueba y modo premium
     var LoginimgStatus by remember { mutableStateOf(Estado.BLOCKED) } //Carga inicial de imagenes de la galeria
     var AddingImages by remember { mutableStateOf(Estado.BLOCKED) } //Agregando las imagenes
-    var Statuslimitimg by remember { mutableStateOf(false) }
+
     //Variable de la 2 verificacion
     var checkedSecondAuth: Boolean? by remember { mutableStateOf(false) }
     LaunchedEffect(key1 = Unit) { // Key can be anything to trigger on recomposition
@@ -278,10 +281,6 @@ val textStyleTittle2 = TextStyle(
     val sheetState = rememberModalBottomSheetState()
     var showPremiumPanel by remember { mutableStateOf(false) }
 
-    //Variables necesarias/////////////////////////
-    val context = LocalContext.current
-    val activity = context.findAncestorActivity()
-
     //Carga datos para el perfil y para el socalo de nombre/////////////////////
     var usuario by remember { mutableStateOf<User?>(null) }
     var nombre by remember { mutableStateOf("") }
@@ -294,12 +293,47 @@ val textStyleTittle2 = TextStyle(
         email = usuarioTemp?.email.toString()
         contrasena = usuarioTemp?.password.toString()
     }
+
     var userImage by remember { mutableStateOf<ByteArray?>(null) }
     LaunchedEffect(key1 = userId) {
         withContext(Dispatchers.IO) {
             val user = dbc.getUserById(userId) // Nueva función para obtener el usuario por ID
             userImage = user?.profile_picture // Asigna la imagen de perfil del usuario
         }
+    }
+
+    /// Carga de imagen de perfil de usuario
+    val scope2 = rememberCoroutineScope()
+    val launcherProfile =
+        rememberLauncherForActivityResult(ActivityResultContracts.GetMultipleContents()) { uris: List<Uri>? ->
+            val limitedUris = uris?.take(MAX_IMAGE_SELECTION) ?: emptyList()
+            inProcess = true
+            limitedUris.forEach { uri ->
+                uri?.let {
+                    val inputStream = context.contentResolver.openInputStream(it)
+                    val bitmapOriginal = BitmapFactory.decodeStream(inputStream)
+                    val bitmapResize = galleryController.reduceImageSize(
+                        bitmapOriginal.asImageBitmap(),
+                        1.0f // Ajusta este valor según sea necesario
+                    )
+                    val byteArrayOutputStream = ByteArrayOutputStream()
+                    bitmapResize.asAndroidBitmap()
+                        .compress(Bitmap.CompressFormat.PNG, 60, byteArrayOutputStream)
+                    val compressedImageData = byteArrayOutputStream.toByteArray()
+
+                    scope2.launch {
+                        withContext(Dispatchers.IO) {
+                            galleryController.updateProfileImage(userId, compressedImageData)
+                        }
+                        // Actualiza la imagen en la UI
+                        userImage = compressedImageData
+                    }
+                }
+            }
+            inProcess = false
+        }
+    val onImageClick = {
+        launcherProfile.launch("image/*")
     }
 
     //Acceso a la galeria/imagenes del celular///////////////////////
@@ -315,99 +349,107 @@ val textStyleTittle2 = TextStyle(
         )
     }
 
-
     //Carga de imagenes del usuario en la galeria//////////////////////
-
-    //Cuando cambia el UID
-    LaunchedEffect(key1 = userId) {
-        inProcess = true
-        galleryController.loadImagesForUser(userId)
-        inProcess = false
-    }
     val images = galleryController.getGalleryImages()
     var indeximg by remember { mutableStateOf(images.size) }
     val imageUris = remember { mutableStateOf<List<Uri>>(listOf()) }
-
-
     var indeximages by remember { mutableStateOf(0) }
 
+    //Cuando cambia el UID
     LaunchedEffect(key1 = userId) {
+        galleryController.loadImagesForUser(userId)
         indeximages = dbc.indexImg(userId)
-        if(indeximages!=0){
+        if (indeximages != 0) {
             LoginimgStatus = Estado.PROCESS
         }
-
         Log.e("index", "Cantidad de imágenes: $indeximages")
     }
 
     // Usar `indeximages` para mostrar la cantidad de imágenes
     Text(": $indeximages")
+    Log.e("proceso", "${images.size} $indeximg ${imageUris.value}")
 
-
-
-    Log.e("proceso","${images.size} $indeximg ${imageUris.value}")
     // Cuando cambian las imagenes
     LaunchedEffect(key1 = imageUris.value) {
-        inProcess = true
         galleryController.loadImagesForUser(userId)
-        if(LoginimgStatus==Estado.PROCESS){
-             LoginimgStatus = Estado.FINALIZED}
+        if (LoginimgStatus == Estado.PROCESS) {
+            LoginimgStatus = Estado.FINALIZED
+        }
+    }
+    LaunchedEffect(images.size) {
+        inProcess = true
+        Log.e("estado", "valores de $indeximg ${images.size}")
+        if (AddingImages == Estado.PROCESS && indeximg == images.size) {
+            AddingImages = Estado.FINALIZED
+        }
         inProcess = false
     }
 
-    LaunchedEffect(images.size){
-        Log.e("estado","valores de $indeximg ${images.size}")
-        if(AddingImages==Estado.PROCESS && indeximg==images.size){
-            AddingImages=Estado.FINALIZED
-        }
-    }
-
-
-
-
-    // Barra superior mantiene el color
-    val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(rememberTopAppBarState())
-
     //Seleccion de imagenes de la galeria del celular y almacenamiento////////////////
+
     val launcher =
         rememberLauncherForActivityResult(ActivityResultContracts.GetMultipleContents()) { uris: List<Uri>? ->
+            //Logica de bloqueo de carga
+            var listImageSize = galleryController.getImagesSize()
+            inProcess = true
             val maxSelectionLimit =
                 if (isPremium == true) maximoImagenesPremium else maximoImagenesModoPobre
+            val imageDiference = maxSelectionLimit - listImageSize
+            var contador = 0
+
             val limitedUris = uris?.take(MAX_IMAGE_SELECTION) ?: emptyList()
-            indeximg = images.size
+            indeximg = listImageSize
             limitedUris.forEach { uri ->
-                inProcess = true
-                if (indeximg < maxSelectionLimit) {
-                    AddingImages = Estado.PROCESS
-                    uri?.let {
-                        context.contentResolver.openInputStream(it)?.use { inputStream ->
-                            try {
-                                val bitmapOriginal = BitmapFactory.decodeStream(inputStream)
-                                val bitmapResize = galleryController.reduceImageSize(
-                                    bitmapOriginal.asImageBitmap(),
-                                    pixelesDeRedimensionamiento
-                                )
-                                val byteArrayOutputStream = ByteArrayOutputStream()
-                                bitmapResize.asAndroidBitmap()
-                                    .compress(Bitmap.CompressFormat.PNG, 60, byteArrayOutputStream)
-                                val compressedImageData = byteArrayOutputStream.toByteArray()
+                if (contador < imageDiference) {
+                    if (indeximg < maxSelectionLimit) {
+                        AddingImages = Estado.PROCESS
+                        contador++
+                        uri.let {
+                            context.contentResolver.openInputStream(it)?.use { inputStream ->
+                                try {
+                                    val bitmapOriginal = BitmapFactory.decodeStream(inputStream)
+                                    val bitmapResize = galleryController.reduceImageSize(
+                                        bitmapOriginal.asImageBitmap(),
+                                        pixelesDeRedimensionamiento
+                                    )
+                                    val byteArrayOutputStream = ByteArrayOutputStream()
+                                    bitmapResize.asAndroidBitmap()
+                                        .compress(
+                                            Bitmap.CompressFormat.PNG,
+                                            60,
+                                            byteArrayOutputStream
+                                        )
+                                    val compressedImageData = byteArrayOutputStream.toByteArray()
 
-                                // Liberar recursos
-                                inputStream.close()
-                                bitmapOriginal?.recycle()
-                                byteArrayOutputStream.close()
+                                    // Liberar recursos
+                                    inputStream.close()
+                                    bitmapOriginal?.recycle()
+                                    byteArrayOutputStream.close()
 
-                                galleryController.saveImage(compressedImageData, userId)
-                                imageUris.value += it
-                                indeximg++
-                            } catch (e: Exception) {
-                                Log.e("Error", "Error procesando imagen", e)
+                                    galleryController.saveImage(compressedImageData, userId)
+                                    imageUris.value += it
+                                    indeximg++
+                                } catch (e: Exception) {
+                                    Log.e("Error", "Error procesando imagen", e)
+                                }
                             }
                         }
+                    }
+                } else {
+                    if (isPremium == true) {
+                        LoginimgStatus == Estado.PROCESS
+                        currentMessage = messageController.getmessageLimitModePremium()
+                        inProcess = false
+                    } else {
+                        LoginimgStatus == Estado.PROCESS
+                        currentMessage = messageController.getmessageLimitModePrueba()
+                        inProcess = false
                     }
                 }
             }
             inProcess = false
+
+            ////////////////////////////////////////////////////////////////
             Log.e("foto", "lo que vale index adentro$$indeximg")
         }
 
@@ -426,51 +468,7 @@ val textStyleTittle2 = TextStyle(
     Log.e("galeria", "LISTA DE INGRESOS : $listaDeIngresos")
 
 
-    val launcherProfile =
-        rememberLauncherForActivityResult(ActivityResultContracts.GetMultipleContents()) { uris: List<Uri>? ->
-            val maxSelectionLimit =
-                if (isPremium == true) maximoImagenesPremium else maximoImagenesModoPobre
-            indeximg = images.size
-
-            // Only process the first 10 (or the max selection limit) images if more than allowed are selected
-            val limitedUris = uris?.take(MAX_IMAGE_SELECTION) ?: emptyList()
-            inProcess = true
-            limitedUris.forEach { uri ->
-                if (indeximg < maxSelectionLimit) {
-                    uri?.let {
-                        val inputStream = context.contentResolver.openInputStream(it)
-                        val bitmapOriginal = BitmapFactory.decodeStream(inputStream)
-                        val bitmapResize = galleryController.reduceImageSize(
-                            bitmapOriginal.asImageBitmap(),
-                            1.0f // Ajusta este valor según sea necesario
-                        )
-                        val byteArrayOutputStream = ByteArrayOutputStream()
-                        bitmapResize.asAndroidBitmap()
-                            .compress(Bitmap.CompressFormat.PNG, 60, byteArrayOutputStream)
-                        val compressedImageData = byteArrayOutputStream.toByteArray()
-
-                        scope.launch {
-                            withContext(Dispatchers.IO) {
-                                galleryController.updateProfileImage(userId, compressedImageData)
-                            }
-                            // Actualiza la imagen en la UI
-                            userImage = compressedImageData
-                        }
-                    }
-                    indeximg++
-                    Log.e("foto", "lo que vale index adentro$$indeximg")
-                }
-            }
-            inProcess = false
-        }
-
-    Log.e("foto", "lo que vale index$$indeximg")
-
-    val onImageClick = {
-        launcherProfile.launch("image/*")
-    }
-
-    //var qrBitmap by remember { mutableStateOf<Bitmap?>(null) }
+    //Variables de compartir QR
     val showDialog = remember { mutableStateOf(false) }
     val qrCodeBitmap = remember { mutableStateOf<Bitmap?>(null) }
     val imageUrlText = remember { mutableStateOf<String?>(null) }
@@ -533,7 +531,9 @@ val textStyleTittle2 = TextStyle(
                                 verticalArrangement = Arrangement.Center
                             ) {
                                 Row(
-                                    modifier = Modifier.fillMaxWidth().padding(horizontal = 15.dp),
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(horizontal = 15.dp),
                                     horizontalArrangement = Arrangement.Absolute.Center
                                 ) {
                                     Text(
@@ -575,7 +575,9 @@ val textStyleTittle2 = TextStyle(
                         }
                         Spacer(modifier = Modifier.height(8.dp))
                         Text(
-                            modifier = Modifier.fillMaxWidth().padding(horizontal = 15.dp),
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = 15.dp),
                             text = email,
                             color = mainBackgroundColor,
                             style = textStyleTittle2,
@@ -909,15 +911,25 @@ val textStyleTittle2 = TextStyle(
                             ) {
                                 Button(
                                     onClick = {
-                                        DeletionStatus = Estado.PROCESS
-                                        scope.launch {
-                                            withContext(Dispatchers.IO) {
-                                                galleryController.deleteImg(
-                                                    userId,
-                                                    selectedImageIds
-                                                )
-                                                DeletionStatus = Estado.FINALIZED
+                                        if (inProcess == true) {
+                                            inProcess = true
+                                            DeletionStatus = Estado.PROCESS
+                                            scope.launch {
+                                                withContext(Dispatchers.IO) {
+                                                    galleryController.deleteImg(
+                                                        userId,
+                                                        selectedImageIds
+                                                    )
+                                                    DeletionStatus = Estado.FINALIZED
+                                                    inProcess = false
+                                                }
                                             }
+                                        } else {
+                                            Toast.makeText(
+                                                context,
+                                                "Procesos activos, espere un momento.",
+                                                Toast.LENGTH_LONG
+                                            ).show()
                                         }
                                         indeximg = images.size
                                         longClickPerformed = false
@@ -1110,7 +1122,7 @@ val textStyleTittle2 = TextStyle(
                         modifier = Modifier.weight(1f)
                     ) {
                         items(images.size) { index ->
-                            val image = images[index]
+                            val image = images[images.size - 1 - index]
                             val isSelected = selectedImages[image.id] ?: false
                             val bitmap =
                                 BitmapFactory.decodeByteArray(
@@ -1217,9 +1229,12 @@ val textStyleTittle2 = TextStyle(
 
                     // Ciclando los dialogos cada 5 segundo///////////////////////////////////////////////////////////////////
                     LaunchedEffect(DeletionStatus, LimitStatus, LoginimgStatus, AddingImages) {
-                        Log.e("estado", "posible estados $DeletionStatus $LimitStatus $LoginimgStatus $AddingImages")
+                        Log.e(
+                            "estado",
+                            "posible estados $DeletionStatus $LimitStatus $LoginimgStatus $AddingImages"
+                        )
                         when {
-                            LoginimgStatus==Estado.BLOCKED && AddingImages==Estado.BLOCKED && DeletionStatus == Estado.BLOCKED && LimitStatus == Estado.BLOCKED -> {
+                            LoginimgStatus == Estado.BLOCKED && AddingImages == Estado.BLOCKED && DeletionStatus == Estado.BLOCKED && LimitStatus == Estado.BLOCKED -> {
                                 val messageChannel = messageController.getMessageChannel()
                                 for (message in messageChannel) {
                                     currentMessage = message

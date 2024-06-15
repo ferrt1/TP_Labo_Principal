@@ -211,9 +211,10 @@ class GalleryManager {
         images.value = listOf()
     }
 
-    fun getGalleryImages(): List<Images> {
-        return images.value
+    fun getImagesSize(): Int {
+        return images.value.size
     }
+
     @RequiresApi(Build.VERSION_CODES.O)
     suspend fun loadImagesForUser(userId: String) {
         Log.d("EncryptionServiceGallery", "entrando a loadImages")
@@ -243,6 +244,9 @@ class GalleryManager {
         }
     }
 
+    fun getGalleryImages(): List<Images> {
+        return images.value
+    }
 
     @RequiresApi(Build.VERSION_CODES.O)
     fun saveImage(imageData: ByteArray, userId: String): Deferred<Int> {
