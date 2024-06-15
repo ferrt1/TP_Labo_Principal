@@ -232,11 +232,11 @@ fun ConfirmationLoginScreen(navController: NavController, userId: String, fromCa
         var insertarIngreso by remember { mutableStateOf(false) }
         Image(
             painter = painterResource(id = R.drawable.successful),
-            contentDescription = "Bienvenido!",
+            contentDescription = "Acceso Permitido",
             modifier = Modifier.size(128.dp)
         )
         Text(
-            "¡Bienvenido!",
+            "Acceso Permitido",
             fontSize = 20.sp,
             fontFamily = fontFamily,
             color = thirdColor,
@@ -302,11 +302,11 @@ fun ConfirmationLoginScreen(navController: NavController, userId: String, fromCa
     ) {
         Image(
             painter = painterResource(id = R.drawable.failure),
-            contentDescription = "No son la misma persona",
+            contentDescription = "Acceso Denegado",
             modifier = Modifier.size(128.dp)
         )
         Text(
-            "Acceso denegado.",
+            "Acceso denegado",
             fontSize = 20.sp,
             fontFamily = fontFamily,
             color = Color.Red,

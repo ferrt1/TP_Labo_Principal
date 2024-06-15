@@ -106,405 +106,417 @@ fun LockScreen(navController: NavController, userId: String) {
 
     var valorCodigo = remember { mutableStateOf(TextFieldValue()) }
 
-    ElevatedCard(
-        elevation = CardDefaults.cardElevation(
-            defaultElevation = 6.dp
-        ),
+    Column(
         modifier = Modifier
+            .fillMaxSize()
             .padding(15.dp)
-            .background(mainBackgroundColor)
-            .fillMaxHeight(),
+            .verticalScroll(rememberScrollState()),
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Column(
+        ElevatedCard(
+            elevation = CardDefaults.cardElevation(
+                defaultElevation = 6.dp
+            ),
             modifier = Modifier
-                .fillMaxSize()
                 .padding(15.dp)
-                .verticalScroll(rememberScrollState()),
-            horizontalAlignment = Alignment.CenterHorizontally
+                .background(mainBackgroundColor)
+                .fillMaxHeight(),
         ) {
-            //Pantallita de recepcion
-            //////////////// CON CONEXION A INTERNET //////////////////////////////////////////////////////////////////
-            ///////////////////////////////////////////////////////////////////////////////////////////////////////////
-            if (isInternetAvailable) {
-                var mailCode: String = remember { blockUserController.sendMail(context, userId) }
-                /// TITULO //////////////////////////////////////////////////////////////////
-                Spacer(modifier = Modifier.height(15.dp))
-                Row(
-                    horizontalArrangement = Arrangement.Absolute.Center
-                ) {
-                    Icon(
-                        Icons.Filled.Lock,
-                        contentDescription = "Localized description",
-                        Modifier.size(150.dp),
-                        tint = secondColor
-                    )
-                }
-                Spacer(modifier = Modifier.height(15.dp))
-                Row(
-                    horizontalArrangement = Arrangement.Absolute.Center
-                ) {
-                    Text(
-                        text = "Cuenta",
-                        fontSize = 20.sp,
-                        color = secondColor,
-                        style = textStyleTittle2,
-                        onTextLayout = { /* No se necesita hacer nada aquí */ }
-                    )
-                }
-                Spacer(modifier = Modifier.height(8.dp))
-                Row(
-                    horizontalArrangement = Arrangement.Absolute.Center
-                ) {
-                    Text(
-                        text = "Bloqueada",
-                        fontSize = 20.sp,
-                        color = secondColor,
-                        style = textStyleTittle2,
-                        onTextLayout = { /* No se necesita hacer nada aquí */ }
-                    )
-                }
-                /// Informacion de RED///////////////////////////////
-                Row {
-                    AssistChip(
-                        shape = RoundedCornerShape(4.dp),
-                        border = BorderStroke(
-                            3.dp,
-                            com.example.cypher_vault.view.gallery.firstColor
-                        ),
-                        onClick = { Log.d("Assist chip", "WbTwilight world") },
-                        label = {
-                            if (isInternetAvailable) {
-                                Text(
-                                    text = "con conexion",
-                                    color = com.example.cypher_vault.view.gallery.firstColor,
-                                    style = textStyleTittle2,
-                                    onTextLayout = { /* No se necesita hacer nada aquí */ })
-                            } else {
-                                Text(
-                                    text = "sin conexion",
-                                    color = com.example.cypher_vault.view.gallery.firstColor,
-                                    style = textStyleTittle2,
-                                    onTextLayout = { /* No se necesita hacer nada aquí */ })
-                            }
-                        },
-                        leadingIcon = {
-                            if (isInternetAvailable) {
-                                Icon(
-                                    Icons.Filled.Wifi,
-                                    contentDescription = "Localized description",
-                                    Modifier.size(AssistChipDefaults.IconSize),
-                                    tint = com.example.cypher_vault.view.gallery.firstColor
-                                )
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(15.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                //Pantallita de recepcion
+                //////////////// CON CONEXION A INTERNET //////////////////////////////////////////////////////////////////
+                ///////////////////////////////////////////////////////////////////////////////////////////////////////////
+                if (isInternetAvailable) {
+                    var mailCode: String =
+                        remember { blockUserController.sendMail(context, userId) }
+                    /// TITULO //////////////////////////////////////////////////////////////////
+                    Spacer(modifier = Modifier.height(15.dp))
+                    Row(
+                        horizontalArrangement = Arrangement.Absolute.Center
+                    ) {
+                        Icon(
+                            Icons.Filled.Lock,
+                            contentDescription = "Localized description",
+                            Modifier.size(150.dp),
+                            tint = secondColor
+                        )
+                    }
+                    Spacer(modifier = Modifier.height(15.dp))
+                    Row(
+                        horizontalArrangement = Arrangement.Absolute.Center
+                    ) {
+                        Text(
+                            text = "Cuenta",
+                            fontSize = 20.sp,
+                            color = secondColor,
+                            style = textStyleTittle2,
+                            onTextLayout = { /* No se necesita hacer nada aquí */ }
+                        )
+                    }
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Row(
+                        horizontalArrangement = Arrangement.Absolute.Center
+                    ) {
+                        Text(
+                            text = "Bloqueada",
+                            fontSize = 20.sp,
+                            color = secondColor,
+                            style = textStyleTittle2,
+                            onTextLayout = { /* No se necesita hacer nada aquí */ }
+                        )
+                    }
+                    /// Informacion de RED///////////////////////////////
+                    Row {
+                        AssistChip(
+                            shape = RoundedCornerShape(4.dp),
+                            border = BorderStroke(
+                                3.dp,
+                                com.example.cypher_vault.view.gallery.firstColor
+                            ),
+                            onClick = { Log.d("Assist chip", "WbTwilight world") },
+                            label = {
+                                if (isInternetAvailable) {
+                                    Text(
+                                        text = "con conexion",
+                                        color = com.example.cypher_vault.view.gallery.firstColor,
+                                        style = textStyleTittle2,
+                                        onTextLayout = { /* No se necesita hacer nada aquí */ })
+                                } else {
+                                    Text(
+                                        text = "sin conexion",
+                                        color = com.example.cypher_vault.view.gallery.firstColor,
+                                        style = textStyleTittle2,
+                                        onTextLayout = { /* No se necesita hacer nada aquí */ })
+                                }
+                            },
+                            leadingIcon = {
+                                if (isInternetAvailable) {
+                                    Icon(
+                                        Icons.Filled.Wifi,
+                                        contentDescription = "Localized description",
+                                        Modifier.size(AssistChipDefaults.IconSize),
+                                        tint = com.example.cypher_vault.view.gallery.firstColor
+                                    )
 
-                            } else {
-                                Icon(
-                                    Icons.Filled.WifiOff,
-                                    contentDescription = "Localized description",
-                                    Modifier.size(AssistChipDefaults.IconSize),
-                                    tint = com.example.cypher_vault.view.gallery.firstColor
+                                } else {
+                                    Icon(
+                                        Icons.Filled.WifiOff,
+                                        contentDescription = "Localized description",
+                                        Modifier.size(AssistChipDefaults.IconSize),
+                                        tint = com.example.cypher_vault.view.gallery.firstColor
+                                    )
+                                }
+                            }
+                        )
+                    }
+                    //// Mensaje cuando hay conexion a internet //////////////////////////////////////////////////////////////////
+                    Row(
+                        horizontalArrangement = Arrangement.Absolute.Center
+                    ) {
+                        Spacer(modifier = Modifier.width(4.dp))
+                        Text(
+                            text = "En este momento tu cuenta se encuentra bloqueda," +
+                                    "para desbloquearla ingresa el codigo que enviamos a tu mail." +
+                                    " Ten en cuenta que si su ingreso es erroneo se bloquea la cuenta por 30min." +
+                                    "Recuerda que puedes usar el boton de limpiar campos para volver a escribirlo.",
+                            color = com.example.cypher_vault.view.gallery.firstColor,
+                            style = textStyleTittle2,
+                            textAlign = TextAlign.Center,
+                            onTextLayout = { /* No se necesita hacer nada aquí */ },
+                            modifier = Modifier.padding(horizontal = 12.dp)
+                        )
+                    }
+                    Spacer(modifier = Modifier.height(10.dp))
+                    //// Formularios ingreso de codigo ////////////////////////////
+                    Row(
+                        horizontalArrangement = Arrangement.Absolute.Center
+                    ) {
+                        /// VALOR DIGITO 1 ///////////////////////////////////////////////
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Column {
+                            TextField(
+                                value = valorCodigo.value,
+                                onValueChange = { nuevoValor ->
+                                    valorCodigo.value = nuevoValor
+                                },
+                                textStyle = TextStyle(
+                                    color = com.example.cypher_vault.view.gallery.firstColor,
+                                    fontSize = 30.sp,
+                                    fontFamily = fontFamily,
+                                    fontWeight = FontWeight.Bold,
+                                    textAlign = TextAlign.Center
+                                ),
+                                placeholder = {
+                                    Text(
+                                        "",
+                                        style = TextStyle(
+                                            color = Color.Gray,
+                                            fontSize = 16.sp,
+                                            fontFamily = fontFamily
+                                        )
+                                    )
+                                },
+                                label = {
+                                    Text(
+                                        "",
+                                        fontSize = 20.sp,
+                                        fontFamily = fontFamily,
+                                        color = thirdColor,
+                                        fontWeight = FontWeight.Bold,
+
+                                        )
+                                },
+                                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                                singleLine = true,
+                                shape = RoundedCornerShape(4.dp),
+                                colors = TextFieldDefaults.colors(
+                                    focusedContainerColor = Color.Transparent,
+                                    unfocusedContainerColor = Color.Transparent,
+                                    disabledContainerColor = Color.Transparent,
+                                    cursorColor = thirdColor,
+                                    focusedIndicatorColor = com.example.cypher_vault.view.resources.firstColor,
+                                    unfocusedIndicatorColor = com.example.cypher_vault.view.resources.firstColor,
+                                ),
+                                modifier = Modifier
+                                    .width(200.dp) // Establece un ancho fijo para el TextField
+                                    .border(
+                                        BorderStroke(
+                                            3.dp,
+                                            com.example.cypher_vault.view.resources.firstColor
+                                        ),
+                                        shape = RoundedCornerShape(4.dp),
+                                    )
+                            )
+                        }
+                    }
+                    //// Botones del formulario //////////////////////////////////////////////////////////////////////////
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Row(
+                        horizontalArrangement = Arrangement.Absolute.Center
+                    ) {
+                        /// BOTON LIMPIAR
+                        Column {
+                            Row(
+                                horizontalArrangement = Arrangement.Absolute.Center
+                            ) {
+                                OutlinedButton(
+                                    onClick = {
+                                        valorCodigo.value = TextFieldValue("")
+                                    },
+                                    shape = RoundedCornerShape(15.dp),
+                                    border = BorderStroke(3.dp, Color.Gray),
+                                    colors = ButtonDefaults.buttonColors(
+                                        containerColor = com.example.cypher_vault.view.gallery.thirdColor,
+                                        contentColor = wingWhite
+                                    ),
+                                    modifier = Modifier
+                                        .width(200.dp)
+                                ) {
+                                    Text(
+                                        "Limpiar campos",
+                                        fontWeight = FontWeight.Bold
+                                    )
+                                }
+                            }
+                            Row(
+                                horizontalArrangement = Arrangement.Absolute.Center
+                            ) {
+                                Spacer(modifier = Modifier.width(4.dp))
+                                Text(
+                                    text = "Intento 1 de 1",
+                                    color = com.example.cypher_vault.view.gallery.firstColor,
+                                    style = textStyleTittle2,
+                                    onTextLayout = { /* No se necesita hacer nada aquí */ },
+                                    modifier = Modifier.padding(horizontal = 16.dp)
                                 )
+                            }
+                            Row(
+                                horizontalArrangement = Arrangement.Absolute.Center
+                            ) {
+                                OutlinedButton(
+                                    onClick = {
+
+                                        if (comprobarCodigo(
+                                                mailCode,
+                                                valorCodigo.value.text
+                                            )
+                                        ) {
+                                            Log.d("lockAccount", "////////Codigo Correcto")
+                                            scope.launch {
+                                                userId.let { blockUserController.deleteBlock(it) }
+                                                Log.d("lockAccount", "///////Blockeo Eliminado")
+                                                Toast.makeText(
+                                                    context,
+                                                    "Bloqueo Eliminado",
+                                                    Toast.LENGTH_SHORT
+                                                ).show()
+                                                navController.navigateToGallery(userId)
+                                            }
+                                        } else {
+                                            Log.d("lockAccount", "////////Codigo Incorrecto")
+                                            scope.launch {
+                                                var time = System.currentTimeMillis()
+                                                userId.let {
+                                                    blockUserController.setBlockDate(
+                                                        it,
+                                                        time
+                                                    )
+                                                }
+                                                Log.d(
+                                                    "lockAccount",
+                                                    "///////updateAttempts completed"
+                                                )
+                                                Toast.makeText(
+                                                    context,
+                                                    "Error en la autenticacion,se bloquea la cuenta por 30min",
+                                                    Toast.LENGTH_SHORT
+                                                ).show()
+                                                navController.navigateToListLogin()
+                                            }
+                                        }
+                                    },
+                                    shape = RoundedCornerShape(15.dp),
+                                    border = BorderStroke(3.dp, Color.Gray),
+                                    colors = ButtonDefaults.buttonColors(
+                                        containerColor = com.example.cypher_vault.view.gallery.thirdColor,
+                                        contentColor = wingWhite
+                                    ),
+                                    modifier = Modifier
+                                        .width(200.dp)
+                                        .padding(vertical = 30.dp)
+                                ) {
+                                    Text(
+                                        "Comprobar",
+                                        fontWeight = FontWeight.Bold
+                                    )
+                                }
                             }
                         }
-                    )
-                }
-                //// Mensaje cuando hay conexion a internet //////////////////////////////////////////////////////////////////
-                Row(
-                    horizontalArrangement = Arrangement.Absolute.Center
-                ) {
-                    Spacer(modifier = Modifier.width(4.dp))
-                    Text(
-                        text = "En este momento tu cuenta se encuentra bloqueda," +
-                                "para desbloquearla ingresa el codigo que enviamos a tu mail." +
-                                " Ten en cuenta que si su ingreso es erroneo se bloquea la cuenta por 30min." +
-                                "Recuerda que puedes usar el boton de limpiar campos para volver a escribirlo.",
-                        color = com.example.cypher_vault.view.gallery.firstColor,
-                        style = textStyleTittle2,
-                        textAlign = TextAlign.Center,
-                        onTextLayout = { /* No se necesita hacer nada aquí */ },
-                        modifier = Modifier.padding(horizontal = 12.dp)
-                    )
-                }
-                Spacer(modifier = Modifier.height(10.dp))
-                //// Formularios ingreso de codigo ////////////////////////////
-                Row(
-                    horizontalArrangement = Arrangement.Absolute.Center
-                ) {
-                    /// VALOR DIGITO 1 ///////////////////////////////////////////////
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Column {
-                        TextField(
-                            value = valorCodigo.value,
-                            onValueChange = {nuevoValor ->
-                                valorCodigo.value = nuevoValor
-                            },
-                            textStyle = TextStyle(
-                                color = com.example.cypher_vault.view.gallery.firstColor,
-                                fontSize = 30.sp,
-                                fontFamily = fontFamily,
-                                fontWeight = FontWeight.Bold,
-                                textAlign = TextAlign.Center
-                            ),
-                            placeholder = {
-                                Text(
-                                    "",
-                                    style = TextStyle(
-                                        color = Color.Gray,
-                                        fontSize = 16.sp,
-                                        fontFamily = fontFamily
-                                    )
-                                )
-                            },
-                            label = {
-                                Text(
-                                    "",
-                                    fontSize = 20.sp,
-                                    fontFamily = fontFamily,
-                                    color = thirdColor,
-                                    fontWeight = FontWeight.Bold,
-
-                                )
-                            },
-                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                            singleLine = true,
+                    }
+                } else {
+                    /////// SIN CONEXION A INTERNET //////////////////////////////////////////////////////////////////
+                    /////////////////////////////////////////////////////////////////////////////////////////////////////////
+                    /// TITULO //////////////////////////////////////////////////////////////////
+                    Spacer(modifier = Modifier.height(15.dp))
+                    Row(
+                        horizontalArrangement = Arrangement.Absolute.Center
+                    ) {
+                        Icon(
+                            Icons.Filled.Lock,
+                            contentDescription = "Localized description",
+                            Modifier.size(150.dp),
+                            tint = secondColor
+                        )
+                    }
+                    Spacer(modifier = Modifier.height(15.dp))
+                    Row(
+                        horizontalArrangement = Arrangement.Absolute.Center
+                    ) {
+                        Text(
+                            text = "Cuenta",
+                            fontSize = 20.sp,
+                            color = secondColor,
+                            style = textStyleTittle2,
+                            onTextLayout = { /* No se necesita hacer nada aquí */ }
+                        )
+                    }
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Row(
+                        horizontalArrangement = Arrangement.Absolute.Center
+                    ) {
+                        Text(
+                            text = "Bloqueada",
+                            fontSize = 20.sp,
+                            color = secondColor,
+                            style = textStyleTittle2,
+                            onTextLayout = { /* No se necesita hacer nada aquí */ }
+                        )
+                    }
+                    /// Informacion de RED///////////////////////////////
+                    Row {
+                        AssistChip(
                             shape = RoundedCornerShape(4.dp),
-                            colors = TextFieldDefaults.colors(
-                                focusedContainerColor = Color.Transparent,
-                                unfocusedContainerColor = Color.Transparent,
-                                disabledContainerColor = Color.Transparent,
-                                cursorColor = thirdColor,
-                                focusedIndicatorColor = com.example.cypher_vault.view.resources.firstColor,
-                                unfocusedIndicatorColor = com.example.cypher_vault.view.resources.firstColor,
+                            border = BorderStroke(
+                                3.dp,
+                                com.example.cypher_vault.view.gallery.firstColor
                             ),
-                            modifier = Modifier
-                                .width(200.dp) // Establece un ancho fijo para el TextField
-                                .border(
-                                    BorderStroke(
-                                        3.dp,
-                                        com.example.cypher_vault.view.resources.firstColor
-                                    ),
-                                    shape = RoundedCornerShape(4.dp),
-                                )
+                            onClick = { Log.d("Assist chip", "WbTwilight world") },
+                            label = {
+                                if (isInternetAvailable) {
+                                    Text(
+                                        text = "con conexion",
+                                        color = com.example.cypher_vault.view.gallery.firstColor,
+                                        style = textStyleTittle2,
+                                        onTextLayout = { /* No se necesita hacer nada aquí */ })
+                                } else {
+                                    Text(
+                                        text = "sin conexion",
+                                        color = com.example.cypher_vault.view.gallery.firstColor,
+                                        style = textStyleTittle2,
+                                        onTextLayout = { /* No se necesita hacer nada aquí */ })
+                                }
+                            },
+                            leadingIcon = {
+                                if (isInternetAvailable) {
+                                    Icon(
+                                        Icons.Filled.Wifi,
+                                        contentDescription = "Localized description",
+                                        Modifier.size(AssistChipDefaults.IconSize),
+                                        tint = com.example.cypher_vault.view.gallery.firstColor
+                                    )
+
+                                } else {
+                                    Icon(
+                                        Icons.Filled.WifiOff,
+                                        contentDescription = "Localized description",
+                                        Modifier.size(AssistChipDefaults.IconSize),
+                                        tint = com.example.cypher_vault.view.gallery.firstColor
+                                    )
+                                }
+                            }
+                        )
+                    }
+                    //// Mensaje cuando no hay conexion a internet //////////////////////////////////////////////////////////////////
+                    Spacer(modifier = Modifier.height(20.dp))
+                    //// Texto de la 2da Authentificacion por mail ////////////////////////////
+                    Row {
+                        Text(
+                            text = "La cuenta se encuentra bloqueda, por favor vuelve a " +
+                                    "intentarlo cuando tengas conexion a internet",
+                            color = com.example.cypher_vault.view.gallery.firstColor,
+                            style = textStyleTittle2,
+                            textAlign = TextAlign.Center,
+                            onTextLayout = { /* No se necesita hacer nada aquí */ },
+                            modifier = Modifier.padding(horizontal = 16.dp)
                         )
                     }
                 }
-                //// Botones del formulario //////////////////////////////////////////////////////////////////////////
-                Spacer(modifier = Modifier.height(8.dp))
-                Row(
-                    horizontalArrangement = Arrangement.Absolute.Center
-                ) {
-                    /// BOTON LIMPIAR
-                    Column {
-                        Row(
-                            horizontalArrangement = Arrangement.Absolute.Center
-                        ) {
-                            OutlinedButton(
-                                onClick = {
-                                    valorCodigo.value = TextFieldValue("")
-                                },
-                                shape = RoundedCornerShape(15.dp),
-                                border = BorderStroke(3.dp, Color.Gray),
-                                colors = ButtonDefaults.buttonColors(
-                                    containerColor = com.example.cypher_vault.view.gallery.thirdColor,
-                                    contentColor = wingWhite
-                                ),
-                                modifier = Modifier
-                                    .width(200.dp)
-                            ) {
-                                Text(
-                                    "Limpiar campos",
-                                    fontWeight = FontWeight.Bold
-                                )
-                            }
-                        }
-                        Row(
-                            horizontalArrangement = Arrangement.Absolute.Center
-                        ) {
-                            Spacer(modifier = Modifier.width(4.dp))
-                            Text(
-                                text = "Intento 1 de 1",
-                                color = com.example.cypher_vault.view.gallery.firstColor,
-                                style = textStyleTittle2,
-                                onTextLayout = { /* No se necesita hacer nada aquí */ },
-                                modifier = Modifier.padding(horizontal = 16.dp)
-                            )
-                        }
-                        Row(
-                            horizontalArrangement = Arrangement.Absolute.Center
-                        ) {
-                            OutlinedButton(
-                                onClick = {
 
-                                    if (comprobarCodigo(
-                                            mailCode,
-                                            valorCodigo.value.text
-                                        )
-                                    ) {
-                                        Log.d("lockAccount", "////////Codigo Correcto")
-                                        scope.launch {
-                                            userId.let { blockUserController.deleteBlock(it) }
-                                            Log.d("lockAccount", "///////Blockeo Eliminado")
-                                            Toast.makeText(
-                                                context,
-                                                "Bloqueo Eliminado",
-                                                Toast.LENGTH_SHORT
-                                            ).show()
-                                            navController.navigateToGallery(userId)
-                                        }
-                                    } else {
-                                        Log.d("lockAccount", "////////Codigo Incorrecto")
-                                        scope.launch {
-                                            var time = System.currentTimeMillis()
-                                            userId.let {
-                                                blockUserController.setBlockDate(
-                                                    it,
-                                                    time
-                                                )
-                                            }
-                                            Log.d("lockAccount", "///////updateAttempts completed")
-                                            Toast.makeText(
-                                                context,
-                                                "Error en la autenticacion,se bloquea la cuenta por 30min",
-                                                Toast.LENGTH_SHORT
-                                            ).show()
-                                            navController.navigateToListLogin()
-                                        }
-                                    }
-                                },
-                                shape = RoundedCornerShape(15.dp),
-                                border = BorderStroke(3.dp, Color.Gray),
-                                colors = ButtonDefaults.buttonColors(
-                                    containerColor = com.example.cypher_vault.view.gallery.thirdColor,
-                                    contentColor = wingWhite
-                                ),
-                                modifier = Modifier
-                                    .width(200.dp)
-                                    .padding(vertical = 30.dp)
-                            ) {
-                                Text(
-                                    "Comprobar",
-                                    fontWeight = FontWeight.Bold
-                                )
-                            }
-                        }
-                    }
-                }
-            } else {
-                /////// SIN CONEXION A INTERNET //////////////////////////////////////////////////////////////////
-                /////////////////////////////////////////////////////////////////////////////////////////////////////////
-                /// TITULO //////////////////////////////////////////////////////////////////
-                Spacer(modifier = Modifier.height(15.dp))
-                Row(
-                    horizontalArrangement = Arrangement.Absolute.Center
-                ) {
-                    Icon(
-                        Icons.Filled.Lock,
-                        contentDescription = "Localized description",
-                        Modifier.size(150.dp),
-                        tint = secondColor
-                    )
-                }
-                Spacer(modifier = Modifier.height(15.dp))
-                Row(
-                    horizontalArrangement = Arrangement.Absolute.Center
-                ) {
-                    Text(
-                        text = "Cuenta",
-                        fontSize = 20.sp,
-                        color = secondColor,
-                        style = textStyleTittle2,
-                        onTextLayout = { /* No se necesita hacer nada aquí */ }
-                    )
-                }
-                Spacer(modifier = Modifier.height(8.dp))
-                Row(
-                    horizontalArrangement = Arrangement.Absolute.Center
-                ) {
-                    Text(
-                        text = "Bloqueada",
-                        fontSize = 20.sp,
-                        color = secondColor,
-                        style = textStyleTittle2,
-                        onTextLayout = { /* No se necesita hacer nada aquí */ }
-                    )
-                }
-                /// Informacion de RED///////////////////////////////
-                Row {
-                    AssistChip(
-                        shape = RoundedCornerShape(4.dp),
-                        border = BorderStroke(
-                            3.dp,
-                            com.example.cypher_vault.view.gallery.firstColor
-                        ),
-                        onClick = { Log.d("Assist chip", "WbTwilight world") },
-                        label = {
-                            if (isInternetAvailable) {
-                                Text(
-                                    text = "con conexion",
-                                    color = com.example.cypher_vault.view.gallery.firstColor,
-                                    style = textStyleTittle2,
-                                    onTextLayout = { /* No se necesita hacer nada aquí */ })
-                            } else {
-                                Text(
-                                    text = "sin conexion",
-                                    color = com.example.cypher_vault.view.gallery.firstColor,
-                                    style = textStyleTittle2,
-                                    onTextLayout = { /* No se necesita hacer nada aquí */ })
-                            }
-                        },
-                        leadingIcon = {
-                            if (isInternetAvailable) {
-                                Icon(
-                                    Icons.Filled.Wifi,
-                                    contentDescription = "Localized description",
-                                    Modifier.size(AssistChipDefaults.IconSize),
-                                    tint = com.example.cypher_vault.view.gallery.firstColor
-                                )
-
-                            } else {
-                                Icon(
-                                    Icons.Filled.WifiOff,
-                                    contentDescription = "Localized description",
-                                    Modifier.size(AssistChipDefaults.IconSize),
-                                    tint = com.example.cypher_vault.view.gallery.firstColor
-                                )
-                            }
-                        }
-                    )
-                }
-                //// Mensaje cuando no hay conexion a internet //////////////////////////////////////////////////////////////////
-                Spacer(modifier = Modifier.height(20.dp))
-                //// Texto de la 2da Authentificacion por mail ////////////////////////////
-                Row {
-                    Text(
-                        text = "La cuenta se encuentra bloqueda, por favor vuelve a " +
-                                "intentarlo cuando tengas conexion a internet",
-                        color = com.example.cypher_vault.view.gallery.firstColor,
-                        style = textStyleTittle2,
-                        textAlign = TextAlign.Center,
-                        onTextLayout = { /* No se necesita hacer nada aquí */ },
-                        modifier = Modifier.padding(horizontal = 16.dp)
-                    )
-                }
             }
-            //Boton vuelta al logueo //////////////////////////////////////////////////////////////////////////
-            Spacer(modifier = Modifier.weight(1f)) // Push the button to the bottom
-            OutlinedButton(
-                onClick = { navController.navigateToListLogin() },
-                shape = RoundedCornerShape(15.dp),
-                border = BorderStroke(3.dp, Color.Gray),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = Color.Transparent,
-                    contentColor = Color.Gray
-                ),
-                modifier = Modifier
-                    .width(200.dp)
-                    .padding(bottom = 30.dp)
-            ) {
-                Text(
-                    "Volver",
-                    fontWeight = FontWeight.Bold
-                )
-            }
+        }
+        //Boton vuelta al logueo //////////////////////////////////////////////////////////////////////////
+        Spacer(modifier = Modifier.weight(1f)) // Push the button to the bottom
+        OutlinedButton(
+            onClick = { navController.navigateToListLogin() },
+            shape = RoundedCornerShape(15.dp),
+            border = BorderStroke(3.dp, Color.Gray),
+            colors = ButtonDefaults.buttonColors(
+                containerColor = Color.Transparent,
+                contentColor = Color.Gray
+            ),
+            modifier = Modifier
+                .width(200.dp)
+                .padding(bottom = 30.dp)
+        ) {
+            Text(
+                "Volver",
+                fontWeight = FontWeight.Bold
+            )
         }
     }
 }
