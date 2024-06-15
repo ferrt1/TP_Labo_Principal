@@ -49,7 +49,6 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.ExitToApp
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.ArrowBackIosNew
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Share
@@ -105,8 +104,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.Font
-import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
@@ -137,6 +134,7 @@ import com.example.cypher_vault.controller.messages.getvalidatePasswordNotContai
 import com.example.cypher_vault.controller.messages.getvalidatePasswordSpecialCharacters
 import com.example.cypher_vault.controller.messages.getvalidatePasswordsSecialcharacters
 import com.example.cypher_vault.controller.premium.PremiumController
+import com.example.cypher_vault.database.Images
 import com.example.cypher_vault.database.User
 import com.example.cypher_vault.database.UserIncome
 import com.example.cypher_vault.model.premium.PremiumManager
@@ -150,7 +148,6 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.ByteArrayOutputStream
-import kotlin.math.log
 
 enum class Estado {
     PROCESS,
@@ -350,39 +347,41 @@ fun Gallery(navController: NavController, userId: String, galleryController: Gal
     }
 
     //Carga de imagenes del usuario en la galeria//////////////////////
-    val images = galleryController.getGalleryImages()
-    var indeximg by remember { mutableStateOf(images.size) }
+    val images =  galleryController.getGalleryImages()
+    var indexImage by remember { mutableStateOf(images.size) }
     val imageUris = remember { mutableStateOf<List<Uri>>(listOf()) }
     var indeximages by remember { mutableStateOf(0) }
 
     //Cuando cambia el UID
     LaunchedEffect(key1 = userId) {
         inProcess = true
-        galleryController.loadImagesForUser(userId)
         indeximages = dbc.indexImg(userId)
         if (indeximages != 0) {
             LoginimgStatus = Estado.PROCESS
         }
+        galleryController.loadImagesForUser(userId)
         Log.e("index", "Cantidad de imágenes: $indeximages")
         inProcess = false
     }
 
     // Usar `indeximages` para mostrar la cantidad de imágenes
     Text(": $indeximages")
-    Log.e("proceso", "${images.size} $indeximg ${imageUris.value}")
+    Log.e("proceso", "${images.size} $indexImage ${imageUris.value}")
 
     // Cuando cambian las imagenes
     LaunchedEffect(key1 = imageUris.value) {
+        inProcess = true
         galleryController.loadImagesForUser(userId)
         if (LoginimgStatus == Estado.PROCESS) {
             LoginimgStatus = Estado.FINALIZED
         }
+        inProcess = false
     }
 
     LaunchedEffect(images.size) {
         inProcess = true
-        Log.e("estado", "valores de $indeximg ${images.size}")
-        if (AddingImages == Estado.PROCESS && indeximg == images.size) {
+        Log.e("estado", "valores de $indexImage ${images.size}")
+        if (AddingImages == Estado.PROCESS && indexImage == images.size) {
             AddingImages = Estado.FINALIZED
         }
         inProcess = false
@@ -401,10 +400,10 @@ fun Gallery(navController: NavController, userId: String, galleryController: Gal
             var contador = 0
 
             val limitedUris = uris?.take(MAX_IMAGE_SELECTION) ?: emptyList()
-            indeximg = listImageSize
+            indexImage = listImageSize
             limitedUris.forEach { uri ->
                 if (contador < imageDiference) {
-                    if (indeximg < maxSelectionLimit) {
+                    if (indexImage < maxSelectionLimit) {
                         AddingImages = Estado.PROCESS
                         contador++
                         uri.let {
@@ -431,7 +430,7 @@ fun Gallery(navController: NavController, userId: String, galleryController: Gal
 
                                     galleryController.saveImage(compressedImageData, userId)
                                     imageUris.value += it
-                                    indeximg++
+                                    indexImage++
                                 } catch (e: Exception) {
                                     Log.e("Error", "Error procesando imagen", e)
                                 }
@@ -453,7 +452,7 @@ fun Gallery(navController: NavController, userId: String, galleryController: Gal
             inProcess = false
 
             ////////////////////////////////////////////////////////////////
-            Log.e("foto", "lo que vale index adentro$$indeximg")
+            Log.e("foto", "lo que vale index adentro$$indexImage")
         }
 
 
@@ -926,7 +925,7 @@ fun Gallery(navController: NavController, userId: String, galleryController: Gal
                                                     inProcess = false
                                                 }
                                             }
-                                        indeximg = images.size
+                                        indexImage = images.size
                                         longClickPerformed = false
                                     },
                                     shape = RoundedCornerShape(4.dp),
@@ -1022,20 +1021,23 @@ fun Gallery(navController: NavController, userId: String, galleryController: Gal
             floatingActionButton = {
                 FloatingActionButton(
                     onClick = {
+                        indexImage = galleryController.getImagesSize()
+                        val maximoDeGaleria = if ( isPremium == true ) maximoImagenesPremium else maximoImagenesModoPobre
+                        val valorRestante = if( maximoDeGaleria - indexImage > 10 ) { 10 } else { maximoDeGaleria - indexImage }
                         if (inProcess == false) {
                             inProcess = true
                             if (isPremium == true) {
-                                indeximg = images.size
-                                if (images.size < maximoImagenesPremium) {
+                                indexImage = galleryController.getImagesSize()
+                                if (indexImage < maximoImagenesPremium) {
                                     resettingTheChecklists(
-
                                         selectedImageIds = selectedImageIds,
                                         longClickPerformedSetter = { longClickPerformed = it },
                                         selectedImages = selectedImages
                                     )
+
                                     val toast = Toast.makeText(
                                         context,
-                                        "Puedes seleccionar un máximo de 10 imágenes. Si seleccionas más de esta cantidad, no se guardarán",
+                                        "Puedes seleccionar un máximo de $valorRestante imágenes. Si seleccionas más de esta cantidad, no se guardarán",
                                         Toast.LENGTH_LONG
                                     )
                                     toast.setGravity(Gravity.TOP, 0, 0)
@@ -1052,7 +1054,7 @@ fun Gallery(navController: NavController, userId: String, galleryController: Gal
                                     currentMessage = messageController.getmessageLimitModePremium()
                                 }
                             } else {
-                                if (images.size < maximoImagenesModoPobre) {
+                                if (indexImage < maximoImagenesModoPobre) {
                                     resettingTheChecklists(
                                         selectedImageIds = selectedImageIds,
                                         longClickPerformedSetter = { longClickPerformed = it },
@@ -1060,7 +1062,7 @@ fun Gallery(navController: NavController, userId: String, galleryController: Gal
                                     )
                                     val toast = Toast.makeText(
                                         context,
-                                        "Puedes seleccionar un máximo de 10 imágenes. Si seleccionas más de esta cantidad, no se guardarán",
+                                        "Puedes seleccionar un máximo de $valorRestante imágenes. Si seleccionas más de esta cantidad, no se guardarán",
                                         Toast.LENGTH_LONG
                                     )
                                     toast.setGravity(Gravity.TOP, 0, 0)
