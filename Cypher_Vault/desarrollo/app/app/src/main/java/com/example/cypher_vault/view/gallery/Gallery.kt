@@ -1025,7 +1025,7 @@ fun Gallery(navController: NavController, userId: String, galleryController: Gal
                                     AddingImages == Estado.PROCESS || LoginimgStatus == Estado.PROCESS || DeletionStatus == Estado.PROCESS -> R.drawable.waiting
                                     AddingImages == Estado.FINALIZED || LoginimgStatu
                 * */
-                if (AddingImages == Estado.BLOCKED && DeletionStatus == Estado.BLOCKED && LoginimgStatus == Estado.BLOCKED) {
+                if ((AddingImages == Estado.BLOCKED || AddingImages == Estado.FINALIZED) && (DeletionStatus == Estado.BLOCKED || DeletionStatus == Estado.FINALIZED) && (LoginimgStatus == Estado.BLOCKED || LoginimgStatus == Estado.FINALIZED)) {
                     FloatingActionButton(
                         onClick = {
                             indexImage = galleryController.getImagesSize()
@@ -1155,6 +1155,7 @@ fun Gallery(navController: NavController, userId: String, galleryController: Gal
                                         .border(2.dp, Color.Black)
                                         .combinedClickable(
                                             onLongClick = {
+                                                if(AddingImages!=Estado.PROCESS){
                                                 selectedImageIds.value = listOf(image.id)
                                                 selectedImages[image.id] = !isSelected
                                                 longClickPerformed = true
@@ -1162,7 +1163,7 @@ fun Gallery(navController: NavController, userId: String, galleryController: Gal
                                                     "img",
                                                     "imagenes seleciona click largo id selecionado${selectedImageIds.value}"
                                                 )
-                                            },
+                                            }},
                                             onClick = {
                                                 //para ver las imagenes (zoom)
                                                 if (!longClickPerformed) {
@@ -1250,11 +1251,11 @@ fun Gallery(navController: NavController, userId: String, galleryController: Gal
                         )
                         when {
                             LoginimgStatus == Estado.BLOCKED && AddingImages == Estado.BLOCKED && DeletionStatus == Estado.BLOCKED && LimitStatus == Estado.BLOCKED -> {
-                                val messageChannel = messageController.getMessageChannel()
-                                for (message in messageChannel) {
-                                    currentMessage = message
-                                }
-                            }
+                                    val messageChannel = messageController.getMessageChannel()
+                                    for (message in messageChannel) {
+                                        currentMessage = message
+                                    }
+                               }
 
                             AddingImages == Estado.PROCESS -> {
                                 currentMessage = messageController.getmessageAddingImages()
@@ -1287,15 +1288,11 @@ fun Gallery(navController: NavController, userId: String, galleryController: Gal
                             }
 
                             DeletionStatus == Estado.BLOCKED && LimitStatus == Estado.PROCESS -> {
-                                delay(5000) // Espera 5 segundos
                                 LimitStatus = Estado.BLOCKED
+                                delay(5000) // Espera 5 segundos
                             }
-
                         }
-
                     }
-
-
                 }
 
                 if (selectedImageBitmap.value != null) {
