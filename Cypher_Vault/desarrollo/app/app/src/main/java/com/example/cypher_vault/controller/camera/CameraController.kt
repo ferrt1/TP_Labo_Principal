@@ -94,9 +94,8 @@ class CameraController(
                                 // Configurar el detector de rostros
                                 val realTimeOpts = FaceDetectorOptions.Builder()
                                     .setContourMode(FaceDetectorOptions.CONTOUR_MODE_ALL)
-                                    .setPerformanceMode(FaceDetectorOptions.PERFORMANCE_MODE_FAST)
+                                    .setPerformanceMode(FaceDetectorOptions.PERFORMANCE_MODE_ACCURATE)
                                     .setClassificationMode(FaceDetectorOptions.CLASSIFICATION_MODE_ALL)
-                                    .enableTracking()
                                     .build()
 
                                 val detector = FaceDetection.getClient(realTimeOpts)
@@ -109,40 +108,35 @@ class CameraController(
                                                 val boundingBox = face.boundingBox
 
                                                 try {
-                                                    // Reducir el tamaño del bounding box para que sea solo la cara
-                                                    val reductionAmountX = 230
-                                                    val reductionAmountY = 230
+                                                    // Asegurar que siempre se capturen los mismos márgenes alrededor del rostro
+                                                    val marginX = 50
+                                                    val marginY = 50
                                                     val adjustedBoundingBox = Rect(
-                                                        boundingBox.left + reductionAmountX,
-                                                        boundingBox.top + reductionAmountY,
-                                                        boundingBox.right - reductionAmountX,
-                                                        boundingBox.bottom - reductionAmountY
+                                                        boundingBox.left - marginX,
+                                                        boundingBox.top - marginY,
+                                                        boundingBox.right + marginX,
+                                                        boundingBox.bottom + marginY
+                                                    )
+
+                                                    // Validar los límites del bounding box ajustado
+                                                    val safeBoundingBox = Rect(
+                                                        maxOf(adjustedBoundingBox.left, 0),
+                                                        maxOf(adjustedBoundingBox.top, 0),
+                                                        minOf(adjustedBoundingBox.right, imgBitmap.width),
+                                                        minOf(adjustedBoundingBox.bottom, imgBitmap.height)
                                                     )
 
                                                     // Recortar la imagen para obtener solo la cara
                                                     val faceBitmap = Bitmap.createBitmap(
                                                         imgBitmap,
-                                                        adjustedBoundingBox.left,
-                                                        adjustedBoundingBox.top,
-                                                        adjustedBoundingBox.width(),
-                                                        adjustedBoundingBox.height()
+                                                        safeBoundingBox.left,
+                                                        safeBoundingBox.top,
+                                                        safeBoundingBox.width(),
+                                                        safeBoundingBox.height()
                                                     )
 
-                                                    // Calcular las nuevas dimensiones manteniendo el aspecto original
-                                                    val aspectRatio = faceBitmap.width.toFloat() / faceBitmap.height.toFloat()
-                                                    val targetWidth: Int
-                                                    val targetHeight: Int
-
-                                                    if (aspectRatio > 1) {
-                                                        targetWidth = 112
-                                                        targetHeight = (112 / aspectRatio).toInt()
-                                                    } else {
-                                                        targetHeight = 112
-                                                        targetWidth = (112 * aspectRatio).toInt()
-                                                    }
-
                                                     // Redimensionar la imagen manteniendo el aspecto original
-                                                    val resizedBitmap = Bitmap.createScaledBitmap(faceBitmap, targetWidth, targetHeight, false)
+                                                    val resizedBitmap = Bitmap.createScaledBitmap(faceBitmap, 112, 112, false)
 
                                                     // Crear una nueva imagen de 112x112 píxeles y dibujar la imagen redimensionada en el centro
                                                     val finalBitmap = Bitmap.createBitmap(112, 112, Bitmap.Config.ARGB_8888)
@@ -221,6 +215,7 @@ class CameraController(
                 navController.navigateToConfirmation(userId, false, "Error al iniciar la captura de imagen")
         }
     }
+
 
     fun rotateBitmap(bitmap: Bitmap, rotationDegrees: Int): Bitmap {
         val matrix = Matrix()
