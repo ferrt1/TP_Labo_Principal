@@ -1014,6 +1014,37 @@ image::Recursos/gallery/mensajes.JPG[]
 
 *** Límite de capacidad en modo premium: Similar al modo prueba, se indicará al usuario que ha alcanzado el límite de capacidad en modo premium.
 
+
+==== Mensaje de Galería - Barra de Carga
+
+** Se han agregado dos tipos de iconos: uno de carga y otro de carga completada.
+
+image::Recursos/waiting.png[70,70]
+
+*** Este icono indica que se está procesando una foto, ya sea para cargar la imagen en la galería, eliminarla o actualizarla.
+
+image::Recursos/successful.png[70,70]
+
+*** Este icono indica que el proceso se ha completado exitosamente.
+
+*** Barra de carga de galería:
+
+image::Recursos/barraDeCarga/CargaDeImagen.PNG[]
+
+*** Cuando el usuario entra a su galería, se procede a cargar las imágenes. En la parte inferior de la galería se indicará que estamos cargando las imágenes. Una vez que todas las imágenes se hayan cargado, se mostrará un mensaje indicando "Todas las imágenes se cargaron exitosamente".
+
+** Barra de carga para agregar imágenes:
+
+image::Recursos/barraDeCarga/AgregandoImagen.PNG[]
+
+*** Cuando se seleccionan imágenes para almacenarlas, se generará un mensaje al usuario indicando que se están almacenando las imágenes en la base de datos. Una vez que todas las imágenes se hayan almacenado, se mostrará un nuevo mensaje indicando que "Todas las imágenes se guardaron exitosamente".
+
+** Barra de carga para eliminar imágenes:
+
+image::Recursos/barraDeCarga/EliminandoImagen.PNG[]
+
+*** Se seleccionarán las imágenes a eliminar y, al proceder con la eliminación, se generará un mensaje indicando que las imágenes se están eliminando de manera segura. Una vez que todas las imágenes se hayan eliminado, se mostrará un mensaje indicando que "Todas las imágenes se eliminaron exitosamente".
+
 === Galeria de Imagenes
 
 *En esta interfaz se visualizan las imagenes privadas el usuario que ya se encuentran cifradas, en la misma el usuario puede agregar sus imagenes mediante un boton, aparte tiene acceso a su perfil en el cual puede visualizar sus datos personales y actualizar su contraseña.*
