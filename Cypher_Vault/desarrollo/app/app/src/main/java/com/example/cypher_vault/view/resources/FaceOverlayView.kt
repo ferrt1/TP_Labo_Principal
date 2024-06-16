@@ -110,9 +110,9 @@ class FaceOverlayView(context: Context) : View(context) {
         }
 
 
-    // Define el tamaño mínimo y máximo del targetBox
-        val minBoxWidth = width * 5 / 8 + 130
-        val minBoxHeight = height * 3 / 8 + 600
+        // Define el tamaño mínimo y máximo del targetBox
+        val minBoxWidth = width * 5 / 8 + 100
+        val minBoxHeight = height * 3 / 8 + 250
         val maxBoxWidth = width * 3 / 4 + 100
         val maxBoxHeight = height * 1 / 2 + 250
 
@@ -130,38 +130,6 @@ class FaceOverlayView(context: Context) : View(context) {
             (width + maxBoxWidth) / 2,
             (height / 2 + maxBoxHeight / 2 - 100)   // Ajusta la posición inferior acorde a la nueva altura y movimiento
         )
-
-//        // Dibuja el targetBox mínimo en azul
-//        val minTargetPaint = Paint().apply {
-//            color = Color.BLUE
-//            style = Paint.Style.STROKE
-//            strokeWidth = 4f
-//        }
-//         canvas.drawRect(minTargetBox!!, minTargetPaint)
-//
-//        // Dibuja el targetBox máximo en verde
-//        val maxTargetPaint = Paint().apply {
-//            color = Color.GREEN
-//            style = Paint.Style.STROKE
-//            strokeWidth = 4f
-//        }
-//        canvas.drawRect(maxTargetBox!!, maxTargetPaint)
-//
-//        // Dibuja el boundingBox en rojo
-//        boundingBox?.let {
-//            val paint = Paint().apply {
-//                color = Color.RED
-//                style = Paint.Style.STROKE
-//                strokeWidth = 4f
-//            }
-//
-//            val left = width - it.right * width.toFloat() / imageHeight
-//            val top = it.top * height.toFloat() / imageWidth
-//            val right = width - it.left * width.toFloat() / imageHeight
-//            val bottom = it.bottom * height.toFloat() / imageWidth
-//
-//             canvas.drawRect(left, top, right, bottom, paint)
-//        }
 
         // Dibuja la silueta correcta dependiendo del estado
         val silhouetteBitmap = if (inside) silhouette else silhouetteError
@@ -186,7 +154,7 @@ class FaceOverlayView(context: Context) : View(context) {
         canvas.drawText(text, x, y, textPaint)
     }
 
-// Methods to update state
+    // Methods to update state
     fun updateState(orientation: String, timer: Int = 0, eyesOpen: Int = 0) {
         currentOrientation = orientation
         timerValue = timer
