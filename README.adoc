@@ -258,6 +258,7 @@ Los pesos se clasifican en base a:
 | 2.3 | Login | Implementar interfaz de autentificación | Desarrollo | Equipo de desarrollo | 2 
 | 2.3.1 | Formulario | Creación de formulario de autentificación | Desarrollo | Equipo de desarrollo | 2 
 | 2.3.2 | Autentificación | Método de autentificación | Desarrollo | Equipo de desarrollo | 2 
+| 2.3.2.1 | Mejoras autentificación | Implementar mejora en la autentificación | Desarrollo | Equipo de desarrollo | 2 
 | 2.3.3 | Buscador de usuario | Creación de barra de busqueda de usuario | Desarrollo | Equipo de desarrollo | 2 
 | 2.3.4 | Login alternativo | Creación del login alternativo | Desarrollo | Equipo de desarrollo | 2
 | 2.3.5 | Mejorar interfaz login | Implementar mejoras en la interfaz de login | Desarrollo | Equipo de desarrollo | 2
@@ -278,6 +279,12 @@ Los pesos se clasifican en base a:
 | 2.6 | Premium | El usuario posee funcionalidades de paquete premium | Desarrollo | Equipo de desarrollo | 3
 | 2.6.1 | Interfaz opción premium| Preparar la interfaz del paquete premium | Desarrollo | Equipo de desarrollo | 3
 | 2.6.2 | Aumentar capacidad de galeria | El usuario tendra mas espacio con el paquete premium | Desarrollo | Equipo de desarrollo | 3
+| 2.7 | Bloquear usuario | Funcionalidad para el bloqueo del usuario | Desarrollo | Equipo de desarrollo | 3
+| 2.7.1 | Interfaz bloqueo de usuario | Interfaz para el bloqueo del usuario | Desarrollo | Equipo de desarrollo | 3
+| 2.7.2 | Logica bloqueo de usuario | Logica para el bloqueo del usuario | Desarrollo | Equipo de desarrollo | 3
+| 2.8 | Recuperar cuenta | Funcionalidad para recuperar la cuenta del usuario | Desarrollo | Equipo de desarrollo | 3
+| 2.8.1 | Interfaz recuperar cuenta de usuario | Interfaz para la recuperacion de cuenta del usuario | Desarrollo | Equipo de desarrollo | 3
+| 2.8.2 | Logica recuperar cuenta de usuario | Logica para la recuperacion de cuenta del usuario | Desarrollo | Equipo de desarrollo | 3
 | 3 | Desarrollo backend | Desarrollar la lógica de la aplicación | Desarrollo | Equipo de desarrollo | 3 
 | 3.1 | Capacitación del equipo de desarrollo | Capacitar al equipo de desarrollo con las tecnologías a utilizar | Capacitación | Equipo de desarrollo | 2 
 | 3.2 | Almacenamiento de imágenes | Almacenar las imágenes en el dispositivo del usuario | Desarrollo | Equipo de desarrollo | 2 
@@ -287,10 +294,12 @@ Los pesos se clasifican en base a:
 | 3.2.2.2 | Imagen vault | Guardar imagenes para la galeria | Desarrollo | Equipo de desarrollo | 3
 | 3.2.2.2.1 | Ver imagenes | Ver imagenes en la galeria | Desarrollo | Equipo de desarrollo | 3
 | 3.2.2.2.2 | Agregar imagenes | Agregar imagenes para la galeria | Desarrollo | Equipo de desarrollo | 3
+| 3.2.2.2.2.1 | Seleccipon multiple de imagenes | Agregar multiples imagenes a la galeria | Desarrollo | Equipo de desarrollo | 3
 | 3.2.2.2.3 | Encriptar imagenes | Encriptar imagenes de la galeria | Desarrollo | Equipo de desarrollo | 3
 | 3.2.2.2.4 | Capacidad galeria | Limitar la capacidad de la galeria | Desarrollo | Equipo de desarrollo | 3
 | 3.2.2.2.5 | Redimencionar imágenes | Redimencionar las imagenes de la galeria | Desarrollo | Equipo de desarrollo | 3
 | 3.2.2.2.6 | Eliminar imágenes | Eliminar las imagenes de la galeria | Desarrollo | Equipo de desarrollo | 3
+| 3.2.2.2.7 | Bloquear screenshot | Bloquear las screenshot en la galeria | Desarrollo | Equipo de desarrollo | 3
 | 3.3 | Crear algoritmo reconocimiento facial | Implementación de lógica de reconocimiento facial | Desarrollo | Equipo de desarrollo | 3 
 | 3.3.1 | Mejoras reconocimiento | Implementación de mejoras en el reconocimiento facial | Desarrollo | Equipo de desarrollo | 3 
 | 3.4 | Desarrollo parte Vault | Implementar aplicación de galería privada | Desarrollo | Equipo de desarrollo | 3 
@@ -313,10 +322,13 @@ Los pesos se clasifican en base a:
 | 3.8.7 | Interfaz rango horario | Crear la interfaz para los botones de rango horario | Desarrollo | Equipo de desarrollo | 3 
 | 3.8.8 | Funcionalidad botones rango horario | Crear la funcionalidad para ingresar por el rango horario | Desarrollo | Equipo de desarrollo | 3 
 | 3.8.9 | Habiulitar/Deshabilitar doble autenticación | Crear la funcionalidad para habilitar o deshabilitar la doble autenticación | Desarrollo | Equipo de desarrollo | 3 
+| 3.9 | Bloquear vista en vertical | Bloquear la vista en vertical de la aplicacion | Desarrollo | Equipo de desarrollo | 3 
 | 4 | Implementación | Puesta en servicio de la aplicación | Implementación | Capacitador y Prueba de Usuario, Equipo de desarrollo | 2 
 | 4.1 | Exportar apk | Compilación del proyecto a formato de dispositivo android | Implementación | Equipo de desarrollo | 2 
 | 4.2 | Capacitar usuario | Capacitar a usuario final | Capacitación | Capacitador y Prueba de Usuario | 2 
 | 4.2.1 | Infografía | Mostrar imagen de uso | Capacitación | Capacitador y Prueba de Usuario | 2 
+| 4.2.1.1 | PAgina de descargar | Crear la pagina para la descarga de la apk | Capacitación | Capacitador y Prueba de Usuario | 2 
+| 4.3 | Segunda etapa | Definir proxima etapa del proyecto | Implementación | Equipo scrum | 2 
 |===
 
 
