@@ -329,11 +329,11 @@ Los pesos se clasifican en base a:
 | 3.8.9 | Habiulitar/Deshabilitar doble autenticación | Crear la funcionalidad para habilitar o deshabilitar la doble autenticación | Desarrollo | Equipo de desarrollo | 3 
 | 3.9 | Bloquear vista en vertical | Bloquear la vista en vertical de la aplicacion | Desarrollo | Equipo de desarrollo | 3 
 | 4 | Implementación | Puesta en servicio de la aplicación | Implementación | Capacitador y Prueba de Usuario, Equipo de desarrollo | 2 
-| 4.1 | Exportar apk | Compilación del proyecto a formato de dispositivo android | Implementación | Equipo de desarrollo | 2 
+| 4.1 | Exportar apk | Compilación del proyecto a formato de dispositivo android | Desarrollo | Equipo de desarrollo | 2 
 | 4.2 | Capacitar usuario | Capacitar a usuario final | Capacitación | Capacitador y Prueba de Usuario | 2 
-| 4.2.1 | Infografía | Mostrar imagen de uso | Capacitación | Capacitador y Prueba de Usuario | 2 
-| 4.2.1.1 | PAgina de descargar | Crear la pagina para la descarga de la apk | Capacitación | Capacitador y Prueba de Usuario | 2 
-| 4.3 | Segunda etapa | Definir proxima etapa del proyecto | Implementación | Equipo scrum | 2 
+| 4.2.1 | Infografía | Mostrar imagen de uso | Capacitación | Capacitador | 2 
+| 4.2.1.1 | Página de descargar | Crear la pagina para la descarga de la apk | Desarrollo | Equipo de desarrollo | 2 
+| 4.3 | Segunda etapa | Definir proxima etapa del proyecto | Desarrollo | Todo el equipo | 2 
 |===
 
 
@@ -667,7 +667,7 @@ PONER BURNDOWN CHART 5
 
 image::Recursos/Sprint 4/Evolucion de la prueba acumulado sprint 4.PNG[700,700]
 
-PONER EVOLUCION DE LA PUREBA ACUMULADO
+PONER EVOLUCION DE LA PRUEBA ACUMULADO
 
 
 * Burndown Chart Acumulado
