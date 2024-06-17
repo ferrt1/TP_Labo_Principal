@@ -645,7 +645,7 @@ image::Recursos/Sprint 4/Burndown chart sprint 4.PNG[700,700]
 
 image::Recursos/Sprint 5/Tabla funcionalidad 1.PNG[700,700]
 
-image::Recursos/Sprint 5/Tabla funcionalidad 2.PNG[700,700]
+image::Recursos/Sprint 5/tabla funcionalidad 2.PNG[700,700]
 
 * Nivel de Calidad Sprint 5
 
