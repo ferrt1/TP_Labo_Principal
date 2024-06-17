@@ -205,7 +205,6 @@ Una vez explicado las clasificación de requerimientos funcionales,  se hará a 
 
 * No Funcionales:
 ** Usabilidad:
-*** Si el usuario desea entrar y no esta registrado se le debe mostrar un mensaje de "acceso denegado, primero necesitas registrarte"
 *** Si el usuario desea ingresar a su cuenta con una foto u otro rostro (no asociado a su cuenta) se le debe mostrar un mensaje de "acceso denegado".
 *** Si el usuario pudo ingresar a su cuenta se le debe mostrar un mensaje de "acceso permitido".
 *** Por cada interfaz en la que el usuario se encuentre el sistema debe mostrar el mensaje adecuado correspondiente a la interacción del mismo con la aplicación.
