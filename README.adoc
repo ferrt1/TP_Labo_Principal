@@ -453,7 +453,7 @@ PONER IMAGENES DE HORAS ACUMULADAS
 
 image::imagenAdoc/riesgos_para_informe.PNG[700,700]
 
-PONER TABLA RIESGOS
+PONER MAPA DE CALOR
 
 ** Plan de mitigacion
 * R1 = Armado detallado de la WBS. Organizar reuniones para revisar y aclarar los objetivos.
@@ -484,6 +484,8 @@ PONER TABLA RIESGOS
 
 image::Recursos/Sprint 4/riesgos.PNG[700,700]
 
+PONER TABLA RIESGOS
+
 ** Plan de mitigación sprint 2
 
 image::Recursos/Sprint 2/indice de mit grafico.PNG[700,700]
@@ -495,6 +497,10 @@ image::Recursos/Sprint 3/Indice de mitigacion grafico.PNG[700,700]
 ** Plan de mitigación sprint 4
 
 image::Recursos/Sprint 4/Indice de mitigacion sprint 4.PNG[700,700]
+
+** Plan de mitigación sprint 5
+
+PONER PLAN DE MITIGACION
  
 === Entregables
 
@@ -506,7 +512,7 @@ En los hitos restantes se presentará al cliente los avances en el producto.
 * Reunión formal 2 el día 8/05
 * Reunión formal 3 el día 22/05
 * Reunión formal 4 el día 5/06
-* Reunión formal 5 el día 14/06
+* Reunión formal 5 el día 19/06
 * Presentación final el día 26/06
 
 ** Entregables para el proximo sprint del dia 8/05:
@@ -529,7 +535,7 @@ En los hitos restantes se presentará al cliente los avances en el producto.
 * Implementar mensajes de perfil de usuario y galeria
 * Cifrar imagenes
 
-** Entregables para el proximo sprint del dia 14/06:
+** Entregables para el proximo sprint del dia 19/06:
 * Compartir imágenes
 * Bloquear vista en vertical
 * Exportar APK
@@ -554,6 +560,8 @@ image::Recursos/Sprint 3/Pruebas sprint 3.PNG[700,700]
 image::Recursos/Sprint 2/Tabla de equivalencia - inicio de sesion.png[700,700]
 
 image::Recursos/Sprint 4/Tabla equivalencia sprint4.PNG[700,700]
+
+PONER TABLA EQUIVALENCIA
 
 === Administración de Cambios
 
@@ -638,6 +646,21 @@ image::Recursos/Sprint 4/Evolucion de la prueba sprint 4.PNG[700,700]
 
 image::Recursos/Sprint 4/Burndown chart sprint 4.PNG[700,700]
 
+* Funcionalidad Completa Sprint 5
+
+PONER FUNCIONALIDAD COMPLETA 5 1 Y 2
+
+* Nivel de Calidad Sprint 5
+
+PONER NIVEL DE CALIDAD 5
+
+* Evolución de la Prueba Sprint 5
+
+PONER EVOLUCION DE LA PRUEBA 5
+
+* Burndown Chart Sprint 5
+
+PONER BURNDOWN CHART 5
 
 === Indicadores Acumulados
 
@@ -645,10 +668,14 @@ image::Recursos/Sprint 4/Burndown chart sprint 4.PNG[700,700]
 
 image::Recursos/Sprint 4/Evolucion de la prueba acumulado sprint 4.PNG[700,700]
 
+PONER EVOLUCION DE LA PUREBA ACUMULADO
+
 
 * Burndown Chart Acumulado
 
 image::Recursos/Sprint 4/Burndown char acumulado.PNG[700,700]
+
+PONER BURNDOWN CHART ACUMULADO
 
 
 === Problemas encontrados
