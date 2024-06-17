@@ -88,7 +88,7 @@ class ServiceManager(private val context: Context) {
         return mailCode
     }
 
-    private val emailUsername = "cyphervaultapp@hotmail.com"
+    private val emailUsername = "cyphervault@hotmail.com"
     private val emailPassword = "11111111111111a$"
 
     fun sendEmail(receiverEmail: String, subjects: String, body: String) {
