@@ -643,22 +643,21 @@ Dentro del marco de la metodología Scrum, se promueve una comunicación abierta
 *  Para una segunda etapa del proyecto se propusieron varias funcionalidades, se analizaron, se evaluaron y se aprobaron en caso de que fueran viables para el proyecto. A continuación, se detallarán dichas funcionalidades con el costo, expresado en dólares, de las mismas:
 ** Agregar idioma inglés (U$S 870), una ves implementado el primer idioma se podrían agregar mas idiomas los cuales tendrían un valor muy reducido del propuesto para el primero.
 ** Agregar múltiples formatos de archivos (PDF, MP3, MP4) (U$S 1310)
-•	Expandir almacenamiento "Free" si se comparte la app con 5 amigos (50mb) (U$S 1310)
-•	Descargar imagenes de la web directamente a la app (Sin pasar por galería del dispositivo) (U$S 1010)
-•	Visualizador de imagenes mejorado (-Rotar imagen, -Modo presentación, Pasar imágenes sin salir del visualizador) (U$S 1410)
-•	Tomar fotografía dentro de la app (U$S 350)
-•	Implementación vista horizontal (U$S 770)
-•	Logueo falso (U$S 1010), si una persona quisiera entrar a su cuenta, el logueo falso lo que hace es iniciar sesión en una cuenta falsa y tomar una foto del invasor y dejarla guardada en el dispositivo.
-•	Protección contra espías (U$S 1010), Si la app detecta 2 rostros mientras se esta utilizando la app, se bloquea para proteger tus imágenes 
-•	Seguimiento de usuario (U$S 1360), La app continuamente esta identificando tu rostro para asegurarse que nadie mas pueda mirar tus imágenes
-•	Temas (U$S 770), Para el primer tema se elegirá el tema oscuro, luego de la aplicación del primer tema, los demás tendrán un valor muy reducido.
-•	Recuperación de cuenta (U$S 770), se podrá recuperar la cuenta sin ingresar a la misma a través del mail registrado por el usuario
-•	Accesibilidad para personas con visión reducida (U$S 250), guía auditiva para el usuario al momento de registrarse y loguearse
-•	Crear versión para IOS (U$S 33000)
-•	Crear versión para escritorio (U$S 24750)
-Todas las funcionales recién detallas suman un total de $69950. Ocupando un total de 1257hs de trabajo del equipo, el cual se tendría terminado en un plazo de 7 sprints (6 meses).
+** Expandir almacenamiento "Free" si se comparte la app con 5 amigos (50mb) (U$S 1310)
+** Descargar imagenes de la web directamente a la app (Sin pasar por galería del dispositivo) (U$S 1010)
+** Visualizador de imagenes mejorado (-Rotar imagen, -Modo presentación, Pasar imágenes sin salir del visualizador) (U$S 1410)
+** Tomar fotografía dentro de la app (U$S 350)
+** Implementación vista horizontal (U$S 770)
+** Logueo falso (U$S 1010), si una persona quisiera entrar a su cuenta, el logueo falso lo que hace es iniciar sesión en una cuenta falsa y tomar una foto del invasor y dejarla guardada en el dispositivo.
+** Protección contra espías (U$S 1010), Si la app detecta 2 rostros mientras se esta utilizando la app, se bloquea para proteger tus imágenes 
+** Seguimiento de usuario (U$S 1360), La app continuamente esta identificando tu rostro para asegurarse que nadie mas pueda mirar tus imágenes
+** Temas (U$S 770), Para el primer tema se elegirá el tema oscuro, luego de la aplicación del primer tema, los demás tendrán un valor muy reducido.
+** Recuperación de cuenta (U$S 770), se podrá recuperar la cuenta sin ingresar a la misma a través del mail registrado por el usuario
+** Accesibilidad para personas con visión reducida (U$S 250), guía auditiva para el usuario al momento de registrarse y loguearse
+** Crear versión para IOS (U$S 33000)
+** Crear versión para escritorio (U$S 24750)
 
-
+* Todas las funcionales recién detallas suman un total de $69950. Ocupando un total de 1257hs de trabajo del equipo, el cual se tendría terminado en un plazo de 7 sprints (6 meses).
 
 === Tecnologías
 
