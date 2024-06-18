@@ -685,6 +685,20 @@ Durante la ejecución del proyecto, nos enfrentamos a contratiempos relacionados
 
 * Falta de servicio de Internet: Durante la ejecución del sprint, nos enfrentamos a un contratiempo relacionado con la interrupción del suministro de internet. Esto retraso un par de horas la finalización de una de las actividades, sin embargo, se logró terminar para la fecha acordada de entrega.
 
+=== Costos:
+
+* Para este proyecto fue asignado un presupesto de U$S 65000 para cubrir todos los requerimientos solicitados, como asi los posibles cambios que surgieran durante el desarrollo del mismo. A continuación se detallaran los montos gastados en cada sprint:
+
+* Sprint 1: Periodo del 20/4 al 26/4, monto consumido: U$S 3568
+* Sprint 2: Periodo del 27/4 al 8/5, monto consumido: U$S 7444
+* Sprint 3: Periodo del 9/5 al 22/5, monto consumido: U$S 11663
+* Sprint 4: Periodo del 23/05 al 5/06, monto consumido: U$S 11478
+* Sprint 5: Periodo del 6/06 al 19/06, monto consumido: U$S 9174
+
+* El total del proyecto asiende a un valor de U$S 43327. Lo cual quiere decir que se utilizo el 66,6% del presupuesto inicialmente proporcionado.
+
+PONER IMAGEN DE COSTOS
+
 === Lecciones aprendidas:
 
 * Planificación y gestión de proyecto:
