@@ -192,7 +192,7 @@ val textStyleTittle2 = TextStyle(
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
 fun Gallery(navController: NavController, userId: String, galleryController: GalleryController) {
-/*
+
     //-----"CODIGO PARA QUE SE VEA EN NEGRO LA GALERIA SI QUIERE SACAR FOTOCAPTURA-----//
     val block = LocalContext.current
     // Usar DisposableEffect para configurar y limpiar la bandera FLAG_SECURE
@@ -209,7 +209,7 @@ fun Gallery(navController: NavController, userId: String, galleryController: Gal
         }
     }
     //----------------------------------------------------------------------------------//
-*/
+
     //Variables necesarias/////////////////////////
     val context = LocalContext.current
     val activity = context.findAncestorActivity()
