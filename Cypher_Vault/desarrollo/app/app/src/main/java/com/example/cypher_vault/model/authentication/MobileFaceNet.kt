@@ -12,7 +12,7 @@ import kotlin.math.sqrt
 class MobileFaceNet(assetManager: AssetManager, modelPath: String = "MobileFaceNetv2.tflite") {
     companion object {
         const val INPUT_IMAGE_SIZE = 112
-        const val THRESHOLD = 0.35f
+        const val THRESHOLD = 0.4f
     }
 
     private val interpreter: Interpreter

@@ -69,7 +69,7 @@ class FaceOverlayView(context: Context) : View(context) {
                 "blink1", "blink2", "blink3" -> {
                     drawTextWithBackground(
                         canvas,
-                        "Por favor, pestañee. Restantes $eyesOpens",
+                        "Pestañee. Restantes $eyesOpens",
                         width / 2f,
                         height * 0.1f,
                         textPaint,
