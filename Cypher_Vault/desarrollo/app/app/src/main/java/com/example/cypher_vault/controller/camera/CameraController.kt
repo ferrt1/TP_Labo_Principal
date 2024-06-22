@@ -5,7 +5,10 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Canvas
 import android.graphics.Color
+import android.graphics.ColorMatrix
+import android.graphics.ColorMatrixColorFilter
 import android.graphics.Matrix
+import android.graphics.Paint
 import android.graphics.Rect
 import android.util.Log
 import androidx.camera.core.ImageCapture
@@ -83,6 +86,7 @@ class CameraController(
                                 // Rotar la imagen si es necesario
                                 val rotationDegrees = getRotationDegrees(tempFile)
                                 imgBitmap = rotateBitmap(imgBitmap, rotationDegrees)
+
                             } catch (e: Exception) {
                                 Log.e("Imagen", "Error al rotar la imagen", e)
                             }
@@ -109,13 +113,13 @@ class CameraController(
 
                                                 try {
                                                     // Asegurar que siempre se capturen los mismos márgenes alrededor del rostro
-                                                    val marginX = 50
-                                                    val marginY = 50
+                                                    val marginX = (boundingBox.width() * 0.2).toInt() // 20% de margen
+                                                    val marginY = (boundingBox.height() * 0.2).toInt() // 20% de margen
                                                     val adjustedBoundingBox = Rect(
-                                                        boundingBox.left - marginX,
-                                                        boundingBox.top - marginY,
-                                                        boundingBox.right + marginX,
-                                                        boundingBox.bottom + marginY
+                                                        maxOf(boundingBox.left - marginX, 0),
+                                                        maxOf(boundingBox.top - marginY, 0),
+                                                        minOf(boundingBox.right + marginX, imgBitmap.width),
+                                                        minOf(boundingBox.bottom + marginY, imgBitmap.height)
                                                     )
 
                                                     // Validar los límites del bounding box ajustado
