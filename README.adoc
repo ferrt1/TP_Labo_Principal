@@ -6,7 +6,7 @@
 :experimental:
 :leveloffset: 0.
 
-= Proyecto de Reconocimiento Facial
+= Cypher Vault
 
 image::imagenAdoc/logofacultad.png[700,700]
 
