@@ -645,14 +645,6 @@ image::Recursos/Sprint 5/Tabla funcionalidad 1.PNG[700,700]
 
 image::Recursos/Sprint 5/tabla funcionalidad 2.PNG[700,700]
 
-* Nivel de Calidad Sprint 5
-
-image::Recursos/Sprint 5/Nivel de calidad sprint 5.PNG[700,700]
-
-* Evolución de la Prueba Sprint 5
-
-image::Recursos/Sprint 5/evolucion de la prueba sprint 5.PNG[700,700]
-
 * Burndown Chart Sprint 5
 
 image::Recursos/Sprint 5/burndown chart sprint 5.PNG[700,700]
@@ -661,7 +653,11 @@ image::Recursos/Sprint 5/burndown chart sprint 5.PNG[700,700]
 
 * Evolución de la Prueba Acumulado
 
-image::Recursos/Sprint 5/Evolucion de la prueba acumulado.PNG[700,700]
+PONER IMAGEN DE EVOLUCION DE LA PRUEBA
+
+* Nivel de calidad acumulado
+
+PONER IMAGEN DE NIVEL DE CALIDAD
 
 * Burndown Chart Acumulado
 
@@ -693,7 +689,7 @@ Durante la ejecución del proyecto, nos enfrentamos a contratiempos relacionados
 * Sprint 4: Periodo del 23/05 al 5/06, monto consumido: U$S 11478
 * Sprint 5: Periodo del 6/06 al 19/06, monto consumido: U$S 9174
 
-* El total del proyecto asiende a un valor de U$S 43327. Lo cual quiere decir que se utilizo el 66,6% del presupuesto inicialmente proporcionado.
+* El total del proyecto asciende a un valor de U$S 43327. Lo cual quiere decir que se utilizo el 66,6% del presupuesto inicialmente proporcionado.
 
 image::Recursos/Sprint 5/costo proyecto.PNG[700,700]
 
