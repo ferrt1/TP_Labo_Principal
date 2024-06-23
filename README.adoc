@@ -653,11 +653,11 @@ image::Recursos/Sprint 5/burndown chart sprint 5.PNG[700,700]
 
 * Evolución de la Prueba Acumulado
 
-PONER IMAGEN DE EVOLUCION DE LA PRUEBA
+image::Recursos/Sprint 5/Evolucion de la prueba acumulado final.PNG[700,700]
 
 * Nivel de calidad acumulado
 
-PONER IMAGEN DE NIVEL DE CALIDAD
+image::Recursos/Sprint 5/Nivel de calidad final.PNG[700,700]
 
 * Burndown Chart Acumulado
 
